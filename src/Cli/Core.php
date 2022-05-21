@@ -17,7 +17,10 @@ namespace  CrazyPHP\Cli;
  */
 use CrazyPHP\Library\File\Composer;
 use splitbrain\phpcli\Options;
+use League\CLImate\CLImate;
 use splitbrain\phpcli\CLI;
+use CrazyPHP\App\Create;
+use CrazyPHP\Cli\Form;
 
 /**
  * Core
@@ -41,6 +44,24 @@ class Core extends CLI {
             "long"          =>  "version",
             "help"          =>  "Print version of CrazyPHP",
             "short"         =>  "v",
+        ],
+        # New Project
+        [
+            "long"          =>  "new",
+            "help"          =>  "New crazy project",
+            "short"         =>  "n",
+        ],
+        # Upgrade Project
+        [
+            "long"          =>  "upgrade",
+            "help"          =>  "Upgrade your crazy project",
+            "short"         =>  "u",
+        ],
+        # Delete Project
+        [
+            "long"          =>  "delete",
+            "help"          =>  "Delete your crazy project",
+            "short"         =>  "d",
         ],
         /* [
             "long"          =>  "",
@@ -146,5 +167,54 @@ class Core extends CLI {
 
     }
 
+    /** New project
+     * 
+     * New project
+     * 
+     */
+    protected function actionNew(){
+
+        # Display result
+        $this->success("New project");
+
+        # New climate
+        $climate = new CLImate();
+
+        ## First part
+        usleep(400000);
+        $climate
+            ->br()
+            ->green()
+            ->border()
+            ->br();
+        usleep(300000);
+        $climate
+            ->out("First we need informations about your new project 👋");
+        usleep(300000);
+        
+        # Display form
+        new Form(Create::REQUIRED_VALUES);
+
+    }
+
+    /** Upgrade project
+     * 
+     */
+    protected function actionUpgrade(){
+
+        # Display result
+        $this->info("upgrade");
+
+    }
+
+    /** Delete project
+     * 
+     */
+    protected function actionDelete(){
+
+        # Display result
+        $this->info("delete");
+
+    }
 
 }

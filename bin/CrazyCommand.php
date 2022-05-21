@@ -13,6 +13,12 @@
  */
 require __DIR__ . '/../vendor/autoload.php';
 
+/** Disable deprecated message
+ * 
+ */
+$errorlevel=error_reporting();
+$errorlevel=error_reporting($errorlevel & ~E_DEPRECATED);
+
 /** Dependances
  * 
  */
