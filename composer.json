@@ -1,0 +1,22 @@
+{
+    "name": "kzarshenas/crazyphp",
+    "version": "0.0.0",
+    "description": "My crazy framework for creating ultra-fast webapps.",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "CrazyPHP\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "kekefreedog",
+            "email": "kevin.zarshenas@gmail.com"
+        }
+    ],
+    "require": {
+        "mezon/router": "^1.4",
+        "splitbrain/php-cli": "^1.1",
+        "league/climate": "^3.8"
+    }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "crazyphp",
+  "version": "0.0.0",
+  "description": "My crazy framework for creating ultra-fast webapps.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kekefreedog/CrazyPHP.git"
+  },
+  "author": "kekefreedog",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kekefreedog/CrazyPHP/issues"
+  },
+  "homepage": "https://github.com/kekefreedog/CrazyPHP#readme"
+}

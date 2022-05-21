@@ -1,0 +1,13 @@
+# Composer dependances (PHP)
+/vendor/
+composer.lock
+
+# Npm dependances (JS)
+node_modules
+package.lock
+
+# Distribution
+/dist
+
+# Etc
+.DS_Store
