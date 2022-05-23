@@ -48,6 +48,7 @@ class Create{
         # Author
         [
             "name"          =>  "author",
+            "description"   =>  "Author of this crazy project",
             "type"          =>  "VARCHAR",
             "default"       =>  "CrazyPerson",
             "required"      =>  true,
@@ -56,25 +57,22 @@ class Create{
         # Type
         [
             "name"          =>  "type",
+            "description"   =>  "Type of your crazy project",
             "type"          =>  "VARCHAR",
             "default"       =>  "library",
             "select"        =>  [
                 ""              =>  "Undifined",
                 "library"       =>  "Library",
-                "project"       =>  "project"
+                "project"       =>  "Project"
             ]
         ],
         # Homepage
         [
             "name"          =>  "homepage",
+            "description"   =>  "Home page of your crazy project",
             "type"          =>  "VARCHAR",
             "default"       =>  "https://github.com/kekefreedog/CrazyPHP/",
-            "process"       =>  ['http'],
-            "select"        =>  [
-                ""              =>  "Undifined",
-                "library"       =>  "Library",
-                "project"       =>  "project"
-            ]
+            "validate"      =>  ['http'],
         ],
     ];
 

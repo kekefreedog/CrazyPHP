@@ -28,6 +28,15 @@ use League\CLImate\CLImate;
  */
 class Form {
 
+    /** Variables
+     ******************************************************
+     */
+
+    /** 
+     * Result
+     */
+    private $result = [];
+
     /**
      * Constructor
      * 
@@ -56,7 +65,14 @@ class Form {
                     # Prepare question
                     $question = $value['description'];
 
-                $question .= " {".$value['name']."} ?";
+                $question .= 
+                    " {".$value['name']."} ?".
+                    (
+                        $value['default'] ?
+                            " <".$value['default'].">" :
+                                ""
+                    )
+                ;
 
                 # Select
                 if(!empty($value['select'] ?? [])){
@@ -72,7 +88,7 @@ class Form {
                         $input = $climate->radio($question, $value['select']);
                         
                         # Get result
-                        $this->result = array_merge(
+                        $this->result[$value['name']] = array_merge(
                             $value,
                             [
                                 "value" =>  $input->prompt()
@@ -88,13 +104,15 @@ class Form {
                     $input = $climate->input($question);
 
                     # Check if default
-                    if($value['default'] ?? false)
+                    if($value['default'] ?? false){
 
                         # Set default
                         $input->defaultTo($value['default']);
 
+                    }
+
                     # Get result
-                    $this->result = array_merge(
+                    $this->result[$value['name']] = array_merge(
                         $value,
                         [
                             "value" =>  $input->prompt()
@@ -109,15 +127,6 @@ class Form {
         return $this;
 
     }
-
-    /** Variables
-     ******************************************************
-     */
-
-    /** 
-     * Result
-     */
-    private $result = [];
 
     /** Public Methods
      ******************************************************

@@ -193,7 +193,28 @@ class Core extends CLI {
         usleep(300000);
         
         # Display form
-        new Form(Create::REQUIRED_VALUES);
+        $form = new Form(Create::REQUIRED_VALUES);
+
+        # Get form result
+        $formResult = $form->getResult();
+
+        # Process value
+        $formResultProcessed = new ProcessFormValues($formResult);
+
+        ## Second part
+        $climate
+            ->br()
+            ->green()
+            ->border()
+            ->br();
+        usleep(400000);
+        $climate
+            ->json([
+                'name' => 'Gary',
+                'age'  => 52,
+                'job'  => 'Engineer',
+            ]);
+          
 
     }
 
