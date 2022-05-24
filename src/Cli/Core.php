@@ -15,7 +15,9 @@ namespace  CrazyPHP\Cli;
 /**
  * Dependances
  */
+use CrazyPHP\Library\Form\Validate;
 use CrazyPHP\Library\File\Composer;
+use CrazyPHP\Library\Form\Process;
 use splitbrain\phpcli\Options;
 use League\CLImate\CLImate;
 use splitbrain\phpcli\CLI;
@@ -174,11 +176,12 @@ class Core extends CLI {
      */
     protected function actionNew(){
 
-        # Display result
-        $this->success("New project");
-
         # New climate
         $climate = new CLImate();
+        $climate->br();
+
+        # Display result
+        $this->success("New project");
 
         ## First part
         usleep(400000);
@@ -195,11 +198,43 @@ class Core extends CLI {
         # Display form
         $form = new Form(Create::REQUIRED_VALUES);
 
-        # Get form result
-        $formResult = $form->getResult();
+        # Break line
+        $climate
+            ->br()
+            ->orange("Process values given")
+            ->br();
 
-        # Process value
-        $formResultProcessed = new ProcessFormValues($formResult);
+        # Progress bar
+        $progress = $climate->progress()->total(100);
+
+            # Get form result
+            $formResult = $form->getResult();
+
+                # Update progress bar
+                $progress->current(33);
+
+            # Process value
+            $formResult = (new Process($formResult))->getResult();
+
+                # Update progress bar
+                $progress->current(66);
+
+            # Validate value
+            $formResult = (new Validate($formResult))->getResult();
+                
+                # Update progress bar
+                $progress->current(100);
+
+                # Prepare display value
+                $dispayValues = [];
+                foreach($formResult as $result)
+                    $dispayValues[ucfirst($result['name'])] = $result['value'] ?? "Null";
+
+        # Success message
+        $climate
+            ->br()
+            ->green("Values processed with success 🎉")
+        ;
 
         ## Second part
         $climate
@@ -209,12 +244,25 @@ class Core extends CLI {
             ->br();
         usleep(400000);
         $climate
-            ->json([
-                'name' => 'Gary',
-                'age'  => 52,
-                'job'  => 'Engineer',
-            ]);
-          
+            ->json($dispayValues)
+            ->br();
+        usleep(200000);
+
+        $input = $climate->confirm('Do you confirm the creation of the projet ?');
+
+        // Continue? [y/n]
+        if(!$input->confirmed()){
+
+            usleep(200000);
+            $climate
+                ->br()
+                ->red("✋ Project creation has been canceled ✋")
+                ->br()
+            ;
+
+        }
+            
+
 
     }
 
