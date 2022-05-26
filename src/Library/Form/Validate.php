@@ -13,6 +13,11 @@
 namespace  CrazyPHP\Library\Form;
 
 /**
+ * Dependances
+ */
+use CrazyPHP\Library\Form\Process;
+
+/**
  * Validate form values
  *
  * Check form values respect rules and return error / log message for client
@@ -213,7 +218,7 @@ class Validate {
     /**
      * Get Logs
      * 
-     * Return result
+     * Return logs
      * 
      * @param string $input
      * @return array
@@ -228,6 +233,64 @@ class Validate {
     /** Public Static Methods
      ******************************************************
      */
+
+    /** 
+     * Get Result Summary
+     * 
+     * Return a result summary as {<parameter>:<value>}
+     * 
+     * @param array $input
+     * @return array
+     */
+    public static function getResultSummary(array $inputs = []):array {
+
+        # Declare result
+        $result = [];
+
+        # Check empty
+        if(empty($inputs))
+            return $result;
+
+        # Iteration of input
+        foreach($inputs as $input)
+
+            # Check name of input
+            if($input['name'] ?? false){
+
+                # Prepare name
+                $name = ucwords(
+                    str_replace(
+                        "_",
+                        " ",
+                        Process::camelToSnake($input['name'])
+                    )
+                );
+
+                # Check value is a password
+                if($input['type'] === "PASSWORD")
+                    
+                    # Transform 
+                    $value = $input['value'] ?
+                        "*****" :
+                            null;
+
+                # Process value
+                else
+                    
+                    # Check value
+                    $value = $input['value'] ?
+                        $input['value'] :
+                            null;
+
+                # Add current input in result collection
+                $result[$name] = $value;
+
+            }
+
+        # Return result
+        return $result;
+
+    }
 
     /**
      * Is Http

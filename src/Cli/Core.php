@@ -15,6 +15,7 @@ namespace  CrazyPHP\Cli;
 /**
  * Dependances
  */
+use CrazyPHP\Library\Database\Create as CreateDatabase;
 use CrazyPHP\Library\Form\Validate;
 use CrazyPHP\Library\File\Composer;
 use CrazyPHP\Library\Form\Process;
@@ -226,9 +227,7 @@ class Core extends CLI {
                 $progress->current(100);
 
                 # Prepare display value
-                $dispayValues = [];
-                foreach($formResult as $result)
-                    $dispayValues[ucfirst($result['name'])] = $result['value'] ?? "Null";
+                $dispayValues = Validate::getResultSummary($formResult);
 
         # Success message
         $climate
@@ -260,9 +259,98 @@ class Core extends CLI {
                 ->br()
             ;
 
-        }
-            
+            # Stop script
+            return;
 
+        }
+
+        ## Third part (database)
+        usleep(400000);
+        $climate
+            ->br()
+            ->cyan()
+            ->border()
+            ->br();
+        usleep(300000);
+        $input = $climate->confirm('Do you need a database ? 📒');
+
+        // Continue? [y/n]
+        if ($input->confirmed()) {
+
+            usleep(300000);
+        
+            # Display form
+            $form = new Form(CreateDatabase::REQUIRED_VALUES);
+
+            # Break line
+            $climate
+                ->br()
+                ->orange("Process values given")
+                ->br();
+
+            # Progress bar
+            $progress = $climate->progress()->total(100);
+
+                # Get form result
+                $formResultDb = $form->getResult();
+
+                    # Update progress bar
+                    $progress->current(33);
+
+                # Process value
+                $formResultDb = (new Process($formResultDb))->getResult();
+
+                    # Update progress bar
+                    $progress->current(66);
+
+                # Validate value
+                $formResultDb = (new Validate($formResultDb))->getResult();
+                    
+                    # Update progress bar
+                    $progress->current(100);
+
+                    # Prepare display value
+                    $dispayValues = Validate::getResultSummary($formResultDb);
+
+            # Success message
+            $climate
+                ->br()
+                ->green("Values processed with success 🎉")
+            ;
+
+            ## Second part
+            $climate
+                ->br()
+                ->green()
+                ->border()
+                ->br();
+            usleep(400000);
+            $climate
+                ->json($dispayValues)
+                ->br();
+            usleep(200000);
+            
+            // Continue? [y/n]
+            $input = $climate->confirm('Do you confirm the creation of the database ?');
+            
+            # Check answer
+            if($input->confirmed()){
+
+                # Database
+                $formResult['database'] = $formResultDb;
+
+            }else{
+
+                usleep(200000);
+                $climate
+                    ->br()
+                    ->yellow("🟠 Database creation has been canceled, project creation continue...")
+                    ->br()
+                ;
+
+            }
+
+        }
 
     }
 

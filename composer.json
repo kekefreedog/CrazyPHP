@@ -18,6 +18,8 @@
         "mezon/router": "^1.4",
         "splitbrain/php-cli": "^1.1",
         "league/climate": "^3.8",
-        "symfony/yaml": "^6.0"
+        "symfony/yaml": "^6.0",
+        "catfan/medoo": "^2.1",
+        "delight-im/auth": "^8.3"
     }
 }

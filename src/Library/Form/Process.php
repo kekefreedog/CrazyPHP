@@ -13,6 +13,11 @@
 namespace  CrazyPHP\Library\Form;
 
 /**
+ * Dependances
+ */
+use CrazyPHP\Library\Form\Validate;
+
+/**
  * Process form values
  *
  * Process form values return error / log message for client
@@ -201,6 +206,21 @@ class Process {
     /** Public Static Methods
      ******************************************************
      */
+
+    /** 
+     * Get Result Summary
+     * 
+     * Return a result summary as {<parameter>:<value>}
+     * 
+     * @param array $input
+     * @return array
+     */
+    public static function getResultSummary(array $inputs = []):array {
+
+        # Get Get Result Summary
+        return Validate::getResultSummary($inputs);
+
+    }
 
     /**
      * Trim string

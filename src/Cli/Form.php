@@ -96,12 +96,14 @@ class Form {
                         );
 
                     }
-                    
+
                 # Input
                 }else{
 
                     # Parepare the input
-                    $input = $climate->input($question);
+                    $input = $value['type'] == "PASSWORD" ?
+                        $climate->password($question) :
+                            $climate->input($question);
 
                     # Check if default
                     if($value['default'] ?? false){
