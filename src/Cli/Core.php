@@ -177,6 +177,9 @@ class Core extends CLI {
      */
     protected function actionNew(){
 
+        # Declare result
+        $result = [];
+
         # New climate
         $climate = new CLImate();
         $climate->br();
@@ -263,6 +266,9 @@ class Core extends CLI {
             return;
 
         }
+        
+        # Push form result in result
+        $result['application'] = $formResult;
 
         ## Third part (database)
         usleep(400000);
@@ -330,14 +336,41 @@ class Core extends CLI {
                 ->br();
             usleep(200000);
             
-            // Continue? [y/n]
+            # Continue? [y/n]
             $input = $climate->confirm('Do you confirm the creation of the database ?');
             
             # Check answer
             if($input->confirmed()){
+        
+                # Push form result in result
+                $result['database'] = $formResult;
 
-                # Database
-                $formResult['database'] = $formResultDb;
+                ## Part 4 (auth)
+                usleep(400000);
+                $climate
+                    ->br()
+                    ->magenta()
+                    ->border()
+                    ->br();
+                usleep(300000);
+                $input = $climate->confirm('Do you need authentication library ? <delight-im/PHP-Auth> 🔐');
+
+                # Continue? [y/n]
+                if ($input->confirmed())
+
+                    # Push form result in result
+                    $result['authentication'] = [
+                        [
+                            "name"          =>  "library_author",
+                            "type"          =>  "VARCHAR",
+                            "value"         =>  "delight-im",
+                        ],
+                        [
+                            "name"          =>  "library_repository",
+                            "type"          =>  "VARCHAR",
+                            "value"         =>  "PHP-Auth",
+                        ],
+                    ];
 
             }else{
 

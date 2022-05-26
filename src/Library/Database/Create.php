@@ -47,7 +47,7 @@ class Create {
         ],
         # Root
         [
-            "name"          =>  "root",
+            "name"          =>  "root_login",
             "description"   =>  "Root of your crazy database service",
             "type"          =>  "VARCHAR",
             "default"       =>  "root",
@@ -71,7 +71,7 @@ class Create {
         ],
         # User
         [
-            "name"          =>  "user",
+            "name"          =>  "user_login",
             "description"   =>  "New crazy user of your database",
             "type"          =>  "VARCHAR",
             "required"      =>  true,
