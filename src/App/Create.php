@@ -45,14 +45,24 @@ class Create{
             "default"       =>  "My Crazy Web Application",
             "process"       =>  ['trim']
         ],
-        # Author
+        # Author Name
         [
-            "name"          =>  "author",
+            "name"          =>  "authors__name",
             "description"   =>  "Author of this crazy project",
             "type"          =>  "VARCHAR",
             "default"       =>  "CrazyPerson",
             "required"      =>  true,
             "process"       =>  ['trim'],
+        ],
+        # Author Email
+        [
+            "name"          =>  "authors__email",
+            "description"   =>  "Email of the crazy author",
+            "type"          =>  "VARCHAR",
+            "default"       =>  "crazy@person.com",
+            "required"      =>  true,
+            "process"       =>  ['trim'],
+            "validate"      =>  ['email'],
         ],
         # Type
         [
@@ -83,7 +93,12 @@ class Create{
     /**
      * Inputs
      */
-    public $inputs = [];
+    private $inputs = [];
+
+    /**
+     * Logs
+     */
+    private $logs = true;
 
     /**
      * Constructor
@@ -250,6 +265,11 @@ class Create{
      * @return Create
      */
     public function runNpm():Create {
+
+        # Check input > application is set and not empty
+        if(empty($this->input['application'] ?? []))
+
+
 
         # Return instance
         return $this;

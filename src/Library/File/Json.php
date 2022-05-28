@@ -106,5 +106,77 @@ class Json{
         return $result;
         
     }
+    
+    /**
+     * Set value in json
+     *
+     * @param string $path Path of the json file
+     * @param array $values Values to put on composer.json
+     * @return string
+     */
+    public static function set(string $path = "", array $values = []):bool{
+
+        # Set result
+        $result = true;
+
+        # Check $path and $values
+        if(!$path || empty($values) || !file_exists($path))
+
+            # Stop function
+            return $result;
+
+        
+
+
+        # Return result
+        return $result;
+
+    }
+    
+    /**
+     * Read value in json
+     *
+     * @param string $path Path of the json file
+     * @param string  $values Values to update on json
+     * @return string
+     */
+    public static function update(string $path = "", array $values = [], bool $createIfNotExists = false):bool{
+
+        # Set result
+        $result = true;
+
+        # Check $path and $values
+        if(!$path || empty($values) || !file_exists($path))
+
+            # Stop function
+            return $result;
+
+        # Return result
+        return $result;
+
+    }
+    
+    /**
+     * Delete value in json
+     *
+     * @param string $path Path of the json file
+     * @param string|array $parameters Parameters to delete in json
+     * @return string
+     */
+    public static function delete(string $path = "", string|array $parameters = []):bool{
+
+        # Set result
+        $result = true;
+
+        # Check $path and $values
+        if(!$path || empty($parameters) || !file_exists($path))
+
+            # Stop function
+            return $result;
+
+        # Return result
+        return $result;
+
+    }
 
 }

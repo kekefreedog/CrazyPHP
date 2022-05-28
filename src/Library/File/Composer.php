@@ -15,6 +15,7 @@ namespace CrazyPHP\Library\File;
 /** Dependances
  * 
  */
+use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\File\Json;
 
 /**
@@ -36,6 +37,22 @@ class Composer{
     public const PATH = [
         "composer.json" =>  __DIR__."/../../../composer.json",
         "composer.lock" =>  __DIR__."/../../../composer.lock",
+    ];
+
+    # Default properties of composer
+    public const DEFAULT_PROPERTIES = [
+        "name"          =>  null,
+        "description"   =>  null,
+        "version"       =>  null,
+        "type"          =>  null,
+        "keywords"      =>  null,
+        "homepage"      =>  null,
+        "readme"        =>  null,
+        "time"          =>  null,
+        "license"       =>  null,
+        "authors"       =>  null,
+        "support"       =>  null,
+        "funding"       =>  null,
     ];
 
     /** Public Static Methods

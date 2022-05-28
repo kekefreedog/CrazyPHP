@@ -38,6 +38,19 @@ class Validate {
     private $values = [];
 
     /**
+     * Dispatch of action
+     */
+    private $dispatch = [
+        "VARCHAR"   =>  [
+            "email"
+        ],
+        "ARRAY"     =>  [
+        ], 
+        "BOOL"      =>  [
+        ]
+    ];
+
+    /**
      * Logs
      */
     private $log = [];
@@ -118,13 +131,21 @@ class Validate {
         if(!empty($input['process'] ?? null))
 
             # Iteration process
-            foreach($input['process'] as $process)
+            foreach($input['process'] as $process){
+
+                # Prepare method name
+                $methodName = "_is".ucfirst($process);
 
                 # Check methods exists
-                if(method_exists($this, $process))
+                if(
+                    method_exists($this, $methodName) && 
+                    in_array($process, $this->dispatch['VARCHAR'])
+                )
 
                     # Process value
-                    $input['value'] = $this->{$process}($input['value']);
+                    $input['value'] = $this->{$methodName}($input);
+
+            }
 
     }
 
@@ -289,6 +310,62 @@ class Validate {
 
         # Return result
         return $result;
+
+    }
+
+    /** Public Static Methods
+     ******************************************************
+     */
+
+    /**
+     * Is Email
+     * 
+     * Check string is email
+     * 
+     * @param string $input String to check
+     * @return bool
+     */
+    public static function isEmail(string $input = ""):bool {
+
+        return filter_var($input, FILTER_VALIDATE_EMAIL);
+
+    }
+
+    /** Private Methods | is...
+     ******************************************************
+     */
+
+    /**
+     * Is Email
+     * 
+     * Check string is email
+     * 
+     * @param array $input Input item
+     * @return void
+     */
+    private function _isEmail(array &$input = ""):void {
+
+        if(!filter_var($input['value'], FILTER_VALIDATE_EMAIL))
+
+            # New log
+            $input["log"] = $this->_pushLog(
+                [
+                "message"   =>  "Value given is not a boolean",
+                "code"      =>  "form-004",
+                "icon"      =>  [
+                    "text"      =>  "error",
+                    "class"     =>  "material-icons"
+                ],
+                "color"     =>  "orange",
+                "old_value" =>  $input['value'],
+            ]
+        );
+
+        # Set value null
+        $input['value'] = null;
+
+        # Stop function
+        return;
 
     }
 
