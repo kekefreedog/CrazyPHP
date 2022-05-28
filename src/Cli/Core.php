@@ -324,7 +324,7 @@ class Core extends CLI {
                 ->green("Values processed with success 🎉")
             ;
 
-            ## Second part
+            ## Third part
             $climate
                 ->br()
                 ->green()
@@ -384,6 +384,14 @@ class Core extends CLI {
             }
 
         }
+
+        ## Part 5 Create application
+        
+        # New app create instance
+        $app = new Create($result);
+
+        
+        print_r($app->getStoryline());
 
     }
 

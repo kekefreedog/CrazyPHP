@@ -37,6 +37,18 @@ class Create {
      */
 
     public const REQUIRED_VALUES = [
+        # Driver
+        [
+            "name"          =>  "driver",
+            "description"   =>  "Type of your database",
+            "type"          =>  "VARCHAR",
+            "default"       =>  "mysql",
+            "select"        =>  [
+                "MySQL"         =>  "mysql",
+                "MariaDB"       =>  "mysql",
+                "PostgreSQL"    =>  "pgsql"
+            ]
+        ],
         # Host
         [
             "name"          =>  "host",

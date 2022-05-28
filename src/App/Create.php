@@ -13,9 +13,9 @@
 namespace CrazyPHP\App;
 
 /**
- * Create project
+ * Create new Application
  *
- * TBD
+ * Classe for create step by step new application
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
@@ -76,6 +76,30 @@ class Create{
         ],
     ];
 
+    /** Variables
+     ******************************************************
+     */
+
+    /**
+     * Inputs
+     */
+    public $inputs = [];
+
+    /**
+     * Constructor
+     * 
+     * Ingest data
+     * 
+     * @param array $formResult Collection of value to process
+     * @return Create
+     */
+    public function __construct(array $inputs = []){
+
+        # Ingest data
+        $this->inputs = $inputs;
+
+    }
+
     /** Public method
      ******************************************************
      */    
@@ -83,26 +107,263 @@ class Create{
      /**
      * Run creation of project
      *
-     * @param string $parameter Parameter to read
-     * @param string $file File to read data
-     * @return string
+     * @return Create
      */
     public function run(){
 
-        # Get data
+        /**
+         * Run Composer
+         * 1. Fill composer.json
+         * 2. Run composer install
+         */
+        $this->runComposer();
 
-        # Create database
+        /**
+         * Run NPM
+         * 0. Check package.json exists
+         * 1. Fill package.json
+         * 2. Run npm install
+         */
+        $this->runNpm();
 
-        # Init composer
+        /**
+         * Run Structure Folder
+         * 1. Create structure folder
+         * 2. Check permissions
+         */
+        $this->runStructureFolder();
 
-        # Init package
+        /**
+         * Run Config
+         * 0. Check configs files exists
+         * 1. Fill config files
+         * 2. Create app routes
+         * 3. Create basic users
+         */
+        $this->runConfig();
 
-        # Create structure
+        /**
+         * Run Public
+         * 1. Fill .htaccess
+         * 2. Fill index.php
+         */
+        $this->runPublic();
 
-        # Create rooter
+        /**
+         * Run User Interface
+         * 1. Create basic components
+         * 2. Prepare basic assets
+         */
+        $this->runUserInterface();
 
-        # Create basic interface
+        /**
+         * Run Webpack
+         * 1. Prepare webpack config
+         */
+        $this->runWebpack();
+
+        /**
+         * Run Database
+         * 0. Try to connect to database
+         * 1. Create user
+         * 2. Create database
+         * 3. Create auth tables
+         * 4. Create app tables
+         */
+        $this->runDatabase();
+
+        /**
+         * Run First Compilation
+         * 
+         * First compilation of thr app
+         */
+        $this->runFirstCompilation();
+
+        # Return this
+        return $this;
 
     }
 
+    /**
+     * Get story line
+     * 
+     * Used for execute each method one after another
+     * 
+     * @return array
+     */
+    public function getStoryline():array {
+
+        # Declare result
+        $result = [];
+
+        # New reflection
+        $reflection = new \ReflectionClass($this);
+
+        # Get methods
+        $methods = $reflection->getMethods();
+
+        # Check methods
+        if($methods)
+
+            # Iteration of methods
+            foreach($methods as $method)
+
+                # Check run children methods
+                if(
+                    substr($method->name, 0, 3) == "run" && 
+                    strlen($method->name) > 3
+                )
+
+                    # Push result in result
+                    $result[] = $method->name;
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Run Composer
+     * 
+     * Steps : 
+     * 0. Check composer.json exists
+     * 1. Fill composer.json
+     * 2. Run composer install
+     * 
+     * @return Create
+     */
+    public function runComposer():Create {
+
+        # Return instance
+        return $this;
+
+    }
+
+    /**
+     * Run NPM
+     * 
+     * Steps : 
+     * 0. Check package.json exists
+     * 1. Fill package.json
+     * 2. Run npm install
+     * 
+     * @return Create
+     */
+    public function runNpm():Create {
+
+        # Return instance
+        return $this;
+
+    }
+
+    /**
+     * Run Structure Folder
+     * 
+     * Steps : 
+     * 1. Create structure folder
+     * 2. Check permissions
+     * 
+     * @return Create
+     */
+    public function runStructureFolder():Create {
+
+        # Return instance
+        return $this;
+
+    }
+
+    /**
+     * Run Config
+     * 
+     * Steps : 
+     * 0. Check configs files exists
+     * 1. Fill config files
+     * 2. Create app routes
+     * 3. Create basic users
+     * 
+     * @return Create
+     */
+    public function runConfig():Create {
+
+        # Return instance
+        return $this;
+
+    }
+
+    /**
+     * Run Public
+     * 
+     * Steps : 
+     * 1. Fill .htaccess
+     * 2. Fill index.php
+     * 
+     * @return Create
+     */
+    public function runPublic():Create {
+
+        # Return instance
+        return $this;
+
+    }
+
+    /**
+     * Run User Interface
+     * 
+     * Steps : 
+     * 1. Create basic components
+     * 2. Prepare basic assets
+     * 
+     * @return Create
+     */
+    public function runUserInterface():Create {
+
+        # Return instance
+        return $this;
+
+    }
+
+    /**
+     * Run Webpack
+     * 
+     * 1. Prepare webpack config
+     * 
+     * @return Create
+     */
+    public function runWebpack():Create {
+
+        # Return instance
+        return $this;
+
+    }
+
+    /**
+     * Run Database
+     * 
+     * Steps : 
+     * 0. Try to connect to database
+     * 1. Create user
+     * 2. Create database
+     * 3. Create auth tables
+     * 4. Create app tables
+     * 
+     * @return Create
+     */
+    public function runDatabase():Create {
+
+        # Return instance
+        return $this;
+
+    }
+
+    /** 
+     * Run First Compilation
+     * 
+     * @return Create
+     */
+    public function runFirstCompilation():Create {
+
+        # Return instance
+        return $this;
+
+    }
 }
