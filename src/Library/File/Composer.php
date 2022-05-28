@@ -71,5 +71,53 @@ class Composer{
         return $result;
 
     }
+    
+    /**
+     * Set value in composer.json
+     *
+     * @param array $values Values to put on composer.json
+     * @return string
+     */
+    public static function set(array $values = []):bool{
+
+        # Set result
+        $result = true;
+
+        # Return result
+        return $result;
+
+    }
+    
+    /**
+     * Read value in composer.json
+     *
+     * @param string  $values Values to update on composer.json
+     * @return string
+     */
+    public static function update(array $values = [], bool $createIfNotExists = false):bool{
+
+        # Set result
+        $result = true;
+
+        # Return result
+        return $result;
+
+    }
+    
+    /**
+     * Delete value in composer.json
+     *
+     * @param string  $values Values to update on composer.json
+     * @return string
+     */
+    public static function delete(array $values = []):bool{
+
+        # Set result
+        $result = true;
+
+        # Return result
+        return $result;
+
+    }
 
 }
