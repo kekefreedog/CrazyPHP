@@ -27,7 +27,10 @@ class Arrays{
      ******************************************************
      */
 
-	/** Stretch array
+	/** 
+	 * Stretch array
+	 * 
+	 * Use separator to convert 1 dimension array to multi dimension array
 	 * 
      * @param array $array array to process
 	 * @param string $separator by default "_"
@@ -68,6 +71,28 @@ class Arrays{
 		# Return array
 		return $result;
 	
+	}
+
+    /** 
+	 * Filter array by key value
+     * 
+	 * Find parameter than some child parameter correspond to key value
+	 * 
+	 * @param array $array Array to process
+	 * @param any $key Child parameter to use in filter
+	 * @param any $keyValue Child parameter value's to use in filter
+	 * @return array 
+     */
+    public static function filterByKey(array $array = [], $key = "", $keyValue = ""):array {
+
+		# Process and return result
+		return array_filter(
+			$array, 
+			function ($var) use ($keyValue, $key) {
+				return ($var[$key] == $keyValue);
+			}
+		);
+
 	}
 
 }

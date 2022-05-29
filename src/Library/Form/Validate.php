@@ -17,6 +17,7 @@ namespace  CrazyPHP\Library\Form;
  */
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Form\Process;
+use CrazyPHP\Library\Array\Arrays;
 
 /**
  * Validate form values
@@ -309,14 +310,15 @@ class Validate {
      * Is Items In
      *  
      * Check items is in conditions collection
+     * Check also if required value isn't missing
+     * 
      * @param array $inputs Input to check
      * @param array $conditions Collection of data to compare with
-     * 
      * @return bool
      */
     public static function isItemsIn(array $inputs = [], array $conditions):bool {
 
-        # Declare Result
+        # Declare Result & inputMissing & inputExtra
         $result = true;
 
         # Check inputs and conditions
@@ -330,11 +332,43 @@ class Validate {
             $inputs = [$inputs];
 
         # Iteration of input
-        foreach($inputs as $input){
+        foreach($inputs as $kInput => $input){
         
+            # Get corresponding condition
+            $condition = Arrays::filterByKey($conditions, "name", $input["name"]);
+            
+            # Check condition
+            if(!empty($condition)){
 
+                # Iteration des condition
+                foreach($condition as $k => $v)
+
+                    # Unset value
+                    unset($conditions[$k]);
+
+                # Unset current input
+                unset($inputs[$kInput]);
+
+            }
 
         }
+
+        # Check inputs
+        if(!empty($inputs))
+
+            $result = false;
+
+        # Check required conditions
+        elseif(!empty($conditions))
+
+            # Iteration des conditions
+            foreach($conditions as $condition)
+
+                # Check required
+                if($condition["required"] ?? false)
+
+                    # Update result
+                    $result = false;
 
         # Return result
         return $result;

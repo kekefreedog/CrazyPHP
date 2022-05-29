@@ -15,7 +15,9 @@ namespace  CrazyPHP\Library\Form;
 /**
  * Dependances
  */
+use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Form\Validate;
+use CrazyPHP\Library\Array\Arrays;
 
 /**
  * Process form values
@@ -212,6 +214,8 @@ class Process {
      * 
      * Return a result summary as {<parameter>:<value>}
      * 
+     * Warning, requierd valuue missing caused error
+     * 
      * @param array $input
      * @return array
      */
@@ -219,6 +223,89 @@ class Process {
 
         # Get Get Result Summary
         return Validate::getResultSummary($inputs);
+
+    }    
+    
+    /**
+     * Items In
+     *  
+     * Process items is in conditions collection
+     * @param array $inputs Input to check
+     * @param array $conditions Collection of data to compare with
+     * 
+     * @return bool
+     */
+    public static function itemsIn(array $inputs = [], array $conditions):bool {
+
+        # Declare Result & inputMissing
+        $result = [];
+        $inputsMissing = "";
+
+        # Check inputs and conditions
+        if(empty($inputs) || empty($conditions))
+            return $result;
+
+        # Check if only one value
+        if( ( $inputs['name'] ?? false ) || ( $inputs['type'] ?? false ))
+
+            # Put input in an array
+            $inputs = [$inputs];
+
+        # Iteration of input
+        foreach($inputs as $input){
+        
+            # Get corresponding condition
+            $condition = Arrays::filterByKey($conditions, "name", $input["name"]);
+            
+            # Check condition
+            if(!empty($condition)){
+
+                # Iteration des condition
+                foreach($condition as $k => $v)
+
+                    # Unset value
+                    unset($conditions[$k]);
+
+                # Push current input in result
+                $result[] = $input;
+
+            }
+
+        }
+
+        # Check required conditions
+        if(!empty($conditions))
+
+            # Iteration des conditions
+            foreach($conditions as $condition)
+
+                # Check required
+                if($condition["required"] ?? false)
+
+                    # Push name of required parameter in inputsMissing
+                    $inputsMissing .= ($inputsMissing ? ", " : "").
+                        "\"".$condition['name']."\"";
+
+        # Check input missing
+        if($inputsMissing)
+
+            # New Exception
+            throw new CrazyException(
+                "$inputsMissing ".
+                    (
+                        strpos($inputsMissing, ",") !== false ?
+                            "are " :
+                                 ""
+                    ).
+                        "missing in processed inputs...",
+                500,
+                [
+                    "custom_code"   =>  "process-001",
+                ]
+            );
+
+        # Return result
+        return $result;
 
     }
 
