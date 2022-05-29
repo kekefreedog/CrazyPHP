@@ -17,6 +17,7 @@ namespace CrazyPHP\Library\File;
  */
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\File\Json;
+use CrazyPHP\App\Create;
 
 /**
  * Composer
@@ -41,18 +42,62 @@ class Composer{
 
     # Default properties of composer
     public const DEFAULT_PROPERTIES = [
-        "name"          =>  null,
-        "description"   =>  null,
-        "version"       =>  null,
-        "type"          =>  null,
-        "keywords"      =>  null,
-        "homepage"      =>  null,
-        "readme"        =>  null,
-        "time"          =>  null,
-        "license"       =>  null,
-        "authors"       =>  null,
-        "support"       =>  null,
-        "funding"       =>  null,
+        # Name
+        "name"          =>  Create::REQUIRED_VALUES[0],
+        # Description
+        "description"   =>  Create::REQUIRED_VALUES[1],
+        # Version
+        "version"       =>  [
+            "name"          =>  "Version",
+            "description"   =>  "Version of your crazy project",
+            "type"          =>  "VARCHAR",
+        ],
+        # Type
+        "type"          =>  Create::REQUIRED_VALUES[4],
+        # Keywords
+        "keywords"      =>  [
+            "name"          =>  "Keywords",
+            "description"   =>  "Keywords about your app",
+            "type"          =>  "ARRAY",
+        ],
+        # Homepage
+        "homepage"      =>  Create::REQUIRED_VALUES[5],
+        # Readme
+        "readme"        =>  [
+            "name"          =>  "Read Me",
+            "description"   =>  "Path of the read me",
+            "type"          =>  "VARCHAR",
+        ],
+        # Time
+        "time"          =>  [
+            "name"          =>  "Read Me",
+            "description"   =>  "Path of the read me",
+            "type"          =>  "DATETIME",
+        ],
+        # Licence
+        "license"       =>  [
+            "name"          =>  "Licence",
+            "description"   =>  "Licence of your app",
+            "type"          =>  "VARCHAR",
+        ],
+        # Authors
+        "authors"       =>  [
+            "name"          =>  "Authors",
+            "description"   =>  "Authors of your app",
+            "type"          =>  "ARRAY",
+        ],
+        # Support
+        "support"       =>  [
+            "name"          =>  "Support",
+            "description"   =>  "Support information of your app",
+            "type"          =>  "ARRAY",
+        ],
+        # Funding
+        "funding"       =>  [
+            "name"          =>  "Funding",
+            "description"   =>  "Funding information of your app",
+            "type"          =>  "ARRAY",
+        ],
     ];
 
     /** Public Static Methods
@@ -91,14 +136,25 @@ class Composer{
     
     /**
      * Set value in composer.json
+     * 
+     * Set value in composer.json from array :
+     * 1. {parameter:"value",...}
      *
      * @param array $values Values to put on composer.json
-     * @return string
+     * @param string $file File composer.json
+     * @return array
      */
-    public static function set(array $values = []):bool{
+    public static function set(array $values = [], string $file = "composer.json"):array {
 
         # Set result
-        $result = true;
+        $result = false;
+
+        # Check parameter in path
+        if(!array_key_exists($file, Composer::PATH))
+            return $result;
+
+        # Set values in composer.json
+        $result = Json::set(self::PATH[$file], $values, self::DEFAULT_PROPERTIES);
 
         # Return result
         return $result;

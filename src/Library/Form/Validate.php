@@ -147,6 +147,15 @@ class Validate {
 
             }
 
+        # Check if required
+        if( ( $input["required"] ?? false ) && !$input['value'])
+
+            # If default value
+            if($input['default'] ?? false)
+
+                # Set default value
+                $input['value'] = $input['default'];
+
     }
 
     /**
@@ -181,6 +190,15 @@ class Validate {
 
         }
 
+        # Check if required
+        if( ( $input["required"] ?? false ) && !$input['value'])
+
+            # If default value
+            if($input['default'] ?? false)
+
+                # Set default value
+                $input['value'] = $input['default'];
+
     }
 
     /**
@@ -214,6 +232,15 @@ class Validate {
             return;
 
         }
+
+        # Check if required
+        if( ( $input["required"] ?? false ) && !$input['value'])
+
+            # If default value
+            if($input['default'] ?? false)
+
+                # Set default value
+                $input['value'] = $input['default'];
 
     }
 

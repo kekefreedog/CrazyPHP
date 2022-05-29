@@ -111,22 +111,41 @@ class Json{
      * Set value in json
      *
      * @param string $path Path of the json file
-     * @param array $values Values to put on composer.json
-     * @return string
+     * @param array $values Values to put on json
+     * @param array $conditions Condition for put value in json
+     * @return array
      */
-    public static function set(string $path = "", array $values = []):bool{
+    public static function set(string $path = "", array $values = [], array $conditions = []):array{
 
         # Set result
-        $result = true;
+        $result = [];
 
-        # Check $path and $values
-        if(!$path || empty($values) || !file_exists($path))
+        # Open json
+        $old_value = $result = self::open($path);
 
-            # Stop function
-            return $result;
+        # Check value
+        if(!empty($values))
 
-        
+            # Iteration des values
+            foreach($values as $key => $value)
 
+                # Check if parameter in default properties
+                if(
+                    $key && 
+                    (
+                        empty($conditions) ||
+                        array_key_exists($key, $conditions)
+                    )
+                )
+
+                    # Set value
+                    $result[$key] = $value;
+
+        # Check difference between old value & result
+        if($old_value !== $result)
+
+            # Put content in file
+            file_put_contents($path, $result);
 
         # Return result
         return $result;

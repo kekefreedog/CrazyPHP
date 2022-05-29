@@ -13,6 +13,11 @@
 namespace  CrazyPHP\Interface;
 
 /**
+ * Dependances
+ */
+use Throwable;
+
+/**
  * Exception Interface
  * 
  * @source https://www.php.net/manual/en/language.exceptions.php
@@ -62,8 +67,30 @@ interface Exception{
      * 
      * @param string|null $message Message for Exception
      * @param int $code Code Http of the error
+     * @param array|null $extra Extra information about exception
+     *  - Ex : {
+     *      old_value: "...",
+     *      icon: [
+     *          classe: "material-icons",
+     *          text: "error"
+     *      ],
+     *      color: [
+     *          text: "white",
+     *          background: "red",
+     *      ],
+     *      options: [
+     *         [...]
+     *      ],
+     *      redirection: "...",
+     *  }
+     * @param Throwable|null $previous Previous exception
      */
-    public function __construct(string|null $message = null, int $code = 0);
+    public function __construct(
+        string|null $message = null, 
+        int $code = 0,
+        array|null $extra = null,
+        Throwable|null $previous = null
+    );
 
     /** Public methods | Overrideable methods inherited from Exception class
      ******************************************************

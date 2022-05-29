@@ -15,8 +15,9 @@ namespace  CrazyPHP\Exception;
 /**
  * Dependances
  */
-use Exception;
 use CrazyPHP\Interface\Exception as InterfaceException;
+use Throwable;
+use Exception;
 
 /**
  * Json
@@ -47,15 +48,37 @@ class CrazyException extends Exception implements InterfaceException{
      * 
      * @param string|null $message Message for Exception
      * @param int $code Code Http of the error
+     * @param array|null $extra Extra information about exception
+     *  - Ex : {
+     *      old_value: "...",
+     *      icon: [
+     *          classe: "material-icons",
+     *          text: "error"
+     *      ],
+     *      color: [
+     *          text: "white",
+     *          background: "red",
+     *      ],
+     *      options: [
+     *         [...]
+     *      ],
+     *      redirection: "...",
+     *  }
+     * @param Throwable|null $previous Previous exception
      */
-    public function __construct(string|null $message = null, int $code = 0){
+    public function __construct(
+        string|null $message = null, 
+        int $code = 0,
+        array $extra = [],
+        Throwable|null $previous = null
+    ){
 
         // Check message
         if (!$message)
             throw new $this('Unknown '.get_class($this));
 
         // Construct parent
-        parent::__construct($message, $code);
+        parent::__construct($message, $code, $previous);
 
         // Set source
         // $this->setSource();
