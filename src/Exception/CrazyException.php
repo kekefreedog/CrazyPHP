@@ -50,6 +50,7 @@ class CrazyException extends Exception implements InterfaceException{
      * @param int $code Code Http of the error
      * @param array|null $extra Extra information about exception
      *  - Ex : {
+     *      custom_code: "form-001"
      *      old_value: "...",
      *      icon: [
      *          classe: "material-icons",
@@ -59,7 +60,7 @@ class CrazyException extends Exception implements InterfaceException{
      *          text: "white",
      *          background: "red",
      *      ],
-     *      options: [
+     *      actions: [
      *         [...]
      *      ],
      *      redirection: "...",
@@ -80,55 +81,6 @@ class CrazyException extends Exception implements InterfaceException{
         // Construct parent
         parent::__construct($message, $code, $previous);
 
-        // Set source
-        // $this->setSource();
-
-        // Right in log file
-        // $this->logWrite();
-
     }
-
-    /** Public methods
-     ******************************************************
-     */
-
-    /** 
-     * Get Source
-     * 
-     * @return string
-     */
-    public function getSource():string {
-
-        # Get source
-        $result = $this->source;
-
-        # Return result
-        return $result;
-
-    }
-
-    /** 
-     * Display message as error message in javascript console
-     * 
-     * @return void
-     */
-    public function consoleError():void{
-
-        # Put error in console
-        // Console::error($this->__toString());
-
-    }
-
-    /** Public methods | Protected methods inherited from Exception class
-     ******************************************************
-     */
-
-    /****************************************************************
-     * Methods
-     */
-
-    /** Public methods | Overrideable methods inherited from Exception class
-     ******************************************************
-     */
 
 }

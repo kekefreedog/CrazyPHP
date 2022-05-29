@@ -15,6 +15,7 @@ namespace  CrazyPHP\Library\Form;
 /**
  * Dependances
  */
+use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Form\Process;
 
 /**
@@ -36,6 +37,11 @@ class Validate {
      * Input (form results)
      */
     private $values = [];
+
+    /**
+     * Only One Input
+     */
+    private $oneItemOnly = false;
 
     /**
      * Dispatch of action
@@ -67,6 +73,17 @@ class Validate {
 
         # Set input
         $this->values = $formResult;
+
+        # Check if only one value
+        if( ( $formResult['name'] ?? false ) || ( $formResult['type'] ?? false )):
+
+            # Put input in an array
+            $formResult = [$formResult];
+
+            # Set 
+            $this->oneItemOnly = true;
+        
+        endif;
 
         # Iteration inputs
         foreach($this->values as &$input)
@@ -103,29 +120,16 @@ class Validate {
     private function _actionVarchar(array &$input = []):void {
 
         # Check value is same type
-        if(!is_string($input['value']) && !is_numeric($input['value'])){
+        if(!is_string($input['value']) && !is_numeric($input['value']))
 
-            # New log
-            $input["log"] = $this->_pushLog(
+            # New Exception
+            throw new CrazyException(
+                "Value of \”".$input["name"]."\” isn't a string of characters...",
+                500,
                 [
-                    "message"   =>  "Value given is not a string nor numeric",
-                    "code"      =>  "form-001",
-                    "icon"      =>  [
-                        "text"      =>  "error",
-                        "class"     =>  "material-icons"
-                    ],
-                    "color"     =>  "red",
-                    "old_value" =>  $input['value'],
+                    "custom_code"   =>  "validate-001",
                 ]
             );
-
-            # Set value null
-            $input['value'] = null;
-
-            # Stop function
-            return;
-
-        }
 
         # Check process
         if(!empty($input['process'] ?? null))
@@ -166,29 +170,16 @@ class Validate {
     private function _actionArray(array &$input = []){
 
         # Check value is same type
-        if(!is_array($input['value'])){
+        if(!is_array($input['value']))
 
-            # New log
-            $input["log"] = $this->_pushLog(
-                    [
-                    "message"   =>  "Value given is not an array",
-                    "code"      =>  "form-002",
-                    "icon"      =>  [
-                        "text"      =>  "error",
-                        "class"     =>  "material-icons"
-                    ],
-                    "color"     =>  "red",
-                    "old_value" =>  $input['value'],
+            # New Exception
+            throw new CrazyException(
+                "Value of \”".$input["name"]."\” isn't an array...",
+                500,
+                [
+                    "custom_code"   =>  "validate-002",
                 ]
             );
-
-            # Set value null
-            $input['value'] = null;
-
-            # Stop function
-            return;
-
-        }
 
         # Check if required
         if( ( $input["required"] ?? false ) && !$input['value'])
@@ -209,29 +200,16 @@ class Validate {
     private function _actionBool(array &$input = []){
 
         # Check value is same type
-        if(!is_bool($input['value'])){
+        if(!is_bool($input['value']))
 
-            # New log
-            $input["log"] = $this->_pushLog(
-                    [
-                    "message"   =>  "Value given is not a boolean",
-                    "code"      =>  "form-003",
-                    "icon"      =>  [
-                        "text"      =>  "error",
-                        "class"     =>  "material-icons"
-                    ],
-                    "color"     =>  "red",
-                    "old_value" =>  $input['value'],
+            # New Exception
+            throw new CrazyException(
+                "Value of \”".$input["name"]."\” isn't an boolean...",
+                500,
+                [
+                    "custom_code"   =>  "validate-003",
                 ]
             );
-
-            # Set value null
-            $input['value'] = null;
-
-            # Stop function
-            return;
-
-        }
 
         # Check if required
         if( ( $input["required"] ?? false ) && !$input['value'])
@@ -259,22 +237,9 @@ class Validate {
     public function getResult():array {
 
         # Return value
-        return $this->values;
-
-    }
-
-    /**
-     * Get Logs
-     * 
-     * Return logs
-     * 
-     * @param string $input
-     * @return array
-     */
-    public function getLogs():array {
-
-        # Return value
-        return $this->log;
+        return $this->oneItemOnly ?
+            $this->values[0] :
+                $this->values;
 
     }
 
@@ -340,6 +305,42 @@ class Validate {
 
     }
 
+    /**
+     * Is Items In
+     *  
+     * Check items is in conditions collection
+     * @param array $inputs Input to check
+     * @param array $conditions Collection of data to compare with
+     * 
+     * @return bool
+     */
+    public static function isItemsIn(array $inputs = [], array $conditions):bool {
+
+        # Declare Result
+        $result = true;
+
+        # Check inputs and conditions
+        if(empty($inputs) || empty($conditions))
+            return $result;
+
+        # Check if only one value
+        if( ( $inputs['name'] ?? false ) || ( $inputs['type'] ?? false ))
+
+            # Put input in an array
+            $inputs = [$inputs];
+
+        # Iteration of input
+        foreach($inputs as $input){
+        
+
+
+        }
+
+        # Return result
+        return $result;
+
+    }
+
     /** Public Static Methods
      ******************************************************
      */
@@ -374,25 +375,14 @@ class Validate {
 
         if(!filter_var($input['value'], FILTER_VALIDATE_EMAIL))
 
-            # New log
-            $input["log"] = $this->_pushLog(
+            # New Exception
+            throw new CrazyException(
+                "\”".$input["value"]."\” isn't a valid email...",
+                500,
                 [
-                "message"   =>  "Value given is not a boolean",
-                "code"      =>  "form-004",
-                "icon"      =>  [
-                    "text"      =>  "error",
-                    "class"     =>  "material-icons"
-                ],
-                "color"     =>  "orange",
-                "old_value" =>  $input['value'],
-            ]
-        );
-
-        # Set value null
-        $input['value'] = null;
-
-        # Stop function
-        return;
+                    "custom_code"   =>  "validate-004",
+                ]
+            );
 
     }
 
@@ -449,55 +439,6 @@ class Validate {
     public static function isClean(string $input = ""):bool{
 
         return true;
-
-    }
-
-    /** Private Methods
-     ******************************************************
-     */
-
-    /**
-     * Push Log
-     * 
-     * Process log and return key associate
-     * 
-     * @return string
-     */
-    public function _pushLog($input){
-
-        # Random id
-        $id = rand()."-".time();
-
-        # Declare result
-        $result = [
-            "message"   =>  "Error",
-            "code"      =>  "form-00"
-        ];
-
-        # Push input parameter
-        if($input['message'] ?? false)
-            $result["message"] = $input["message"];
-
-        if($input['log'] ?? false)
-            $result["log"] = $input["log"];
-
-        if($input['code'] ?? false)
-            $result["code"] = $input["code"];
-
-        if($input['icon'] ?? false)
-            $result["icon"] = $input["icon"];
-
-        if($input['color'] ?? false)
-            $result["color"] = $input["color"];
-
-        if($input['old_value'] ?? false)
-            $result["old_value"] = $input["old_value"];
-
-        # Fill log
-        $this->log[$id] = $result;
-
-        # Return id
-        return $id;
 
     }
 

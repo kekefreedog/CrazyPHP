@@ -13,6 +13,13 @@
 namespace  CrazyPHP\Library\File;
 
 /**
+ * Dependances
+ */
+use CrazyPHP\Exception\CrazyException;
+use CrazyPHP\Library\Form\Validate;
+use CrazyPHP\Library\Form\Process;
+
+/**
  * Json
  *
  * Methods for interacting with Composer files
@@ -27,7 +34,8 @@ class Json{
      ******************************************************
      */
 
-    /** Is Convertible in Json
+    /** 
+     * Is Convertible in Json
      * 
      * @return bool
      */
@@ -37,22 +45,19 @@ class Json{
         $reponse = true;
 
         # Check if is string
-        if(is_string($input) || is_numeric($input)):
-
-            # Set exception
-            # throw new Exception("You are trying to convert a non-array element to Json", 500);
+        if(is_string($input) || is_numeric($input))
 
             # Set reponse
             $reponse = false;
-
-        endif;
         
         # Retorune reponse
         return $reponse;
 
     }
 
-    /** Check if input is json
+    /** 
+     * Check if input is json
+     * 
      * @param mixed $string
      * @return bool
      */
@@ -68,8 +73,11 @@ class Json{
 		return (json_last_error() == JSON_ERROR_NONE);
 	}
 
-    /** Open Json File
+    /** 
+     * Open Json File
+     * 
      * Open json file and return its content decodes
+     * 
      * @param string $filename
      * @param bool $arrayFormat decode as array (else as object)
      */
@@ -84,20 +92,30 @@ class Json{
         
         # Check if file exist
         if(!file_exists($filename))
-            return $result;
 
-            # Set exception
-            # throw new Exception("Json file \"$filename\" doesn't exists.", 404);
+            # New Exception
+            throw new CrazyException(
+                "Json \"$filename\" doesn't exists...",
+                500,
+                [
+                    "custom_code"   =>  "json-001",
+                ]
+            );
 
         # Get content of file
         $content = file_get_contents($filename);
 
         # Check if content is json
         if(!Json::check($content))
-            return $result;
 
-            # Set exception
-            # throw new Exception("Content of \"$filename\" is not a valid Json.", 500);
+            # New Exception
+            throw new CrazyException(
+                "Content of  \"$filename\" isn't json...",
+                500,
+                [
+                    "custom_code"   =>  "json-001",
+                ]
+            );
 
         # Decode content
         $result = json_decode($content, $arrayFormat);
@@ -144,8 +162,8 @@ class Json{
         # Check difference between old value & result
         if($old_value !== $result)
 
-            # Put content in file
-            file_put_contents($path, $result);
+            # Put new json content in file
+            file_put_contents($path, json_encode($result));
 
         # Return result
         return $result;
@@ -156,19 +174,46 @@ class Json{
      * Read value in json
      *
      * @param string $path Path of the json file
-     * @param string  $values Values to update on json
-     * @return string
+     * @param array $values Values to update on json
+     * @param bool $createIfNotExists Create parameter in json if doesn't exists
+     * @return array
      */
-    public static function update(string $path = "", array $values = [], bool $createIfNotExists = false):bool{
+    public static function update(string $path = "", array $values = [], bool $createIfNotExists = false):array{
 
         # Set result
-        $result = true;
+        $result = [];
 
-        # Check $path and $values
-        if(!$path || empty($values) || !file_exists($path))
+        # Open json
+        $old_value = $result = self::open($path);
 
-            # Stop function
-            return $result;
+        # Check value
+        if(!empty($values))
+
+            # Iteration des values
+            foreach($values as $key => $value)
+
+                # Check if parameter in default properties
+                if($key && ( $result[$key] ?? false ))
+
+                    # Set value
+                    $result[$key] = $value;
+
+                # Check if parameter have to be create if not exists
+                elseif(
+                    $createIfNotExists && 
+                    (
+                        empty($conditions) || array_key_exists($key, $conditions)
+                    )
+                )
+
+                    # Set value
+                    $result[$key] = $value;
+
+        # Check difference between old value & result
+        if($old_value !== $result)
+
+            # Put new json content in file
+            file_put_contents($path, json_encode(json_encode($result)));
 
         # Return result
         return $result;
@@ -180,18 +225,39 @@ class Json{
      *
      * @param string $path Path of the json file
      * @param string|array $parameters Parameters to delete in json
-     * @return string
+     * @return array
      */
-    public static function delete(string $path = "", string|array $parameters = []):bool{
+    public static function delete(string $path = "", string|array $parameters = []):array{
 
         # Set result
-        $result = true;
+        $result = [];
 
-        # Check $path and $values
-        if(!$path || empty($parameters) || !file_exists($path))
+        # Open json
+        $old_value = $result = self::open($path);
 
-            # Stop function
-            return $result;
+        # Check parameters
+        if(!empty($parameters))
+
+            # Check parameter is a string and is set in result
+            if(is_string($parameters) && ( $result[$parameters] ?? false ))
+
+                # Unset parameter
+                unset($result[$parameters]);
+
+            # Check parameters is an array
+            elseif(is_array($parameters))
+
+                # Iteration des parameters
+                foreach($parameters as $parameter)
+
+                    # Delete parameter
+                    unset($result[$parameter]);
+
+        # Check difference between old value & result
+        if($old_value !== $result)
+
+            # Put new json content in file
+            file_put_contents($path, json_encode(json_encode($result)));
 
         # Return result
         return $result;
