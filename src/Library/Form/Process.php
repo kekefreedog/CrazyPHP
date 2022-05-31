@@ -485,5 +485,81 @@ class Process {
 		return $input;
 	}
 
+    /**
+     * Wash
+     * 
+     * Wash items by condtions
+     * 
+     * @param array $inputs Input to process
+     * @param array $conditions Conditon to respect
+     * @return array
+     */
+    public static function wash(array $inputs = [], array $conditions = []):array {
+
+        # Declare result
+        $result = [];
+
+        # Check inputs & conditions
+        if(empty($inputs) || empty($conditions))
+
+            # Set result
+            $result = $inputs;
+
+        # Start wash
+        else
+
+            # Iteration inputs
+            foreach($inputs as $key => $value){
+
+                # Check condition with same name exists
+                $condition = Arrays::filterByKey($conditions, "name", $value['name']);
+
+                # Check condition and type
+                if(
+                    !empty($condition) &&
+                    $value['type'] == $condition[array_key_first($condition)]['type'] 
+                )
+
+                    # Push value in result
+                    $result[] = $value;
+
+            }
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Compilate
+     * 
+     * Compilate items to array with key => values
+     * 
+     * @param array $input Input to process
+     * @param bool $keepNull Keep null or delete them from compilation
+     * @return array
+     */
+    public static function compilate(array $inputs = [], bool $keepNull = false):array {
+
+        # Declare result
+        $result = [];
+
+        # Check inputs
+        if(!empty($inputs))
+
+            # Iteration inputs
+            foreach($inputs as $value)
+
+                # Check if not null or keepNull
+                if($value['value'] !== null || $keepNull)
+
+                    # Push value in result
+                    $result[$value['name']] = $value['value'];
+
+        # Return result
+        return $result;
+
+    }
+
 
 }

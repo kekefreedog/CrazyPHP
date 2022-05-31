@@ -165,12 +165,17 @@ class Composer{
      * Read value in composer.json
      *
      * @param string  $values Values to update on composer.json
+     * @param string $createIfNotExists create parameter if doesn't exists
+     * @param string $file File composer.json
      * @return string
      */
-    public static function update(array $values = [], bool $createIfNotExists = false):bool{
+    public static function update(array $values = [], bool $createIfNotExists = false, string $file = "composer.json"):bool{
 
         # Set result
         $result = true;
+
+        # Set values in composer.json
+        $result = Json::set(self::PATH[$file], $values, self::DEFAULT_PROPERTIES);
 
         # Return result
         return $result;

@@ -13,6 +13,13 @@
 namespace CrazyPHP\App;
 
 /**
+ * Dependances
+ */
+use CrazyPHP\Library\File\Composer;
+use CrazyPHP\Library\Array\Arrays;
+use CrazyPHP\Library\Form\Process;
+
+/**
  * Create new Application
  *
  * Classe for create step by step new application
@@ -248,6 +255,21 @@ class Create{
      * @return Create
      */
     public function runComposer():Create {
+
+        # Decalare input
+        $inputs = $this->inputs["application"];
+
+        # Wash input
+        $inputs = Process::wash($inputs, Composer::DEFAULT_PROPERTIES);
+
+        # Compilate inputs
+        $inputs = Process::compilate($inputs);
+
+        # Stretch inputs
+        $inputs = Arrays::stretch($inputs);
+
+        # Set composer.json
+        Composer::set($inputs);
 
         # Return instance
         return $this;

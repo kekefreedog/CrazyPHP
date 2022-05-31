@@ -130,10 +130,9 @@ class Json{
      *
      * @param string $path Path of the json file
      * @param array $values Values to put on json
-     * @param array $conditions Condition for put value in json
      * @return array
      */
-    public static function set(string $path = "", array $values = [], array $conditions = []):array{
+    public static function set(string $path = "", array $values = []):array{
 
         # Set result
         $result = [];
@@ -141,23 +140,8 @@ class Json{
         # Open json
         $old_value = $result = self::open($path);
 
-        # Check value
-        if(!empty($values))
-
-            # Iteration des values
-            foreach($values as $key => $value)
-
-                # Check if parameter in default properties
-                if(
-                    $key && 
-                    (
-                        empty($conditions) ||
-                        array_key_exists($key, $conditions)
-                    )
-                )
-
-                    # Set value
-                    $result[$key] = $value;
+        # Get result
+        $result = self::_loopSet($values, $result);
 
         # Check difference between old value & result
         if($old_value !== $result)
@@ -186,28 +170,8 @@ class Json{
         # Open json
         $old_value = $result = self::open($path);
 
-        # Check value
-        if(!empty($values))
-
-            # Iteration des values
-            foreach($values as $key => $value)
-
-                # Check if parameter in default properties
-                if($key && ( $result[$key] ?? false ))
-
-                    # Set value
-                    $result[$key] = $value;
-
-                # Check if parameter have to be create if not exists
-                elseif(
-                    $createIfNotExists && 
-                    (
-                        empty($conditions) || array_key_exists($key, $conditions)
-                    )
-                )
-
-                    # Set value
-                    $result[$key] = $value;
+        # Get result
+        $result = self::_loopSet($values, $result, $createIfNotExists);
 
         # Check difference between old value & result
         if($old_value !== $result)
@@ -263,5 +227,45 @@ class Json{
         return $result;
 
     }
+
+    /** Public Static Methods | Loop
+     ******************************************************
+     */
+
+    /**
+     * Loop update
+     * 
+     * @private
+     * 
+     * @param any $input
+     * @param any $output
+     * @param bool $createIfNotExists
+     * 
+     * @return any
+     */
+    public static function _loopSet($input = [], $output = [], bool $createIfNotExists = false) {
+
+            # Check input
+            if(!is_array($input) || empty($input))
+
+                # Set output
+                $output = $input;
+
+            # If filled array
+            else
+
+                # Iteration des inputs
+                foreach($input as $key => $value)
+
+                    # Check output is existing or create folder is allowed
+                    if($output[$key] ?? false || $createIfNotExists)
+
+                        # Continue loop
+                        $output[$key] = self::_loopSet($value, $output[$key] ?? [], $createIfNotExists); 
+
+            # Retourne output
+            return $output;
+
+        }
 
 }

@@ -48,10 +48,10 @@ class Arrays{
 			foreach($array as $k => $v)
 
 				# Check if separator in key
-				if(strpos($k, $separator) !== false){
+				if(!is_string($k) && strpos( (string) $k, $separator) !== false){
 
 					# Explode key
-					$explode = explode($separator, $k, 2);
+					$explode = explode($separator, (string) $k, 2);
 					
 					# Declare new dimension array
 					if(!isset($result[$explode[0]]))

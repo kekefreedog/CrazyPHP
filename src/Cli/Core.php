@@ -379,6 +379,9 @@ class Core extends CLI {
                     ->br()
                     ->yellow("🟠 Database creation has been canceled, project creation continue...")
                     ->br()
+                    ->br()
+                    ->yellow()
+                    ->border()
                 ;
 
             }
@@ -390,8 +393,24 @@ class Core extends CLI {
         # New app create instance
         $app = new Create($result);
 
-        
-        print_r($app->getStoryline());
+        # Iteration storyline
+        foreach($app->getStoryline() as $action){
+
+            # Message start
+            $climate
+                ->br()
+                ->yellow("Run ".str_replace("run", "", strtolower($action)))
+            ;
+
+            # Execute
+            $app->{$action}();
+
+            # Message end
+            $climate
+                ->green(str_replace("run", "", $action)." ran with succes")
+            ;
+
+        }
 
     }
 
