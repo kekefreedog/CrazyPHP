@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 /**
- * Json
+ * Exception
  *
- * TDB
+ * Exeption class for manipulate errors
  *
  * PHP version 8.1.2
  *

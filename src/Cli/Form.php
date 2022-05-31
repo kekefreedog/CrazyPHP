@@ -139,15 +139,18 @@ class Form {
      * 
      * Send result of the form
      * 
+     * @package bool $nameAsKey Keep name parameter as key of items
      * @return array
      */
-    public function getResult(){
+    public function getResult(bool $nameAsKey = false){
 
         # Declare result
         $result = [];
 
         # Set result
-        $result = $this->result;
+        $result = $nameAsKey ?
+            $this->result :
+                array_values($this->result);
 
         # Return result
         return $result;

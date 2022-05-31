@@ -239,7 +239,7 @@ class Validate {
 
         # Return value
         return $this->oneItemOnly ?
-            $this->values[0] :
+            $this->values[array_key_first($this->values)] :
                 $this->values;
 
     }
@@ -402,10 +402,10 @@ class Validate {
      * 
      * Check string is email
      * 
-     * @param array $input Input item
+     * @param string $input Input to validate
      * @return void
      */
-    private function _isEmail(array &$input = ""):void {
+    private function _isEmail(string &$input = ""):void {
 
         if(!filter_var($input['value'], FILTER_VALIDATE_EMAIL))
 

@@ -44,9 +44,9 @@ class Create {
             "type"          =>  "VARCHAR",
             "default"       =>  "mysql",
             "select"        =>  [
-                "MySQL"         =>  "mysql",
-                "MariaDB"       =>  "mysql",
-                "PostgreSQL"    =>  "pgsql"
+                "mysql"         =>  "MySQL",
+                "mariadb"       =>  "MariaDB",
+                "pgsql"         =>  "PostgreSQL"
             ]
         ],
         # Host

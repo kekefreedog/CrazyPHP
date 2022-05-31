@@ -205,7 +205,7 @@ class Core extends CLI {
         # Break line
         $climate
             ->br()
-            ->orange("Process values given")
+            ->orange("Processing values given")
             ->br();
 
         # Progress bar
@@ -225,12 +225,12 @@ class Core extends CLI {
 
             # Validate value
             $formResult = (new Validate($formResult))->getResult();
+
+            # Prepare display value
+            $dispayValues = Validate::getResultSummary($formResult);
                 
                 # Update progress bar
                 $progress->current(100);
-
-                # Prepare display value
-                $dispayValues = Validate::getResultSummary($formResult);
 
         # Success message
         $climate
@@ -291,7 +291,7 @@ class Core extends CLI {
             # Break line
             $climate
                 ->br()
-                ->orange("Process values given")
+                ->orange("Processing values given")
                 ->br();
 
             # Progress bar
@@ -311,12 +311,12 @@ class Core extends CLI {
 
                 # Validate value
                 $formResultDb = (new Validate($formResultDb))->getResult();
+
+                # Prepare display value
+                $dispayValues = Validate::getResultSummary($formResultDb);
                     
                     # Update progress bar
                     $progress->current(100);
-
-                    # Prepare display value
-                    $dispayValues = Validate::getResultSummary($formResultDb);
 
             # Success message
             $climate
