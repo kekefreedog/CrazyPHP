@@ -15,6 +15,7 @@ namespace CrazyPHP\Library\File;
 /** Dependances
  * 
  */
+use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\File\Json;
 use CrazyPHP\App\Create;
@@ -147,14 +148,19 @@ class Composer{
     public static function set(array $values = [], string $file = "composer.json"):array {
 
         # Set result
-        $result = false;
+        $result = [];
 
         # Check parameter in path
-        if(!array_key_exists($file, Composer::PATH))
-            return $result;
+        if(array_key_exists($file, self::PATH))
+
+            # Get value of index
+            $file = self::PATH[$file];
 
         # Set values in composer.json
-        $result = Json::set(self::PATH[$file], $values, self::DEFAULT_PROPERTIES);
+        $result = Json::set(
+            $file, 
+            $values
+        );
 
         # Return result
         return $result;
@@ -167,9 +173,9 @@ class Composer{
      * @param string  $values Values to update on composer.json
      * @param string $createIfNotExists create parameter if doesn't exists
      * @param string $file File composer.json
-     * @return string
+     * @return array
      */
-    public static function update(array $values = [], bool $createIfNotExists = false, string $file = "composer.json"):bool{
+    public static function update(array $values = [], bool $createIfNotExists = false, string $file = "composer.json"):array{
 
         # Set result
         $result = true;

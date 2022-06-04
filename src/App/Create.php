@@ -15,9 +15,11 @@ namespace CrazyPHP\App;
 /**
  * Dependances
  */
+use League\CLImate\TerminalObject\Dynamic\Input;
 use CrazyPHP\Library\File\Composer;
-use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\Form\Process;
+use CrazyPHP\Library\Array\Arrays;
+use CrazyPHP\Library\File\Json;
 
 /**
  * Create new Application
@@ -268,8 +270,12 @@ class Create{
         # Stretch inputs
         $inputs = Arrays::stretch($inputs);
 
+        # Get path of composer
+        $composer = getcwd()."/composer.json";
+
         # Set composer.json
-        Composer::set($inputs);
+        # - Reqire script to be executed from the project folder 
+        Composer::set($inputs, $composer);
 
         # Return instance
         return $this;

@@ -80,8 +80,9 @@ class Json{
      * 
      * @param string $filename
      * @param bool $arrayFormat decode as array (else as object)
+     * @return array
      */
-    public static function open(string $filename = "", bool $arrayFormat = true):array|null{
+    public static function open(string $filename = "", bool $arrayFormat = true):array{
 
         # Set result
         $result = null;
@@ -143,6 +144,14 @@ class Json{
         # Get result
         $result = self::_loopSet($values, $result);
 
+        echo PHP_EOL;
+        echo PHP_EOL;
+        print_r($result);
+        echo PHP_EOL;
+        echo PHP_EOL;
+        print_r($path);
+        exit;
+
         # Check difference between old value & result
         if($old_value !== $result)
 
@@ -150,7 +159,7 @@ class Json{
             file_put_contents($path, json_encode($result));
 
         # Return result
-        return $result;
+        return (array) $result;
 
     }
     
@@ -226,6 +235,30 @@ class Json{
         # Return result
         return $result;
 
+    }    
+    
+    /**
+     * File Exists 
+     * 
+     * Check if json file exists
+     *
+     * @param string $input Path of the json file
+     * @return bool
+     */
+    public static function fileExists(string $input = ""):bool {
+
+        # Set result
+        $result = false;
+
+        # Check input and file exists
+        if($input && file_exists($input))
+
+            # Toggle result
+            $result = true;
+
+        # Return result
+        return $result;
+
     }
 
     /** Public Static Methods | Loop
@@ -261,7 +294,7 @@ class Json{
                     if($output[$key] ?? false || $createIfNotExists)
 
                         # Continue loop
-                        $output[$key] = self::_loopSet($value, $output[$key] ?? [], $createIfNotExists); 
+                        $output[$key] = self::_loopSet($value[$key], $output[$key] ?? [], $createIfNotExists); 
 
             # Retourne output
             return $output;
