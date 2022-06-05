@@ -95,4 +95,34 @@ class Arrays{
 
 	}
 
+    /**
+     * Merge multidimensional array
+	 * 
+     * @param bool $createIfNotExists Create parameter if not exists in precedents arrays
+     * @param array ...$inputs All arrays to merge
+     * @return array
+     */
+    public static function mergeMultidimensionalArrays(bool $createIfNotExists = false, ...$inputs = []):array {
+
+		# Declare result
+		$result = [];
+
+		# Check inputs
+		if(empty($inputs))
+			return $result;
+
+		# Iteration inputs
+		foreach($inputs as $input){
+
+			# Check inputs is array and not empty
+			if(!is_array($input) || empty($input))
+				continue;
+
+			###
+
+		}
+		
+
+    }
+
 }

@@ -146,6 +146,9 @@ class Json{
 
         echo PHP_EOL;
         echo PHP_EOL;
+        print_r($values);
+        echo PHP_EOL;
+        echo PHP_EOL;
         print_r($result);
         echo PHP_EOL;
         echo PHP_EOL;
@@ -278,27 +281,27 @@ class Json{
      */
     public static function _loopSet($input = [], $output = [], bool $createIfNotExists = false) {
 
-            # Check input
-            if(!is_array($input) || empty($input))
+        # Check input
+        if(!is_array($input) || empty($input))
 
-                # Set output
-                $output = $input;
+            # Set output
+            $output = $input;
 
-            # If filled array
-            else
+        # If filled array
+        else
 
-                # Iteration des inputs
-                foreach($input as $key => $value)
+            # Iteration des inputs
+            foreach($input as $key => $value)
 
-                    # Check output is existing or create folder is allowed
-                    if($output[$key] ?? false || $createIfNotExists)
+                # Check output is existing or create folder is allowed
+                if($output[$key] ?? false || $createIfNotExists)
 
-                        # Continue loop
-                        $output[$key] = self::_loopSet($value[$key], $output[$key] ?? [], $createIfNotExists); 
+                    # Continue loop
+                    $output[$key] = self::_loopSet($value[$key], $output[$key] ?? [], $createIfNotExists); 
 
-            # Retourne output
-            return $output;
+        # Retourne output
+        return $output;
 
-        }
+    }
 
 }
