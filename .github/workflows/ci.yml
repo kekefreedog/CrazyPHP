@@ -1,12 +1,29 @@
+# Action
 name: CI
+# Hook
 on: [push]
+# Jobs
 jobs:
-  build-test:
+  # PHP Unit
+  phpunit:
+    # OS
     runs-on: ubuntu-latest
+    # Steps
     steps:
-    - uses: actions/checkout@v2
-    - uses: php-actions/composer@v5
-    - uses: php-actions/phpunit@v3
+    # Checkout
+    - uses: actions/checkout@v2      
+    # PHP
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+          php-version: '8.1'
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick, redis
+          tools: composer:v2
+          coverage: none
+    # Composer
+    - name: Run composer install
+      run: composer install -n --prefer-dist
+    # PHP Unit
     - name: PHPUnit tests
       uses: php-actions/phpunit@v3
       with:
