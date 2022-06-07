@@ -17,6 +17,7 @@ namespace CrazyPHP\Library\File;
  */
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Array\Arrays;
+use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\File\Json;
 use CrazyPHP\App\Create;
 
@@ -81,6 +82,10 @@ class Composer{
             "description"   =>  "Licence of your app",
             "type"          =>  "VARCHAR",
         ],
+        # Author name
+        "authors__name" =>  Create::REQUIRED_VALUES[2],
+        # Author name
+        "authors__email"=>  Create::REQUIRED_VALUES[3],
         # Authors
         "authors"       =>  [
             "name"          =>  "Authors",
@@ -156,11 +161,11 @@ class Composer{
             # Get value of index
             $file = self::PATH[$file];
 
+        # Process value
+        self::process($values);
+
         # Set values in composer.json
-        $result = Json::set(
-            $file, 
-            $values
-        );
+        $result = Json::set($file, $values, true);
 
         # Return result
         return $result;
@@ -180,8 +185,11 @@ class Composer{
         # Set result
         $result = true;
 
+        # Process value
+        self::process($values);
+
         # Set values in composer.json
-        $result = Json::set(self::PATH[$file], $values, self::DEFAULT_PROPERTIES);
+        $result = Json::set(self::PATH[$file], $values, true);
 
         # Return result
         return $result;
@@ -201,6 +209,28 @@ class Composer{
 
         # Return result
         return $result;
+
+    }
+
+    /**
+     * Process value
+     * 
+     * Process value for composer.json
+     *
+     * @param array $inputs Values to process for composer.json
+     * @return void
+     */
+    public static function process(array &$inputs = []):void{
+
+        # Check name
+        if(isset($inputs["name"]) && isset($inputs["authors"][0]["name"]))
+
+            # Clean name
+            $inputs["name"] = 
+                Process::clean($inputs["authors"][0]["name"]).
+                "/".
+                Process::clean($inputs["name"])
+            ;
 
     }
 

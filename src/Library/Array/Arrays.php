@@ -48,11 +48,17 @@ class Arrays{
 			foreach($array as $k => $v)
 
 				# Check if separator in key
-				if(!is_string($k) && strpos( (string) $k, $separator) !== false){
+				if(is_string($k) && strpos( (string) $k, $separator) !== false){
 
 					# Explode key
 					$explode = explode($separator, (string) $k, 2);
 					
+					# Check not empty key
+					if($explode[0] == "")
+
+						# Set int value as key
+						$explode[0] = 0;
+
 					# Declare new dimension array
 					if(!isset($result[$explode[0]]))
 						$result[$explode[0]] = [];

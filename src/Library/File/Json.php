@@ -18,6 +18,7 @@ namespace  CrazyPHP\Library\File;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Form\Validate;
 use CrazyPHP\Library\Form\Process;
+use CrazyPHP\Library\Array\Arrays;
 
 /**
  * Json
@@ -131,9 +132,10 @@ class Json{
      *
      * @param string $path Path of the json file
      * @param array $values Values to put on json
+     * @param bool $beautify Beauty result
      * @return array
      */
-    public static function set(string $path = "", array $values = []):array{
+    public static function set(string $path = "", array $values = [], bool $beautify = false):array{
 
         # Set result
         $result = [];
@@ -142,24 +144,18 @@ class Json{
         $old_value = $result = self::open($path);
 
         # Get result
-        $result = self::_loopSet($values, $result);
-
-        echo PHP_EOL;
-        echo PHP_EOL;
-        print_r($values);
-        echo PHP_EOL;
-        echo PHP_EOL;
-        print_r($result);
-        echo PHP_EOL;
-        echo PHP_EOL;
-        print_r($path);
-        exit;
+        $result = Arrays::mergeMultidimensionalArrays(true, $result, $values);
 
         # Check difference between old value & result
         if($old_value !== $result)
 
             # Put new json content in file
-            file_put_contents($path, json_encode($result));
+            file_put_contents(
+                $path, 
+                $beautify ?
+                    json_encode($result, JSON_PRETTY_PRINT) :
+                        json_encode($result)
+            );
 
         # Return result
         return (array) $result;
@@ -183,7 +179,7 @@ class Json{
         $old_value = $result = self::open($path);
 
         # Get result
-        $result = self::_loopSet($values, $result, $createIfNotExists);
+        $result = Arrays::mergeMultidimensionalArrays($createIfNotExists, $result, $values);
 
         # Check difference between old value & result
         if($old_value !== $result)
@@ -261,46 +257,6 @@ class Json{
 
         # Return result
         return $result;
-
-    }
-
-    /** Public Static Methods | Loop
-     ******************************************************
-     */
-
-    /**
-     * Loop update
-     * 
-     * @private
-     * 
-     * @param any $input
-     * @param any $output
-     * @param bool $createIfNotExists
-     * 
-     * @return any
-     */
-    public static function _loopSet($input = [], $output = [], bool $createIfNotExists = false) {
-
-        # Check input
-        if(!is_array($input) || empty($input))
-
-            # Set output
-            $output = $input;
-
-        # If filled array
-        else
-
-            # Iteration des inputs
-            foreach($input as $key => $value)
-
-                # Check output is existing or create folder is allowed
-                if($output[$key] ?? false || $createIfNotExists)
-
-                    # Continue loop
-                    $output[$key] = self::_loopSet($value[$key], $output[$key] ?? [], $createIfNotExists); 
-
-        # Retourne output
-        return $output;
 
     }
 
