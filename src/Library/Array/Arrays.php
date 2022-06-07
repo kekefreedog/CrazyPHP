@@ -102,7 +102,7 @@ class Arrays{
      * @param array ...$inputs All arrays to merge
      * @return array
      */
-    public static function mergeMultidimensionalArrays(bool $createIfNotExists = false, ...$inputs = []):array {
+    public static function mergeMultidimensionalArrays(bool $createIfNotExists = false, array ...$inputs):array {
 
 		# Declare result
 		$result = [];
@@ -118,10 +118,58 @@ class Arrays{
 			if(!is_array($input) || empty($input))
 				continue;
 
-			###
+			# Check if result is empty
+			if(empty($result)){
+
+				# Set result
+				$result = $input;
+
+				# Continue iteration
+				continue;
+
+			}
+
+			# Iteration items in input
+			foreach($input as $key => $item){
+
+				# Check if value have to bet set or create
+				if(isset($result[$key]) || $createIfNotExists)
+
+					# Check item is array
+					if(is_array($item)){
+
+						# Prepare old
+						$resultLegacy = isset($result[$key]) ?
+							( 
+								is_array($result[$key]) ?
+									$result[$key] : 
+										[]
+							) :
+								[];
+
+						# Check createIfNotExists or not empty current result
+						if(!empty($resultLegacy) || $createIfNotExists)
+
+							# Loop
+							$result[$key] = self::mergeMultidimensionalArrays(
+								$createIfNotExists,
+								$resultLegacy,
+								$item
+							);
+
+					}else{
+
+							# Push new value
+							$result[$key] = $item;
+
+					}
+
+			}
 
 		}
 		
+		# Return result
+		return $result;
 
     }
 

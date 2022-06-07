@@ -16,7 +16,7 @@ namespace Tests\Library\File;
  * Dependances
  */
 use CrazyPHP\Library\Array\Arrays;
-use Tests\TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Arrays test
@@ -30,7 +30,7 @@ use Tests\TestCase;
 class ArraysTest extends TestCase{
 
     /**
-     * Loop update
+     * Merge multidimensional array test
      * 
      * @private
      * 
@@ -38,53 +38,91 @@ class ArraysTest extends TestCase{
      */
     public function testMergeMultidimensionalArrays():void {
 
-        # Declare stack
-        $stack1 = [
-            "name"          =>  "Crazy Project",
-            "description"   =>  "My Crazy Web Application",
-            "type"          =>  "library",
-            "homepage"      =>  "https://github.com/kekefreedog/CrazyPHP/",
-        ];
-        $stack2 = [
-            "repositories" [
-                [
-                    "type"      =>  "path",
-                    "url"       =>  "../CrazyPHP",
-                    "options"   => [
-                        "symlink"   =>  1
-                    ]
-                ]
-            ],
-            "require" => [
-                "kzarshenas/crazyphp" => "@dev"
+        # Test set
+        $array11 = [
+            'alpha' =>  'alpha',
+            'beta'  =>  'beta',
+            'hello'	=>	[
             ]
-        
         ];
-        $stack3 = [
-            "name"          =>  "Crazy Project",
-            "description"   =>  "My Crazy Web Application",
-            "type"          =>  "library",
-            "homepage"      =>  "https://github.com/kekefreedog/CrazyPHP/",
-            "repositories" [
-                [
-                    "type"      =>  "path",
-                    "url"       =>  "../CrazyPHP",
-                    "options"   => [
-                        "symlink"   =>  1
-                    ]
-                ]
-            ],
-            "require" => [
-                "kzarshenas/crazyphp" => "@dev"
+        $array12 = [
+            'beta'  =>  'tera',
+            'tera'  =>  'quad',
+            'hello'	=>	[
+            	"woow"	=>	true	
             ]
-        
         ];
+        $array13 = [
+        	'one'	=>	[
+        		'two'	=>	[
+        			'three'
+    			]	
+        	]
+        ];
+        $array14 = [
 
-        # Check
-        $this->assertSame(
-            $stack3, 
-            Arrays::mergeMultidimensionalArrays(false, $stack2, $stack1);
-        );
+        ];
+        $result1 = [
+            'alpha' =>  'alpha',
+            'beta'  =>  'tera',
+            'hello'	=>	[
+            	"woow"	=>	true	
+            ],
+            'tera'  =>  'quad',
+        	'one'	=>	[
+        		'two'	=>	[
+        			'three'
+    			]	
+        	]
+        ];
+        $mergedArrays = Arrays::mergeMultidimensionalArrays(true, $array11, $array12, $array13, $array14);
+        $this->assertEquals($mergedArrays, $result1);
+
+        # Test update
+        $array21 = [
+            'alpha' =>  'alpha',
+            'beta'  =>  'beta',
+            'hello'	=>	[
+            ]
+        ];
+        $array22 = [
+            'beta'  =>  'tera',
+            'tera'  =>  'quad',
+            'hello'	=>	[
+            	"woow"	=>	true	
+            ]
+        ];
+        $array23 = [
+        	'one'	=>	[
+        		'two'	=>	[
+        			'three'
+    			]	
+        	]
+        ];
+        $result2 = [
+            'alpha' =>  'alpha',
+            'beta'  =>  'tera',
+            'hello'	=>	[
+            ]
+        ];
+        $mergedArrays = Arrays::mergeMultidimensionalArrays(false, $array21, $array22, $array23);
+        $this->assertEquals($mergedArrays, $result2);
+
+        # Test empty
+        $array31 = [
+
+        ];
+        $array32 = [
+
+        ];
+        $array33 = [
+
+        ];
+        $result3 = [
+
+        ];
+        $mergedArrays = Arrays::mergeMultidimensionalArrays(true, $array31, $array32, $array33);
+        $this->assertEquals($mergedArrays, $result3);
 
     }
 
