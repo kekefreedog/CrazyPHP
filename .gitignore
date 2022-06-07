@@ -11,3 +11,6 @@ package.lock
 
 # Etc
 .DS_Store
+
+# PHPUnit (PHP)
+.phpunit.result.cache
