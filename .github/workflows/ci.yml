@@ -24,8 +24,9 @@ jobs:
     - name: Run composer install
       run: composer install -n --prefer-dist
     # PHP Unit
-    - name: PHPUnit tests
-      uses: php-actions/phpunit@v3
+    - name: PHPUnit Tests
+      uses: php-actions/phpunit@v2
       with:
-        # configuration: /tests/phpunit.xml
-        memory_limit: 256M
+        bootstrap: vendor/autoload.php
+        configuration: tests/phpunit.xml
+        args: --coverage-text
