@@ -8,7 +8,8 @@ jobs:
     - uses: php-actions/composer@v5
     - uses: php-actions/phpunit@v3
   unit-tests:
-    - name: PHPUnit tests
+    - 
+      name: PHPUnit tests
       uses: php-actions/phpunit@v3
       with:
         configuration: phpunit.xml
