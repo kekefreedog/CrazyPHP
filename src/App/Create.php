@@ -16,7 +16,9 @@ namespace CrazyPHP\App;
  * Dependances
  */
 use League\CLImate\TerminalObject\Dynamic\Input;
+use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\File\Composer;
+use CrazyPHP\Library\File\Package;
 use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\File\Json;
@@ -258,6 +260,18 @@ class Create{
      */
     public function runComposer():Create {
 
+        # Check input > application is set and not empty
+        if(empty($this->input['application'] ?? []))
+            
+            # New error
+            throw new CrazyException(
+                "Input of application create is missing", 
+                500,
+                [
+                    "custom_code"   =>  "create-002",
+                ]
+            );
+
         # Decalare input
         $inputs = $this->inputs["application"];
 
@@ -299,8 +313,36 @@ class Create{
 
         # Check input > application is set and not empty
         if(empty($this->input['application'] ?? []))
+            
+            # New error
+            throw new CrazyException(
+                "Input of application create is missing", 
+                500,
+                [
+                    "custom_code"   =>  "create-002",
+                ]
+            );
 
+        # Decalare input
+        $inputs = $this->inputs["application"];
 
+        # Adapt inputs
+        Package::adaptCreateInputs($inputs);
+
+        # Wash input
+        $inputs = Process::wash($inputs, Package::DEFAULT_PROPERTIES);
+
+        # Compilate inputs
+        $inputs = Process::compilate($inputs);
+
+        # Sort inputs
+        $inputs = Process::sortByConditions($inputs, Package::DEFAULT_PROPERTIES);
+
+        # Stretch inputs
+        $inputs = Arrays::stretch($inputs);
+
+        # Get path of composer
+        $composer = getcwd()."/package.json";
 
         # Return instance
         return $this;

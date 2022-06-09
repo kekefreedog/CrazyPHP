@@ -2,7 +2,7 @@
 /**
  * File
  *
- * TDB
+ * Classe for manipulate specific files
  *
  * PHP version 8.1.2
  *
