@@ -88,7 +88,7 @@ class Composer{
         "authors__email"=>  Create::REQUIRED_VALUES[3],
         # Authors
         "authors"       =>  [
-            "name"          =>  "Authors",
+            "name"          =>  "authors",
             "description"   =>  "Authors of your app",
             "type"          =>  "ARRAY",
         ],
@@ -165,7 +165,7 @@ class Composer{
         self::process($values);
 
         # Set values in composer.json
-        $result = Json::set($file, $values, true);
+        $result = Json::set($file, $values, true, true);
 
         # Return result
         return $result;

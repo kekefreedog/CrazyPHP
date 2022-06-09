@@ -232,10 +232,9 @@ class Process {
      * Process items is in conditions collection
      * @param array $inputs Input to check
      * @param array $conditions Collection of data to compare with
-     * 
-     * @return bool
+     * @return array
      */
-    public static function itemsIn(array $inputs = [], array $conditions):bool {
+    public static function itemsIn(array $inputs = [], array $conditions = []):array {
 
         # Declare Result & inputMissing
         $result = [];
@@ -561,5 +560,54 @@ class Process {
 
     }
 
+    /**
+     * Sort by conditions
+     * 
+     * Sort items to array by conditions (all other items will but at the end
+     * - Only sort first dimension array
+     * 
+     * @param array $inputs Input to process
+     * @param array $conditions Conditon to respect
+     * @param string $separator Separator to avoid multidimensional array
+     * @return array
+     */
+    public static function sortByConditions(array $array = [], array $conditions = [], string $separator = "_"):array {
+
+        # Declare result
+        $result = [];
+
+        # Check condition
+        if(!empty($conditions))
+
+            # Iteration conditions
+            foreach($conditions as $condition){
+
+                # Check not multidimensional conditions
+                if(strpos($condition['name'], $separator) !== false)
+                    continue;
+
+                # Check array as current condition
+                if(isset($array[$condition['name']])){
+
+                    # Push value in result
+                    $result[$condition['name']] = $array[$condition['name']];
+
+                    # Remove current name to array
+                    unset($array[$condition['name']]);
+
+                }
+            
+            }
+
+        # Check not orther value in array
+        if(!empty($array))
+
+                # Merge them to array
+                $result += $array;
+
+        # Return result
+        return $result;
+
+    }
 
 }

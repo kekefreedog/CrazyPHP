@@ -267,6 +267,9 @@ class Create{
         # Compilate inputs
         $inputs = Process::compilate($inputs);
 
+        # Sort inputs
+        $inputs = Process::sortByConditions($inputs, Composer::DEFAULT_PROPERTIES);
+
         # Stretch inputs
         $inputs = Arrays::stretch($inputs);
 
