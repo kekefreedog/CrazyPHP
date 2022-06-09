@@ -32,8 +32,6 @@ class ArraysTest extends TestCase{
     /**
      * Merge multidimensional array test
      * 
-     * @private
-     * 
      * @return void
      */
     public function testMergeMultidimensionalArrays():void {
@@ -123,6 +121,47 @@ class ArraysTest extends TestCase{
         ];
         $mergedArrays = Arrays::mergeMultidimensionalArrays(true, $array31, $array32, $array33);
         $this->assertEquals($mergedArrays, $result3);
+
+    }
+
+    /**
+     * Stretch test
+     * 
+     * @return void
+     */
+    public function testStretch():void {
+
+        # Declare input
+        $input = [
+            'name' => 'Crazy Project',
+            'description' => 'My Crazy Web Application',
+            'authors__name' => 'CrazyPerson',
+            'authors__email' => 'crazy@person.com',
+            'type' => 'library',
+            'homepage' => 'https://github.com/kekefreedog/CrazyPHP/',
+        ];
+
+        # Declare await result
+        $awaitResult = array (
+            'name' => 'Crazy Project',
+            'description' => 'My Crazy Web Application',
+            'authors' => 
+            array (
+              0 => 
+              array (
+                'name' => 'CrazyPerson',
+                'email' => 'crazy@person.com',
+              ),
+            ),
+            'type' => 'library',
+            'homepage' => 'https://github.com/kekefreedog/CrazyPHP/',
+        );
+
+        # Result
+        $result = Arrays::stretch($input);
+
+        # Send results to php unit
+        $this->assertEquals($result, $awaitResult);
 
     }
 

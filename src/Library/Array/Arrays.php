@@ -52,11 +52,10 @@ class Arrays{
 
 					# Explode key
 					$explode = explode($separator, (string) $k, 2);
-					
-					# Check not empty key
-					if($explode[0] == "")
 
-						# Set int value as key
+					# Check explode first value not empty
+					if(!$explode[0])
+
 						$explode[0] = 0;
 
 					# Declare new dimension array
@@ -64,7 +63,8 @@ class Arrays{
 						$result[$explode[0]] = [];
 						
 					# Set value and call function recursively
-					$result[$explode[0]] = array_merge_recursive(
+					$result[$explode[0]] = self::mergeMultidimensionalArrays(
+						true,
 						$result[$explode[0]],
 						self::stretch([$explode[1]=>$v], $separator)
 					);
