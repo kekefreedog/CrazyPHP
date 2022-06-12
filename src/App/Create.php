@@ -15,7 +15,6 @@ namespace CrazyPHP\App;
 /**
  * Dependances
  */
-use League\CLImate\TerminalObject\Dynamic\Input;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\File\Composer;
 use CrazyPHP\Library\File\Package;
@@ -82,7 +81,7 @@ class Create{
             "type"          =>  "VARCHAR",
             "default"       =>  "library",
             "select"        =>  [
-                ""              =>  "Undifined",
+                "other"         =>  "Undifined",
                 "library"       =>  "Library",
                 "project"       =>  "Project"
             ]
@@ -261,7 +260,7 @@ class Create{
     public function runComposer():Create {
 
         # Check input > application is set and not empty
-        if(empty($this->input['application'] ?? []))
+        if(empty($this->inputs['application'] ?? []))
             
             # New error
             throw new CrazyException(
@@ -290,6 +289,12 @@ class Create{
         # Get path of composer
         $composer = getcwd()."/composer.json";
 
+        # Check json file exists
+        if(!Json::check($composer))
+
+            # Create composer file
+            Composer::create($composer);
+
         # Set composer.json
         # - Reqire script to be executed from the project folder 
         Composer::set($inputs, $composer);
@@ -312,14 +317,14 @@ class Create{
     public function runNpm():Create {
 
         # Check input > application is set and not empty
-        if(empty($this->input['application'] ?? []))
+        if(empty($this->inputs['application'] ?? []))
             
             # New error
             throw new CrazyException(
                 "Input of application create is missing", 
                 500,
                 [
-                    "custom_code"   =>  "create-002",
+                    "custom_code"   =>  "create-003",
                 ]
             );
 
@@ -343,6 +348,16 @@ class Create{
 
         # Get path of composer
         $composer = getcwd()."/package.json";
+
+        # Check json file exists
+        if(!Json::check($composer))
+
+            # Create composer file
+            Package::create($composer);
+
+        # Set composer.json
+        # - Reqire script to be executed from the project folder 
+        Package::set($inputs, $composer);
 
         # Return instance
         return $this;

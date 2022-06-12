@@ -70,7 +70,7 @@ class CrazyException extends Exception implements InterfaceException{
     public function __construct(
         string|null $message = null, 
         int $code = 0,
-        array $extra = [],
+        array|null $extra = null,
         Throwable|null $previous = null
     ){
 

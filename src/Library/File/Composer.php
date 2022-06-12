@@ -20,6 +20,7 @@ use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\File\Json;
 use CrazyPHP\App\Create;
+use splitbrain\phpcli\examples\Complex;
 
 /**
  * Composer
@@ -106,9 +107,45 @@ class Composer{
         ],
     ];
 
+    # Default value
+    const DEFAULT_VALUE = [
+        "require"   =>  [
+            "kzarshenas/crazyphp"   =>  "@dev"
+        ]
+    ];
+
     /** Public Static Methods
      ******************************************************
      */
+
+    /**
+     * Read value in composer.json
+     *
+     * @param string $parameter Parameter to read
+     * @param string $file File to read data
+     * @return string
+     */
+    public static function create(string $path):array{
+
+        # Declare result
+        $result = [];
+
+        # Check parameter in path
+        if(array_key_exists($path, self::PATH))
+
+            # Update path
+            $path = self::PATH[$path];
+
+        # Check if file already exists
+        if(!file_exists($path))
+
+            # Get collection of file
+            $result = Json::create($path, self::DEFAULT_VALUE);
+        
+        # Return result
+        return $result;
+
+    }
 
     /**
      * Read value in composer.json
@@ -123,11 +160,11 @@ class Composer{
         $result = "";
 
         # Check parameter in path
-        if(!array_key_exists($file, Composer::PATH))
+        if(!array_key_exists($file, self::PATH))
             return $result;
 
         # Get collection of file
-        $fileCollection = Json::open(Composer::PATH[$file]);
+        $fileCollection = Json::open(self::PATH[$file]);
 
         # Check value exist in collection
         if($fileCollection[$parameter] ?? false)
@@ -165,7 +202,7 @@ class Composer{
         self::process($values);
 
         # Set values in composer.json
-        $result = Json::set($file, $values, true, true);
+        $result = Json::set($file, $values, true);
 
         # Return result
         return $result;
@@ -189,7 +226,7 @@ class Composer{
         self::process($values);
 
         # Set values in composer.json
-        $result = Json::set(self::PATH[$file], $values, true);
+        $result = Json::set(self::PATH[$file], $values);
 
         # Return result
         return $result;

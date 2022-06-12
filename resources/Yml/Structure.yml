@@ -1,0 +1,32 @@
+# #
+# Structure
+#
+# Define app folder structure of the Crazy App
+#
+# YAML version 1.2
+#
+# @package    kzarshenas/crazyphp
+# @author     kekefreedog <kevin.zarshenas@gmail.com>
+# @copyright  2022-2022 Kévin Zarshenas
+# #
+Structure:
+  @root:
+    folders:
+      .cache:
+        app:
+      assets:
+        folders:
+          Css: {}
+          Hbs: {}
+          Jpeg: {}
+          Js: {}
+          Png: {}
+          Scss: {}
+          Yaml: {}
+      config: {}
+      docs: {}
+      logs: {}
+      public: {}
+      src_front:
+      src_back:
+    

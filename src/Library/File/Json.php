@@ -62,16 +62,54 @@ class Json{
      * @param mixed $string
      * @return bool
      */
-    public static function check(mixed $string):bool {
+    public static function check(string $string = ""):bool {
         
         # Check if is string
-        if(!is_string($string)) return false;
+        if(!is_string($string))
+            return false;
 
         # Decode string
         json_decode($string);
 
         # Return error or not
 		return (json_last_error() == JSON_ERROR_NONE);
+
+	}
+
+    /** 
+     * Create json
+     * 
+     * Create json file with data inside
+     * 
+     * @param string $path Path of the json file
+     * @param array $data Data to put on the json file
+     * @return array
+     */
+    public static function create(string $path = "", array $data = []):array {
+        
+        # Create json
+        if(
+            file_put_contents(
+                $path, 
+                json_encode(
+                    $data, 
+                    JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES
+                )
+            ) === false
+        )
+
+            # New Exception
+            throw new CrazyException(
+                "Json file \"".array_pop(explode("/", $path))."\" can't be created...",
+                403,
+                [
+                    "custom_code"   =>  "json-002",
+                ]
+            );
+
+        # Return data
+        return $data;
+
 	}
 
     /** 
@@ -132,11 +170,10 @@ class Json{
      *
      * @param string $path Path of the json file
      * @param array $values Values to put on json
-     * @param bool $beautify Beauty result
      * @param bool $invertMerge Invert merge sort
      * @return array
      */
-    public static function set(string $path = "", array $values = [], bool $beautify = false, $invertMerge = false):array{
+    public static function set(string $path = "", array $values = [], $invertMerge = false):array{
 
         # Set result
         $result = [];
@@ -155,9 +192,7 @@ class Json{
             # Put new json content in file
             file_put_contents(
                 $path, 
-                $beautify ?
-                    json_encode($result, JSON_PRETTY_PRINT) :
-                        json_encode($result)
+                json_encode($result, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES)
             );
 
         # Return result
@@ -188,7 +223,7 @@ class Json{
         if($old_value !== $result)
 
             # Put new json content in file
-            file_put_contents($path, json_encode(json_encode($result)));
+            file_put_contents($path, json_encode(json_encode($result, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES)));
 
         # Return result
         return $result;
@@ -232,7 +267,7 @@ class Json{
         if($old_value !== $result)
 
             # Put new json content in file
-            file_put_contents($path, json_encode(json_encode($result)));
+            file_put_contents($path, json_encode(json_encode($result, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES)));
 
         # Return result
         return $result;

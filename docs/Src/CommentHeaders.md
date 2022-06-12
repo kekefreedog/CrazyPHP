@@ -67,3 +67,18 @@ class Toto{
 
 }
 ```
+
+## YAML Headers
+```yml
+# #
+# TITLE
+#
+# TBD
+#
+# YAML version 1.2
+#
+# @package    kzarshenas/crazyphp
+# @author     kekefreedog <kevin.zarshenas@gmail.com>
+# @copyright  2022-2022 Kévin Zarshenas
+# #
+```
