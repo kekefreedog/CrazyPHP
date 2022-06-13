@@ -10,23 +10,22 @@
 # @copyright  2022-2022 Kévin Zarshenas
 # #
 Structure:
-  @root:
+  "@root":
     folders:
       .cache:
-        app:
+        app: null
       assets:
         folders:
-          Css: {}
-          Hbs: {}
-          Jpeg: {}
-          Js: {}
-          Png: {}
-          Scss: {}
-          Yaml: {}
-      config: {}
-      docs: {}
-      logs: {}
-      public: {}
-      src_front:
-      src_back:
-    
+          Css: null
+          Hbs: null
+          Jpeg: null
+          Js: null
+          Png: null
+          Scss: null
+          Yaml: null
+      config: null
+      docs: null
+      logs: null
+      public: null
+      src_front: null
+      src_back: null

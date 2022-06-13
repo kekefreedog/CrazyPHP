@@ -16,6 +16,7 @@ namespace CrazyPHP\Library\File;
  * 
  */
 use CrazyPHP\Exception\CrazyException;
+use Symfony\Component\Finder\Finder;
 use Symfony\Component\Yaml\Yaml;
 use CrazyPHP\Library\File\Json;
 use CrazyPHP\Library\File\File;
@@ -64,6 +65,11 @@ class Structure{
             "application/json"  =>  "_parseJson",
             "text/php"          =>  "_parsePhp",
         ],
+        "actionsAccepted"   =>  [
+            'create', 
+            'update', 
+            'delete',
+        ],
     ];
 
     /**
@@ -73,8 +79,13 @@ class Structure{
      * 
      * @param string $root Root where create files
      * @param array $template Template to use for app creation
+     * @param string $action Action of the strucure
+     *  - action
+     *  - update
+     *  - delete
+     * 
      */
-    public function __construct(string $action = "create", string $root = "", string $template = self::DEFAULT_TEMPLATE){
+    public function __construct(string $root = "", string $template = self::DEFAULT_TEMPLATE, string $action = "create"){
 
         # Set action
         $this->setAction($action);
@@ -194,6 +205,38 @@ class Structure{
     }    
 
     /**
+     * setAction
+     * 
+     * Set action of the current structure :
+     *  - action
+     *  - update
+     *  - delete
+     * 
+     * @param string $action Action of the current structure
+     * @return void
+     */
+    public function setAction(string $action = "create"):void {
+
+        $action = strtolower($action);
+        
+        # Check action 
+        if(!$action || !in_array($action, $this->conditions['actionsAccepted']))
+
+            # New Exception
+            throw new CrazyException(
+                "Action given \”$action\” isn't valid...",
+                500,
+                [
+                    "custom_code"   =>  "structure-008",
+                ]
+            );
+
+        # Set action
+        $this->action = $action;
+
+    }
+
+    /**
      * getAction
      * 
      * Get root path
@@ -204,6 +247,20 @@ class Structure{
 
         # Return root
         return $this->action;
+
+    }
+
+    /**
+     * getStructure
+     * 
+     * Get structure
+     * 
+     * @return array
+     */
+    public function getStructure():array {
+
+        # Return root
+        return $this->structure;
 
     }
     
@@ -217,10 +274,10 @@ class Structure{
     public function run():void {
         
         # Get type of current file
-        $type = File::getMime($this->root);
+        $type = File::guessMime($this->template);
 
         # Check file type is accepted
-        if(!in_array($type, $this->conditions['fileTypeAccepted']))
+        if(!array_key_exists($type, $this->conditions['fileTypeAccepted']))
 
             # New Exception
             throw new CrazyException(
@@ -254,16 +311,10 @@ class Structure{
      * @param string $action 'create', 'update' or 'delete'
      * @return void
      */
-    public function treeFolderGenerator($folders = [], $path = '/', $action = 'create'){
+    public static function treeFolderGenerator($folders = [], $path = '/', $action = 'create'){
 
         # Check path has / at the end
         $path = rtrim($path, '/').'/';
-
-        # Check arguments
-        if(
-            !in_array($action, ['create', 'update', 'delete'])
-        )
-            return false;
 
         # Iteration of folders
         foreach($folders as $folderName => $folderContent)
@@ -322,7 +373,7 @@ class Structure{
 
                             }
 
-                        }elseif(
+                        }/* elseif(
                             isset($fileContent['function']['name']) && 
                             $fileContent['function']['name'] && 
                             method_exists($this, $fileContent['function']['name'])
@@ -334,7 +385,7 @@ class Structure{
                             # Put new content in file
                             file_put_contents($filepath, $newContent);
 
-                        }else{
+                        } */else{
 
                             # Check file no exist
                             if(!file_exists($filepath))
@@ -365,6 +416,187 @@ class Structure{
                     # Delete folder
                     unlink($path.$folderName);
         
+    }
+
+    /**
+     * Creates directories array for preview and check based on the array given
+     * 
+     * @source https://gist.github.com/timw4mail/4172083
+     *
+     * @param array $structure
+     * @param string $path
+     * @return array
+     */
+    public static function treeFolderGeneratorPreview($folders = [], $action = 'create'):array {
+
+        # Declare result
+        $result = [];
+
+        # Iteration of folders
+        foreach($folders as $folderName => $folderContent)
+
+            # Create folder of the root folder if not exist
+            if(in_array($action, ['create', 'update'])){
+
+                # Push folder in result
+                $result[$folderName] = null;
+
+                # Check files
+                if(
+                    isset($folderContent['files']) &&
+                    is_array($folderContent['files']) &&
+                    !empty($folderContent['files'])
+                )
+
+                    # Iteration des files
+                    foreach ($folderContent['files'] as $filename => $fileContent)
+
+                        # Push folder in result
+                        $result[$folderName][$filename] = null;
+
+                # Check if subfolders
+                if(
+                    isset($folderContent['folders']) &&
+                    is_array($folderContent['folders']) &&
+                    !empty($folderContent['folders'])
+                ){
+
+                    # Call function
+                    $temp = self::treeFolderGeneratorPreview($folderContent['folders'], $action);
+
+                    # Check temp is array
+                    if(is_array($temp) && !empty($temp)){
+
+                        # Transform $result
+                        if($result[$folderName] === null)
+
+                            # Transform to array
+                            $result[$folderName] = [];
+
+                        # Merge current result
+                        $result[$folderName] += $temp;
+
+                    }
+
+                }
+
+            # Action delete
+            }/* elseif($action == 'delete')
+
+                # Check path is not root "/"
+                if($path.$folderName !== "/")
+
+                    # Delete folder
+                    unlink($path.$folderName); */
+
+            # Return result
+            return empty($result) ?
+                false :
+                    $result;
+        
+    }    
+    
+    /**
+     * Get File Tree Simple
+     * 
+     * Get a simple file tree of folders and files contains inside given path of structure array :
+     * [
+     *      "folder1"   =>  null,
+     *      "folder2"   =>  [
+     *          "folder3"   =>  null,
+     *          "filee.yml" =>  null,
+     *      ]
+     * ]
+     * 
+     * @param string|array $input Parameter to read
+     * @return array|false
+     */
+    public static function getFileTreeSimple(string|array $input = ""):array|false {
+
+        # Declare result
+        $result = false;
+
+        # Check if input is valid
+        if(empty($input))
+
+            # Return result
+            return $result;
+
+        /**
+         * If input is path
+         */
+        if(is_string($input) && is_dir($input)){
+
+            function _loop(string $path = ""):array|null {
+
+                # Declare result
+                $result = null;
+
+                # New finder
+                $finder = new Finder();
+
+                # Prepare finder
+                $finder->in($path)->ignoreDotFiles(false)->depth("== 0");
+
+                # Check finder find something
+                if($finder->hasResults())
+
+                    # Iteration 
+                    foreach($finder as $item){
+
+                        # Check item is file
+                        if($item->isFile())
+
+                            # Push item in result
+                            $result[$item->getFilename()] = null;
+
+                        elseif($item->isDir()){
+
+                            # Get subfolders
+                            $temp = _loop($item->getRealPath());
+
+                            # Check result 
+                            if(!$temp || empty($temp))
+
+                                # Update result
+                                $result[$item->getFilename()] = null;
+
+                            else
+
+                                # Push temps in result
+                                $result[$item->getFilename()] = $temp;
+
+                        }
+
+                    }
+
+                # Return result
+                return $result;
+
+            }
+
+            $result = _loop($input);
+
+        }else
+        /**
+         * If input is array
+         */
+        if(is_array($input)){
+
+            # Get tree folder
+            $result = Structure::treeFolderGeneratorPreview($input);
+
+            # Check if root is defined
+            if($result["/"] ?? false)
+
+                # Update result
+                $result = array_pop($result);
+
+        }
+
+        # Return result
+        return $result;
+
     }
 
     /** Private method

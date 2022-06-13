@@ -14,3 +14,4 @@ package-lock.json
 
 # PHPUnit (PHP)
 .phpunit.result.cache
+tests/.cache/*
