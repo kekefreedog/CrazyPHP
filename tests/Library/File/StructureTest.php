@@ -76,11 +76,44 @@ class StructureTest extends TestCase{
         # Get structure expected
         $structureExpected = Structure::getFileTreeSimple($structure->getStructure());
 
-        # Clean temp foldes / files generated
-        File::remove(self::RELATIVE_ROOT_PATH);
-
         # Check created and expected
         $this->assertEquals($structureCreated, $structureExpected);
+
+    }    
+    
+    /**
+     * Test Tree Folder Deletion
+     * 
+     * @depends testTreeFolderGeneratorCreate
+     * 
+     * @return void
+     */
+    public function testTreeFolderGeneratorDelete():void {
+
+        # Check tmp directory already exists
+        if(!is_dir(self::RELATIVE_ROOT_PATH))
+
+            # Make tmp directory
+            mkdir(self::RELATIVE_ROOT_PATH, 0777, true);
+
+        # New instance
+        $structure = new Structure(
+            self::RELATIVE_ROOT_PATH,
+            self::RELATIVE_TEMPLATE_PATH,
+            "delete"
+        );
+
+        # Run deletion of structure
+        $structure->run();
+
+        # Get item in root path
+        $result = scandir(self::RELATIVE_ROOT_PATH);
+
+        # Remove dots
+        $result = array_filter($result, fn($e) => !in_array($e, [".", ".."]));
+
+        # Check folder is empty
+        $this->assertEmpty($result);
 
     }
 

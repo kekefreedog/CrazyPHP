@@ -20,7 +20,7 @@ use Symfony\Component\Finder\Finder;
 use Symfony\Component\Yaml\Yaml;
 use CrazyPHP\Library\File\Json;
 use CrazyPHP\Library\File\File;
-;
+
 /**
  * Structure
  *
@@ -316,18 +316,35 @@ class Structure{
         # Check path has / at the end
         $path = rtrim($path, '/').'/';
 
+        # Check of delete action
+        if($action == "delete"){
+
+            # Delete folders and files
+            self::treeFolderDeletion($folders, $path);
+
+            # Stop function
+            return;
+
+        }
+
         # Iteration of folders
-        foreach($folders as $folderName => $folderContent)
+        foreach($folders as $folderName => $folderContent){
+
+                # Set currentPath
+                $currentPath = $path.$folderName;
+
+                # Clean current path
+                $currentPath = rtrim($currentPath, '/').'/';
 
             # Create folder of the root folder if not exist
             if(in_array($action, ['create', 'update'])){
     
                 # check path exist
-                if(!is_dir($path.$folderName))
+                if(!is_dir($currentPath))
     
                     # Create current folder
                     mkdir(
-                        $path.$folderName, 
+                        $currentPath, 
                         $folderContent['permission'] ?? 0777,
                         true
                     );
@@ -405,18 +422,82 @@ class Structure{
                 )
 
                     # Call function
-                    self::treeFolderGenerator($folderContent['folders'], $path.$folderName, $action);
+                    self::treeFolderGenerator($folderContent['folders'], $currentPath, $action);
 
-            # Action delete
-            }elseif($action == 'delete')
-
-                # Check path is not root "/"
-                if($path.$folderName !== "/")
-
-                    # Delete folder
-                    unlink($path.$folderName);
+            }
+                
+        }
         
-    }
+    }    
+    
+    /**
+    * Delete directories based on the array given
+    * 
+    * @source https://stackoverflow.com/questions/1653771/how-do-i-remove-a-directory-that-is-not-empty
+    *
+    * @param array $structure
+    * @param string $path
+    * @param bool $deleteFirst Private params
+    * @return void
+    */
+   public static function treeFolderDeletion($folders = [], $path = '/', bool $deleteFirst = false){
+
+        # Iteration folders
+        foreach($folders as $folderName => $folderContent){
+
+            # Set currentPath
+            $currentPath = $path.$folderName;
+
+            # Clean current path
+            $currentPath = rtrim($currentPath, '/').'/';
+
+            # Check if file
+            if(!is_dir($currentPath)) 
+                continue;
+
+            # Check if subfolders
+            if(
+                isset($folderContent['folders']) &&
+                is_array($folderContent['folders']) &&
+                !empty($folderContent['folders'])
+            ){
+
+                # Delete content of folders
+                self::treeFolderDeletion($folderContent['folders'], $currentPath, true);
+
+            }
+
+            # Check files
+            if(
+                isset($folderContent['files']) &&
+                is_array($folderContent['files']) &&
+                !empty($folderContent['files'])
+            )
+
+                # Iteration des files
+                foreach ($folderContent['files'] as $filename => $fileContent) {
+
+                    # Get path of the current file
+                    $filepath = rtrim($path, '/').'/'.rtrim($folderName, '/').'/'.$filename;
+
+                    # Check current file exists
+                    if(!$filepath || !file_exists($filepath))
+                        continue;
+
+                    # Remove current file
+                    return unlink($filepath);
+
+            }
+
+            # Check if current folder have to be deleted
+            if($deleteFirst && !empty(scandir($currentPath)))
+
+                # Remove dir
+                rmdir($currentPath);
+
+        }
+
+   }
 
     /**
      * Creates directories array for preview and check based on the array given

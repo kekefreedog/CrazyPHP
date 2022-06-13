@@ -23,6 +23,7 @@ use splitbrain\phpcli\Options;
 use League\CLImate\CLImate;
 use splitbrain\phpcli\CLI;
 use CrazyPHP\App\Create;
+use CrazyPHP\App\Delete;
 use CrazyPHP\Cli\Form;
 
 /**
@@ -250,7 +251,7 @@ class Core extends CLI {
             ->br();
         usleep(200000);
 
-        $input = $climate->confirm('Do you confirm the creation of the projet ?');
+        $input = $climate->confirm('Do you confirm the creation of the project ?');
 
         // Continue? [y/n]
         if(!$input->confirmed()){
@@ -429,8 +430,60 @@ class Core extends CLI {
      */
     protected function actionDelete(){
 
+        # New climate
+        $climate = new CLImate();
+        $climate->br();
+
         # Display result
-        $this->info("delete");
+        $this->warning("delete");
+
+        ## First part
+        usleep(400000);
+        $climate
+            ->br()
+            ->green()
+            ->border()
+            ->br();
+        usleep(300000);
+
+        $input = $climate->confirm('Do you confirm the deletion of the project ?');
+
+        // Continue? [y/n]
+        if(!$input->confirmed()){
+
+            usleep(200000);
+            $climate
+                ->br()
+                ->red("✋ Project deletion has been canceled ✋")
+                ->br()
+            ;
+
+            # Stop script
+            return;
+
+        }
+
+        # New app delete instance
+        $app = new Delete();
+
+        # Iteration storyline
+        foreach($app->getStoryline() as $action){
+
+            # Message start
+            $climate
+                ->br()
+                ->yellow("Run ".str_replace("run", "", strtolower($action)))
+            ;
+
+            # Execute
+            $app->{$action}();
+
+            # Message end
+            $climate
+                ->green(str_replace("run", "", $action)." ran with succes")
+            ;
+
+        }
 
     }
 

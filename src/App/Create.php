@@ -16,6 +16,7 @@ namespace CrazyPHP\App;
  * Dependances
  */
 use CrazyPHP\Exception\CrazyException;
+use CrazyPHP\Library\File\Structure;
 use CrazyPHP\Library\File\Composer;
 use CrazyPHP\Library\File\Package;
 use CrazyPHP\Library\Form\Process;
@@ -163,7 +164,6 @@ class Create{
          * 0. Check configs files exists
          * 1. Fill config files
          * 2. Create app routes
-         * 3. Create basic users
          */
         $this->runConfig();
 
@@ -182,12 +182,6 @@ class Create{
         $this->runUserInterface();
 
         /**
-         * Run Webpack
-         * 1. Prepare webpack config
-         */
-        $this->runWebpack();
-
-        /**
          * Run Database
          * 0. Try to connect to database
          * 1. Create user
@@ -195,7 +189,20 @@ class Create{
          * 3. Create auth tables
          * 4. Create app tables
          */
-        $this->runDatabase();
+        $this->runDatabase();    
+        
+        /**
+        * Run Users
+        * 0. Create permissions
+        * 1. Create default users
+        */
+       $this->runUsers();
+
+       /**
+        * Run Webpack
+        * 1. Prepare webpack config
+        */
+       $this->runWebpack();
 
         /**
          * Run First Compilation
@@ -375,6 +382,15 @@ class Create{
      */
     public function runStructureFolder():Create {
 
+        # Define Root
+        $root = getcwd();
+
+        # New structure instance
+        $structure = new Structure($root);
+
+        # Create new structure
+        $structure->run();
+
         # Return instance
         return $this;
 
@@ -387,7 +403,6 @@ class Create{
      * 0. Check configs files exists
      * 1. Fill config files
      * 2. Create app routes
-     * 3. Create basic users
      * 
      * @return Create
      */
@@ -431,20 +446,6 @@ class Create{
     }
 
     /**
-     * Run Webpack
-     * 
-     * 1. Prepare webpack config
-     * 
-     * @return Create
-     */
-    public function runWebpack():Create {
-
-        # Return instance
-        return $this;
-
-    }
-
-    /**
      * Run Database
      * 
      * Steps : 
@@ -457,6 +458,35 @@ class Create{
      * @return Create
      */
     public function runDatabase():Create {
+
+        # Return instance
+        return $this;
+
+    }
+
+    /**
+     * Run Users
+     * 
+     * Steps :
+     * 0. Create permissions
+     * 1. Create default users
+     * @return Create
+     */
+    public function runUsers():Create {
+
+        # Return instance
+        return $this;
+
+    }
+
+    /**
+     * Run Webpack
+     * 
+     * 1. Prepare webpack config
+     * 
+     * @return Create
+     */
+    public function runWebpack():Create {
 
         # Return instance
         return $this;

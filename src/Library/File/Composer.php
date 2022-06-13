@@ -208,6 +208,80 @@ class Composer{
         return $result;
 
     }
+
+    /**
+     * Get value in composer.json
+     * 
+     * Get value in composer
+     *
+     * @param array $input Input to search in composer.json
+     * @param string $file File composer.json
+     * @return
+     */
+    public static function get(string $input = "", string $file = "composer.json"){
+
+        # Declare result
+        $result = null;
+
+        # Declare explodedInput
+        $explodedInput = [];
+
+        # Check input
+        if(!$input)
+
+            # Return
+            return $result;
+
+        # List delimiter
+        $delimiters = ["/", "."];
+
+        # Iteration of delimiter
+        foreach($delimiters as $delimiter)
+
+            # Check if input has delimiter
+            if(strpos($input, $delimiter) !== false)
+
+                # Explode
+                $explodedInput = explode($delimiter, $input);
+
+        # Check explodeInput
+        if(empty($explodedInput))
+
+            # Set explodedInput
+            $explodedInput = $input;
+
+
+        # Check parameter in path
+        if(!array_key_exists($file, self::PATH))
+            return $result;
+
+        # Get collection of file
+        $fileCollection = Json::open(self::PATH[$file]);
+
+        # Declare resultWip
+        $resultWip = $fileCollection;
+
+        # Search input in composer
+        foreach($explodedInput as $parameter)
+
+            # Check value in array
+            if(isset($resultWip[$parameter]))
+
+                # Update value
+                $resultWip = $resultWip[$parameter];
+
+            else
+
+                # Return result
+                return $result;
+
+        # Update result
+        $result = $resultWip;
+
+        # Return result
+        return $result;
+
+    }
     
     /**
      * Read value in composer.json
