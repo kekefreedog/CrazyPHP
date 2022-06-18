@@ -9,3 +9,4 @@ php vendor/kzarshenas/crazyphp/bin/CrazyCommand.php
 
 Arguments :
 - `--new` : New project
+- `--delete` : Delete project

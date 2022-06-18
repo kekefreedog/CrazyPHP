@@ -15,6 +15,8 @@ namespace CrazyPHP\Library\Template;
 /** Dependances
  * 
  */
+use LightnCandy\LightnCandy as Handlebars;
+use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\File\Composer;
 use CrazyPHP\App\Create;
 
@@ -29,18 +31,114 @@ use CrazyPHP\App\Create;
  */
 class Header{
 
-    /** Public methods
+    /** Public static methods
      ******************************************************
      */
 
     /**
+     * Get
+     * 
      * Get and return header
      * 
      * @param string $extension Extension that we want have the header
-     * 
+     * @param array $input Custom data for header :
+     *  - name
+     *  - description
+     *  - author
+     *  - copyright
      * @return string
      */
-    public function get(string $extension = "", array $information = self::DEFAULT_INFO):string {
+    public static function get(string $extension = "", array $input = self::DEFAULT_INFO):string {
+
+        # Declare result
+        $result = "";
+
+        # Process extension
+        $extension = trim(strtolower($extension));
+
+        # Check extension
+        if(!$extension)
+            return $result;
+
+        # Check method associate to extension exists
+        if(!array_key_exists($extension, self::EXTENSION_TO_METHODS))
+
+            # New Exception
+            throw new CrazyException(
+                "No header associated to extension \"$extension\", please contact author for add it.", 
+                501,
+                [
+                    "custom_code"   =>  "header-001",
+                ]
+            );
+
+        # Get header
+        $result = self::{$extension}($input);
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * yaml
+     * 
+     * Get Yaml Header
+     * 
+     * @param array $input Custom data for header :
+     *  - name
+     *  - description
+     *  - author
+     *  - copyright
+     * @return string
+     */
+    public static function yaml(array $input = self::DEFAULT_INFO):string {
+
+        # Declare result
+        $result = "";
+
+        # 
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * json
+     * 
+     * Get Json Header
+     * 
+     * @param array $input Custom data for header :
+     *  - name
+     *  - description
+     *  - author
+     *  - copyright
+     * @return string
+     */
+    public static function json(array $input = self::DEFAULT_INFO):string {
+
+        # Declare result
+        $result = "";
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * php
+     * 
+     * Get Php Header
+     * 
+     * @param array $input Custom data for header :
+     *  - name
+     *  - description
+     *  - author
+     *  - copyright
+     * @return string
+     */
+    public static function php(array $input = self::DEFAULT_INFO):string {
 
         # Declare result
         $result = "";
@@ -64,7 +162,9 @@ class Header{
         # Json
         "json"  =>  "json",
         # Php
-        "php"   =>  "php"
+        "php"   =>  "php",
+        # Js
+        "js"    =>  "js",
         # TBC ...
     ];
 
@@ -73,26 +173,44 @@ class Header{
      */
     private const DEFAULT_INFO = [
         # Name
-        "name"          =>  Composer::get("name") ? 
-                                Composer::get("name") :
-                                    Create::REQUIRED_VALUES[0],
+        "name"          =>  [
+            "value"         =>  Composer::get("name") ? 
+                                    Composer::get("name") :
+                                        Create::REQUIRED_VALUES[0],
+        ] + Create::REQUIRED_VALUES[0],
         # Description
-        "description"   =>  Composer::get("description") ?
+        "description"   =>  [
+            "value"     =>  Composer::get("description") ?
                                 Composer::get("description") : 
                                     Create::REQUIRED_VALUES[1],
+        ] + Create::REQUIRED_VALUES[1],
         # Authors
-        "author"        =>  Composer::read("authors") ? 
+        "author"        =>  [
+            "name"      =>  "author",
+            "value"     =>  Composer::read("authors") ? 
                                 Composer::read("authors") :
                                     "kekefreedog <kevin.zarshenas@gmail.com>",
+            "type"          =>  "VARCHAR",
+        ],
         # Copyright
-        "copyright"     =>  Composer::get("name") ? 
+        "copyright"     =>  [
+            "name"      =>  "copyright",
+            "value"     =>  Composer::get("name") ? 
                                 date("Y")." "(
                                     Composer::get("name") ?
                                         Composer::get("name") :
                                             Create::REQUIRED_VALUES[0]
                                 ) :
-                                    "2022-".date("Y")." Kévin Zarshenas"
+                                    "2022-".date("Y")." Kévin Zarshenas",
+            "type"          =>  "VARCHAR",
+        ],
 
     ];
+
+    /** Private constant | Template
+     ******************************************************
+     */
+
+    # ... 
 
 }
