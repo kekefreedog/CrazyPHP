@@ -18,6 +18,7 @@ namespace CrazyPHP\Library\Template;
 use LightnCandy\LightnCandy as Handlebars;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\File\Composer;
+use Phpfastcache\CacheManager;
 use CrazyPHP\App\Create;
 
 /**
@@ -97,7 +98,10 @@ class Header{
         # Declare result
         $result = "";
 
-        # 
+        # Merge array
+        $input = array_merge(self::DEFAULT_INFO, $input);
+
+
 
         # Return result
         return $result;
@@ -121,6 +125,9 @@ class Header{
         # Declare result
         $result = "";
 
+        # Merge array
+        $input = array_merge(self::DEFAULT_INFO, $input);
+
         # Return result
         return $result;
 
@@ -142,6 +149,9 @@ class Header{
 
         # Declare result
         $result = "";
+
+        # Merge array
+        $input = array_merge(self::DEFAULT_INFO, $input);
 
         # Return result
         return $result;
@@ -207,10 +217,13 @@ class Header{
 
     ];
 
-    /** Private constant | Template
-     ******************************************************
+    /**
+     * Name associate to template
      */
-
-    # ... 
+    private const NAME_TO_TEMPLATE = [
+        "c"     =>  "../../../resources/Hbs/Header/style_c.hbs",
+        "shell" =>  "../../../resources/Hbs/Header/style_shell.hbs",
+        "html"  =>  "../../../resources/Hbs/Header/style_html.hbs",
+    ];
 
 }
