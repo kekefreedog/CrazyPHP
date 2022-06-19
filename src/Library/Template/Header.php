@@ -18,7 +18,6 @@ namespace CrazyPHP\Library\Template;
 use LightnCandy\LightnCandy as Handlebars;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\File\Composer;
-use Phpfastcache\CacheManager;
 use CrazyPHP\App\Create;
 
 /**
