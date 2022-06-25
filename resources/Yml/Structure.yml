@@ -13,7 +13,8 @@ Structure:
   "@root":
     folders:
       .cache:
-        app: null
+        folders:
+          app: null
       assets:
         folders:
           Css: null

@@ -15,6 +15,8 @@ namespace CrazyPHP\Library\Cache;
 /**
  * Dependances
  */
+use Phpfastcache\Core\Pool\ExtendedCacheItemPoolInterface;
+use Phpfastcache\Config\ConfigurationOptionInterface;
 use Phpfastcache\Config\ConfigurationOption;
 use Phpfastcache\Helper\Psr16Adapter;
 use Psr\SimpleCache\CacheInterface;
@@ -24,6 +26,8 @@ use Phpfastcache\CacheManager;
  * Cache
  *
  * Cache manipulation
+ * 
+ * @extends [Psr16Adapter](/vendor/phpfastcache/phpfastcache/lib/Phpfastcache/Helper/Psr16Adapter.php)
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
@@ -39,6 +43,33 @@ class Cache extends Psr16Adapter {
      * Instance of the cache
      */
     private $InstanceCache = null;
+
+    /**
+     * Constructor
+     * 
+     * Ingest data
+     * 
+     * @param string|ExtendedCacheItemPoolInterface $driver Driver of the cache
+     * @param ConfigurationOptionInterface $config Config of the cache
+     * @return Create
+     */
+    public function __construct(string|ExtendedCacheItemPoolInterface $driver = "Files", ConfigurationOptionInterface $config = null, string $customPath = ""){
+
+        # Set path of cache
+        CacheManager::setDefaultConfig(
+            new ConfigurationOption([
+                'path' => $customPath ? $customPath : self::PATH,
+            ])
+        );
+
+        # Parent constructor
+        parent::__construct($driver, $config);
+
+    }
+
+    /** Public static
+     ******************************************************
+     */
 
     /** Private methods
      ******************************************************
@@ -86,8 +117,14 @@ class Cache extends Psr16Adapter {
      ******************************************************
      */
 
-    /** Directory of class name
-     * 
+    /**
+     * Path of the cache
+     */
+    public const PATH = "/.cache/app/";
+
+
+    /**
+     * Directory of class name
      */
     public const DIRECTORY = [
         "CrazyPHP"  => [

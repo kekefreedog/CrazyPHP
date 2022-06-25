@@ -18,6 +18,8 @@ namespace CrazyPHP\Library\Template;
 use LightnCandy\LightnCandy as Handlebars;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\File\Composer;
+use CrazyPHP\Library\Cache\Cache;
+use CrazyPHP\Library\File\File;
 use CrazyPHP\App\Create;
 
 /**
@@ -100,7 +102,8 @@ class Header{
         # Merge array
         $input = array_merge(self::DEFAULT_INFO, $input);
 
-
+        # Copilate template
+        $compilatedTemplate = 
 
         # Return result
         return $result;
@@ -157,25 +160,49 @@ class Header{
 
     }
 
-    /** Private constant
+    /** Private static methods
      ******************************************************
      */
 
     /**
-     * Correspondance between extension and methods
+     * Compilate
+     * 
+     * Compilate header template
+     * 
+     * @param string $name Name of the template to compile
+     * @return void
      */
-    private const EXTENSION_TO_METHODS = [
-        # Yml
-        "yml"   =>  "yml",
-        "yaml"  =>  "yml",
-        # Json
-        "json"  =>  "json",
-        # Php
-        "php"   =>  "php",
-        # Js
-        "js"    =>  "js",
-        # TBC ...
-    ];
+    private static function _compilate(string $name = ""):void {
+
+        # Check name
+        if(!$name)
+            return;
+
+        # Check name in const
+        if(array_key_exists($name, self::NAME_TO_TEMPLATE))
+            return;
+
+        # Get template
+        $template = File::read(self::NAME_TO_TEMPLATE[$name]);
+
+        # Check template
+        if(!$template)
+            return;
+
+        # Compilate $template
+        $compilation = LightnCandy::compile($template);
+
+        # New cache
+        $cacheInstance = new Cache();
+
+        # Set cache
+        $cacheInstance->set("CrazyPHP/Library/Template/Header/TemplatesCompilated", $compilation);
+
+    }
+
+    /** Private constant
+     ******************************************************
+     */
 
     /**
      * Default value
@@ -214,6 +241,22 @@ class Header{
             "type"          =>  "VARCHAR",
         ],
 
+    ];
+
+    /**
+     * Correspondance between extension and methods
+     */
+    private const EXTENSION_TO_METHODS = [
+        # Yml
+        "yml"   =>  "yml",
+        "yaml"  =>  "yml",
+        # Json
+        "json"  =>  "json",
+        # Php
+        "php"   =>  "php",
+        # Js
+        "js"    =>  "js",
+        # TBC ...
     ];
 
     /**

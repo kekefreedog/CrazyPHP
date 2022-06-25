@@ -193,6 +193,39 @@ class File {
 
     }
 
+    /**
+     * Read
+     * 
+     * Read content of file
+     * 
+     * @param string $dir Directory to delete
+     * @return string
+     */
+    public static function read(string $path = ""):string {
+
+        # Declare result
+        $result = "";
+
+        # Check path
+        if(!$path || !file_exists($path))
+
+            # Return result
+            return $result;
+
+        # Get file content
+        $content = file_get_contents($path);
+
+        # Check result
+        if($content)
+
+            # Set result
+            $result = $content;
+
+        # Return result
+        return $result;
+
+    }
+
     /** Public constant
      ******************************************************
      */
