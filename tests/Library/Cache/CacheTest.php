@@ -79,10 +79,18 @@ class CacheTest extends TestCase {
         $this->assertSame(self::TEST_ARRAY, $this->cache->get("test-array"));
         $this->assertSame(Handlebars::compile(self::TEST_TEMPLATE), $this->cache->get("test-template"));
 
-    /*     $template = ($this->cache->get("test-template"));
+        # Get cache value and eval it
+        $template = eval($this->cache->get("test-template"));
+
+        # Execute template
         $result = $template(["id" => 1, "name" => "Kevin"]);
 
-        $this->assertSame($result, "1 is corresponding to Kevin"); */
+        # Check
+        $this->assertSame($result, "1 is corresponding to Kevin");
+            
+        # Remove cache folder
+        $this->cache->deleteMultiple(["test-string", "test-array", "test-template"]);
+        File::remove(self::TEST_PATH);
 
     }
     

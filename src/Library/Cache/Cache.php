@@ -71,6 +71,45 @@ class Cache extends Psr16Adapter {
      ******************************************************
      */
 
+    /**
+     * Get Cache Name
+     * 
+     * Return clean cache name from methods or class
+     * 
+     * @param string $context Context like __METHOD__ or __CLASS__ or __FUNCTION__
+     * @param string $customName custum name
+     * @return string
+     */
+    public static function getCacheName(string $context = "", string $customName = ""):string {
+
+        # Declare result
+        $result = "";
+
+        # Check context or customName
+        if(!$context && !$customName)
+            return $result;
+
+        # Clean Array
+        $cleanArray = [
+            "\\"    =>  "/",
+            "::"    =>  "/",
+            "//"    =>  "/",
+        ];
+
+        # Fill result
+        $result = $context.($customName ? "/".ucfirst(strtolower($customName)) : "");
+            
+        # Iteration of cleanArray
+        foreach($cleanArray as $search => $replace)
+
+            # Process
+            $result = str_replace($search, $replace, $result);
+
+        # Return result
+        return $result;
+
+    }
+
     /** Private methods
      ******************************************************
      */

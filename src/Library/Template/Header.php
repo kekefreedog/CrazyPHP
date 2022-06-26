@@ -102,8 +102,11 @@ class Header{
         # Merge array
         $input = array_merge(self::DEFAULT_INFO, $input);
 
+        # Get cache name
+        $cacheName = Cache::getCacheName(__METHOD__); ## Update EXTENSION_TO_METHODS
+
         # Copilate template
-        $compilatedTemplate = 
+        $compilatedTemplate = "";
 
         # Return result
         return $result;
