@@ -15,11 +15,14 @@ namespace CrazyPHP\Library\Cache;
 /**
  * Dependances
  */
+use Phpfastcache\Exceptions\PhpfastcacheInvalidArgumentException;
+use Phpfastcache\Exceptions\PhpfastcacheSimpleCacheException;
 use Phpfastcache\Core\Pool\ExtendedCacheItemPoolInterface;
 use Phpfastcache\Config\ConfigurationOptionInterface;
 use Phpfastcache\Config\ConfigurationOption;
 use Phpfastcache\Helper\Psr16Adapter;
 use Psr\SimpleCache\CacheInterface;
+use CrazyPHP\Library\Time\DateTime;
 use Phpfastcache\CacheManager;
 
 /**
@@ -67,7 +70,50 @@ class Cache extends Psr16Adapter {
 
     }
 
-    /** Public static
+    /** Public methods
+     ******************************************************
+     */
+
+    /** 
+     * Has Up To Date
+     * 
+     * Chack if db has a up to date cached of the current key given
+     * 
+     * @return bool
+     */
+    public function hasUpToDate(string $key, DateTime $lastModifiedDate ): bool {
+
+        # Declare result
+        $result = false;
+
+        try {
+
+            # Get cache item
+            $cacheItem = $this->internalCacheInstance->getItem($key);
+            
+            # Check key is valid
+            if(
+                $cacheItem->isHit() && 
+                !$cacheItem->isExpired() &&
+                $cacheItem->getModificationDate() >= $lastModifiedDate
+            )
+
+                # Set result
+                $result = true;
+
+        } catch (PhpfastcacheInvalidArgumentException $e) {
+
+            # New error
+            throw new PhpfastcacheSimpleCacheException($e->getMessage(), 0, $e);
+
+        }
+
+        # Return result
+        return $result;
+
+    }
+
+    /** Public static methods
      ******************************************************
      */
 

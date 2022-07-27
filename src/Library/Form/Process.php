@@ -610,4 +610,25 @@ class Process {
 
     }
 
+    /**
+     * Shortcuts By File
+     * 
+     * Process Shortcuts in array with equivalent in file
+     * 
+     * @param string|array $inputs List of items to search
+     * @param string $file File with equivalent shortcut to value
+     * @return array
+     */
+    public static function shortcutsByFile(string|array $inputs = [], string $file = ""):string|array {
+
+        # Declare result
+        $result = [];
+
+        $result = $inputs;
+
+        # Return result
+        return $result;
+
+    }
+
 }

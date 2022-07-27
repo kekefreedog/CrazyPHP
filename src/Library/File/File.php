@@ -16,6 +16,8 @@ namespace CrazyPHP\Library\File;
  * 
  */
 use CrazyPHP\Exception\CrazyException;
+use CrazyPHP\Library\Time\DateTime as TimeDateTime;
+use DateTime;
 
 /**
  * File
@@ -220,6 +222,24 @@ class File {
 
             # Set result
             $result = $content;
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Get Last Modified Date
+     * 
+     * Get last modified date of file or group of files
+     * 
+     * @param string|array $input Path to file or files to check
+     * @return DateTime
+     */
+    public static function getLastModifiedDate(string|array $inputs = ""):DateTime {
+
+        # Declare result
+        $result = new DateTime();
 
         # Return result
         return $result;

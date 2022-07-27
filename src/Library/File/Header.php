@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 /**
- * Template
+ * Json
  *
- * Classe for templating
+ * Classe for manipulate specific files
  *
  * PHP version 8.1.2
  *
@@ -10,12 +10,11 @@
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2022 Kévin Zarshenas
  */
-namespace CrazyPHP\Library\Template;
+namespace  CrazyPHP\Library\File;
 
 /** Dependances
  * 
  */
-use LightnCandy\LightnCandy as Handlebars;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\File\Composer;
 use CrazyPHP\Library\Cache\Cache;
@@ -105,8 +104,17 @@ class Header{
         # Get cache name
         $cacheName = Cache::getCacheName(__METHOD__); ## Update EXTENSION_TO_METHODS
 
-        # Copilate template
-        $compilatedTemplate = "";
+        # New cache
+        $cache = new Cache();
+
+        # Check cache has cachename
+        if(!$cache->has($cacheName))
+
+            # Create cache
+            $cache->set($cacheName, Handlebars::compile(self::TEST_TEMPLATE));
+        
+        # Fill compilatedTemplate
+        $compilatedTemplate = $cache->get($cacheName);
 
         # Return result
         return $result;
