@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 /**
- * Json
+ * File
  *
  * Classe for manipulate specific files
  *
@@ -10,7 +10,7 @@
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2022 Kévin Zarshenas
  */
-namespace  CrazyPHP\Library\File;
+namespace CrazyPHP\Library\File;
 
 /**
  * Dependances
@@ -23,7 +23,7 @@ use CrazyPHP\Library\Array\Arrays;
 /**
  * Json
  *
- * Methods for interacting with Composer files
+ * Methods for interacting with Json files
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>

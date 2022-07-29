@@ -26,7 +26,23 @@ Structure:
           Yaml: null
       config: null
       docs: null
+        app: null
+        api: null
       logs: null
       public: null
       src_front: null
-      src_back: null
+      # Script PHP
+      src_back: 
+        # Controllers folder
+        controller: null
+        # Model folder
+        model: null
+        # View folder
+        view: null
+        # Languages translation folder
+        language: null
+        # Custom libraryarch -x86_64 brew install
+        library: null
+        # Bridge with other api
+        bridge: null
+        

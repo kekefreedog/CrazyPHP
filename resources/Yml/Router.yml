@@ -1,0 +1,34 @@
+# #
+# Router
+#
+# Define default config of database of the Crazy App
+#
+# YAML version 1.2
+#
+# @package    kzarshenas/crazyphp
+# @author     kekefreedog <kevin.zarshenas@gmail.com>
+# @copyright  2022-2022 Kévin Zarshenas
+# #
+Router:
+  app:
+    - name: Home
+      patterns:
+        - /index/
+      methods:
+        - get
+      controller: ""
+      view: html
+  api:
+    - 
+  websocket:
+    - 
+  appPrefix: ""
+  apiPrefix: "api"
+  websocketPrefix: direct
+  methods:
+    - get
+    - post
+    - put
+    - delete
+    - option
+    - patch

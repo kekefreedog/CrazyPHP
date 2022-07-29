@@ -1,0 +1,25 @@
+# #
+# Template
+#
+# Define default config of template of the Crazy App
+#
+# YAML version 1.2
+#
+# @package    kzarshenas/crazyphp
+# @author     kekefreedog <kevin.zarshenas@gmail.com>
+# @copyright  2022-2022 Kévin Zarshenas
+# #
+Template:
+  handlebars:
+    engine:
+      php:
+        command: composer
+        source: github
+        author: zordius
+        package: lightncandy
+        helpers: null
+      js:
+        command: npm
+        package: handlebars
+        helpers: null
+    extension: hbs

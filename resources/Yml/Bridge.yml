@@ -1,0 +1,37 @@
+# #
+# Bridge
+#
+# Define default config of bridges of the Crazy App
+#
+# YAML version 1.2
+#
+# @package    kzarshenas/crazyphp
+# @author     kekefreedog <kevin.zarshenas@gmail.com>
+# @copyright  2022-2022 Kévin Zarshenas
+# #
+Bridge:
+  # Google Api
+  google:
+    # Google Drive Api
+    drive:
+      # Id of the google drive
+      - driveId: null
+  # Adobe Api
+  adobe:
+    # Pdf viewer Api
+    pdf:
+      # Token of Pdf viewer
+      - token: null
+  # ShotGrid Api
+  shotgrid:
+    - name: null
+      host: null
+      auth: null
+        client_id: null
+        client_secret: null
+        grant_type: null
+  # RocketChat Api
+  rocketchat:
+    - url: null
+      login: null
+      password: null

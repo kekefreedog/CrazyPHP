@@ -1,0 +1,19 @@
+# #
+# Style
+#
+# Define default config of style of the Crazy App
+#
+# YAML version 1.2
+#
+# @package    kzarshenas/crazyphp
+# @author     kekefreedog <kevin.zarshenas@gmail.com>
+# @copyright  2022-2022 Kévin Zarshenas
+# #
+Style:
+  framework:
+    - name: Dogfalo/materialize
+      source: github
+      author: Dogfalo
+      package: materialize
+      branch: v1-dev
+    

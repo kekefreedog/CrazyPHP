@@ -31,7 +31,7 @@ use DateTime;
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2022 Kévin Zarshenas
  */
-class Handlebars{
+class Handlebars {
 
     /**
      * @var array $options Default options value of the constructor
