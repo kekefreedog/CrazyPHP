@@ -16,9 +16,8 @@ namespace CrazyPHP\Library\File;
  * Dependances
  */
 use CrazyPHP\Exception\CrazyException;
-use CrazyPHP\Library\Form\Validate;
-use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\Array\Arrays;
+use CrazyPHP\Library\File\File;
 
 /**
  * Json
@@ -201,7 +200,7 @@ class Json{
     }
     
     /**
-     * Read value in json
+     * Update value in json
      *
      * @param string $path Path of the json file
      * @param array $values Values to update on json
@@ -272,7 +271,7 @@ class Json{
         # Return result
         return $result;
 
-    }    
+    }
     
     /**
      * File Exists 
@@ -285,13 +284,7 @@ class Json{
     public static function fileExists(string $input = ""):bool {
 
         # Set result
-        $result = false;
-
-        # Check input and file exists
-        if($input && file_exists($input))
-
-            # Toggle result
-            $result = true;
+        $result = File::exists($input);
 
         # Return result
         return $result;

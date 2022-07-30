@@ -25,7 +25,7 @@ Structure:
           Scss: null
           Yaml: null
       config: null
-      docs: null
+      docs:
         app: null
         api: null
       logs: null
@@ -45,4 +45,3 @@ Structure:
         library: null
         # Bridge with other api
         bridge: null
-        

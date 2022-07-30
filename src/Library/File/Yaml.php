@@ -16,11 +16,10 @@ namespace CrazyPHP\Library\File;
  * Dependances
  */
 use Symfony\Component\Yaml\Exception\ParseException;
-use CrazyPHP\Exception\CrazyException;
-use CrazyPHP\Library\Form\Validate;
-use CrazyPHP\Library\Form\Process;
-use CrazyPHP\Library\Array\Arrays;
 use Symfony\Component\Yaml\Yaml as YamlS;
+use CrazyPHP\Exception\CrazyException;
+use CrazyPHP\Library\Array\Arrays;
+use CrazyPHP\Library\File\File;
 
 /**
  * Yaml
@@ -86,5 +85,227 @@ class Yaml{
         return $result;
 
 	}
+
+    /** 
+     * Create yaml
+     * 
+     * Create yaml file with data inside
+     * 
+     * @param string $path Path of the yaml file
+     * @param array $data Data to put on the json file
+     * @return array
+     */
+    public static function create(string $path = "", array $data = []):array {
+        
+        # Create json
+        if(
+            file_put_contents(
+                $path, 
+                YamlS::dump($data)
+            ) === false
+        )
+
+            # New Exception
+            throw new CrazyException(
+                "Yaml file \"".array_pop(explode("/", $path))."\" can't be created...",
+                403,
+                [
+                    "custom_code"   =>  "yaml-002",
+                ]
+            );
+
+        # Return data
+        return $data;
+
+	}
+
+
+    /** 
+     * Open
+     * 
+     * Open Yaml file and return its content decodes
+     * 
+     * @param string $filename
+     * @param bool $arrayFormat decode as array (else as object)
+     * @return array
+     */
+    public static function open(string $filename = "", bool $arrayFormat = true):array{
+
+        # Set result
+        $result = null;
+
+        # Check filename
+        if(!$filename)
+            return $result;
+        
+        # Check if file exist
+        if(!file_exists($filename))
+
+            # New Exception
+            throw new CrazyException(
+                "Yaml \"$filename\" doesn't exists...",
+                500,
+                [
+                    "custom_code"   =>  "yaml-001",
+                ]
+            );
+
+        # Try to...
+        try {
+
+            # Reading YAML files and parse content
+            $result = YamlS::parseFile($filename);
+            
+        # If it doesn't work...
+        } catch (ParseException $exception) {
+
+            # New Exception
+            throw new CrazyException(
+                "Content of  \"$filename\" isn't yaml...",
+                500,
+                [
+                    "custom_code"   =>  "yaml-001",
+                ]
+            );
+
+        }
+
+        # Return result
+        return $result;
+        
+    }    
+    
+    /**
+     * Set value in yaml
+     *
+     * @param string $path Path of the json file
+     * @param array $values Values to put on json
+     * @param bool $invertMerge Invert merge sort
+     * @return array
+     */
+    public static function set(string $path = "", array $values = [], $invertMerge = false):array{
+
+        # Set result
+        $result = [];
+
+        # Open json
+        $old_value = $result = self::open($path);
+
+        # Get result
+        $result = $invertMerge ?
+            Arrays::mergeMultidimensionalArrays(true, $values, $result) :
+                Arrays::mergeMultidimensionalArrays(true, $result, $values);
+
+        # Check difference between old value & result
+        if($old_value !== $result)
+
+            # Put new json content in file
+            file_put_contents(
+                $path,
+                YamlS::dump($result)
+            );
+
+        # Return result
+        return (array) $result;
+
+    }
+    
+    /**
+     * Update value in yaml
+     *
+     * @param string $path Path of the yaml file
+     * @param array $values Values to update on yaml
+     * @param bool $createIfNotExists Create parameter in yaml if doesn't exists
+     * @return array
+     */
+    public static function update(string $path = "", array $values = [], bool $createIfNotExists = false):array{
+
+        # Set result
+        $result = [];
+
+        # Open yaml
+        $old_value = $result = self::open($path);
+
+        # Get result
+        $result = Arrays::mergeMultidimensionalArrays($createIfNotExists, $result, $values);
+
+        # Check difference between old value & result
+        if($old_value !== $result)
+
+            # Put new yaml content in file
+            file_put_contents(
+                $path,
+                YamlS::dump($result)
+            );
+
+        # Return result
+        return $result;
+
+    }
+    
+    /**
+     * Delete value in yaml
+     *
+     * @param string $path Path of the yaml file
+     * @param string|array $parameters Parameters to delete in yaml
+     * @return array
+     */
+    public static function delete(string $path = "", string|array $parameters = []):array{
+
+        # Set result
+        $result = [];
+
+        # Open yaml
+        $old_value = $result = self::open($path);
+
+        # Check parameters
+        if(!empty($parameters))
+
+            # Check parameter is a string and is set in result
+            if(is_string($parameters) && ( $result[$parameters] ?? false ))
+
+                # Unset parameter
+                unset($result[$parameters]);
+
+            # Check parameters is an array
+            elseif(is_array($parameters))
+
+                # Iteration des parameters
+                foreach($parameters as $parameter)
+
+                    # Delete parameter
+                    unset($result[$parameter]);
+
+        # Check difference between old value & result
+        if($old_value !== $result)
+
+            # Put new yaml content in file
+            file_put_contents(
+                $path,
+                YamlS::dump($result)
+            );
+
+        # Return result
+        return $result;
+
+    }
+    
+    /**
+     * File Exists 
+     * 
+     * Check if yaml file exists
+     *
+     * @param string $input Path of the json file
+     * @return bool
+     */
+    public static function fileExists(string $input = ""):bool {
+
+        # Set result
+        $result = File::exists($input);
+
+        # Return result
+        return $result;
+
+    }
 
 }

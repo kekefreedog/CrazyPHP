@@ -245,6 +245,30 @@ class File {
         return $result;
 
     }
+    
+    /**
+     * File Exists 
+     * 
+     * Check if file exists
+     *
+     * @param string $input Path of the json file
+     * @return bool
+     */
+    public static function exists(string $input = ""):bool {
+
+        # Set result
+        $result = false;
+
+        # Check input and file exists
+        if($input && file_exists($input))
+
+            # Toggle result
+            $result = true;
+
+        # Return result
+        return $result;
+
+    }
 
     /** Public constant
      ******************************************************
