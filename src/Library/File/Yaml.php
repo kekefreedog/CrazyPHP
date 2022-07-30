@@ -126,10 +126,9 @@ class Yaml{
      * Open Yaml file and return its content decodes
      * 
      * @param string $filename
-     * @param bool $arrayFormat decode as array (else as object)
      * @return array
      */
-    public static function open(string $filename = "", bool $arrayFormat = true):array{
+    public static function open(string $filename = ""):array{
 
         # Set result
         $result = null;

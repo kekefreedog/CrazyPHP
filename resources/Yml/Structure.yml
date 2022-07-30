@@ -15,6 +15,7 @@ Structure:
       .cache:
         folders:
           app: null
+      # Assets
       assets:
         folders:
           Css: null
@@ -24,24 +25,31 @@ Structure:
           Png: null
           Scss: null
           Yaml: null
+      # Config
       config: null
+      # Documentation
       docs:
-        app: null
-        api: null
+        folders:
+          app: null
+          api: null
+      # Logs
       logs: null
+      # Public folder
       public: null
+      # Script JS
       src_front: null
       # Script PHP
-      src_back: 
-        # Controllers folder
-        controller: null
-        # Model folder
-        model: null
-        # View folder
-        view: null
-        # Languages translation folder
-        language: null
-        # Custom libraryarch -x86_64 brew install
-        library: null
-        # Bridge with other api
-        bridge: null
+      src_back:
+        folders:
+          # Controllers folder
+          controller:
+          # Model folder
+          model: null
+          # View folder
+          view: null
+          # Languages translation folder
+          language: null
+          # Custom libraryarch -x86_64 brew install
+          library: null
+          # Bridge with other api
+          bridge: null

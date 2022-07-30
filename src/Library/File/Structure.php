@@ -17,8 +17,8 @@ namespace CrazyPHP\Library\File;
  */
 use CrazyPHP\Exception\CrazyException;
 use Symfony\Component\Finder\Finder;
-use Symfony\Component\Yaml\Yaml;
 use CrazyPHP\Library\File\Json;
+use CrazyPHP\Library\File\Yaml;
 use CrazyPHP\Library\File\File;
 
 /**
@@ -690,7 +690,7 @@ class Structure{
         $result = [];
 
         # Ingest Yaml
-        $parsed = Yaml::parseFile($this->template);
+        $parsed = Yaml::open($this->template);
 
         # Set result
         $result['/'] = $parsed['Structure']['@root'] ?? null;

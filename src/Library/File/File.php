@@ -270,6 +270,58 @@ class File {
 
     }
 
+    /** Path
+     * 
+     * Get path (replace @app_root, @crazyphp_root)
+     * 
+     * @param string $input Path to process
+     * 
+     * @return string
+     */
+    public static function path(string $input = ""):string {
+
+        # Set result
+        $result = $input;
+
+        # Regex expression for select word starting after @
+        $regex = '/@[\w]+/';
+        
+        # Search values
+        preg_match_all(
+            $regex,
+            $input,
+            $results
+        );
+
+        # Check result
+        if(!empty($result))
+
+            # Iteration des result
+            foreach($results as $k => $v){
+
+                # Set v
+                $cleanV = strtoupper((string)str_replace("@", "", $v));
+
+                # Check env exists
+                if(isset($_ENV[$cleanV]))
+
+                    # Replace in result
+                    $result = str_replace($v, $_ENV[$cleanV], $result);
+
+                # Env doesn't exists
+                else
+
+                    # Replace in result
+                    $result = str_replace($v, "", $result);
+
+            }
+
+        # Return result
+        return $result;
+
+    }
+
+
     /** Public constant
      ******************************************************
      */
