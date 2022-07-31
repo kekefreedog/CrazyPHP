@@ -12,8 +12,8 @@
  */
 namespace  CrazyPHP\Library\File;
 
-/** Dependances
- * 
+/**
+ * Dependances
  */
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\File\Composer;

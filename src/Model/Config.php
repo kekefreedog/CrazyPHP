@@ -10,11 +10,12 @@
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2022 Kévin Zarshenas
  */
-namespace CrazyPHP\Library\File;
+namespace CrazyPHP\Model;
 
-/** Dependances
- * 
+/**
+ * Dependances
  */
+use CrazyPHP\Library\File\File;
 
 /**
  * Config
@@ -65,7 +66,7 @@ class Config{
         ],
     ];
 
-    /** Public methods
+    /** Public static methods
      ******************************************************
      */
 
@@ -101,7 +102,8 @@ class Config{
                 # Continue
                 continue;
 
-            
+            # Copy config
+            File::copy($config['path_source'], $config['path_target']);
             
         }
 
@@ -116,9 +118,33 @@ class Config{
      * 
      * @return void
      */
-    public static function update(array|string $config = "*"):void {
+    public static function update(array|string $configs = "*"):void {
 
+        # Check config
+        if(is_string($configs))
 
+            # Convert string to array
+            $configs = [$configs];
+
+        # Check configs
+        if(empty($configs))
+
+            # Stop function
+            return;
+
+        # Iteration DEFAULT_CONFIG_FILES
+        foreach(self::DEFAULT_CONFIG_FILES as $name => $config){
+
+            # Check not all config
+            if(!in_array("*", $configs) && !in_array($name, $configs))
+
+                # Continue
+                continue;
+
+            # Copy config
+            # TBC...
+
+        }
 
     }
 

@@ -22,6 +22,8 @@ use CrazyPHP\Library\File\Package;
 use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\File\Json;
+use CrazyPHP\Model\Config;
+use CrazyPHP\Model\Env;
 
 /**
  * Create new Application
@@ -123,6 +125,12 @@ class Create{
 
         # Ingest data
         $this->inputs = $inputs;
+
+        # Define env constants
+        Env::set([
+            "app_root"      =>  getcwd(),
+            "crazyphp_root" =>  getcwd()."/vendor/kekefreedog/crazyphp",
+        ]);
 
     }
 
@@ -408,7 +416,8 @@ class Create{
      */
     public function runConfig():Create {
 
-        # Collection Config Files
+        # Set config
+        Config::set();
 
         # Return instance
         return $this;

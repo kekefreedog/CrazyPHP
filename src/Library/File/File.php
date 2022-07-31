@@ -15,8 +15,8 @@ namespace CrazyPHP\Library\File;
 /** Dependances
  * 
  */
-use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Time\DateTime as TimeDateTime;
+use CrazyPHP\Exception\CrazyException;
 use DateTime;
 
 /**
@@ -272,7 +272,7 @@ class File {
 
     /** Path
      * 
-     * Get path (replace @app_root, @crazyphp_root)
+     * Get path (replace @app_root <> __APP_ROOT__, @crazyphp_root <> __CRAZYPHP_ROOT__)
      * 
      * @param string $input Path to process
      * 
@@ -300,13 +300,13 @@ class File {
             foreach($results as $k => $v){
 
                 # Set v
-                $cleanV = strtoupper((string)str_replace("@", "", $v));
+                $cleanV = "__".strtoupper((string)str_replace("@", "", $v))."__";
 
                 # Check env exists
-                if(isset($_ENV[$cleanV]))
+                if(constant($cleanV))
 
                     # Replace in result
-                    $result = str_replace($v, $_ENV[$cleanV], $result);
+                    $result = str_replace($v, constant($cleanV), $result);
 
                 # Env doesn't exists
                 else
@@ -315,6 +315,43 @@ class File {
                     $result = str_replace($v, "", $result);
 
             }
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Copy
+     * 
+     * Copy with check of folder and check of path
+     * 
+     * @param string $source Source to copy
+     * @param string $target Target where copy
+     * @return bool
+     */
+    public static function copy(string $source = "", string $target = ""):bool {
+
+        # Declare result
+        $result = false;
+
+        # Path source
+        $path_source = self::path($source);
+
+        # Path target
+        $path_target = self::path($target);
+
+        # Path target parent folder
+        $path_folder = dirname($path_target);
+
+        # Check folder target exists
+        if(!is_dir($path_folder))
+
+            # Create folder
+            mkdir(dirname($path_folder, 0777, true));
+
+        # Set result
+        $result = copy($path_source, $path_folder);
 
         # Return result
         return $result;
