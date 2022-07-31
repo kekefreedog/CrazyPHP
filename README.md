@@ -1,12 +1,21 @@
 # CrazyPHP
 My crazy framework for creating ultra-fast webapps.
 
-## New project
+## Project
+
+
+New project :
 
 ```sh
-php vendor/kzarshenas/crazyphp/bin/CrazyCommand.php
+php vendor/kzarshenas/crazyphp/bin/CrazyCommand.php new project
 ```
 
-Arguments :
-- `--new` : New project
-- `--delete` : Delete project
+Update project :
+```sh
+php vendor/kzarshenas/crazyphp/bin/CrazyCommand.php update project
+```
+
+Delete project :
+```sh
+php vendor/kzarshenas/crazyphp/bin/CrazyCommand.php update project
+```

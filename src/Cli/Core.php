@@ -45,32 +45,41 @@ class Core extends CLI {
     protected const REGISTER_OPTIONS = [
         # Version
         [
+            "type"          =>  "command",
             "long"          =>  "version",
             "help"          =>  "Print version of CrazyPHP",
-            "short"         =>  "v",
         ],
         # New Project
         [
+            "type"          =>  "command",
             "long"          =>  "new",
-            "help"          =>  "New crazy project",
-            "short"         =>  "n",
+            "help"          =>  "New crazy entity (project, page, component...)",
         ],
-        # Upgrade Project
+        # Update Project
         [
-            "long"          =>  "upgrade",
-            "help"          =>  "Upgrade your crazy project",
-            "short"         =>  "u",
+            "type"          =>  "command",
+            "long"          =>  "update",
+            "help"          =>  "Update crazy entity (project, page, component...)",
         ],
         # Delete Project
         [
+            "type"          =>  "command",
             "long"          =>  "delete",
-            "help"          =>  "Delete your crazy project",
-            "short"         =>  "d",
+            "help"          =>  "Delete crazy entity (project, page, component...)",
+        ],
+        # Arguments
+        [
+            "type"          =>  "argument",
+            "long"          =>  "entity",
+            "help"          =>  "Entity (project, page, component...)",
+            "command"       =>  ["new", "update", "delete"]
         ],
         /* [
+            "type"          =>  "",
             "long"          =>  "",
             "help"          =>  "",
             "short"         =>  "",
+            "argument"      =>  "",
         ], */
     ];
 
@@ -93,8 +102,39 @@ class Core extends CLI {
         # Iteration REGISTER_OPTIONS
         foreach(self::REGISTER_OPTIONS as $option)
 
-            # Register current option
-            $options->registerOption($option['long'], $option['help'], $option['short']);
+            # Option
+            if($option['type'] == "option")
+
+                # Register current option
+                $options->registerOption($option['long'], $option['help'], $option['short']);
+
+            else
+            # Command
+            if($option['type'] == "command")
+
+                # Register command
+                $options->registerCommand($option['long'], $option['help']);
+
+            else
+            # Argument
+            if($option['type'] == "argument"){
+
+                # Check command
+                if(!is_array($option['command']))
+
+                    # Convert command to array if not array
+                    $option["command"] = [$option["command"]];
+
+                # Check command
+                if(!empty($option["command"]))
+
+                    # Iteration command
+                    foreach($option['command'] as $command)
+
+                        # Register argument
+                        $options->registerArgument($option['long'], $option['help'], true, $command);
+
+            }
 
     }
 
@@ -113,30 +153,24 @@ class Core extends CLI {
         # Display help
         $options->help();
 
-        # Iteration REGISTER_OPTIONS
-        foreach(self::REGISTER_OPTIONS as $option)
+        # Check command long
+        if($options->getCmd()){
 
-            # Check option long
-            if($options->getOpt($option['long'])){
+            # Get method name
+            $methodName = "action".ucfirst(strtolower($options->getCmd()));
 
-                # Get method name
-                $methodName = "action".ucfirst(strtolower($option['long']));
+            # Check action is set
+            if(method_exists($this, $methodName)){
 
-                # Check action is set
-                if(method_exists($this, $methodName)){
+                # Set noActionFound
+                $noActionFound = false;
 
-                    # Set noActionFound
-                    $noActionFound = false;
-
-                    # Execute action
-                    $this->{"action".$option['long']}();
-
-                }
-
-                # Break iteration
-                break;
+                # Execute action
+                $this->{"action".$options->getCmd()}();
 
             }
+
+        }
 
         # Check if no action found
         if($noActionFound)
@@ -415,13 +449,13 @@ class Core extends CLI {
 
     }
 
-    /** Upgrade project
+    /** Update project
      * 
      */
-    protected function actionUpgrade(){
+    protected function actionUpdate(){
 
         # Display result
-        $this->info("upgrade");
+        $this->info("update");
 
     }
 

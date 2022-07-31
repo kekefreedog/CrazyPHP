@@ -129,7 +129,7 @@ class Create{
         # Define env constants
         Env::set([
             "app_root"      =>  getcwd(),
-            "crazyphp_root" =>  getcwd()."/vendor/kekefreedog/crazyphp",
+            "crazyphp_root" =>  getcwd()."/vendor/kzarshenas/crazyphp",
         ]);
 
     }

@@ -69,7 +69,7 @@ class Env{
                     continue;
 
                 # Add double underscores
-                $k = "__".trim($k, "_")."__";
+                $k = "__".strtoupper(trim($k, "_"))."__";
 
                 # Define env constant
                 define($k, $v);

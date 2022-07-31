@@ -18,6 +18,7 @@ namespace CrazyPHP\Library\File;
 use CrazyPHP\Library\Time\DateTime as TimeDateTime;
 use CrazyPHP\Exception\CrazyException;
 use DateTime;
+use LDAP\Result;
 
 /**
  * File
@@ -299,6 +300,9 @@ class File {
             # Iteration des result
             foreach($results as $k => $v){
 
+                # Update v
+                $v = $v[0];
+
                 # Set v
                 $cleanV = "__".strtoupper((string)str_replace("@", "", $v))."__";
 
@@ -351,7 +355,7 @@ class File {
             mkdir(dirname($path_folder, 0777, true));
 
         # Set result
-        $result = copy($path_source, $path_folder);
+        $result = copy($path_source, $path_target);
 
         # Return result
         return $result;
