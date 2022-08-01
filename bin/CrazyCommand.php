@@ -22,7 +22,14 @@ $errorlevel=error_reporting($errorlevel & ~E_DEPRECATED);
 /**
  * Dependances
  */
+use CrazyPHP\Model\Env;
 use CrazyPHP\Cli\Core;
+
+# Define env constants
+Env::set([
+    "app_root"      =>  getcwd(),
+    "crazyphp_root" =>  getcwd()."/vendor/kzarshenas/crazyphp",
+]);
 
 // Execute core
 (new Core())->run();

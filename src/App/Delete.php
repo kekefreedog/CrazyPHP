@@ -16,6 +16,7 @@ namespace CrazyPHP\App;
  * Dependances
  */
 use CrazyPHP\Library\File\Structure;
+use CrazyPHP\Model\Env;
 
 /**
  * Delete Application
@@ -27,6 +28,17 @@ use CrazyPHP\Library\File\Structure;
  * @copyright  2022-2022 Kévin Zarshenas
  */
 class Delete{
+
+    /**
+     * Constructor
+     * 
+     * Construct current class
+     * 
+     * @return Create
+     */
+    public function __construct(){
+
+    }
 
     /** Public method
      ******************************************************

@@ -18,7 +18,7 @@ namespace CrazyPHP\Library\File;
 use CrazyPHP\Library\Time\DateTime as TimeDateTime;
 use CrazyPHP\Exception\CrazyException;
 use DateTime;
-use LDAP\Result;
+
 
 /**
  * File
@@ -273,7 +273,7 @@ class File {
 
     /** Path
      * 
-     * Get path (replace @app_root <> __APP_ROOT__, @crazyphp_root <> __CRAZYPHP_ROOT__)
+     * Get path (replace @app_root <> \_\_APP_ROOT\_\_, @crazyphp_root <> \_\_CRAZYPHP_ROOT\_\_)
      * 
      * @param string $input Path to process
      * 
@@ -283,6 +283,12 @@ class File {
 
         # Set result
         $result = $input;
+
+        # Check if at sign in input
+        if(strpos($input, "@") === false)
+
+            # Stop function
+            return $input;
 
         # Regex expression for select word starting after @
         $regex = '/@[\w]+/';

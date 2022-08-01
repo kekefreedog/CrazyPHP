@@ -467,6 +467,34 @@ class Structure{
 
             }
 
+            # If not first level
+            if($deleteFirst){
+
+                # Check hidden files
+                $notDeclared = scandir($currentPath);
+
+                # Check not declared
+                if(!empty($notDeclared))
+
+                    # Iteration des items
+                    foreach($notDeclared as $item){
+
+                        # Check not dot
+                        if(in_array($item, ['.', ".."]))
+
+                            # Continue iteration
+                            continue;
+
+                        # if is file
+                        if(is_file("$currentPath/$item"))
+
+                            # Fill $folderContent['files']
+                            $folderContent['files'][$item] = null;
+
+                }
+
+            }
+
             # Check files
             if(
                 isset($folderContent['files']) &&
@@ -485,15 +513,17 @@ class Structure{
                         continue;
 
                     # Remove current file
-                    return unlink($filepath);
+                    unlink($filepath);
 
             }
 
             # Check if current folder have to be deleted
-            if($deleteFirst && !empty(scandir($currentPath)))
+            if($deleteFirst && !empty(scandir($currentPath))){
 
                 # Remove dir
                 rmdir($currentPath);
+
+            }
 
         }
 

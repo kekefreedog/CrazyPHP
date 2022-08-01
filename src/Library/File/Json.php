@@ -82,15 +82,25 @@ class Json{
      * 
      * @param string $path Path of the json file
      * @param array $data Data to put on the json file
-     * @return array
+     * @param string $header Custom header file
+     * @return array|null
      */
-    public static function create(string $path = "", array $data = []):array {
+    public static function create(string $path = "", array $data = [], string $header = ""):array|null {
+        
+        # Check path
+        if(empty($path))
+
+            # Stop function
+            return null;
+
+        # Check path
+        $path = File::path($path);
         
         # Create json
         if(
             file_put_contents(
                 $path, 
-                json_encode(
+                $header.json_encode(
                     $data, 
                     JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES
                 )
@@ -128,6 +138,9 @@ class Json{
         # Check filename
         if(!$filename)
             return $result;
+
+        # Check tokken in filename
+        $filename = File::path($filename);
         
         # Check if file exist
         if(!file_exists($filename))

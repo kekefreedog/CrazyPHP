@@ -93,15 +93,25 @@ class Yaml{
      * 
      * @param string $path Path of the yaml file
      * @param array $data Data to put on the json file
-     * @return array
+     * @param string $header Custom header file
+     * @return array|null
      */
-    public static function create(string $path = "", array $data = []):array {
+    public static function create(string $path = "", array $data = [], string $header = ""):array|null {
         
+        # Check path
+        if(empty($path))
+
+            # Stop function
+            return null;
+
+        # Check path
+        $path = File::path($path);
+
         # Create json
         if(
             file_put_contents(
                 $path, 
-                YamlS::dump($data)
+                $header.YamlS::dump($data, 10)
             ) === false
         )
 

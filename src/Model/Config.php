@@ -15,7 +15,11 @@ namespace CrazyPHP\Model;
 /**
  * Dependances
  */
+use CrazyPHP\Exception\CrazyException;
+use CrazyPHP\Library\File\Composer;
+use CrazyPHP\Library\File\Header;
 use CrazyPHP\Library\File\File;
+use CrazyPHP\Library\File\Yaml;
 
 /**
  * Config
@@ -36,6 +40,11 @@ class Config{
      * Default Config files
      */
     public const DEFAULT_CONFIG_FILES = [
+        "app"       =>  [
+            "path_source"   =>  "@app_root"."/composer.json",
+            "path_target"   =>  "@app_root"."/config/App.yml",
+            "action_set"    =>  "_setAppConfig",
+        ],
         "Template"  =>  [
             "path_source"   =>  "@crazyphp_root"."/resources/Yml/Template.yml",
             "path_target"   =>  "@app_root"."/config/Template.yml",
@@ -102,6 +111,17 @@ class Config{
                 # Continue
                 continue;
 
+            # Check if action_set
+            if(($config['action_set'] ?? false) && method_exists(static::class, $config['action_set'])){
+
+                # Execute methods
+                static::{$config['action_set']}($config);
+
+                # Continue
+                continue;
+
+            }
+
             # Copy config
             File::copy($config['path_source'], $config['path_target']);
             
@@ -147,5 +167,46 @@ class Config{
         }
 
     }
+
+    /** Private static methods
+     ******************************************************
+     */
+
+    /**
+     * Copy App Config
+     * 
+     * Methods for convert json composer.json to yml config
+     * 
+     * @param string $config Config array with the pAth of the composer.json file
+     * @return void
+     */
+    private static function _setAppConfig(array $config = []):void {
+
+        # Check config
+        if(!isset($config['path_source']))
+
+            # Stop function
+            return;
+
+        # Open composer.json
+        $composerContent = Composer::open();
+
+        # Check content
+        if(empty($composerContent))
+            
+            # New error
+            throw new CrazyException(
+                "composer.json is not valid or is maybe missing", 
+                500,
+                [
+                    "custom_code"   =>  "config-001",
+                ]
+            );
+
+        # Create yaml
+        Yaml::create($config['path_target'], $composerContent/* , Header::get("yml") */);
+
+    }
+
 
 }

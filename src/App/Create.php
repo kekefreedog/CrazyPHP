@@ -126,12 +126,6 @@ class Create{
         # Ingest data
         $this->inputs = $inputs;
 
-        # Define env constants
-        Env::set([
-            "app_root"      =>  getcwd(),
-            "crazyphp_root" =>  getcwd()."/vendor/kzarshenas/crazyphp",
-        ]);
-
     }
 
     /** Public method

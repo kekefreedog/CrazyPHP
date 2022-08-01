@@ -20,7 +20,6 @@ use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\File\Json;
 use CrazyPHP\App\Create;
-use splitbrain\phpcli\examples\Complex;
 
 /**
  * Composer
@@ -39,8 +38,8 @@ class Composer{
 
     # Path of composer
     public const PATH = [
-        "composer.json" =>  __DIR__."/../../../composer.json",
-        "composer.lock" =>  __DIR__."/../../../composer.lock",
+        "composer.json" =>  "@app_root"."/composer.json",
+        "composer.lock" =>  "@app_root"."/composer.lock",
     ];
 
     # Default properties of composer
@@ -130,11 +129,8 @@ class Composer{
         # Declare result
         $result = [];
 
-        # Check parameter in path
-        if(array_key_exists($path, self::PATH))
-
-            # Update path
-            $path = self::PATH[$path];
+        # Get reel path
+        $path = self::_readPath($path);
 
         # Check if file already exists
         if(!file_exists($path))
@@ -159,12 +155,11 @@ class Composer{
         # Set result
         $result = "";
 
-        # Check parameter in path
-        if(!array_key_exists($file, self::PATH))
-            return $result;
+        # Get reel path
+        $file = self::_readPath($file);
 
         # Get collection of file
-        $fileCollection = Json::open(self::PATH[$file]);
+        $fileCollection = Json::open($file);
 
         # Check value exist in collection
         if($fileCollection[$parameter] ?? false)
@@ -192,17 +187,38 @@ class Composer{
         # Set result
         $result = [];
 
-        # Check parameter in path
-        if(array_key_exists($file, self::PATH))
-
-            # Get value of index
-            $file = self::PATH[$file];
+        # Get reel path
+        $file = self::_readPath($file);
 
         # Process value
         self::process($values);
 
         # Set values in composer.json
         $result = Json::set($file, $values, true);
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Open
+     * 
+     * Open and return content of composer.json
+     *
+     * @param string $file File composer.json
+     * @return array
+     */
+    public static function open(string $file = "composer.json"):array {
+
+        # Declare result
+        $result = [];
+
+        # Get reel path
+        $file = self::_readPath($file);
+
+        # Get collection of file
+        $result = Json::open($file);
 
         # Return result
         return $result;
@@ -250,13 +266,11 @@ class Composer{
             # Set explodedInput
             $explodedInput = $input;
 
-
-        # Check parameter in path
-        if(!array_key_exists($file, self::PATH))
-            return $result;
+        # Get reel path
+        $file = self::_readPath($file);
 
         # Get collection of file
-        $fileCollection = Json::open(self::PATH[$file]);
+        $fileCollection = Json::open($file);
 
         # Declare resultWip
         $resultWip = $fileCollection;
@@ -299,8 +313,11 @@ class Composer{
         # Process value
         self::process($values);
 
+        # Get reel path
+        $file = self::_readPath($file);
+
         # Set values in composer.json
-        $result = Json::set(self::PATH[$file], $values);
+        $result = Json::set($file, $values);
 
         # Return result
         return $result;
@@ -342,6 +359,48 @@ class Composer{
                 "/".
                 Process::clean($inputs["name"])
             ;
+
+    }
+
+    /** Private Static Methods
+     ******************************************************
+     */
+
+    /**
+     * Read Path
+     * 
+     * Read and get real path
+     * 
+     * @param string $path Path to process
+     */
+    private static function _readPath(string $path = ""):string {
+
+        # Result
+        $result = "";
+
+        # Check path is not empty
+        if(!$path)
+                
+            # New error
+            throw new CrazyException(
+                "Path of composer file is empty and not valid !", 
+                500,
+                [
+                    "custom_code"   =>  "composer-001",
+                ]
+            );
+
+        # Check path is in path constant
+        if(array_key_exists($path, self::PATH))
+
+            # Get long value
+            $path = self::PATH[$path];
+
+        # Check env variable in path
+        $result = File::path($path);
+
+        # Return result
+        return $result;
 
     }
 
