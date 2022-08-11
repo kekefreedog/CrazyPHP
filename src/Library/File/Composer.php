@@ -264,7 +264,7 @@ class Composer{
         if(empty($explodedInput))
 
             # Set explodedInput
-            $explodedInput = $input;
+            $explodedInput = [$input];
 
         # Get reel path
         $file = self::_readPath($file);

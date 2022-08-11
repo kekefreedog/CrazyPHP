@@ -15,6 +15,7 @@ namespace CrazyPHP\Library\Cache;
 /**
  * Dependances
  */
+
 use Phpfastcache\Exceptions\PhpfastcacheInvalidArgumentException;
 use Phpfastcache\Exceptions\PhpfastcacheSimpleCacheException;
 use Phpfastcache\Core\Pool\ExtendedCacheItemPoolInterface;
@@ -23,7 +24,9 @@ use Phpfastcache\Config\ConfigurationOption;
 use Phpfastcache\Helper\Psr16Adapter;
 use Psr\SimpleCache\CacheInterface;
 use CrazyPHP\Library\Time\DateTime;
+use CrazyPHP\Library\File\File;
 use Phpfastcache\CacheManager;
+use CrazyPHP\Model\Env;
 
 /**
  * Cache
@@ -56,17 +59,21 @@ class Cache extends Psr16Adapter {
      * @param ConfigurationOptionInterface $config Config of the cache
      * @return Create
      */
-    public function __construct(string|ExtendedCacheItemPoolInterface $driver = "Files", ConfigurationOptionInterface $config = null, string $customPath = ""){
+    public function __construct(string|ExtendedCacheItemPoolInterface $driver = "Files", ConfigurationOptionInterface $config = null){
 
         # Set path of cache
         CacheManager::setDefaultConfig(
             new ConfigurationOption([
-                'path' => $customPath ? $customPath : self::PATH,
+                'path'              => self::_getPath(),
+                'itemDetailedDate'  => true,
             ])
         );
 
+        # Set driver instance
+        $driverInstance = CacheManager::getInstance('files');
+
         # Parent constructor
-        parent::__construct($driver, $config);
+        parent::__construct($driverInstance);
 
     }
 
@@ -198,6 +205,30 @@ class Cache extends Psr16Adapter {
 
     }
 
+    /**
+     * Get Path
+     * 
+     * Get Path, check if not test
+     */
+    private function _getPath():string {
+
+        # Declare result
+        $result = self::PATH;
+
+        # check constant
+        if(Env::has("phpunit_test") && Env::get("phpunit_test"))
+
+            # Set result
+            $result = self::PATH_TEST;
+
+        # PRocess result
+        $result = File::path($result);
+
+        # Return result
+        return $result;
+
+    }
+
     /** Private constants
      ******************************************************
      */
@@ -205,7 +236,8 @@ class Cache extends Psr16Adapter {
     /**
      * Path of the cache
      */
-    public const PATH = "/.cache/app/";
+    public const PATH = "@app_root/.cache/app/";
+    public const PATH_TEST = "@app_root/tests/.cache/cache/";
 
 
     /**

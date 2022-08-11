@@ -19,6 +19,7 @@ use LightnCandy\LightnCandy as Handlebars;
 use CrazyPHP\Library\Cache\Cache;
 use CrazyPHP\Library\File\File;
 use PHPUnit\Framework\TestCase;
+use CrazyPHP\Model\Env;
 
 /**
  * Structure Test
@@ -45,11 +46,18 @@ class CacheTest extends TestCase {
      */
 
     /**
-     * Test Tree Folder Generator
+     * Prepare cache
      * 
      * @return void
      */
-    public function testNewCache():void {
+    public function prepareCache(){
+
+        # Setup env
+        Env::set([
+            # App root for composer class
+            "phpunit_test"  =>  true,
+            "app_root"      =>  getcwd(),
+        ]);
 
         # Check folder exists
         if(is_dir(self::TEST_PATH))
@@ -58,7 +66,22 @@ class CacheTest extends TestCase {
             File::remove(self::TEST_PATH);
 
         # New cache
-        $this->cache = new Cache("Files", null, self::TEST_PATH);
+        $this->cache = new Cache("Files", null);
+
+    }
+
+    /**
+     * Test Tree Folder Generator
+     * 
+     * @return void
+     */
+    public function testNewCache():void {
+
+        # Check cache
+        if(!$this->cache)
+
+            # PRepare cache
+            $this->prepareCache();
 
         # Store a string
         $this->cache->set('test-string', self::TEST_STRING, 300);

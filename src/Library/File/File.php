@@ -15,9 +15,9 @@ namespace CrazyPHP\Library\File;
 /** Dependances
  * 
  */
-use CrazyPHP\Library\Time\DateTime as TimeDateTime;
 use CrazyPHP\Exception\CrazyException;
-use DateTime;
+use CrazyPHP\Library\Time\DateTime;
+use CrazyPHP\Model\Env;
 
 
 /**
@@ -201,28 +201,39 @@ class File {
      * 
      * Read content of file
      * 
-     * @param string $dir Directory to delete
+     * @param string|array $dir Directory to get content
      * @return string
      */
-    public static function read(string $path = ""):string {
+    public static function read(string|array $paths = ""):string {
 
         # Declare result
         $result = "";
 
-        # Check path
-        if(!$path || !file_exists($path))
+        # Check path is not array
+        if(!is_array($paths))
 
-            # Return result
-            return $result;
+            # Convert to array
+            $paths = [$paths];
 
-        # Get file content
-        $content = file_get_contents($path);
+        # Iteration of paths
+        foreach($paths as $path){
 
-        # Check result
-        if($content)
+            # Check path
+            if(!$path || !file_exists($path))
 
-            # Set result
-            $result = $content;
+                # Continue iteration
+                continue;
+
+            # Get file content
+            $content = file_get_contents($path);
+
+            # Check result
+            if($content)
+
+                # Set result
+                $result .= $content;
+
+        }
 
         # Return result
         return $result;
@@ -237,10 +248,36 @@ class File {
      * @param string|array $input Path to file or files to check
      * @return DateTime
      */
-    public static function getLastModifiedDate(string|array $inputs = ""):DateTime {
+    public static function getLastModifiedDate(string|array $inputs = ""):DateTime|null {
 
         # Declare result
-        $result = new DateTime();
+        $result = DateTime::kz();
+
+        # Check input is aarray
+        if(!is_array($inputs))
+
+            # Convert string to array
+            $inputs = [$inputs];
+
+        # Iteration des inputs
+        foreach($inputs as $input){
+
+            # Result
+            $newResult = DateTime::lastUpdateFile($input);
+
+            # Check new result
+            if(!$newResult)
+
+                # Continue iteration
+                continue;
+
+            # Compare to result
+            if(!$result || ( $newResult > $result ))
+
+                # Set result
+                $result = $newResult;
+
+        }
 
         # Return result
         return $result;
@@ -301,25 +338,26 @@ class File {
         );
 
         # Check result
-        if(!empty($result))
+        if(!empty($results[0]))
 
             # Iteration des result
-            foreach($results as $k => $v){
-
-                # Update v
-                $v = $v[0];
+            foreach($results[0] as $k => $v){
 
                 # Set v
-                $cleanV = "__".strtoupper((string)str_replace("@", "", $v))."__";
-
+                #$cleanV = "__".strtoupper((string)str_replace("@", "", $v))."__";
+                $cleanV = strtoupper((string)str_replace("@", "", $v));
+                
                 # Check env exists
-                if(constant($cleanV))
+                if(Env::has($cleanV)){
+
+                    # Replace
+                    $replace = Env::get($cleanV);
 
                     # Replace in result
-                    $result = str_replace($v, constant($cleanV), $result);
+                    $result = str_replace($v, $replace, $result);
 
                 # Env doesn't exists
-                else
+                }else
 
                     # Replace in result
                     $result = str_replace($v, "", $result);

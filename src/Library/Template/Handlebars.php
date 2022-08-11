@@ -15,6 +15,7 @@ namespace CrazyPHP\Library\Template;
 /** 
  * Dependances
  */
+use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\Cache\Cache;
 use CrazyPHP\Library\File\File;
@@ -100,8 +101,20 @@ class Handlebars {
             # Convert inputs to array
             $inputs = [$inputs];
 
+        # Add class in top of inputs
+        $collectionKey = [];
+
+        # Iteration des inputs
+        foreach($inputs as $input)
+
+            # Check input
+            if($input)
+
+                # Push filename in collection
+                $collectionKey[] = pathinfo($input, PATHINFO_FILENAME);
+
         # Get key
-        $this->key = self::getKey($inputs);
+        $this->key = self::getKey($collectionKey, Cache::getCacheName(__CLASS__).".templateCached.");
 
         # Check cache is enable
         if($this->options["useCache"]){
@@ -109,11 +122,22 @@ class Handlebars {
             # New cache instance
             $cache = new Cache();
 
+            # Set lastModifiedDate
+            $lastModifiedDate = File::getLastModifiedDate($inputs);
+
             # Check cache is valid
-            if(!$cache->hasUpToDate($this->key, File::getLastModifiedDate($inputs)))
+            if(!$cache->hasUpToDate($this->key, $lastModifiedDate)){
+
+                # Read file
+                $file = File::read($inputs);
+
+                # Compile
+                $compile = $this->compile($file);
 
                 # Set Cache
-                $cache->set($this->key, $this->compile($inputs));
+                $cache->set($this->key, $compile);
+
+            }
 
         }
 
@@ -123,11 +147,44 @@ class Handlebars {
      * Render
      * 
      * Render template
+     * 
      */
-    public function render(array $inputs = ""):string {
+    public function render(array $data = []):string {
 
         # Declare result
         $result = "";
+
+        # Check key
+        if(!$this->key)
+
+            # New Exception
+            throw new CrazyException(
+                "You have to load template before render it ! No templates defined...",
+                500,
+                [
+                    "custom_code"   =>  "handlebars-001",
+                ]
+            );
+
+        # Check compilate already load
+        if(!$this->renderableClass){
+
+            # New cache instance
+            $cache = new Cache();
+
+            # Get cached compilate
+            $compilate = $cache->get($this->key);
+
+            # COnvert cache to php
+            $this->renderableClass = eval($compilate);
+
+        }
+
+        # Get rendarable class
+        $function = $this->renderableClass;
+
+        # Render compilate
+        $result = $function($data);
 
         # Return result
         return $result;
@@ -180,14 +237,14 @@ class Handlebars {
      * 
      * Get key of layout or multiple layouts
      */
-    public static function getKey(string|array $inputs = ""):string {
+    public static function getKey(string|array $inputs = "", $prefix = ""):string {
 
         # Declare result
         $result = "";
 
         # Check inputs
         if(empty($inputs))
-            return;
+            return $inputs;
 
         # Check inputs is array
         if(!is_array($inputs))
@@ -206,13 +263,16 @@ class Handlebars {
         $inputs = array_filter($inputs);
 
         # Implode inputs
-        $inputs = implode("/", $inputs);
+        $inputs = implode(".", $inputs);
 
         # Check $inputs
         if($inputs)
 
             # Push in result
             $result = $inputs;
+
+        # Replace {}()/\@: by dot
+        $result = str_replace(["{", "}", "(", ")", "/", "\\", "@", ":"], ".", $prefix.$result);
 
         # Return result
         return $result;
@@ -225,14 +285,25 @@ class Handlebars {
      * Compile Handlebars template
      * 
      * @param string $inputs Input to compile
-     * @return void
+     * @param array $preset Preset to use for compilation
+     * @return
      */
-    public static function compile(string|array $inputs = "") {
+    public static function compile(string $inputs = "", array $preset = self::CRAZY_PRESET) {
 
         # Declare result
-        $result = fn() => "";
+        $result = LightnCandy::compile($inputs, $preset);
 
-        // $this->getFlags()
+        # Check result
+        if($result === false)
+
+            # New Exception
+            throw new CrazyException(
+                "An error is present in your hbs file",
+                500,
+                [
+                    "custom_code"   =>  "handlebars-002",
+                ]
+            );
 
         # Return result
         return $result;
@@ -248,7 +319,7 @@ class Handlebars {
      * Crazy Preset with the maximum of compatibility
      */
     public const CRAZY_PRESET = [
-        "flags" =>  LightnCandy::FLAG_HANDLEBARSJS,
+        "flags" =>  LightnCandy::FLAG_HANDLEBARSJS/*  | LightnCandy::FLAG_ERROR_LOG */,
     ];
 
     /**

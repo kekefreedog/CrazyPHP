@@ -15,6 +15,7 @@ namespace CrazyPHP\Model;
 /** Dependances
  * 
  */
+use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Form\Process;
 
 /**
@@ -27,10 +28,6 @@ use CrazyPHP\Library\Form\Process;
  * @copyright  2022-2022 Kévin Zarshenas
  */
 class Env{
-
-    /** Public constants
-     ******************************************************
-     */
 
     /** Public static methods
      ******************************************************
@@ -69,13 +66,94 @@ class Env{
                     continue;
 
                 # Add double underscores
-                $k = "__".strtoupper(trim($k, "_"))."__";
+                #$k = "__".strtoupper(trim($k, "_"))."__";
+                $k = strtoupper(trim($k, "_"));
 
                 # Define env constant
-                define($k, $v);
+                #define($k, $v);
+
+                # Defin env in global
+                $GLOBALS[static::PREFIX][$k] = $v;
 
             }
 
     }
+
+    /**
+     * Get
+     * 
+     * @param string $input Input to process
+     * 
+     * @return
+     */
+    public static function get(string $input = "") {
+
+        # Declare result
+        $result = "";
+
+        # Process input
+        $input = strtoupper($input);
+
+        # Check input
+        if(!static::has($input))
+                
+            # New error
+            throw new CrazyException(
+                "No env variable match with \"$input\", please define it before !",
+                500,
+                [
+                    "custom_code"   =>  "composer-002",
+                ]
+            );
+
+        # Get globals
+        $result = $GLOBALS[static::PREFIX][$input];
+
+        # Return
+        return $result;
+
+    }
+
+    /**
+     * Has
+     * 
+     * @param string $input Input to process
+     * 
+     * @return bool
+     */
+    public static function has(string $input = ""):bool {
+
+        # Declare result
+        $result = false;
+
+        # Check input
+        if(!$input)
+                
+            # New error
+            throw new CrazyException(
+                "Input can't be an empty string !",
+                500,
+                [
+                    "custom_code"   =>  "composer-001",
+                ]
+            );
+
+        # Process input
+        $input = strtoupper($input);
+
+        # Get globals
+        $result = isset($GLOBALS[static::PREFIX][$input]) ? true : false;
+
+        # Return
+        return $result;
+
+    }
+
+    /** Public constants
+     ******************************************************
+     */
+
+    /* @var string PREFIX used in global */
+    public const PREFIX = "__CRAZY_APP";
 
 }
