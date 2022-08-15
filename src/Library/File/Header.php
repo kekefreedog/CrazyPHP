@@ -106,20 +106,9 @@ class Header{
         # Merge array
         $input = array_merge(self::_getDefaultInfo(), $input);
 
-        # Get cache name
-        $cacheName = Cache::getCacheName(__METHOD__); ## Update EXTENSION_TO_METHODS
-
-        # New cache
         $cache = new Cache();
-
-        # Check cache has cachename
-        if(!$cache->has($cacheName))
-
-            # Create cache
-            $cache->set($cacheName, Handlebars::compile(self::TEST_TEMPLATE));
-        
-        # Fill compilatedTemplate
-        $compilatedTemplate = $cache->get($cacheName);
+        # Set result
+        $result = self::_compilate("shell", $input);
 
         # Return result
         return $result;
@@ -138,13 +127,12 @@ class Header{
      *  - copyright
      * @return string
      */
-    public static function json(array $input = []):string {
+    public static function json(/* array $input = [] */):string {
 
         # Declare result
         $result = "";
 
-        # Merge array
-        $input = array_merge(self::_getDefaultInfo(), $input);
+        # !!! Json doesn't support comment !!!
 
         # Return result
         return $result;
