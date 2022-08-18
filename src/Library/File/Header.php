@@ -106,7 +106,6 @@ class Header{
         # Merge array
         $input = array_merge(self::_getDefaultInfo(), $input);
 
-        $cache = new Cache();
         # Set result
         $result = self::_compilate("shell", $input);
 
