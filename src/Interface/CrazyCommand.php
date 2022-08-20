@@ -23,7 +23,7 @@ namespace  CrazyPHP\Interface;
  */
 interface CrazyCommand {
 
-    /** Public method
+    /** Public static methods
      ******************************************************
      */
 
@@ -34,7 +34,11 @@ interface CrazyCommand {
      * 
      * @return array
      */
-    public function getRequiredValues():array;
+    public static function getRequiredValues():array;
+
+    /** Public methods
+     ******************************************************
+     */
 
     /**
      * Get story line

@@ -16,6 +16,7 @@ namespace CrazyPHP\App;
  * Dependances
  */
 use CrazyPHP\Exception\CrazyException;
+use CrazyPHP\Interface\CrazyCommand;
 use CrazyPHP\Library\File\Structure;
 use CrazyPHP\Library\File\Composer;
 use CrazyPHP\Library\File\Package;
@@ -34,7 +35,7 @@ use CrazyPHP\Model\Env;
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2022 Kévin Zarshenas
  */
-class Create{
+class Create extends CrazyCommand {
 
     /** Public constants
      ******************************************************
@@ -128,9 +129,30 @@ class Create{
 
     }
 
-    /** Public method
+    /** Public static methods
      ******************************************************
-     */    
+     */
+
+    /**
+     * Get Required Values
+     * 
+     * Return required values
+     * 
+     * @return array
+     */
+    public static function getRequiredValues():array {
+
+        # Set result
+        $result = self::REQUIRED_VALUES;
+
+        # Return result
+        return $result;
+
+    }
+
+    /** Public methods
+     ******************************************************
+     */
     
     /**
      * Run creation of project

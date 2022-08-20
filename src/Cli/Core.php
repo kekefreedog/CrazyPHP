@@ -16,6 +16,7 @@ namespace  CrazyPHP\Cli;
  * Dependances
  */
 use CrazyPHP\Library\Database\Create as CreateDatabase;
+use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Form\Validate;
 use CrazyPHP\Library\File\Composer;
 use CrazyPHP\Library\Form\Process;
@@ -236,8 +237,26 @@ class Core extends CLI {
         # Title of current action
         $climate->backgroundBlue()->out("🚀 Run ".$inputs['cmd']." ".$inputs['args'][0])->br();
           
-        
+        # Check command is in router
+        $this->_checkInRouter($inputs);
 
+        # Get router
+        $router = self::ROUTERS[$inputs['cmd']][!$inputs['args'][0]];
+
+        # Get class
+        $class = $router["class"];
+
+        # Get required values
+        $requiredValues = $class::getRequiredValues();
+
+        # Set Options
+        $options = !empty($requiredValues) ?
+
+            # Return cli result
+            (new Process($formResult))->getResult() :
+
+                    # Fill empty value
+                    [];
 
         return;
         # ---
@@ -545,6 +564,50 @@ class Core extends CLI {
 
     }
 
+    /** Provate methods
+     ******************************************************
+     */
+
+    /** Check in router
+     * 
+     * Check inputs data is in router
+     * 
+     * @param array $inputs Collection of data from cli
+     * @return void
+     */
+    private function _checkInRouter(array $inputs = []):void {
+
+        # Check inputs
+        if(
+            !isset($inputs['cmd']) || 
+            !isset($inputs['args'][0]) ||
+            !$inputs['cmd'] ||
+            !$inputs['args'][0]
+        )
+            
+            # New error
+            throw new CrazyException(
+                "Please fill a valid command and valid arguments", 
+                500,
+                [
+                    "custom_code"   =>  "core-001",
+                ]
+            );
+
+        # Check command given is in router
+        if(!isset(self::ROUTERS[$inputs['cmd']][!$inputs['args'][0]]))
+            
+            # New error
+            throw new CrazyException(
+                "Please fill a valid command and valid arguments", 
+                500,
+                [
+                    "custom_code"   =>  "core-002",
+                ]
+            );  
+
+    }
+
     /** Public constants
      ******************************************************
      */
@@ -555,5 +618,18 @@ class Core extends CLI {
     public const ASCII_ART = [
         "crazyphp"  =>  "vendor/kzarshenas/crazyphp/resources/Ascii"
     ];
+
+    /**
+     * Router Collection
+     */
+    public const ROUTERS = [
+        # Command new
+        "new"   =>  [
+            # Options
+            "project"   =>  [
+                "class"     =>  "\CrazyPHP\App\Create",
+            ],
+        ],
+    ]
 
 }
