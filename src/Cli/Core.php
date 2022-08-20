@@ -165,8 +165,15 @@ class Core extends CLI {
                 # Set noActionFound
                 $noActionFound = false;
 
-                # Execute action
-                $this->{"action".$options->getCmd()}();
+                # Set input
+                $input = [
+                    "opts"  =>  $options->getOpts,
+                    "args"  =>  $options->getArgs(),
+                    "cmd"   =>  $options->getCmd()
+                ];
+
+                # Execute action and pass input data
+                $this->{"action".$options->getCmd()}($input);
 
             }
 
@@ -209,14 +216,31 @@ class Core extends CLI {
      * 
      * New project
      * 
+     * @param array $inputs Collection of inputs with opts, args & cmd
+     * 
      */
-    protected function actionNew(){
+    protected function actionNew(array $inputs = []){
 
         # Declare result
         $result = [];
 
         # New climate
         $climate = new CLImate();
+
+        # Add asci folder
+        $climate->addArt(self::ASCII_ART["crazyphp"]);
+        
+        # Draw crazy php logo
+        $climate->draw('crazyphp');
+
+        # Title of current action
+        $climate->backgroundBlue()->out("🚀 Run ".$inputs['cmd']." ".$inputs['args'][0])->br();
+          
+        
+
+
+        return;
+        # ---
         $climate->br();
 
         # Display result
@@ -520,5 +544,16 @@ class Core extends CLI {
         }
 
     }
+
+    /** Public constants
+     ******************************************************
+     */
+
+    /**
+     * Ascii art collection
+     */
+    public const ASCII_ART = [
+        "crazyphp"  =>  "vendor/kzarshenas/crazyphp/resources/Ascii"
+    ];
 
 }
