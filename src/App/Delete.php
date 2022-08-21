@@ -16,6 +16,7 @@ namespace CrazyPHP\App;
  * Dependances
  */
 use CrazyPHP\Library\File\Structure;
+use CrazyPHP\Interface\CrazyCommand;
 use CrazyPHP\Model\Env;
 
 /**
@@ -27,7 +28,7 @@ use CrazyPHP\Model\Env;
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2022 Kévin Zarshenas
  */
-class Delete{
+class Delete implements CrazyCommand {
 
     /**
      * Constructor
@@ -40,6 +41,27 @@ class Delete{
 
     }
 
+    /** Public static methods
+     ******************************************************
+     */
+
+    /**
+     * Get Required Values
+     * 
+     * Return required values
+     * 
+     * @return array
+     */
+    public static function getRequiredValues():array {
+
+        # Declare result
+        $result = [];
+
+        # Return result
+        return $result;
+
+    }
+
     /** Public method
      ******************************************************
      */    
@@ -49,13 +71,16 @@ class Delete{
      *
      * @return Delete
      */
-    public function run(){
+    public function run():self {
 
         /**
          * Run Structure Folder
          * 1. Delete structure folder
          */
         $this->runStructureFolder();
+
+        # Return this
+        return $this;
 
     }
 

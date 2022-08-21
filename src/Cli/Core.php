@@ -15,7 +15,6 @@ namespace  CrazyPHP\Cli;
 /**
  * Dependances
  */
-use CrazyPHP\Library\Database\Create as CreateDatabase;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Form\Validate;
 use CrazyPHP\Library\File\Composer;
@@ -213,14 +212,14 @@ class Core extends CLI {
 
     }
 
-    /** New project
+    /** New action
      * 
-     * New project
+     * New entity action
      * 
      * @param array $inputs Collection of inputs with opts, args & cmd
-     * 
+     * @return void
      */
-    protected function actionNew(array $inputs = []){
+    protected function actionNew(array $inputs = []):void {
 
         # Declare result
         $result = [];
@@ -335,7 +334,7 @@ class Core extends CLI {
 
             # Message end
             $climate
-                ->green("🟢 ".str_replace("run", "", $action)." ran with success")
+                ->green("🟢 ".str_replace("run", "", strtolower($action))." ran with success")
             ;
 
         }
@@ -361,65 +360,94 @@ class Core extends CLI {
 
     }
 
-    /** Delete project
+    /** 
+     * Delete action
      * 
+     * Delete entity action
+     * 
+     * @param array $inputs Collection of inputs with opts, args & cmd
+     * @return void
      */
-    protected function actionDelete(){
+    protected function actionDelete(array $inputs = []):void {
 
         # New climate
         $climate = new CLImate();
-        $climate->br();
 
-        # Display result
-        $this->warning("delete");
+        # Add asci folder
+        $climate->addArt(self::ASCII_ART["crazyphp"]);
+        
+        # Draw crazy php logo
+        $climate->draw('crazyphp');
 
-        ## First part
-        usleep(400000);
-        $climate
+        # Title of current action
+        $climate->backgroundRed()->out("🚀 Run ".$inputs['cmd']." ".$inputs['args'][0])->br();
+          
+        # Check command is in router
+        $this->_checkInRouter($inputs);
+
+        # Get router
+        $router = self::ROUTERS[$inputs['cmd']][$inputs['args'][0]];
+
+        # Get class
+        $class = $router["class"];
+
+        # Message
+        $input = $climate
             ->br()
-            ->green()
-            ->border()
-            ->br();
-        usleep(300000);
+            ->lightRed()
+            ->bold()
+            ->confirm('❎ Do you confirm the deletion of your '.$inputs['args'][0].' ? ❎')
+        ;
 
-        $input = $climate->confirm('Do you confirm the deletion of the project ?');
+        # Check action confirmed
+        if (!$input->confirmed()){
 
-        // Continue? [y/n]
-        if(!$input->confirmed()){
-
-            usleep(200000);
+            # Stop message
             $climate
                 ->br()
-                ->red("✋ Project deletion has been canceled ✋")
+                ->bold()
+                ->red("✋ Action canceled ✋")
                 ->br()
             ;
 
-            # Stop script
+            # Stop action
             return;
 
         }
 
-        # New app delete instance
-        $app = new Delete();
+        # New instance of class
+        $instance = new $class();
+
+        # Get story line
+        $storyline = $instance->getStoryline();
 
         # Iteration storyline
-        foreach($app->getStoryline() as $action){
+        foreach($storyline as $action){
 
             # Message start
             $climate
                 ->br()
-                ->yellow("Run ".str_replace("run", "", strtolower($action)))
+                ->yellow("🟠 Run ".str_replace("run", "", strtolower($action)))
             ;
 
             # Execute
-            $app->{$action}();
+            $instance->{$action}();
 
             # Message end
             $climate
-                ->green(str_replace("run", "", $action)." ran with succes")
+                ->green("🟢 ".str_replace("run", "", strtolower($action))." ran with success")
             ;
 
         }
+
+        # Success message
+        $climate
+            ->br()
+            ->lightRed()
+            ->bold()
+            ->out("🎉 ".$inputs['args'][0]." removed with success 🎉")
+            ->br()
+        ;
 
     }
 
@@ -488,6 +516,13 @@ class Core extends CLI {
             "project"   =>  [
                 "class"     =>  "\CrazyPHP\App\Create",
                 "parameter" =>  "application",
+            ],
+        ],
+        # Command delete
+        "delete"   =>  [
+            # Options
+            "project"   =>  [
+                "class"     =>  "\CrazyPHP\App\Delete",
             ],
         ],
     ];
