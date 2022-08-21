@@ -35,7 +35,7 @@ use CrazyPHP\Model\Env;
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2022 Kévin Zarshenas
  */
-class Create extends CrazyCommand {
+class Create implements CrazyCommand {
 
     /** Public constants
      ******************************************************
@@ -98,6 +98,20 @@ class Create extends CrazyCommand {
             "default"       =>  "https://github.com/kekefreedog/CrazyPHP/",
             "validate"      =>  ['http'],
         ],
+        # Database
+        [
+            "name"          =>  "database",
+            "description"   =>  "Type of database used by your crazy project",
+            "type"          =>  "VARCHAR",
+            "default"       =>  "None",
+            "select"        =>  [
+                "none"          =>  "No Database",
+                "mariadb"       =>  "MariaDB",
+                /* "mysql"         =>  "MySQL", */
+                /* "postgresql"    =>  "PostgreSQL", */
+                "mangodb"       =>  "MongoDB",
+            ],
+        ],
     ];
 
     /** Variables
@@ -159,7 +173,7 @@ class Create extends CrazyCommand {
      *
      * @return Create
      */
-    public function run(){
+    public function run():self {
 
         /**
          * Run Composer

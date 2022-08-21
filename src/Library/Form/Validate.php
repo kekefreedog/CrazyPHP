@@ -316,7 +316,7 @@ class Validate {
      * @param array $conditions Collection of data to compare with
      * @return bool
      */
-    public static function isItemsIn(array $inputs = [], array $conditions):bool {
+    public static function isItemsIn(array $inputs = [], array $conditions = []):bool {
 
         # Declare Result & inputMissing & inputExtra
         $result = true;

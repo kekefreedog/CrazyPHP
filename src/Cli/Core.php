@@ -168,7 +168,7 @@ class Core extends CLI {
 
                 # Set input
                 $input = [
-                    "opts"  =>  $options->getOpts,
+                    /* "opts"  =>  $options->getOpts, */
                     "args"  =>  $options->getArgs(),
                     "cmd"   =>  $options->getCmd()
                 ];
@@ -241,7 +241,7 @@ class Core extends CLI {
         $this->_checkInRouter($inputs);
 
         # Get router
-        $router = self::ROUTERS[$inputs['cmd']][!$inputs['args'][0]];
+        $router = self::ROUTERS[$inputs['cmd']][$inputs['args'][0]];
 
         # Get class
         $class = $router["class"];
@@ -249,246 +249,105 @@ class Core extends CLI {
         # Get required values
         $requiredValues = $class::getRequiredValues();
 
-        # Set Options
-        $options = !empty($requiredValues) ?
-
-            # Return cli result
-            (new Process($formResult))->getResult() :
-
-                    # Fill empty value
-                    [];
-
-        return;
-        # ---
-        $climate->br();
-
-        # Display result
-        $this->success("New project");
-
-        ## First part
-        usleep(400000);
-        $climate
-            ->br()
-            ->green()
-            ->border()
-            ->br();
-        usleep(300000);
-        $climate
-            ->out("First we need informations about your new project 👋");
-        usleep(300000);
+        # Check required values
+        if(!empty($requiredValues)){
+            
+            # Message
+            $climate
+                ->lightBlue()
+                ->bold()
+                ->out("👋 First we need informations about your new ".$inputs['args'][0]." 👋");
+            ;
         
-        # Display form
-        $form = new Form(Create::REQUIRED_VALUES);
-
-        # Break line
-        $climate
-            ->br()
-            ->orange("Processing values given")
-            ->br();
-
-        # Progress bar
-        $progress = $climate->progress()->total(100);
+            # Display form
+            $form = new Form($requiredValues);
 
             # Get form result
             $formResult = $form->getResult();
 
-                # Update progress bar
-                $progress->current(33);
-
             # Process value
             $formResult = (new Process($formResult))->getResult();
-
-                # Update progress bar
-                $progress->current(66);
 
             # Validate value
             $formResult = (new Validate($formResult))->getResult();
 
+            # fill result
+            $result[$router['parameter']] = $formResult;
+
             # Prepare display value
-            $dispayValues = Validate::getResultSummary($formResult);
-                
-                # Update progress bar
-                $progress->current(100);
-
-        # Success message
-        $climate
-            ->br()
-            ->green("Values processed with success 🎉")
-        ;
-
-        ## Second part
-        $climate
-            ->br()
-            ->green()
-            ->border()
-            ->br();
-        usleep(400000);
-        $climate
-            ->json($dispayValues)
-            ->br();
-        usleep(200000);
-
-        $input = $climate->confirm('Do you confirm the creation of the project ?');
-
-        // Continue? [y/n]
-        if(!$input->confirmed()){
-
-            usleep(200000);
+            $summary[$router['parameter']] = Validate::getResultSummary($formResult);
+            
+            # Message
             $climate
                 ->br()
-                ->red("✋ Project creation has been canceled ✋")
+                ->lightBlue()
+                ->bold()
+                ->out("📝 Summary about the creation of your new ".$inputs['args'][0]." 📝")
                 ->br()
             ;
 
-            # Stop script
+            # Summary
+            @$climate->table($summary);
+
+        }
+            
+        # Message
+        $input = $climate
+            ->br()
+            ->lightBlue()
+            ->bold()
+            ->confirm('✅ Do you confirm your new '.$inputs['args'][0].' ? ✅')
+        ;
+
+        # Check action confirmed
+        if (!$input->confirmed()){
+
+            # Stop message
+            $climate
+                ->br()
+                ->bold()
+                ->red("✋ Action canceled ✋")
+                ->br()
+            ;
+
+            # Stop action
             return;
 
         }
-        
-        # Push form result in result
-        $result['application'] = $formResult;
 
-        ## Third part (database)
-        usleep(400000);
-        $climate
-            ->br()
-            ->cyan()
-            ->border()
-            ->br();
-        usleep(300000);
-        $input = $climate->confirm('Do you need a database ? 📒');
+        # New instance of class
+        $instance = new $class($result);
 
-        // Continue? [y/n]
-        if ($input->confirmed()) {
-
-            usleep(300000);
-        
-            # Display form
-            $form = new Form(CreateDatabase::REQUIRED_VALUES);
-
-            # Break line
-            $climate
-                ->br()
-                ->orange("Processing values given")
-                ->br();
-
-            # Progress bar
-            $progress = $climate->progress()->total(100);
-
-                # Get form result
-                $formResultDb = $form->getResult();
-
-                    # Update progress bar
-                    $progress->current(33);
-
-                # Process value
-                $formResultDb = (new Process($formResultDb))->getResult();
-
-                    # Update progress bar
-                    $progress->current(66);
-
-                # Validate value
-                $formResultDb = (new Validate($formResultDb))->getResult();
-
-                # Prepare display value
-                $dispayValues = Validate::getResultSummary($formResultDb);
-                    
-                    # Update progress bar
-                    $progress->current(100);
-
-            # Success message
-            $climate
-                ->br()
-                ->green("Values processed with success 🎉")
-            ;
-
-            ## Third part
-            $climate
-                ->br()
-                ->green()
-                ->border()
-                ->br();
-            usleep(400000);
-            $climate
-                ->json($dispayValues)
-                ->br();
-            usleep(200000);
-            
-            # Continue? [y/n]
-            $input = $climate->confirm('Do you confirm the creation of the database ?');
-            
-            # Check answer
-            if($input->confirmed()){
-        
-                # Push form result in result
-                $result['database'] = $formResult;
-
-                ## Part 4 (auth)
-                usleep(400000);
-                $climate
-                    ->br()
-                    ->magenta()
-                    ->border()
-                    ->br();
-                usleep(300000);
-                $input = $climate->confirm('Do you need authentication library ? <delight-im/PHP-Auth> 🔐');
-
-                # Continue? [y/n]
-                if ($input->confirmed())
-
-                    # Push form result in result
-                    $result['authentication'] = [
-                        [
-                            "name"          =>  "library_author",
-                            "type"          =>  "VARCHAR",
-                            "value"         =>  "delight-im",
-                        ],
-                        [
-                            "name"          =>  "library_repository",
-                            "type"          =>  "VARCHAR",
-                            "value"         =>  "PHP-Auth",
-                        ],
-                    ];
-
-            }else{
-
-                usleep(200000);
-                $climate
-                    ->br()
-                    ->yellow("🟠 Database creation has been canceled, project creation continue...")
-                    ->br()
-                    ->br()
-                    ->yellow()
-                    ->border()
-                ;
-
-            }
-
-        }
-
-        ## Part 5 Create application
-        
-        # New app create instance
-        $app = new Create($result);
+        # Get story line
+        $storyline = $instance->getStoryline();
 
         # Iteration storyline
-        foreach($app->getStoryline() as $action){
+        foreach($storyline as $action){
 
             # Message start
             $climate
                 ->br()
-                ->yellow("Run ".str_replace("run", "", strtolower($action)))
+                ->yellow("🟠 Run ".str_replace("run", "", strtolower($action)))
             ;
 
             # Execute
-            $app->{$action}();
+            $instance->{$action}();
 
             # Message end
             $climate
-                ->green(str_replace("run", "", $action)." ran with succes")
+                ->green("🟢 ".str_replace("run", "", $action)." ran with success")
             ;
 
         }
+
+        # Success message
+        $climate
+            ->br()
+            ->lightBlue()
+            ->bold()
+            ->out("🎉 New ".$inputs['args'][0]." created with success 🎉")
+            ->br()
+        ;
 
     }
 
@@ -595,11 +454,11 @@ class Core extends CLI {
             );
 
         # Check command given is in router
-        if(!isset(self::ROUTERS[$inputs['cmd']][!$inputs['args'][0]]))
+        if(!isset(self::ROUTERS[$inputs['cmd']][$inputs['args'][0]]))
             
             # New error
             throw new CrazyException(
-                "Please fill a valid command and valid arguments", 
+                "Please write a valid command and valid arguments", 
                 500,
                 [
                     "custom_code"   =>  "core-002",
@@ -628,8 +487,9 @@ class Core extends CLI {
             # Options
             "project"   =>  [
                 "class"     =>  "\CrazyPHP\App\Create",
+                "parameter" =>  "application",
             ],
         ],
-    ]
+    ];
 
 }

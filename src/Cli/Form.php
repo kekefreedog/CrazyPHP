@@ -56,6 +56,9 @@ class Form {
             # Break line
             $climate->br();
 
+            # Declare key
+            $key = 1;
+
             # Iteration of required values
             foreach($valueCollection as $value){
 
@@ -63,7 +66,7 @@ class Form {
                 if($value['description'] ?? false)
 
                     # Prepare question
-                    $question = $value['description'];
+                    $question = $key.". ".$value['description'];
 
                 $question .= 
                     " {".$value['name']."} ?".
@@ -80,6 +83,16 @@ class Form {
                     # Multiple
                     if($value['multiple'] ?? false){
 
+                        # Prepare input
+                        $input = $climate->checkboxes($question, $value['select']);
+                        
+                        # Get result
+                        $this->result[$value['name']] = array_merge(
+                            $value,
+                            [
+                                "value" =>  $input->prompt()
+                            ]
+                        );
 
                     # Radio
                     }else{
@@ -122,6 +135,9 @@ class Form {
                     );
 
                 }
+
+                # Increment key
+                $key++;
 
             }
 
