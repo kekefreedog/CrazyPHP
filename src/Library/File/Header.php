@@ -79,7 +79,7 @@ class Header{
             );
 
         # Get header
-        $result = self::{$extension}($input);
+        $result = self::{self::EXTENSION_TO_METHODS[$extension]}($input);
 
         # Return result
         return $result;
@@ -287,8 +287,8 @@ class Header{
      */
     private const EXTENSION_TO_METHODS = [
         # Yml
-        "yml"   =>  "yml",
-        "yaml"  =>  "yml",
+        "yml"   =>  "yaml",
+        "yaml"  =>  "yaml",
         # Json
         "json"  =>  "json",
         # Php

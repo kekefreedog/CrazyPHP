@@ -491,6 +491,12 @@ class Structure{
                             # Fill $folderContent['files']
                             $folderContent['files'][$item] = null;
 
+                        # If is folder
+                        if(is_dir("$currentPath/$item"))
+
+                            # Delete content of folders
+                            self::treeFolderDeletion([$item => []], "$currentPath", true);
+
                 }
 
             }

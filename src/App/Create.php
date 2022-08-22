@@ -83,11 +83,11 @@ class Create implements CrazyCommand {
             "name"          =>  "type",
             "description"   =>  "Type of your crazy project",
             "type"          =>  "VARCHAR",
-            "default"       =>  "library",
+            "default"       =>  "project",
             "select"        =>  [
-                "other"         =>  "Undifined",
+                "project"       =>  "Project",
                 "library"       =>  "Library",
-                "project"       =>  "Project"
+                "other"         =>  "Undifined",
             ]
         ],
         # Homepage
@@ -105,11 +105,11 @@ class Create implements CrazyCommand {
             "type"          =>  "VARCHAR",
             "default"       =>  "None",
             "select"        =>  [
-                "none"          =>  "No Database",
+                "mangodb"       =>  "MongoDB",
                 "mariadb"       =>  "MariaDB",
+                "none"          =>  "No Database",
                 /* "mysql"         =>  "MySQL", */
                 /* "postgresql"    =>  "PostgreSQL", */
-                "mangodb"       =>  "MongoDB",
             ],
         ],
     ];

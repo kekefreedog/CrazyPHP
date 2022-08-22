@@ -17,6 +17,7 @@ namespace CrazyPHP\App;
  */
 use CrazyPHP\Library\File\Structure;
 use CrazyPHP\Interface\CrazyCommand;
+use CrazyPHP\Library\Cache\Cache;
 use CrazyPHP\Model\Env;
 
 /**
@@ -121,6 +122,25 @@ class Delete implements CrazyCommand {
         return $result;
 
     }
+
+    /**
+     * Run Cache Cleaner
+     * 
+     * @return Delete
+     */
+    public function runCacheCleaner():Delete {
+
+        # New cache instance
+        $cache = new Cache();
+
+        # Clear cache
+        $cache->clear();
+
+        # Return instance
+        return $this;
+
+    }
+
 
     /**
      * Run Structure Folder

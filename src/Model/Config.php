@@ -204,7 +204,7 @@ class Config{
             );
 
         # Create yaml
-        Yaml::create($config['path_target'], $composerContent/* , Header::get("yml") */);
+        Yaml::create($config['path_target'], ["app" => $composerContent], Header::get("yml"));
 
     }
 
