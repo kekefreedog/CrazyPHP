@@ -95,13 +95,15 @@ class HeaderTest extends TestCase{
     const TEST_PATH = __DIR__."../../../.cache/cache/";
 
     /* Result */
-    const RESULT = "/**
+    const RESULT =
+"/**
  * kzarshenas/crazyphp
  *
  * My crazy framework for creating ultra-fast webapps.
  *
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright   2022 kzarshenas/crazyphp
- */";
+ */
+";
 
 }

@@ -27,45 +27,29 @@ namespace CrazyPHP\Library\File;
  */
 class Docker{
 
+    /** Public static method | File type
+     ******************************************************
+     */
+
     /**
-     * New Docker File
+     * Install Docker Package
      * 
-     * Generate new docker file
+     * Generate new docker package
      * 
      * @return void
      */
-    public static function newDockerFile() {
+    public static function install():void {
 
     }
 
     /**
-     * New Docker Compose
+     * Update Docker package
      * 
-     * Generate new docker compose file
-     * 
-     * @return void
-     */
-    public static function newDockerCompose() {
-
-    }
-
-    /**
-     * Ressources
-     * 
-     * Generate ressources like conf, php.ini...
+     * Update current docker package
      * 
      * @return void
      */
-    public static function ressources() {
-
-    }
-
-    /**
-     * Build
-     * 
-     * Build compose image
-     */
-    public static function build() {
+    public static function update():void {
 
     }
 
@@ -73,10 +57,58 @@ class Docker{
      * Run
      * 
      * Run composer container
+     * 
+     * @return void
      */
-    public static function run() {
+    public static function run():void {
 
     }
 
+    /** Private static method | File type
+     ******************************************************
+     */
+
+    /**
+     * Nginx
+     * 
+     * Prepare Nginc files
+     * 
+     * @return void
+     */
+    private static function _prepareNginx():void {
+
+    }
+    /**
+     * Php
+     * 
+     * Prepare Php files
+     * 
+     * @return void
+     */
+    private static function _preparePhp():void {
+
+    }
+
+    /**
+     * Variables
+     * 
+     * Prepare Env Variables file
+     * 
+     * @return void
+     */
+    private static function _prepareVariables():void {
+
+    }
+
+    /**
+     * Variables
+     * 
+     * Prepare Docker Composer file
+     * 
+     * @return void
+     */
+    private static function _prepareDockerCompose():void {
+
+    }
 
 }
