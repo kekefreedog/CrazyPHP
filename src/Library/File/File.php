@@ -19,7 +19,6 @@ use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Time\DateTime;
 use CrazyPHP\Model\Env;
 
-
 /**
  * File
  *
@@ -287,9 +286,9 @@ class File {
     /**
      * File Exists 
      * 
-     * Check if file exists
+     * Check if file or folder exists
      *
-     * @param string $input Path of the json file
+     * @param string $input Path of the file
      * @return bool
      */
     public static function exists(string $input = ""):bool {
@@ -298,7 +297,15 @@ class File {
         $result = false;
 
         # Check input and file exists
-        if($input && file_exists($input))
+        if(
+            (
+                $input && 
+                file_exists($input) 
+            ) || (
+                $input && 
+                is_dir($input) 
+            )
+        )
 
             # Toggle result
             $result = true;

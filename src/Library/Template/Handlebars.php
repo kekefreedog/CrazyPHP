@@ -294,7 +294,7 @@ class Handlebars {
         $result = LightnCandy::compile($inputs, $preset);
 
         # Check result
-        if($result === false)
+        if($result === false){
 
             # New Exception
             throw new CrazyException(
@@ -304,6 +304,8 @@ class Handlebars {
                     "custom_code"   =>  "handlebars-002",
                 ]
             );
+
+        }
 
         # Return result
         return $result;

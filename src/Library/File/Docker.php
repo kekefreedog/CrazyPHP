@@ -15,6 +15,8 @@ namespace CrazyPHP\Library\File;
 /** Dependances
  * 
  */
+use CrazyPHP\Library\File\Structure;
+use CrazyPHP\Library\File\File;
 
 /**
  * Docker
@@ -31,84 +33,18 @@ class Docker{
      ******************************************************
      */
 
-    /**
-     * Install Docker Package
-     * 
-     * Generate new docker package
-     * 
-     * @return void
-     */
-    public static function install():void {
-
-    }
-
-    /**
-     * Update Docker package
-     * 
-     * Update current docker package
-     * 
-     * @return void
-     */
-    public static function update():void {
-
-    }
-
-    /**
-     * Run
-     * 
-     * Run composer container
-     * 
-     * @return void
-     */
-    public static function run():void {
-
-    }
-
     /** Private static method | File type
      ******************************************************
      */
 
-    /**
-     * Nginx
-     * 
-     * Prepare Nginc files
-     * 
-     * @return void
+    /** Public constants
+     ******************************************************
      */
-    private static function _prepareNginx():void {
-
-    }
-    /**
-     * Php
-     * 
-     * Prepare Php files
-     * 
-     * @return void
-     */
-    private static function _preparePhp():void {
-
-    }
 
     /**
-     * Variables
-     * 
-     * Prepare Env Variables file
-     * 
-     * @return void
+     * Docker Structure path 
      */
-    private static function _prepareVariables():void {
+    public const STRUCTURE_PATH = "@crazyphp_root/resources/Docker/Structure.yml";
 
-    }
-
-    /**
-     * Variables
-     * 
-     * Prepare Docker Composer file
-     * 
-     * @return void
-     */
-    private static function _prepareDockerCompose():void {
-
-    }
 
 }

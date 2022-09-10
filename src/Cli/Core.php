@@ -43,45 +43,69 @@ class Core extends CLI {
 
     # Options to register
     protected const REGISTER_OPTIONS = [
-        # Version
-        [
-            "type"          =>  "command",
-            "long"          =>  "version",
-            "help"          =>  "Print version of CrazyPHP",
+        # Application
+        "CrazyCommand"  =>  [
+            # Version
+            [
+                "type"          =>  "command",
+                "long"          =>  "version",
+                "help"          =>  "Print version of CrazyPHP",
+            ],
+            # New Project
+            [
+                "type"          =>  "command",
+                "long"          =>  "new",
+                "help"          =>  "New crazy entity (project, page, component...)",
+            ],
+            # Update Project
+            [
+                "type"          =>  "command",
+                "long"          =>  "update",
+                "help"          =>  "Update crazy entity (project, page, component...)",
+            ],
+            # Delete Project
+            [
+                "type"          =>  "command",
+                "long"          =>  "delete",
+                "help"          =>  "Delete crazy entity (project, page, component...)",
+            ],
+            # Arguments
+            [
+                "type"          =>  "argument",
+                "long"          =>  "entity",
+                "help"          =>  "Entity (project, page, component...)",
+                "command"       =>  ["new", "update", "delete"]
+            ],
         ],
-        # New Project
-        [
-            "type"          =>  "command",
-            "long"          =>  "new",
-            "help"          =>  "New crazy entity (project, page, component...)",
+        # Docker
+        "CrazyDocker"   =>  [
+            # New
+            [
+                "type"          =>  "command",
+                "long"          =>  "new",
+                "help"          =>  "Install docker compose for your crazy project",
+            ],
+            # Run
+            [
+                "type"          =>  "command",
+                "long"          =>  "run",
+                "help"          =>  "Run docker composer",
+            ],
+            # Down
+            [
+                "type"          =>  "command",
+                "long"          =>  "down",
+                "help"          =>  "Shut down compose instance",
+            ],
         ],
-        # Update Project
-        [
-            "type"          =>  "command",
-            "long"          =>  "update",
-            "help"          =>  "Update crazy entity (project, page, component...)",
-        ],
-        # Delete Project
-        [
-            "type"          =>  "command",
-            "long"          =>  "delete",
-            "help"          =>  "Delete crazy entity (project, page, component...)",
-        ],
-        # Arguments
-        [
-            "type"          =>  "argument",
-            "long"          =>  "entity",
-            "help"          =>  "Entity (project, page, component...)",
-            "command"       =>  ["new", "update", "delete"]
-        ],
-        /* [
-            "type"          =>  "",
-            "long"          =>  "",
-            "help"          =>  "",
-            "short"         =>  "",
-            "argument"      =>  "",
-        ], */
     ];
+
+    /** Arguments
+     ******************************************************
+     */
+
+    /* @var string @scriptName Name of the current script executed */
+    private $scriptName = "";
 
     /** Protected Methods
      ******************************************************
@@ -96,11 +120,20 @@ class Core extends CLI {
      */
     protected function setup(Options $options){
 
+        # Get current name of file name
+        $this->scriptName = pathinfo($_SERVER['SCRIPT_NAME'], PATHINFO_FILENAME);
+
+        # Check if script name is in REGISTER_OPTIONS
+        if(!array_key_exists($this->scriptName, self::REGISTER_OPTIONS))
+
+            # Exit
+            exit("🔴 Current script doesn't have any options associated...");
+
         # Set help
         $options->setHelp(Composer::read("description"));
 
         # Iteration REGISTER_OPTIONS
-        foreach(self::REGISTER_OPTIONS as $option)
+        foreach(self::REGISTER_OPTIONS[$this->scriptName] as $option)
 
             # Option
             if($option['type'] == "option")
@@ -157,7 +190,7 @@ class Core extends CLI {
         if($options->getCmd()){
 
             # Get method name
-            $methodName = "action".ucfirst(strtolower($options->getCmd()));
+            $methodName = "action".ucfirst($this->scriptName).ucfirst($options->getCmd());
 
             # Check action is set
             if(method_exists($this, $methodName)){
@@ -173,7 +206,7 @@ class Core extends CLI {
                 ];
 
                 # Execute action and pass input data
-                $this->{"action".$options->getCmd()}($input);
+                $this->{$methodName}($input);
 
             }
 
@@ -187,7 +220,7 @@ class Core extends CLI {
 
     }
 
-    /** Protected Methods Action
+    /** Protected Methods Action | For CrazyCommand
      ******************************************************
      */
 
@@ -196,7 +229,7 @@ class Core extends CLI {
      * Print the version of the app
      * 
      */
-    protected function actionVersion(){
+    protected function actionCrazyCommandVersion(){
 
         # Declare result
         $result = "";
@@ -219,7 +252,7 @@ class Core extends CLI {
      * @param array $inputs Collection of inputs with opts, args & cmd
      * @return void
      */
-    protected function actionNew(array $inputs = []):void {
+    protected function actionCrazyCommandNew(array $inputs = []):void {
 
         # Declare result
         $result = [];
@@ -240,7 +273,7 @@ class Core extends CLI {
         $this->_checkInRouter($inputs);
 
         # Get router
-        $router = self::ROUTERS[$inputs['cmd']][$inputs['args'][0]];
+        $router = self::ROUTERS[$this->scriptName][$inputs['cmd']]["command"][$inputs['args'][0]];
 
         # Get class
         $class = $router["class"];
@@ -353,7 +386,7 @@ class Core extends CLI {
     /** Update project
      * 
      */
-    protected function actionUpdate(){
+    protected function actionCrazyCommandUpdate(){
 
         # Display result
         $this->info("update");
@@ -368,7 +401,7 @@ class Core extends CLI {
      * @param array $inputs Collection of inputs with opts, args & cmd
      * @return void
      */
-    protected function actionDelete(array $inputs = []):void {
+    protected function actionCrazyCommandDelete(array $inputs = []):void {
 
         # New climate
         $climate = new CLImate();
@@ -386,7 +419,7 @@ class Core extends CLI {
         $this->_checkInRouter($inputs);
 
         # Get router
-        $router = self::ROUTERS[$inputs['cmd']][$inputs['args'][0]];
+        $router = self::ROUTERS[$this->scriptName][$inputs['cmd']]["command"][$inputs['args'][0]];
 
         # Get class
         $class = $router["class"];
@@ -451,6 +484,149 @@ class Core extends CLI {
 
     }
 
+    /** Protected Methods Action | For CrazyDocker
+     ******************************************************
+     */
+
+    /**
+     * Action Crazy Docker New
+     * 
+     * ction for create new docker compose for the current app
+     * 
+     * @param array $inputs Collection of inputs with opts, args & cmd
+     * @return void
+     */
+    protected function actionCrazyDockerNew(array $inputs = []):void {
+
+        # Declare result
+        $result = [];
+
+        # New climate
+        $climate = new CLImate();
+
+        # Add asci folder
+        $climate->addArt(self::ASCII_ART["crazyphp"]);
+        
+        # Draw crazy php logo
+        $climate->draw('crazyphp');
+
+        # Title of current action
+        $climate->backgroundBlue()->out("🚀 Run ".$inputs['cmd']." Docker")->br();
+          
+        # Check command is in router
+        $this->_checkInRouter($inputs);
+
+        # Get router
+        $router = self::ROUTERS[$this->scriptName][$inputs['cmd']];
+
+        # Get class
+        $class = $router["class"];
+
+        # Get required values
+        $requiredValues = $class::getRequiredValues();
+
+        # Check required values
+        if(!empty($requiredValues)){
+            
+            # Message
+            $climate
+                ->lightBlue()
+                ->bold()
+                ->out("👋 First we need informations about your new ".$inputs['args'][0]." 👋");
+            ;
+        
+            # Display form
+            $form = new Form($requiredValues);
+
+            # Get form result
+            $formResult = $form->getResult();
+
+            # Process value
+            $formResult = (new Process($formResult))->getResult();
+
+            # Validate value
+            $formResult = (new Validate($formResult))->getResult();
+
+            # fill result
+            $result[$router['parameter']] = $formResult;
+
+            # Prepare display value
+            $summary[$router['parameter']] = Validate::getResultSummary($formResult);
+            
+            # Message
+            $climate
+                ->br()
+                ->lightBlue()
+                ->bold()
+                ->out("📝 Summary about the creation of your new ".$inputs['args'][0]." 📝")
+                ->br()
+            ;
+
+            # Summary
+            @$climate->table($summary);
+
+        }
+            
+        # Message
+        $input = $climate
+            ->br()
+            ->lightBlue()
+            ->bold()
+            ->confirm('✅ Do you really want to create Docker Composer ? ✅')
+        ;
+
+        # Check action confirmed
+        if (!$input->confirmed()){
+
+            # Stop message
+            $climate
+                ->br()
+                ->bold()
+                ->red("✋ Action canceled ✋")
+                ->br()
+            ;
+
+            # Stop action
+            return;
+
+        }
+
+        # New instance of class
+        $instance = new $class($result);
+
+        # Get story line
+        $storyline = $instance->getStoryline();
+
+        # Iteration storyline
+        foreach($storyline as $action){
+
+            # Message start
+            $climate
+                ->br()
+                ->yellow("🟠 Run ".str_replace("run", "", strtolower($action)))
+            ;
+
+            # Execute
+            $instance->{$action}();
+
+            # Message end
+            $climate
+                ->green("🟢 ".str_replace("run", "", strtolower($action))." ran with success")
+            ;
+
+        }
+
+        # Success message
+        $climate
+            ->br()
+            ->lightBlue()
+            ->bold()
+            ->out("🎉 Docker compose installed with success 🎉")
+            ->br()
+        ;
+
+    }
+
     /** Provate methods
      ******************************************************
      */
@@ -466,10 +642,13 @@ class Core extends CLI {
 
         # Check inputs
         if(
-            !isset($inputs['cmd']) || 
-            !isset($inputs['args'][0]) ||
-            !$inputs['cmd'] ||
-            !$inputs['args'][0]
+            isset(self::ROUTERS[$this->scriptName][$inputs['cmd']]["command"]) && 
+            (
+                !isset($inputs['cmd']) || 
+                !isset($inputs['args'][0]) ||
+                !$inputs['cmd'] ||
+                !$inputs['args'][0]
+            )
         )
             
             # New error
@@ -482,7 +661,7 @@ class Core extends CLI {
             );
 
         # Check command given is in router
-        if(!isset(self::ROUTERS[$inputs['cmd']][$inputs['args'][0]]))
+        if(isset(self::ROUTERS[$this->scriptName][$inputs['cmd']]["command"]) && !isset(self::ROUTERS[$this->scriptName][$inputs['cmd']]["command"][$inputs['args'][0]]))
             
             # New error
             throw new CrazyException(
@@ -510,21 +689,35 @@ class Core extends CLI {
      * Router Collection
      */
     public const ROUTERS = [
-        # Command new
-        "new"   =>  [
-            # Options
-            "project"   =>  [
-                "class"     =>  "\CrazyPHP\App\Create",
-                "parameter" =>  "application",
+        "CrazyCommand"  =>  [
+            # Command new
+            "new"   =>  [
+                # Command
+                "command"   =>  [
+                    ## Project
+                    "project"   =>  [
+                        "class"     =>  "\CrazyPHP\App\Create",
+                        "parameter" =>  "application",
+                    ],
+                ],
+            ],
+            # Command delete
+            "delete"   =>  [
+                # Command
+                "command"   =>  [
+                    ## Project
+                    "project"   =>  [
+                        "class"     =>  "\CrazyPHP\App\Delete",
+                    ],
+                ],
             ],
         ],
-        # Command delete
-        "delete"   =>  [
-            # Options
-            "project"   =>  [
-                "class"     =>  "\CrazyPHP\App\Delete",
+        "CrazyDocker"   =>  [
+            # Command new
+            "new"   =>  [
+                "class"     =>  "\CrazyPHP\Docker\Install",
             ],
-        ],
+        ]
     ];
 
 }

@@ -168,6 +168,8 @@ class Yaml{
         # If it doesn't work...
         } catch (ParseException $exception) {
 
+            print_r($exception->getMessage());
+
             # New Exception
             throw new CrazyException(
                 "Content of  \"$filename\" isn't yaml...",

@@ -16,8 +16,10 @@ namespace Tests\Library\File;
  * Dependances
  */
 use CrazyPHP\Library\File\Structure;
+use CrazyPHP\Library\File\Yaml;
 use CrazyPHP\Library\File\File;
 use PHPUnit\Framework\TestCase;
+use CrazyPHP\Model\Env;
 
 /**
  * Structure Test
@@ -47,6 +49,20 @@ class StructureTest extends TestCase{
     /** Public method
      ******************************************************
      */
+    /**
+     * Prepare Cache
+     */
+    public function prepareEnv():void {
+
+        # Setup env
+        Env::set([
+            # App root for composer class
+            "app_root"      =>  self::RELATIVE_ROOT_PATH,
+            "crazyphp_root" =>  getcwd(),
+            "phpunit_test"  =>  true,
+        ]);
+
+    }
 
     /**
      * Test Tree Folder Generator
@@ -116,5 +132,53 @@ class StructureTest extends TestCase{
         $this->assertEmpty($result);
 
     }
+
+    /**
+     * Test structure create
+     * 
+     * @return void
+     */
+    public function testStructureCreate():void {
+
+        # Prepare env
+        $this->prepareEnv();
+
+        # File path of structure yaml
+        $filePath = File::path("@crazyphp_root/resources/Docker/Structure.yml");
+
+        # Get structure
+        $structure = Yaml::open($filePath);
+
+        # Create structure
+        Structure::create($structure);
+
+        # Assert
+        $this->assertTrue(true);
+ 
+    }
+
+    /**
+     * Test structure check
+     * 
+     * @depends testStructureCreate
+     */
+    public function testStructureCheck():void {
+
+        # We supposed env are already set
+
+        # File path of structure yaml
+        $schema = File::path("@crazyphp_root/resources/Docker/Structure.yml");
+
+        # Create structure
+        $result = Structure::check($schema);
+
+        # Assert
+        $this->assertTrue($result);
+
+    }
+
+    /**
+     * Test structure delete
+     */
 
 }

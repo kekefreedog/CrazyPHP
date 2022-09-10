@@ -17,9 +17,11 @@ namespace CrazyPHP\Library\File;
  */
 use CrazyPHP\Exception\CrazyException;
 use Symfony\Component\Finder\Finder;
+use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\File\Json;
 use CrazyPHP\Library\File\Yaml;
 use CrazyPHP\Library\File\File;
+use CrazyPHP\Model\Env;
 
 /**
  * Structure
@@ -716,6 +718,324 @@ class Structure{
 
     }
 
+    /** Public static method - versions 2
+     ******************************************************
+     */
+
+    /**
+     * Create
+     * 
+     * Create structure
+     * 
+     * @param string|array $schema Path of the schema or schema itself
+     * @param array $data Data to use for compilate
+     * @param bool $preview Preview will return array create but create nor folder
+     * @return array
+     */
+    public static function create(string|array $schema = "", array $data = [], bool $preview = false):array {
+
+        # Declare result
+        $result = [];
+
+        # Get schema
+        $collection = self::_getSchema($schema);
+
+        # check collection has structure parameter
+        if(empty($collection) || !array_key_exists("Structure", $collection))
+
+            # New Exception
+            throw new CrazyException(
+                "Schema content isn't valid...",
+                500,
+                [
+                    "custom_code"   =>  "structure-012",
+                ]
+            );
+
+        # Function for folder
+        $folder = function($folder, $path, $preview){
+
+            # Check preview
+            if($preview)
+
+                # Stop function
+                return;
+
+            # Check folder is set
+            if(!File::exists($path))
+
+                # Create folder
+                mkdir(
+                    $path,
+                    # $folder['permission'] ?? static::DEFAULT_PERMISSION,
+                    0777,
+                    true
+                );
+
+            # Check permission
+            if($folder['permission'] ?? false)
+
+                # Changer permission
+                chmod($path, 0777/* $folder['permission'] */);
+
+        };
+
+        # Function for file
+        $file = function($file, $path, $preview) use ($data) {
+
+            # Check preview
+            if($preview)
+
+                # Stop function
+                return;
+
+            # Check if source
+            if($file['source'] ?? false){
+
+                # Get reel path
+                $file['source'] = File::path($file['source']);
+
+                # Check if engine is valid
+                if(
+                    ( $file['engine'] ?? false ) &&
+                    class_exists($file['engine'])
+                ){
+
+                    # New engine instance
+                    $engineInstance = new $file['engine']();
+
+                    # Load file
+                    $engineInstance->load($file['source']);
+
+                    # Render content of file and set content variable
+                    $content = $engineInstance->render($data);
+
+                }else
+                # Juste read content of the file
+
+                    # Get content of file
+                    $content = File::read($file['source']);
+
+                # Create or update file
+                file_put_contents(
+                    $path,
+                    $content
+                );
+
+                # Check permission
+                if($folder['permission'] ?? false)
+    
+                    # Changer permission
+                    chmod($path, $file['permission']);
+
+            }
+
+        };
+
+        # Execute loop
+        $result = static::_loopInsideSchema(
+            ["folders" => $collection["Structure"]],
+            $folder,
+            $file,
+            $preview
+        );
+
+        # Return result
+        return $result;
+
+    }    
+    
+    /**
+    * Check
+    * 
+    * Check structure has been correctly check
+    * 
+    * @param string|array $schema Path of the schema or schema itself
+    * @return array
+    */
+    public static function check(string|array $schema = ""):bool {
+
+        # Set result
+        $result = true;
+
+        # Return result
+        return $result;
+
+    }
+
+    /** Private static method - version 2
+     ******************************************************
+     */
+
+    /**
+     * Get Schema
+     * 
+     * Get schema path and parse it
+     * 
+     * @param string|array $schema path or collection
+     * @return array
+     */
+    private static function _getSchema(string|array $schema = ""):array {
+
+        # Check schema
+        if(!$schema || empty($schema))
+
+            # New Exception
+            throw new CrazyException(
+                "Schema given isn't valid...",
+                500,
+                [
+                    "custom_code"   =>  "structure-009",
+                ]
+            );
+
+        # Check if is array
+        if(is_array($schema))
+
+            # Set result
+            $result = $schema;
+
+        else{
+
+            # Get clean path
+            $path = File::path($schema);
+
+            # Check path is defined
+            if(!File::exists($path))
+
+                # New Exception
+                throw new CrazyException(
+                    "Path of the schema given isn't valid...",
+                    500,
+                    [
+                        "custom_code"   =>  "structure-010",
+                    ]
+                );
+
+            # Guess mimetype of file
+            $mimeType = File::guessMime($path);
+
+            # Check if yaml
+            if($mimeType == "text/yaml"){
+
+                # Read yaml file
+                $result = Yaml::open($path);
+
+            }else
+            # Check if json
+            if($mimeType == "application/json"){
+
+                # Read json file
+                $result = Json::open($path);
+
+            }else
+            # Check if php
+            if($mimeType == "text/php"){
+
+                # Read php file
+                $result = require $path;
+
+            }else
+
+                # New Exception
+                throw new CrazyException(
+                    "File type of schema is unknown \"".$mimeType."\"",
+                    500,
+                    [
+                        "custom_code"   =>  "structure-011",
+                    ]
+                );
+
+        }
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Loop
+     * 
+     * Loop for iterate inside structure
+     * 
+     * @param array $collection
+     * @param ?callable $folder Function to execute for folder
+     * @param ?callable $file Function to execute for file
+     * @param bool $preview Preview mode
+     * @param string $root Current root
+     * @param array $result Current array
+     * 
+     * @return array
+     */
+    private static function _loopInsideSchema(array $collection, ?callable $folder = null, ?callable $file = null, bool $preview = false, string $root = "", array &$result = []):array {
+
+        # Check folders
+        if(isset($collection['folders']) && !empty($collection['folders']))
+
+            # Iteration of folders
+            foreach($collection['folders'] as $folderName => $content){
+
+                # Check foldername
+                if(!$folderName) continue;
+
+                # Path of folder
+                $currentPath = File::path($root?"$root/$folderName":$folderName);
+
+                # Push path in result
+                $result = Arrays::mergeMultidimensionalArrays(
+                    true,
+                    $result, 
+                    Arrays::stretch([$currentPath], "/")
+                );
+
+                # Execute file
+                if(is_callable($folder)) 
+                    $folder(
+                        $collection['folders'][$folderName],
+                        $currentPath,
+                        $preview
+                    );
+
+                # Recursive
+                static::_loopInsideSchema($content, $folder, $file, $preview, $currentPath, $result);
+
+                
+            }
+
+        # Check files
+        if(isset($collection['files']) && !empty($collection['files']))
+
+            # Iteration of files
+            foreach($collection['files'] as $fileName => $option){
+
+                # Check foldername
+                if(!$fileName) continue;
+
+                # Path of folder
+                $currentPath = File::path("$root/$fileName");
+
+                # Push path in result
+                $result = Arrays::mergeMultidimensionalArrays(
+                    true,
+                    $result, 
+                    Arrays::stretch([$currentPath], "/")
+                );
+
+                # Execute file
+                if(is_callable($file)) 
+                    $file(
+                        $collection['files'][$fileName],
+                        $currentPath,
+                        $preview
+                    );
+
+            }
+
+        # Return result
+        return $result;
+
+    }
+
     /** Private method
      ******************************************************
      */
@@ -820,5 +1140,15 @@ class Structure{
      * Template to use for app creation
      */
     public const DEFAULT_TEMPLATE = "{{root}}/vendor/kzarshenas/crazyphp/resources/Yml/Structure.yml";
+
+    /**
+     * Template for docker
+     */
+    public const DOCKER_TEMPLATE = "@crazyphp_root/resources/Docker/Structure.yml";
+
+    /**
+     * Default permission
+     */
+    public const DEFAULT_PERMISSION = 0777;
 
 }

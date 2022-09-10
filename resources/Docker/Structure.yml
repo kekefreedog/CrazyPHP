@@ -1,0 +1,38 @@
+# #
+# Structure
+#
+# Define app folder structure of the Crazy App
+#
+# YAML version 1.2
+#
+# @package    kzarshenas/crazyphp
+# @author     kekefreedog <kevin.zarshenas@gmail.com>
+# @copyright  2022-2022 Kévin Zarshenas
+# #
+Structure:
+  "@app_root":
+    folders:
+      docker:
+        folders:
+          nginx:
+            files:
+              nginx.conf:
+                source: "@crazyphp_root/resources/Docker/docker/nginx/nginx.conf.hbs"
+                engine: "CrazyPHP\\Library\\Template\\Handlebars"
+          php-fpm: 
+            files:
+              Dockerfile:
+                source: "@crazyphp_root/resources/Docker/docker/php-fpm/Dockerfile.hbs"
+                engine: "CrazyPHP\\Library\\Template\\Handlebars"
+              php-ini-overrides.ini:
+                source: "@crazyphp_root/resources/Docker/docker/php-fpm/php-ini-overrides.ini.hbs"
+                engine: "CrazyPHP\\Library\\Template\\Handlebars"
+        files:
+          variables.env:
+            source: "@crazyphp_root/resources/Docker/docker/variables.env.hbs"
+            engine: "CrazyPHP\\Library\\Template\\Handlebars"
+    files:
+      docker-compose.yml: 
+        source: "@crazyphp_root/resources/Docker/docker-compose.yml.hbs"
+        engine: "CrazyPHP\\Library\\Template\\Handlebars"
+
