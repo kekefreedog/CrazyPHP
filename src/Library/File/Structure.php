@@ -18,6 +18,7 @@ namespace CrazyPHP\Library\File;
 use CrazyPHP\Exception\CrazyException;
 use Symfony\Component\Finder\Finder;
 use CrazyPHP\Library\Array\Arrays;
+use CrazyPHP\Library\String\Url;
 use CrazyPHP\Library\File\Json;
 use CrazyPHP\Library\File\Yaml;
 use CrazyPHP\Library\File\File;
@@ -843,7 +844,7 @@ class Structure{
         # Return result
         return $result;
 
-    }    
+    }
     
     /**
     * Check
@@ -858,8 +859,182 @@ class Structure{
         # Set result
         $result = true;
 
+        # Get schema
+        $collection = self::_getSchema($schema);
+
+        # check collection has structure parameter
+        if(empty($collection) || !array_key_exists("Structure", $collection))
+
+            # New Exception
+            throw new CrazyException(
+                "Schema content isn't valid...",
+                500,
+                [
+                    "custom_code"   =>  "structure-013",
+                ]
+            );
+
+        # Function for folder
+        $folder = function($folder, $path, $preview) use (&$result){
+
+            # Unset unsused arguments
+            unset($folder, $preview);
+
+            # Check folder exists
+            if(!File::exists($path)){
+
+                /* print_r($path); */
+
+                # Set result false
+                $result = false;
+
+            }
+
+        };
+
+        # Function for file
+        $file = function($file, $path, $preview) use (&$result){
+            
+            # Unset unsused arguments
+            unset($file, $preview);
+
+            # Check folder exists
+            if(!File::exists($path)){
+
+                /* print_r($path); */
+
+                # Set result false
+                $result = false;
+
+            }
+
+        };
+
+        # Execute loop
+        static::_loopInsideSchema(
+            ["folders" => $collection["Structure"]],
+            $folder,
+            $file,
+            true
+        );
+
         # Return result
         return $result;
+
+    }
+    
+    /**
+    * remove
+    * 
+    * Remove structure
+    * 
+    * @param string|array $schema Path of the schema or schema itself
+    * @return array
+    */
+    public static function remove(string|array $schema = ""):void {
+
+        # Get schema
+        $collection = self::_getSchema($schema);
+
+        # check collection has structure parameter
+        if(empty($collection) || !array_key_exists("Structure", $collection))
+
+            # New Exception
+            throw new CrazyException(
+                "Schema content isn't valid...",
+                500,
+                [
+                    "custom_code"   =>  "structure-013",
+                ]
+            );
+
+        # Function for folder
+        $folder = function($folder, $path, $preview){
+
+            # Unset unused arguments
+            unset($folder);
+
+            # Check preview
+            if($preview)
+
+                # Stop function
+                return;
+
+            # Check folder exists
+            if(File::exists($path)){
+
+                # Set path collection
+                $pathCollection = [$path];
+
+                # Decompose path
+                $pathCollection += Url::decompose($path);
+
+                # Sort by length descending
+                usort($pathCollection, function($a, $b) {
+                    return strlen($b) <=> strlen($a);
+                });
+
+                # Iteration of path collection
+                foreach($pathCollection as $v){
+
+                    # Check if current folder is empty
+                    if(File::isEmpty($v))
+
+                        # Remove current folder
+                        rmdir($v);
+
+                }
+
+            }
+
+        };
+
+        # Function for file
+        $file = function($file, $path, $preview) use ($folder){
+
+            # Unset unused arguments
+            unset($file);
+
+            # Check preview
+            if($preview)
+
+                # Stop function
+                return;
+
+            # Check folder exists
+            if(File::exists($path)){
+
+                # Remove file
+                unlink($path);
+
+                # Get folder path of the file
+                $folderPath = implode("/", explode("/", $path, -1));
+
+                # Try to remove folder
+                $folder([], $folderPath, $preview);
+
+            }
+
+        };
+
+        # Execute loop
+        static::_loopInsideSchema(
+            ["folders" => $collection["Structure"]],
+            $folder,
+            $file,
+            false
+        );
+
+        /* Recreate first folder if deleted */
+
+        # Get path
+        $path = File::path(array_key_first($collection['Structure']));
+
+        # Check if is dir
+        if(!is_dir($path))
+
+            # Create it
+            mkdir($path, 0777);
 
     }
 

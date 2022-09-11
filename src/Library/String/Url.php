@@ -90,9 +90,9 @@ class Url {
         }else{
             @curl_setopt($ch, CURLOPT_FOLLOWLOCATION ,false);
         }
-//      @curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,5);   // fairly random number (seconds)... but could prevent waiting forever to get a result
-//      @curl_setopt($ch, CURLOPT_TIMEOUT        ,6);   // fairly random number (seconds)... but could prevent waiting forever to get a result
-//      @curl_setopt($ch, CURLOPT_USERAGENT      ,"Mozilla/5.0 (Windows NT 6.0) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1");   // pretend we're a regular browser
+        //      @curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,5);   // fairly random number (seconds)... but could prevent waiting forever to get a result
+        //      @curl_setopt($ch, CURLOPT_TIMEOUT        ,6);   // fairly random number (seconds)... but could prevent waiting forever to get a result
+        //      @curl_setopt($ch, CURLOPT_USERAGENT      ,"Mozilla/5.0 (Windows NT 6.0) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1");   // pretend we're a regular browser
         @curl_exec($ch);
         if(@curl_errno($ch)){   // should be 0
             @curl_close($ch);
@@ -137,5 +137,46 @@ class Url {
         // no headers :
         return false;
     }
+
+	/** 
+     * Decompose
+     * 
+     * Decommpose path
+     * - Exemple : "/toto/titi/tata" => [ "/toto/", "/toto/titi/" ]
+     * 
+     * @param string $path Path to process
+     * @param string $delimiter Delimiter for decomposer path
+	 * @return array
+	 */
+	public static function decompose(string $path = "", string $delimiter = "/"):array{
+
+		# Check string
+		if(!$path || !$delimiter)
+			return [];
+
+		# Explode string
+		$explode = explode($delimiter, trim($path, $delimiter));
+
+		# Declare result
+		$result = [];
+
+		# Remove last value in array
+		array_pop($explode);
+
+		# Boucle
+		while(!empty($explode)):
+
+			# Push value in result
+			$result[] = $delimiter.implode($delimiter, $explode).$delimiter;
+
+			# Remove last value in array
+			array_pop($explode);
+
+		endwhile;
+
+		# Return result 
+		return $result;
+
+	}
 
 }

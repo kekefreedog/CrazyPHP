@@ -221,7 +221,10 @@ class Cache extends Psr16Adapter {
             # Set result
             $result = self::PATH_TEST;
 
-        # PRocess result
+        # Strange reaction... Allow to debug next command... ¯\_(ツ)_/¯
+        Env::get("crazyphp_root");
+
+        # Process result
         $result = File::path($result);
 
         # Return result
@@ -237,7 +240,7 @@ class Cache extends Psr16Adapter {
      * Path of the cache
      */
     public const PATH = "@app_root/.cache/app/";
-    public const PATH_TEST = "@app_root/tests/.cache/cache/";
+    public const PATH_TEST = "@crazyphp_root/tests/.cache/cache/";
 
 
     /**

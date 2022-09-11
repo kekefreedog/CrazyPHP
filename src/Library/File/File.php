@@ -413,6 +413,35 @@ class File {
 
     }
 
+    /**
+     * Is Empty
+     * 
+     * Check if folder is empty
+     * 
+     * @param string $path Path to process
+     * @return bool
+     */
+    public static function isEmpty(string $path = ""):bool {
+
+        # Set result
+        $result = false;
+
+        # Get real path
+        $path = self::path($path);
+
+        # Check folder exists
+        if(!self::exists($path))
+
+            return $result;
+
+        # Check folder is empty
+        $result = !(new \FilesystemIterator($path))->valid();
+
+        # Return result
+        return $result;
+
+    }
+
 
     /** Public constant
      ******************************************************

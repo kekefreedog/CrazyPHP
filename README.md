@@ -45,3 +45,10 @@ php vendor/phpunit/phpunit/phpunit
 |CRAZY_ROOT|@crazyphp_root|\<string>|Root of crazyphp vendor folder|
 |APP_ROOT|@app_root|\<string>|Root of your crazy application|
 |PHPUNIT_TEST|@phpunit_test|\<bool>|Determine if we are in a test context|
+
+# Documentation
+
+- Script
+    - [Comment Headers](docs/Src/CommentHeaders.md) : Rules for the comment header of files like PHP, JS, JSON, YAML...
+- Structure
+    - [Create Folder Structure](docs/Structure/CreateFolderStructure.md) : Tutoriel to learn how to create folder schema

@@ -56,6 +56,7 @@ class CacheTest extends TestCase {
         Env::set([
             # App root for composer class
             "phpunit_test"  =>  true,
+            "crazyphp_root" =>  getcwd(),
             "app_root"      =>  getcwd(),
         ]);
 

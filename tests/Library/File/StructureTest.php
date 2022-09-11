@@ -178,6 +178,35 @@ class StructureTest extends TestCase{
     }
 
     /**
+     * Test structure check
+     * 
+     * @depends testStructureCheck
+     */
+    public function testStructureDelete():void {
+
+        # We supposed env are already set
+
+        # File path of structure yaml
+        $schema = File::path("@crazyphp_root/resources/Docker/Structure.yml");
+
+        # Create structure
+        Structure::remove($schema);
+
+        # Remove cache created
+        # shell_exec("rm -r tests/.cache/structure/tests");
+
+        # Get item in root path
+        $result = scandir(self::RELATIVE_ROOT_PATH);
+
+        # Remove dots
+        $result = array_filter($result, fn($e) => !in_array($e, [".", ".."]));
+
+        # Assert
+        $this->assertEmpty($result);
+
+    }
+
+    /**
      * Test structure delete
      */
 
