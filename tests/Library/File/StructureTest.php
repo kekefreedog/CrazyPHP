@@ -49,6 +49,7 @@ class StructureTest extends TestCase{
     /** Public method
      ******************************************************
      */
+
     /**
      * Prepare Cache
      */
@@ -67,9 +68,11 @@ class StructureTest extends TestCase{
     /**
      * Test Tree Folder Generator
      * 
+     * @deprecated
+     * 
      * @return void
      */
-    public function testTreeFolderGeneratorCreate():void {
+    public function deprecared_testTreeFolderGeneratorCreate():void {
 
         # Check tmp directory already exists
         if(!is_dir(self::RELATIVE_ROOT_PATH))
@@ -100,11 +103,13 @@ class StructureTest extends TestCase{
     /**
      * Test Tree Folder Deletion
      * 
+     * @deprecated
+     * 
      * @depends testTreeFolderGeneratorCreate
      * 
      * @return void
      */
-    public function testTreeFolderGeneratorDelete():void {
+    public function deprecared_testTreeFolderGeneratorDelete():void {
 
         # Check tmp directory already exists
         if(!is_dir(self::RELATIVE_ROOT_PATH))

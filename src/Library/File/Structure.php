@@ -308,6 +308,8 @@ class Structure{
      * Creates directories based on the array given
      * 
      * @source https://gist.github.com/timw4mail/4172083
+     * 
+     * @deprecated
      *
      * @param array $structure
      * @param string $path
@@ -436,6 +438,8 @@ class Structure{
     /**
     * Delete directories based on the array given
     * 
+    * @deprecated
+    * 
     * @source https://stackoverflow.com/questions/1653771/how-do-i-remove-a-directory-that-is-not-empty
     *
     * @param array $structure
@@ -540,6 +544,8 @@ class Structure{
 
     /**
      * Creates directories array for preview and check based on the array given
+     * 
+     * @deprecated
      * 
      * @source https://gist.github.com/timw4mail/4172083
      *
