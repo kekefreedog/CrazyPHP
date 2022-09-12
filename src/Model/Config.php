@@ -45,7 +45,7 @@ class Config{
             "path_target"   =>  "@app_root"."/config/App.yml",
             "action_set"    =>  "_setAppConfig",
         ],
-        "Template"  =>  [
+        /* "Template"  =>  [
             "path_source"   =>  "@crazyphp_root"."/resources/Yml/Template.yml",
             "path_target"   =>  "@app_root"."/config/Template.yml",
         ],
@@ -72,7 +72,7 @@ class Config{
         "Bridge"    =>  [
             "path_source"   =>  "@crazyphp_root"."/resources/Yml/Bridge.yml",
             "path_target"   =>  "@app_root"."/config/Bridge.yml",
-        ],
+        ], */
     ];
 
     /** Public static methods

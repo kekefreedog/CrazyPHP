@@ -18,6 +18,7 @@ namespace CrazyPHP\App;
 use CrazyPHP\Library\File\Structure;
 use CrazyPHP\Interface\CrazyCommand;
 use CrazyPHP\Library\Cache\Cache;
+use CrazyPHP\Library\File\File;
 use CrazyPHP\Model\Env;
 
 /**
@@ -136,6 +137,9 @@ class Delete implements CrazyCommand {
         # Clear cache
         $cache->clear();
 
+        # Clear cache path
+        File::removeAll(Cache::PATH);
+
         # Return instance
         return $this;
 
@@ -152,14 +156,12 @@ class Delete implements CrazyCommand {
      */
     public function runStructureFolder():Delete {
 
-        # Define Root
-        $root = getcwd();
+        # Get path of structure
+        $structurePath = File::path(Structure::DEFAULT_TEMPLATE);
 
-        # New structure instance
-        $structure = new Structure($root, Structure::DEFAULT_TEMPLATE, "delete");
-
-        # Create new structure
-        $structure->run();
+        # Run creation of docker structure
+        Structure::remove($structurePath);
+        Structure::remove($structurePath);
 
         # Return instance
         return $this;

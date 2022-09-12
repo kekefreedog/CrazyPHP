@@ -10,7 +10,7 @@
 # @copyright  2022-2022 Kévin Zarshenas
 # #
 Structure:
-  "@root":
+  "@app_root":
     folders:
       .cache:
         folders:
@@ -26,7 +26,21 @@ Structure:
           Scss: null
           Yaml: null
       # Config
-      config: null
+      config:
+        files:
+          App.yml: null
+          Database.yml:
+            source: "@crazyphp_root/resources/Yml/Database.yml"
+          Firewall.yml:
+            source: "@crazyphp_root/resources/Yml/Firewall.yml"
+          Head.yml:
+            source: "@crazyphp_root/resources/Yml/Head.yml"
+          Router.yml:
+            source: "@crazyphp_root/resources/Yml/Router.yml"
+          Style.yml:
+            source: "@crazyphp_root/resources/Yml/Style.yml"
+          Template.yml:
+            source: "@crazyphp_root/resources/Yml/Template.yml"
       # Documentation
       docs:
         folders:
@@ -36,10 +50,8 @@ Structure:
       logs: null
       # Public folder
       public: null
-      # Script JS
-      src_front: null
       # Script PHP
-      src_back:
+      app:
         folders:
           # Controllers folder
           controller:
@@ -49,7 +61,9 @@ Structure:
           view: null
           # Languages translation folder
           language: null
-          # Custom libraryarch -x86_64 brew install
+          # Custom libraries
           library: null
           # Bridge with other api
           bridge: null
+          # Script JS
+          front: null

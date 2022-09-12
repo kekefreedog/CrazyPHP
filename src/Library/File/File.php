@@ -442,6 +442,46 @@ class File {
 
     }
 
+    /**
+     * Remove All
+     * 
+     * Remove recursively all content in folder
+     * 
+     * @param string $path Path to remove
+     * @return void
+     */
+    public static function removeAll(string $path = ""):void {
+
+        # Get path
+        $path = self::path($path);
+
+        # Check path
+        if(!$path)
+
+            # Stop script
+            return;
+
+        # Remove 
+        # https://stackoverflow.com/questions/3338123/how-do-i-recursively-delete-a-directory-and-its-entire-contents-files-sub-dir
+        $rrmdir = function ($dir, $call) { 
+            if (is_dir($dir)) { 
+              $objects = scandir($dir);
+              foreach ($objects as $object) { 
+                if ($object != "." && $object != "..") { 
+                  if (is_dir($dir. DIRECTORY_SEPARATOR .$object) && !is_link($dir."/".$object))
+                    $call($dir. DIRECTORY_SEPARATOR .$object, $call);
+                  else
+                    unlink($dir. DIRECTORY_SEPARATOR .$object); 
+                } 
+              }
+              rmdir($dir); 
+            } 
+        };
+
+        $rrmdir($path, $rrmdir);
+
+    }
+
 
     /** Public constant
      ******************************************************

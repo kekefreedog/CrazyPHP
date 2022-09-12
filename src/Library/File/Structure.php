@@ -948,8 +948,11 @@ class Structure{
                 ]
             );
 
+        # Get root
+        $root = File::path(array_key_first($collection["Structure"]))."/";
+
         # Function for folder
-        $folder = function($folder, $path, $preview){
+        $folder = function($folder, $path, $preview) use ($root){
 
             # Unset unused arguments
             unset($folder);
@@ -974,14 +977,24 @@ class Structure{
                     return strlen($b) <=> strlen($a);
                 });
 
+                # Remove all path outside root
+                $pathCollection = array_filter(
+                    $pathCollection, 
+                        function($v) use ($root) {
+                            return strpos($v, $root) !== false && $v != $root;
+                        }
+                );
+
                 # Iteration of path collection
                 foreach($pathCollection as $v){
-
+                        
                     # Check if current folder is empty
-                    if(File::isEmpty($v))
+                    if(File::isEmpty($v)){
 
                         # Remove current folder
                         rmdir($v);
+
+                    }
 
                 }
 
@@ -1142,7 +1155,13 @@ class Structure{
      * 
      * @return array
      */
-    private static function _loopInsideSchema(array $collection, ?callable $folder = null, ?callable $file = null, bool $preview = false, string $root = "", array &$result = []):array {
+    private static function _loopInsideSchema(?array $collection, ?callable $folder = null, ?callable $file = null, bool $preview = false, string $root = "", array &$result = []):array {
+
+        # Check collection not valid
+        if($collection === null)
+
+            # Stop loop
+            return [];
 
         # Check folders
         if(isset($collection['folders']) && !empty($collection['folders']))
@@ -1314,7 +1333,7 @@ class Structure{
     /**
      * Template to use for app creation
      */
-    public const DEFAULT_TEMPLATE = "{{root}}/vendor/kzarshenas/crazyphp/resources/Yml/Structure.yml";
+    public const DEFAULT_TEMPLATE = "@crazyphp_root/resources/Yml/Structure.yml";
 
     /**
      * Template for docker

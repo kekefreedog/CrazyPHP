@@ -22,6 +22,7 @@ use CrazyPHP\Library\File\Composer;
 use CrazyPHP\Library\File\Package;
 use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\Array\Arrays;
+use CrazyPHP\Library\File\File;
 use CrazyPHP\Library\File\Json;
 use CrazyPHP\Model\Config;
 use CrazyPHP\Model\Env;
@@ -420,14 +421,14 @@ class Create implements CrazyCommand {
      */
     public function runStructureFolder():Create {
 
-        # Define Root
-        $root = getcwd();
+        # Get path of structure
+        $structurePath = File::path(Structure::DEFAULT_TEMPLATE);
 
-        # New structure instance
-        $structure = new Structure($root);
+        # Get data for render
+        $data = self::_getData();
 
-        # Create new structure
-        $structure->run();
+        # Run creation of docker structure
+        Structure::create($structurePath, $data);
 
         # Return instance
         return $this;
@@ -545,4 +546,26 @@ class Create implements CrazyCommand {
         return $this;
 
     }
+
+    /** Private methods
+     ******************************************************
+     */
+
+    /**
+     * Get data
+     * 
+     * Get all data needed for template engine
+     * 
+     * @return array
+     */
+    private function _getData():array {
+
+        # Set result
+        $result = [];
+
+        # Return result
+        return $result;
+
+    }
+
 }
