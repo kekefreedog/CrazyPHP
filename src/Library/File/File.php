@@ -501,4 +501,12 @@ class File {
         # TBC ...
     ];
 
+    /* @var array MIMTYPE_TO_CLASS */
+    public const MIMTYPE_TO_CLASS = [
+        # Yaml
+        "text/yaml"         =>  "CrazyPHP\\Library\\File\\Yaml",
+        # Json
+        "application/json"  =>  "CrazyPHP\\Library\\File\\Json",
+    ];
+
 }

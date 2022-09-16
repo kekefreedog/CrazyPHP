@@ -139,7 +139,7 @@
             }
         ]
     },
-    // Errors
+    // Config
     "_config": {
         "app":{
 

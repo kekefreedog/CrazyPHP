@@ -10,14 +10,15 @@
 # @copyright  2022-2022 Kévin Zarshenas
 # #
 Database:
-  - engine: mariadb
-    name: '{{app_name}}'
+  mangodb:
+    engine: mangodb
+    name: '{{app.name}}'
     prefix: kevinzar_
     host: localhost
     port: 5432
     root:
-      login: null
-      password: null
+      login: admin
+      password: admin
     users:
       - name: null
         login: null

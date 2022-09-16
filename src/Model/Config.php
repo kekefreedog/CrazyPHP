@@ -16,10 +16,12 @@ namespace CrazyPHP\Model;
  * Dependances
  */
 use CrazyPHP\Exception\CrazyException;
+use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\File\Composer;
 use CrazyPHP\Library\File\Header;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Library\File\Yaml;
+use CrazyPHP\Model\Env;
 
 /**
  * Config
@@ -40,7 +42,7 @@ class Config{
      * Default Config files
      */
     public const DEFAULT_CONFIG_FILES = [
-        "app"       =>  [
+        "App"       =>  [
             "path_source"   =>  "@app_root"."/composer.json",
             "path_target"   =>  "@app_root"."/config/App.yml",
             "action_set"    =>  "_setAppConfig",
@@ -203,8 +205,21 @@ class Config{
                 ]
             );
 
+        $composerContent = Arrays::mergeMultidimensionalArrays(
+            true,
+            $composerContent,
+            [
+                "root"      =>  Env::get("app_root"),
+                # To delete for production
+                "framework" =>  [
+                    "path"      =>  "/Users/kzarshenas/Sites/CrazyPHP"
+                ],
+                "public"    =>  "public"
+            ]
+        );
+
         # Create yaml
-        Yaml::create($config['path_target'], ["app" => $composerContent], Header::get("yml"));
+        Yaml::create($config['path_target'], ["App" => $composerContent], Header::get("yml"));
 
     }
 

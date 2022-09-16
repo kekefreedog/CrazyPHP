@@ -179,4 +179,106 @@ class Arrays{
 
     }
 
+	/**
+	 * Parse Key
+	 * 
+	 * Convert "hello/toto" or "hello.toto" to ["hello"]["toto"]
+	 * 
+	 * @param string $key Key to parse
+	 * @param array $array
+	 * @param string|array $separator
+	 * @return
+	 */
+	public static function parseKey(string $key = "", array $array = [], string|array $separators = [".", "/"]) {
+
+		# Set result
+		$result = null;
+
+		# Check key, array, separator
+		if(empty($key) || empty($separators) || empty($array))
+
+			# Return
+			return $result;
+
+		# Replace separator
+		$key = str_replace($separators, "___", $key);
+
+		# Explode
+		$keyExploded = explode("___", $key);
+
+		# Set result
+		$resultTemp = $array;
+
+		# Get value
+		$i=0;while(isset($keyExploded[$i])){
+
+			# Check
+			if(isset($resultTemp[$keyExploded[$i]]))
+
+				# Set value
+				$resultTemp = $resultTemp[$keyExploded[$i]];
+
+			# Return
+			else
+
+				# Stop function
+				return $result;
+
+		$i++;}
+
+		# Update result
+		$result = $resultTemp;
+
+		# Return result
+		return $result;
+
+	}
+
+	/**
+	 * fill
+	 * 
+	 * Fille array with parsed key
+	 * 
+	 * @param array &$array Array to process
+	 * @param string $key Key to parse
+	 * @param $value Value to fill in array
+	 * @param string|array $separators Separator for key
+	 * @return void
+	 */
+	public static function fill(array &$array = [], string $key = "", $value = null,  string|array $separators = [".", "/"]):void {
+
+		# Check key, array, separator
+		if(empty($key))
+
+			# Return
+			return;
+
+		# Replace separator
+		$key = str_replace($separators, "___", $key);
+
+		# Explode
+		$keyExploded = explode("___", $key);
+
+		# Set current array depth
+		$arrayDepth = &$array;
+
+		# Get value
+		$i=0;while(isset($keyExploded[$i])){
+
+			# Check
+			if(!isset($arrayDepth[$keyExploded[$i]]))
+
+				# Create value
+				$arrayDepth[$keyExploded[$i]] = null;
+
+			# Update arrayDepth
+			$arrayDepth = &$arrayDepth[$keyExploded[$i]];
+
+		$i++;}
+
+		# Push value to the current array depth
+		$arrayDepth = $value;
+
+	} 
+
 }

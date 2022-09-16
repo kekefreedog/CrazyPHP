@@ -165,4 +165,103 @@ class ArraysTest extends TestCase{
 
     }
 
+    /**
+     * Test Parse Key
+     * 
+     * @return void
+     */
+    public function testParseKey():void {
+
+        /* Prepare io */
+
+        # Array
+        $array = [
+            "first" =>	[
+                "second"    =>	[
+                    "third"     =>  "Youpi"
+                ]
+            ]
+        ];
+
+        # Key 1
+        $key1 = "first.second.third";
+        
+        # Key 2
+        $key2 = "first/second/third";
+        
+        # Key 3
+        $key3 = "first/second.third";
+
+        /* Process */
+
+        # Test key 1
+        $valueKey1 = Arrays::parseKey($key1, $array);
+        
+        # Test key 2
+        $valueKey2 = Arrays::parseKey($key2, $array);
+        
+        # Test key 3
+        $valueKey3 = Arrays::parseKey($key3, $array);
+        
+        /* Assert */
+        
+        $this->assertEquals($valueKey1, "Youpi");
+        $this->assertEquals($valueKey2, "Youpi");
+        $this->assertEquals($valueKey3, "Youpi");
+
+    }
+
+    /**
+     * Test Fill
+     * 
+     * @return void
+     */
+    public function testFill():void {
+
+        /* Prepare io */
+
+        # Array
+        $array = [
+            "first" =>	[
+                "second"    =>	[
+                    "third"     =>  "Youpi",
+                    "fourth"    =>  "Woow"
+                ]
+            ],
+            "other" =>  [
+                "lola"  =>  [ 1, 2 ]
+            ]
+        ];
+
+        # Result waited
+        $resultWaited = [
+            "first" =>	[
+                "second"    =>	[
+                    "third"     =>  "Youpi",
+                ]
+            ],
+            "other" =>  [
+                "lola"  =>  [ 1, 2 ]
+            ]
+        ];
+
+        # Key 1
+        $key1 = "first.second.third";
+        $key2 = "other.lola";
+
+        # Result
+        $result = [];
+
+        /* Process */
+
+        # Fill result
+        Arrays::fill($result, $key1, Arrays::parseKey($key1, $array));
+        Arrays::fill($result, $key2, Arrays::parseKey($key2, $array));
+
+        /* Assert */
+        $this->assertEquals($result, $resultWaited);
+
+
+    }
+
 }

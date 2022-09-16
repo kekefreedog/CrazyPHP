@@ -18,6 +18,7 @@ namespace CrazyPHP\Docker;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Interface\CrazyCommand;
 use CrazyPHP\Library\File\Structure;
+use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\File\Docker;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Model\Env;
@@ -168,23 +169,15 @@ class Install implements CrazyCommand {
     private function _getData():array {
 
         # Set result
-        $result = [
-            "app"       =>  [
-                "root"      =>  Env::get("app_root"),
-                "public"    =>  "public",   
-                "framework" =>  [
-                    "path"      =>  "/Users/kzarshenas/Sites/CrazyPHP"
-                ]
-            ],
-            "database"  =>  [
-                "mongodb"   =>  [
-                    "root"          =>  [
-                        "username"          =>  "root",
-                        "password"          =>  "root",
-                    ]
-                ]
-            ]
-        ];
+        $result = [];
+
+        # Set config
+        $config = Config::get([
+            "App", "Database"
+        ]);
+
+        # Push config in result
+        $result['_config'] = $config;
 
         # Return result
         return $result;

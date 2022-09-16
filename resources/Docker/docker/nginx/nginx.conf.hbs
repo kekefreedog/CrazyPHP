@@ -6,7 +6,7 @@ server {
     access_log /var/log/nginx/application.access.log;
 
     # root /Users/kzarshenas/Sites/CrazyTest/public;
-    root {{app.root}}/{{app.public}};
+    root {{_config.App.root}}/{{_config.App.public}};
     index index.php;
 
     # try to serve file directly, fallback to index.php
