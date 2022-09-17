@@ -38,6 +38,8 @@ Structure:
             source: "@crazyphp_root/resources/Yml/Head.yml"
           Router.yml:
             source: "@crazyphp_root/resources/Yml/Router.yml"
+          Middleware.yml:
+            source: "@crazyphp_root/resources/Yml/Middleware.yml"
           Style.yml:
             source: "@crazyphp_root/resources/Yml/Style.yml"
           Template.yml:
@@ -57,18 +59,18 @@ Structure:
       app:
         folders:
           # Controllers folder
-          controller:
+          Controller:
           # Model folder
-          model: null
+          Model: null
           # View folder
-          view: null
+          View: null
           # Languages translation folder
-          language: null
+          Language: null
           # Custom libraries
-          library: null
+          Library: null
           # Bridge with other api
-          bridge: null
+          Bridge: null
           # Script JS
-          front: null
+          Front: null
     files:
       package.json: null

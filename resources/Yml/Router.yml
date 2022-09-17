@@ -10,20 +10,24 @@
 # @copyright  2022-2022 Kévin Zarshenas
 # #
 Router:
-  app:
+  pages:
     - name: Home
+      controller: App\Controller\App\Home
       patterns:
         - /index/
       methods:
         - get
-      controller: ""
+      middleware : {}
       view: html
   api:
     - 
+  assets:
+    - 
   websocket:
     - 
-  appPrefix: ""
-  apiPrefix: "api"
+  pagesPrefix: null
+  apiPrefix: api
+  assetsPrefix: asset
   websocketPrefix: direct
   methods:
     - get

@@ -15,7 +15,7 @@
         }
     ],
     "require": {
-        "mezon/router": "^1.4",
+        "mezon/router": "^1.5",
         "splitbrain/php-cli": "^1.1",
         "league/climate": "^3.8",
         "symfony/yaml": "^6.1",
