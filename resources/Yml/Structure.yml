@@ -12,6 +12,7 @@
 Structure:
   "@app_root":
     folders:
+      .mongo: null
       .cache:
         folders:
           app: null
@@ -49,7 +50,9 @@ Structure:
       # Logs
       logs: null
       # Public folder
-      public: null
+      public:
+        files:
+          index.php: null
       # Script PHP
       app:
         folders:
@@ -67,3 +70,5 @@ Structure:
           bridge: null
           # Script JS
           front: null
+    files:
+      package.json: null

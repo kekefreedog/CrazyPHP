@@ -10,16 +10,9 @@
 # @copyright  2022-2022 Kévin Zarshenas
 # #
 Database:
-  mangodb:
+  mongodb:
     engine: mangodb
-    name: '{{app.name}}'
-    prefix: kevinzar_
-    host: localhost
-    port: 5432
+    port: null
     root:
-      login: admin
-      password: admin
-    users:
-      - name: null
-        login: null
-        password: null
+      login: root
+      password: password

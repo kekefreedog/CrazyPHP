@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 /**
- * New application
+ * Manage Docker Compose
  *
  * TDB
  *
@@ -17,22 +17,20 @@ namespace CrazyPHP\Docker;
  */
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Interface\CrazyCommand;
-use CrazyPHP\Library\File\Structure;
-use CrazyPHP\Library\File\Config;
+use CrazyPHP\Library\Cli\Command;
 use CrazyPHP\Library\File\Docker;
 use CrazyPHP\Library\File\File;
-use CrazyPHP\Model\Env;
 
 /**
- * Create new Application
+ * Down docker compose
  *
- * Classe for create step by step new application
+ * Classe for run step by step docker compose
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2022 Kévin Zarshenas
  */
-class Install implements CrazyCommand {
+class Down implements CrazyCommand {
 
     /**
      * Constructor
@@ -128,65 +126,87 @@ class Install implements CrazyCommand {
     public function run():self {
 
         /**
-         * Run Structure Folder
-         * 1. Prepare folder structure
+         * Check
+         * 1. Check command docker-compose
+         * 2. Check docker-compose.yml file
          */
-        $this->runStructureFolder();
+        $this->runCheck();
 
-        # Return instance
+        /**
+         * Start
+         * 1. Start docker compose
+         */
+        $this->runDown();
+
+        # Return current instance
         return $this;
 
     }
 
     /**
-     * Run Structure Folder
+     * Check
      * 
-     * Prepare folder structure
+     * Check docker compose command
      * 
      * @return self
      */
-    public function runStructureFolder():self {
+    public function runCheck():self {
 
-        # Get path of structure
-        $structurePath = File::path(Docker::STRUCTURE_PATH);
+        # Check command
+        if(!Command::exists(Docker::DOCKER_COMPOSE_COMMAND))
+            
+            # New error
+            throw new CrazyException(
+                "\"".Docker::DOCKER_COMPOSE_COMMAND."\" isn't available in your shell", 
+                500,
+                [
+                    "custom_code"   =>  "Down-001",
+                ]
+            );
 
-        # Get data for render
-        $data = self::_getData();
+        # Check docker compse exists
+        if(!File::exists(Docker::DOCKER_COMPOSE_PATH))
+            
+            # New error
+            throw new CrazyException(
+                "\"docker-compose.yml\" doesn't exist, please install CrazyDocker first",
+                500,
+                [
+                    "custom_code"   =>  "Down-002",
+                ]
+            );
 
-        # Run creation of docker structure
-        Structure::create($structurePath, $data);
-
-        # Return instance
+        # Return self
         return $this;
 
     }
 
-    /** Private methods
-     ******************************************************
-     */
-
     /**
-     * Get data
+     * Down
      * 
-     * Get all data needed for template engine
+     * Down Docker Compose
      * 
-     * @return array
+     * @return self
      */
-    private function _getData():array {
+    public function runDown():self {
 
-        # Set result
-        $result = [];
+        # Run docker compose
+        $result = Docker::down();
 
-        # Set config
-        $config = Config::get([
-            "App", "Database"
-        ]);
-
-        # Push config in result
-        $result['_config'] = $config;
-
-        # Return result
-        return $result;
+        # Check result
+        if($result > 0)
+            
+            # New error
+            throw new CrazyException(
+                "Docker compose down failed",
+                500,
+                [
+                    "custom_code"   =>  "Down-002",
+                ]
+            );
+        
+        # Return self
+        return $this;
 
     }
 

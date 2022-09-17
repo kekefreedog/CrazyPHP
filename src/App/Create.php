@@ -103,8 +103,9 @@ class Create implements CrazyCommand {
         [
             "name"          =>  "database",
             "description"   =>  "Type of database used by your crazy project",
-            "type"          =>  "VARCHAR",
+            "type"          =>  "ARRAY",
             "default"       =>  "None",
+            "multiple"      =>  true,
             "select"        =>  [
                 "mangodb"       =>  "MongoDB",
                 "mariadb"       =>  "MariaDB",

@@ -18,6 +18,7 @@ namespace CrazyPHP\Library\File;
 use CrazyPHP\Exception\CrazyException;
 use Symfony\Component\Finder\Finder;
 use CrazyPHP\Library\Array\Arrays;
+use CrazyPHP\Library\Cache\Cache;
 
 /**
  * Config
@@ -61,7 +62,7 @@ class Config{
             $inputs = [$inputs];
 
         # Iteration of input
-        foreach($inputs as $input)
+        foreach($inputs as $input){
 
             # Check config has input
             if(self::has($input)){
@@ -119,8 +120,8 @@ class Config{
                 # Set file instance class
                 $fileInstance = File::MIMTYPE_TO_CLASS[$fileMime];
 
-                    # Read file path
-                    $content = $fileInstance::open($filePath);
+                # Read file path
+                $content = $fileInstance::open($filePath);
 
                 # Get value
                 $valueToPush = Arrays::parseKey($input, $content);
@@ -129,6 +130,8 @@ class Config{
                 Arrays::fill($result, $input, $valueToPush);
 
             }
+
+        }
 
         # Return result
         return $result;
@@ -308,6 +311,34 @@ class Config{
 
         # Update result
         $result = $finder->hasResults();
+
+        # Return result
+        return $result;
+
+    }
+
+    /** Private static key
+     ******************************************************
+     */
+
+    /**
+     * get Key
+     * 
+     * Get key for cache
+     */
+    private static function _getKey(string $input = "", $prefix = ""):string {
+
+        # Declare result
+        $result = "";
+
+        # Check $inputs
+        if($input)
+
+            # Push in result
+            $result = $input;
+
+        # Replace {}()/\@: by dot
+        $result = str_replace(["{", "}", "(", ")", "/", "\\", "@", ":"], ".", $prefix.$result);
 
         # Return result
         return $result;

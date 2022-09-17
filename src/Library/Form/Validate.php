@@ -288,6 +288,13 @@ class Validate {
                         "*****" :
                             null;
 
+                else
+                # Check value is a password
+                if($input['type'] === "ARRAY")
+                    
+                    # Transform 
+                    $value = json_encode($input['value']);
+
                 # Process value
                 else
                     

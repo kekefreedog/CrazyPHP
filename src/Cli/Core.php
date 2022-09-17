@@ -19,6 +19,7 @@ use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Form\Validate;
 use CrazyPHP\Library\File\Composer;
 use CrazyPHP\Library\Form\Process;
+use CrazyPHP\Library\File\Docker;
 use splitbrain\phpcli\Options;
 use League\CLImate\CLImate;
 use splitbrain\phpcli\CLI;
@@ -84,6 +85,12 @@ class Core extends CLI {
                 "type"          =>  "command",
                 "long"          =>  "new",
                 "help"          =>  "Install docker compose for your crazy project",
+            ],
+            # Delete
+            [
+                "type"          =>  "command",
+                "long"          =>  "delete",
+                "help"          =>  "Delete docker compose from your crazy project",
             ],
             # Run
             [
@@ -627,6 +634,299 @@ class Core extends CLI {
 
     }
 
+    /**
+     * Action Crazy Docker New
+     * 
+     * ction for create new docker compose for the current app
+     * 
+     * @param array $inputs Collection of inputs with opts, args & cmd
+     * @return void
+     */
+    protected function actionCrazyDockerRun(array $inputs = []):void {
+
+        # Declare result
+        $result = [];
+
+        # New climate
+        $climate = new CLImate();
+
+        # Add asci folder
+        $climate->addArt(self::ASCII_ART["crazyphp"]);
+        
+        # Draw crazy php logo
+        $climate->draw('crazyphp');
+
+        # Title of current action
+        $climate->backgroundBlue()->out("🚀 Run Docker Compose")->br();
+          
+        # Check command is in router
+        $this->_checkInRouter($inputs);
+
+        # Get router
+        $router = self::ROUTERS[$this->scriptName][$inputs['cmd']];
+
+        # Get class
+        $class = $router["class"];
+
+        # Message
+        $input = $climate
+            ->br()
+            ->lightBlue()
+            ->bold()
+            ->confirm('✅ Do you want run docker compose ? ✅')
+        ;
+
+        # Check action confirmed
+        if (!$input->confirmed()){
+
+            # Stop message
+            $climate
+                ->br()
+                ->bold()
+                ->red("✋ Action canceled ✋")
+                ->br()
+            ;
+
+            # Stop action
+            return;
+
+        }
+
+        # New instance of class
+        $instance = new $class();
+
+        # Get story line
+        $storyline = $instance->getStoryline();
+
+        # Iteration storyline
+        foreach($storyline as $action){
+
+            # Message start
+            $climate
+                ->br()
+                ->yellow("🟠 Run ".str_replace("run", "", strtolower($action)))
+            ;
+
+            # Execute
+            $instance->{$action}();
+
+            # Message end
+            $climate
+                ->green("🟢 ".ucfirst(str_replace("run", "", strtolower($action)))." ran with success")
+            ;
+
+        }
+
+        # Get port
+        $port = Docker::getLocalHostPort();
+
+        # Check port
+        if($port)
+
+            # Message about port
+            $climate
+                ->br()
+                ->out("ℹ️  Open your browser and navigate to \"<bold><underline>http://localhost:$port/</underline></black>\". If everything is working, you'll see a welcome page.")
+            ;
+
+        # Success message
+        $climate
+            ->br()
+            ->lightBlue()
+            ->bold()
+            ->out("🎉 Docker compose run with success 🎉")
+            ->br()
+        ;
+
+
+    }
+
+    /**
+     * Action Crazy Docker New
+     * 
+     * ction for create new docker compose for the current app
+     * 
+     * @param array $inputs Collection of inputs with opts, args & cmd
+     * @return void
+     */
+    protected function actionCrazyDockerDown(array $inputs = []):void {
+
+        # Declare result
+        $result = [];
+
+        # New climate
+        $climate = new CLImate();
+
+        # Add asci folder
+        $climate->addArt(self::ASCII_ART["crazyphp"]);
+        
+        # Draw crazy php logo
+        $climate->draw('crazyphp');
+
+        # Title of current action
+        $climate->backgroundOrange()->out("🚀 Down Docker Compose")->br();
+          
+        # Check command is in router
+        $this->_checkInRouter($inputs);
+
+        # Get router
+        $router = self::ROUTERS[$this->scriptName][$inputs['cmd']];
+
+        # Get class
+        $class = $router["class"];
+
+        # Message
+        $input = $climate
+            ->br()
+            ->lightMagenta()
+            ->bold()
+            ->confirm('✴️ Do you want down docker compose ? ✴️')
+        ;
+
+        # Check action confirmed
+        if (!$input->confirmed()){
+
+            # Stop message
+            $climate
+                ->br()
+                ->bold()
+                ->red("✋ Action canceled ✋")
+                ->br()
+            ;
+
+            # Stop action
+            return;
+
+        }
+
+        # New instance of class
+        $instance = new $class();
+
+        # Get story line
+        $storyline = $instance->getStoryline();
+
+        # Iteration storyline
+        foreach($storyline as $action){
+
+            # Message start
+            $climate
+                ->br()
+                ->yellow("🟠 Run ".str_replace("run", "", strtolower($action)))
+            ;
+
+            # Execute
+            $instance->{$action}();
+
+            # Message end
+            $climate
+                ->green("🟢 ".ucfirst(str_replace("run", "", strtolower($action)))." ran with success")
+            ;
+
+        }
+
+        # Success message
+        $climate
+            ->br()
+            ->lightMagenta()
+            ->bold()
+            ->out("🎉 Docker compose down with success 🎉")
+            ->br()
+        ;
+
+
+    }
+
+    /** 
+     * Delete action
+     * 
+     * Delete Docker
+     * 
+     * @param array $inputs Collection of inputs with opts, args & cmd
+     * @return void
+     */
+    protected function actionCrazyDockerDelete(array $inputs = []):void {
+
+        # New climate
+        $climate = new CLImate();
+
+        # Add asci folder
+        $climate->addArt(self::ASCII_ART["crazyphp"]);
+        
+        # Draw crazy php logo
+        $climate->draw('crazyphp');
+
+        # Title of current action
+        $climate->backgroundRed()->out("🚀 Run ".$inputs['cmd']." Docker")->br();
+          
+        # Check command is in router
+        $this->_checkInRouter($inputs);
+
+        # Get router
+        $router = self::ROUTERS[$this->scriptName][$inputs['cmd']];
+
+        # Get class
+        $class = $router["class"];
+
+        # Message
+        $input = $climate
+            ->br()
+            ->lightRed()
+            ->bold()
+            ->confirm('❎ Do you confirm the deletion of Docker ? ❎')
+        ;
+
+        # Check action confirmed
+        if (!$input->confirmed()){
+
+            # Stop message
+            $climate
+                ->br()
+                ->bold()
+                ->red("✋ Action canceled ✋")
+                ->br()
+            ;
+
+            # Stop action
+            return;
+
+        }
+
+        # New instance of class
+        $instance = new $class();
+
+        # Get story line
+        $storyline = $instance->getStoryline();
+
+        # Iteration storyline
+        foreach($storyline as $action){
+
+            # Message start
+            $climate
+                ->br()
+                ->yellow("🟠 Run ".str_replace("run", "", strtolower($action)))
+            ;
+
+            # Execute
+            $instance->{$action}();
+
+            # Message end
+            $climate
+                ->green("🟢 ".ucfirst(str_replace("run", "", strtolower($action)))." ran with success")
+            ;
+
+        }
+
+        # Success message
+        $climate
+            ->br()
+            ->lightRed()
+            ->bold()
+            ->out("🎉 Docker removed with success 🎉")
+            ->br()
+        ;
+
+    }
+
     /** Provate methods
      ******************************************************
      */
@@ -717,6 +1017,18 @@ class Core extends CLI {
             "new"   =>  [
                 "class"     =>  "\CrazyPHP\Docker\Install",
             ],
+            # Command delete
+            "delete"=>  [
+                "class"     =>  "\CrazyPHP\Docker\Delete",
+            ],
+            # Command run
+            "run"   =>  [
+                "class"     =>  "\CrazyPHP\Docker\Run",
+            ],
+            # Command down
+            "down"  =>  [
+                "class"     =>  "\CrazyPHP\Docker\Down",
+            ]
         ]
     ];
 

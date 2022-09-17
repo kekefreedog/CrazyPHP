@@ -15,7 +15,10 @@ namespace CrazyPHP\Library\File;
 /** Dependances
  * 
  */
+use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\File\Structure;
+use CrazyPHP\Library\Array\Arrays;
+use CrazyPHP\Library\File\Yaml;
 use CrazyPHP\Library\File\File;
 
 /**
@@ -29,13 +32,113 @@ use CrazyPHP\Library\File\File;
  */
 class Docker{
 
-    /** Public static method | File type
+    /** Public static method | Docker Compose
      ******************************************************
      */
 
-    /** Private static method | File type
+    /**
+     * up
+     * 
+     * Run Docker Compose
+     * 
+     * @param bool $detach Run container in background and print container ID
+     * @return
+     */
+    public static function up(bool $detach = true) {
+
+        # Set result
+        $result = "";
+
+        # Prepare command shell
+        $command = self::DOCKER_COMPOSE_COMMAND." up".($detach ? " -d" : "");
+
+        # Exec command
+        exec($command, $empty, $result);
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * down
+     * 
+     * Down Docker Compose
+     * 
+     * @return
+     */
+    public static function down() {
+
+        # Set result
+        $result = "";
+
+        # Prepare command shell
+        $command = self::DOCKER_COMPOSE_COMMAND." down";
+
+        # Exec command
+        exec($command, $empty, $result);
+
+        # Return result
+        return $result;
+
+    }
+
+    /** Public static method | docker compose
      ******************************************************
      */
+
+    /**
+     * get local host port
+     * 
+     * Return local host port for connect to app
+     * 
+     * @param int $source Port inside container to get
+     * @return int|null
+     */
+    public static function getLocalHostPort($source = 80):int|null {
+
+        # Declare result
+        $result = null;
+
+        # Open docker compose
+        $dockerCompose = Yaml::open(File::path(self::DOCKER_COMPOSE_PATH));
+
+        # Read services.webserver.ports
+        $collection = Arrays::parseKey("services.webserver.ports", $dockerCompose);
+
+        # Check collection
+        if(empty($collection))
+            
+            # New error
+            throw new CrazyException(
+                "No ports defined in docker compose for key \"services.webserver.ports\"...", 
+                500,
+                [
+                    "custom_code"   =>  "Docker-001",
+                ]
+            );
+
+        # Iteration of collection
+        foreach($collection as $port){
+
+            # Split port
+            $currentSource = explode(":", $port);
+
+            # Check last value is equal to source you are looking for
+            if(intval($currentSource[1]) !== $source)
+
+                # Continue
+                continue;
+
+            # Update result
+            $result = intval($currentSource[0]);
+
+        }
+
+        # Return result
+        return $result;
+
+    }
 
     /** Public constants
      ******************************************************
@@ -46,5 +149,10 @@ class Docker{
      */
     public const STRUCTURE_PATH = "@crazyphp_root/resources/Docker/Structure.yml";
 
+    /* @var string DOCKER_COMPOSE_PATH */
+    public const DOCKER_COMPOSE_PATH = "@app_root/docker-compose.yml";
+
+    /* @var string DOCKER_COMPOSE_COMMAND */
+    public const DOCKER_COMPOSE_COMMAND = "docker-compose";
 
 }

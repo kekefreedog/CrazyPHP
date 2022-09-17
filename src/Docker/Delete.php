@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 /**
- * New application
+ * Docker Compose
  *
  * TDB
  *
@@ -10,21 +10,21 @@
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2022 Kévin Zarshenas
  */
-namespace CrazyPHP\App;
+namespace CrazyPHP\Docker;
 
 /**
  * Dependances
  */
+use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\File\Structure;
 use CrazyPHP\Interface\CrazyCommand;
-use CrazyPHP\Library\Cache\Cache;
+use CrazyPHP\Library\File\Docker;
 use CrazyPHP\Library\File\File;
-use CrazyPHP\Model\Env;
 
 /**
- * Delete Application
+ * Delete docker compose
  *
- * Classe for deletion application
+ * Classe for run step by step docker compose
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
@@ -35,13 +35,23 @@ class Delete implements CrazyCommand {
     /**
      * Constructor
      * 
-     * Construct current class
+     * Ingest data
      * 
+     * @param array $formResult Collection of value to process
      * @return Create
      */
-    public function __construct(){
+    public function __construct(array $inputs = []){
+
+        # Ingest data
+        $this->inputs = $inputs;
 
     }
+
+    /** Public constants
+     ******************************************************
+     */
+
+    public const REQUIRED_VALUES = [];
 
     /** Public static methods
      ******************************************************
@@ -56,35 +66,17 @@ class Delete implements CrazyCommand {
      */
     public static function getRequiredValues():array {
 
-        # Declare result
-        $result = [];
+        # Set result
+        $result = self::REQUIRED_VALUES;
 
         # Return result
         return $result;
 
     }
 
-    /** Public method
+    /** Public methods
      ******************************************************
-     */    
-    
-     /**
-     * Run delete of project
-     *
-     * @return Delete
      */
-    public function run():self {
-
-        /**
-         * Run Structure Folder
-         * 1. Delete structure folder
-         */
-        $this->runStructureFolder();
-
-        # Return this
-        return $this;
-
-    }
 
     /**
      * Get story line
@@ -125,25 +117,26 @@ class Delete implements CrazyCommand {
     }
 
     /**
-     * Run Cache Cleaner
+     * Run
      * 
-     * @return Delete
+     * Run current command
+     *
+     * @return self
      */
-    public function runCacheCleaner():Delete {
+    public function run():self {
 
-        # New cache instance
-        $cache = new Cache();
+        /**
+         * Start
+         * 1. Start docker compose
+         */
+        $this->runStructureFolder();
 
-        # Clear cache
-        $cache->clear();
-
-        # Clear cache path
-        File::removeAll(Cache::PATH);
-
-        # Return instance
+        # Return current instance
         return $this;
 
     }
+
+
 
     /**
      * Run Structure Folder
@@ -151,12 +144,12 @@ class Delete implements CrazyCommand {
      * Steps : 
      * 1. Delete structure folder
      * 
-     * @return Delete
+     * @return self
      */
-    public function runStructureFolder():Delete {
+    public function runStructureFolder():self {
 
         # Get path of structure
-        $structurePath = File::path(Structure::DEFAULT_TEMPLATE);
+        $structurePath = File::path(Docker::STRUCTURE_PATH);
 
         # Run creation of docker structure
         Structure::remove($structurePath);

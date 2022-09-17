@@ -296,6 +296,9 @@ class File {
         # Set result
         $result = false;
 
+        # Get path of input
+        $input = self::path($input);
+
         # Check input and file exists
         if(
             (
