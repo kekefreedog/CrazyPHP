@@ -22,7 +22,14 @@ Router:
   api:
     - 
   assets:
-    - 
+    - name: Favicon
+      controller: App\Controller\Assets\Favicon
+      patterns:
+        - /favicon/
+      methods:
+        - get
+      middleware : {}
+      view: file
   websocket:
     - 
   pagesPrefix: null

@@ -54,10 +54,15 @@ Structure:
       # Public folder
       public:
         files:
-          index.php: null
+          index.php:
+            source: "@crazyphp_root/resources/Php/public/index.php"
+          .htaccess:
+            source : "@crazyphp_root/resources/Conf/Apache/.htaccess"
       # Script PHP
       app:
         folders:
+          # Core of the app
+          Core: null
           # Controllers folder
           Controller:
           # Model folder
