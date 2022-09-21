@@ -20,6 +20,7 @@ use CrazyPHP\Interface\CrazyCommand;
 use CrazyPHP\Library\File\Structure;
 use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\File\Docker;
+use CrazyPHP\Library\System\Os;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Model\Env;
 
@@ -184,6 +185,26 @@ class Install implements CrazyCommand {
 
         # Push config in result
         $result['_config'] = $config;
+
+        # Check if windows
+        if(Os::isWindows()){
+
+            # Update _config.App.root
+            $value = $config['_config']['App']['root'];
+            
+            # Change \ or \\ by /
+            $value = str_replace(["\\", "\\\\"], "/", $value);
+
+            # Split by : of disk
+            $explodedValue = explode(":", $value, 2);
+
+            # Set new value
+            $value = "/mnt/".strtolower($explodedValue[0]).$explodedValue[1];
+
+            # Set $value = _config.App.root
+            $result['_config']['App']['root'] = $value;
+
+        }
 
         # Return result
         return $result;
