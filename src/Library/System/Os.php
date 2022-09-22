@@ -50,10 +50,19 @@ class Os {
         $user_agent = getenv("HTTP_USER_AGENT");
 
         # Get win dir
-        $win_dir = getenv("HTTP_USER_AGENT");
+        $win_dir = getenv("WINDIR");
+
+        # Check user agent and win dir
+        if(!$win_dir && !$user_agent)
+
+            # Return result
+            return $result;
 
         # Set result
-        if(strpos($user_agent, "Win") !== false) $result = true;
+        if(strpos($user_agent, "Win") !== false) 
+            
+            # Set result
+            $result = true;
 
         # Set result
         if(!$result && $win_dir) $result = true;
@@ -64,13 +73,3 @@ class Os {
     }
 
 }
-
-
-
-
-
-
-
-
-
-if(strpos($user_agent, "Win") !== FALSE)

@@ -92,11 +92,11 @@ class Core extends CLI {
                 "long"          =>  "delete",
                 "help"          =>  "Delete docker compose from your crazy project",
             ],
-            # Run
+            # Up
             [
                 "type"          =>  "command",
-                "long"          =>  "run",
-                "help"          =>  "Run docker composer",
+                "long"          =>  "up",
+                "help"          =>  "Up docker composer",
             ],
             # Down
             [
@@ -635,14 +635,14 @@ class Core extends CLI {
     }
 
     /**
-     * Action Crazy Docker New
+     * Action Crazy Docker Up
      * 
-     * ction for create new docker compose for the current app
+     * Action for up docker compose for the current app
      * 
      * @param array $inputs Collection of inputs with opts, args & cmd
      * @return void
      */
-    protected function actionCrazyDockerRun(array $inputs = []):void {
+    protected function actionCrazyDockerUp(array $inputs = []):void {
 
         # Declare result
         $result = [];
@@ -657,7 +657,7 @@ class Core extends CLI {
         $climate->draw('crazyphp');
 
         # Title of current action
-        $climate->backgroundBlue()->out("🚀 Run Docker Compose")->br();
+        $climate->backgroundBlue()->out("🚀 Run up Docker Compose")->br();
           
         # Check command is in router
         $this->_checkInRouter($inputs);
@@ -673,7 +673,7 @@ class Core extends CLI {
             ->br()
             ->lightBlue()
             ->bold()
-            ->confirm('✅ Do you want run docker compose ? ✅')
+            ->confirm('✅ Do you want run up docker compose ? ✅')
         ;
 
         # Check action confirmed
@@ -734,7 +734,7 @@ class Core extends CLI {
             ->br()
             ->lightBlue()
             ->bold()
-            ->out("🎉 Docker compose run with success 🎉")
+            ->out("🎉 Docker compose run up with success 🎉")
             ->br()
         ;
 
@@ -1022,8 +1022,8 @@ class Core extends CLI {
                 "class"     =>  "\CrazyPHP\Docker\Delete",
             ],
             # Command run
-            "run"   =>  [
-                "class"     =>  "\CrazyPHP\Docker\Run",
+            "up"   =>  [
+                "class"     =>  "\CrazyPHP\Docker\Up",
             ],
             # Command down
             "down"  =>  [

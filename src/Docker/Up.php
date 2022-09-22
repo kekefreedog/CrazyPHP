@@ -22,15 +22,15 @@ use CrazyPHP\Library\File\Docker;
 use CrazyPHP\Library\File\File;
 
 /**
- * Run docker compose
+ * Up docker compose
  *
- * Classe for run step by step docker compose
+ * Classe for Up step by step docker compose
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2022 Kévin Zarshenas
  */
-class Run implements CrazyCommand {
+class Up implements CrazyCommand {
 
     /**
      * Constructor
