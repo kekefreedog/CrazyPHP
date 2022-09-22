@@ -15,11 +15,11 @@ namespace CrazyPHP\App;
 /**
  * Dependances
  */
+use CrazyPHP\Docker\Delete as DockerDelete;
 use CrazyPHP\Library\File\Structure;
 use CrazyPHP\Interface\CrazyCommand;
 use CrazyPHP\Library\Cache\Cache;
 use CrazyPHP\Library\File\File;
-use CrazyPHP\Model\Env;
 
 /**
  * Delete Application
@@ -151,9 +151,9 @@ class Delete implements CrazyCommand {
      * Steps : 
      * 1. Delete structure folder
      * 
-     * @return Delete
+     * @return self
      */
-    public function runStructureFolder():Delete {
+    public function runStructureFolder():self {
 
         # Get path of structure
         $structurePath = File::path(Structure::DEFAULT_TEMPLATE);
@@ -163,6 +163,27 @@ class Delete implements CrazyCommand {
         Structure::remove($structurePath);
 
         # Return instance
+        return $this;
+
+    }
+
+    /**
+     * Run Remove of Docker if exists
+     * 
+     * Steps:
+     * 1. Remove docker composer
+     * 
+     * @return self
+     */
+    public function runDockerCompose():self {
+
+        # New docker compose delete instance
+        $instance = new DockerDelete();
+
+        # Run instance
+        $instance->run();
+
+        # Return this
         return $this;
 
     }

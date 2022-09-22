@@ -550,10 +550,36 @@ class Process {
             foreach($inputs as $value)
 
                 # Check if not null or keepNull
-                if($value['value'] !== null || $keepNull)
+                if(
+                    (
+                        (
+                            isset($value['value']) && 
+                            $value['value'] !== null
+                        ) || 
+                        $keepNull
+                    ) ||
+                    (
+                        isset($value['required']) &&
+                        $value['required']
+                    )
+                ){
+
+                    # check required and default
+                    if(isset($value["required"]) && $value["required"] && !isset($value['default']))
+            
+                        # New error
+                        throw new CrazyException(
+                            "The default value is missing for the requierd field \"".$value['name']."\"",
+                            500,
+                            [
+                                "custom_code"   =>  "process-002",
+                            ]
+                        );
 
                     # Push value in result
-                    $result[$value['name']] = $value['value'];
+                    $result[$value['name']] = $value['value'] ?? $value['default'];
+
+                }
 
         # Return result
         return $result;

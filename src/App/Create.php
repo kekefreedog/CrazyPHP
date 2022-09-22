@@ -321,6 +321,9 @@ class Create implements CrazyCommand {
         # Decalare input
         $inputs = $this->inputs["application"];
 
+        # Push autoload_psr-4_App\\_0 in inputs
+        $inputs[] = Composer::DEFAULT_PROPERTIES["autoload_psr-4_App\\_0"];
+
         # Wash input
         $inputs = Process::wash($inputs, Composer::DEFAULT_PROPERTIES);
 

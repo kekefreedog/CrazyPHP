@@ -104,6 +104,14 @@ class Composer{
             "description"   =>  "Funding information of your app",
             "type"          =>  "ARRAY",
         ],
+        # Autoload
+        "autoload_psr-4_App\\_0" => [
+            "name"          =>  "autoload_psr-4_App\\_0",
+            "description"   =>  "Autoload following PSR-4 rules.",
+            "type"          =>  "VARCHAR",
+            "default"       =>  "app\/",
+            "required"      =>  true
+        ]
     ];
 
     # Default value
