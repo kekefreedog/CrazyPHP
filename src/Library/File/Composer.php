@@ -12,12 +12,13 @@
  */
 namespace CrazyPHP\Library\File;
 
-/** Dependances
- * 
+/**
+ * Dependances
  */
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\Form\Process;
+use CrazyPHP\Library\Cli\Command;
 use CrazyPHP\Library\File\Json;
 use CrazyPHP\App\Create;
 
@@ -118,6 +119,22 @@ class Composer{
     const DEFAULT_VALUE = [
         "require"   =>  [
             "kzarshenas/crazyphp"   =>  "@dev"
+        ]
+    ];
+
+    /* @const array COMMAND_SUPPORTED supported command */
+    public const COMMAND_SUPPORTED = [
+        "install"   =>  [
+            "command"   =>  "i"
+        ],
+        "update"   =>  [
+            "command"   =>  "u"
+        ],
+        "require"   =>  [
+            "command"   =>  "r"
+        ],
+        "remove"    =>  [
+            "command"   =>  "remove"
         ]
     ];
 
@@ -367,6 +384,53 @@ class Composer{
                 "/".
                 Process::clean($inputs["name"])
             ;
+
+    }
+
+    /**
+     * Exec
+     * 
+     * Execute command
+     * 
+     * @param string $commandName Command name to execute
+     * @param string $argument Argument for the command
+     * @param string $checkError Check error of exec
+     * @return
+     */
+    public static function exec(string $commandName = "", string $argument = "", bool $checkError = true) {
+
+        # Result
+        $result = null;
+
+        # Check command
+        if(!$commandName || !array_key_exists($commandName, self::COMMAND_SUPPORTED))
+                
+            # New error
+            throw new CrazyException(
+                "Command \"$commandName\” isn't supported with Composer", 
+                500,
+                [
+                    "custom_code"   =>  "composer-002",
+                ]
+            );
+
+        # Peepare command
+        $argument = self::COMMAND_SUPPORTED[$commandName]["command"].($argument ? " $argument" : "");
+
+        # Get result of exec
+        $result = Command::exec("composer", $argument);
+
+        # Check result
+        if($checkError && ($result["result_code"] !== null || $result["result_code"] > 0))
+            
+            # New error
+            throw new CrazyException(
+                "Composer ".$argument." failed".(is_array($result["output"]) ? " : ".json_encode($result["output"]) : ""),
+                500,
+                [
+                    "custom_code"   =>  "composer-003",
+                ]
+            );
 
     }
 

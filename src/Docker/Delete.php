@@ -15,6 +15,7 @@ namespace CrazyPHP\Docker;
 /**
  * Dependances
  */
+use CrazyPHP\Docker\Down as DockerDown;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\File\Structure;
 use CrazyPHP\Interface\CrazyCommand;
@@ -126,6 +127,12 @@ class Delete implements CrazyCommand {
     public function run():self {
 
         /**
+         * Down Docker Compose 
+         * 1. Stops docker composer container
+         */
+        $this->runDockerComposeDown();
+
+        /**
          * Start
          * 1. Start docker compose
          */
@@ -136,7 +143,26 @@ class Delete implements CrazyCommand {
 
     }
 
+    /**
+     * Run Docker Compose Down
+     * 
+     * Steps:
+     * 1. Stops docker composer container
+     * 
+     * @return self
+     */
+    public function runDockerComposeDown():self {
 
+        # New docker down instance
+        $instance = new DockerDown();
+
+        # Run docker down
+        $instance->run();
+
+        # Return self
+        return $this;
+
+    }
 
     /**
      * Run Structure Folder

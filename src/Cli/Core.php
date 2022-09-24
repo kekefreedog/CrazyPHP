@@ -374,7 +374,7 @@ class Core extends CLI {
 
             # Message end
             $climate
-                ->green("🟢 ".str_replace("run", "", strtolower($action))." ran with success")
+                ->green("🟢 ".ucfirst(str_replace("run", "", strtolower($action)))." ran with success")
             ;
 
         }
@@ -475,7 +475,7 @@ class Core extends CLI {
 
             # Message end
             $climate
-                ->green("🟢 ".str_replace("run", "", strtolower($action))." ran with success")
+                ->green("🟢 ".ucfirst(str_replace("run", "", strtolower($action)))." ran with success")
             ;
 
         }

@@ -62,7 +62,12 @@ Structure:
       app:
         folders:
           # Core of the app
-          Core: null
+          Core:
+            files:
+              App.php:
+                source: "@crazyphp_root/resources/Php/app/Core/App.php"
+              Kernel.php:
+                source: "@crazyphp_root/resources/Php/app/Core/Kernel.php"
           # Controllers folder
           Controller:
           # Model folder
@@ -77,5 +82,8 @@ Structure:
           Bridge: null
           # Script JS
           Front: null
+        files:
+          Index.php:
+            source: "@crazyphp_root/resources/Php/app/Index.php"
     files:
       package.json: null

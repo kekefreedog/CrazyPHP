@@ -62,4 +62,38 @@ class Command{
 
     }
 
+    /**
+     * Exec
+     * 
+     * Execute command
+     * 
+     * @param string $command Command  to execute
+     * @param string $argument Argument for the command
+     * @return
+     */
+    public static function exec(string $command = "", string $argument = "") {
+
+        # Prepare result
+        $result = [
+            "output"        =>  null,
+            "result_code"   =>  null
+        ];
+
+        # Check command
+        if(!$command)
+
+            # Return
+            return null;
+
+        # Prepare command
+        $command = $command.($argument ? " $argument" : "");
+
+        # Exec command
+        exec($command, $result["output"], $result["result_code"]);
+
+        # Return result
+        return $result;
+
+    }
+
 }

@@ -208,13 +208,6 @@ class Create implements CrazyCommand {
         $this->runConfig();
 
         /**
-         * Run Public
-         * 1. Fill .htaccess
-         * 2. Fill index.php
-         */
-        $this->runPublic();
-
-        /**
          * Run User Interface
          * 1. Create basic components
          * 2. Prepare basic assets
@@ -237,6 +230,12 @@ class Create implements CrazyCommand {
         * 1. Create default users
         */
        $this->runUsers();
+
+       /**
+        * Composer Update
+        * 1. Update Composer
+        */
+       $this->runComposerUpdate();
 
        /**
         * Run Webpack
@@ -460,22 +459,6 @@ class Create implements CrazyCommand {
     }
 
     /**
-     * Run Public
-     * 
-     * Steps : 
-     * 1. Fill .htaccess
-     * 2. Fill index.php
-     * 
-     * @return Create
-     */
-    public function runPublic():Create {
-
-        # Return instance
-        return $this;
-
-    }
-
-    /**
      * Run User Interface
      * 
      * Steps : 
@@ -519,6 +502,25 @@ class Create implements CrazyCommand {
      * @return Create
      */
     public function runUsers():Create {
+
+        # Return instance
+        return $this;
+
+    }
+
+    /**
+     * Run Public
+     * 
+     * Steps : 
+     * 1. Fill .htaccess
+     * 2. Fill index.php
+     * 
+     * @return self
+     */
+    public function runComposerUpdate():self {
+
+        # Composer Update
+        Composer::exec("update", "", false);
 
         # Return instance
         return $this;

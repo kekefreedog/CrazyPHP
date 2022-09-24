@@ -2,7 +2,9 @@
 /**
  * Page Index
  *
- * Index page of your crazy application
+ * Index that redirect to the index of your app
+ * 
+ * !!! Don't touch this script please !!!
  *
  * PHP version 8.1.2
  *
@@ -11,17 +13,7 @@
  * @copyright  2022-2022 Kévin Zarshenas
  */
 
-/** Register The Auto Loader (composer)
- * 
+/** 
+ * Register Index
  */
-require __DIR__.'/../vendor/autoload.php';
-
-/**
- * Dependances
- */
-use CrazyPHP\Exception\CrazyException;
-
-/** Register Application
- * 
- */
-require_once __DIR__.'/../app/Core/App.php';
+require_once __DIR__.'/../app/Index.php';
