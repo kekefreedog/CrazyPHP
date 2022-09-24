@@ -15,6 +15,7 @@ namespace CrazyPHP\App;
 /**
  * Dependances
  */
+use CrazyPHP\Library\Database\Database;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Interface\CrazyCommand;
 use CrazyPHP\Library\File\Structure;
@@ -86,7 +87,9 @@ class Create implements CrazyCommand {
             "type"          =>  "VARCHAR",
             "default"       =>  "project",
             "select"        =>  [
-                "project"       =>  "Project",
+                "application"   =>  "Application",
+                "website"       =>  "Website",
+                "api"           =>  "Only Api",
                 "library"       =>  "Library",
                 "other"         =>  "Undifined",
             ]
@@ -107,11 +110,11 @@ class Create implements CrazyCommand {
             "default"       =>  "None",
             "multiple"      =>  true,
             "select"        =>  [
-                "mangodb"       =>  "MongoDB",
+                "mongodb"       =>  "MongoDB",
                 "mariadb"       =>  "MariaDB",
+                "mysql"         =>  "MySQL",
+                "postgresql"    =>  "PostgreSQL",
                 "none"          =>  "No Database",
-                /* "mysql"         =>  "MySQL", */
-                /* "postgresql"    =>  "PostgreSQL", */
             ],
         ],
     ];
@@ -488,6 +491,21 @@ class Create implements CrazyCommand {
      */
     public function runDatabase():Create {
 
+        # Get database from inputs
+        $database = Arrays::filterByKey($this->inputs['application'], "name", "database");
+
+        # Get database values
+        $databaseValues = $database[array_key_first($database)]['value'] ?? [];
+
+        # Check database values
+        if(!empty($databaseValues))
+
+            # Iteration of values
+            foreach($databaseValues as $value)
+
+                # Push setup in config of database
+                Database::setupConfig($value);
+                
         # Return instance
         return $this;
 

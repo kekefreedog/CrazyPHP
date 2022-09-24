@@ -1,6 +1,3 @@
-###############################################################################
-#                          Generated on phpdocker.io                          #
-###############################################################################
 version: '3.1'
 services:
     
@@ -32,6 +29,7 @@ services:
             # If {app.framework.path} - './vendor/kzarshenas/crazyphp:/Users/kzarshenas/Sites/CrazyPHP'
             {{#if _config.App.framework.path}}- './vendor/kzarshenas/crazyphp:{{_config.App.framework.path}}'{{/if}}
 
+{{#if _config.Database.collection.mongodb}}
     # MANGO
     mongo:
         image: mongo:6.0
@@ -39,9 +37,10 @@ services:
         env_file:
             - './docker/variables.env'
         ports:
-            - "27017:27017"
+            - "27017:{{_config.Database.collection.mongodb.port}}"
         volumes:
             - '~/apps/mongo:{{_config.App.root}}/.mongo'
+{{/if}}
 
     # NODEJS (NPM)
     node:

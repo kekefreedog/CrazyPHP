@@ -10,12 +10,12 @@
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2022 Kévin Zarshenas
  */
-namespace CrazyPHP\Database;
+namespace CrazyPHP\Library\Database;
 
-/**
+/** 
  * Dependances
  */
-use Medoo\Medoo;
+use CrazyPHP\Library\File\Config;
 
 /**
  * Database
@@ -26,19 +26,112 @@ use Medoo\Medoo;
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2022 Kévin Zarshenas
  */
-class Database extends Medoo{
+class Database {
 
     /**
      * Constructor
      * 
      * @param array $options Options for create database
-     * @return Medoo
      */
     public function __construct(array $options = []){
 
-        # Super
-        return parent::__construct($options);
+    }
+
+    /** Public static methods
+     ******************************************************
+     */
+
+    /**
+     * Setup Config
+     * 
+     * Setup config of database given using default value
+     * 
+     * @param string $databse Name of the database
+     * @return void
+     */
+    public static function setupConfig(string $database = "") {
+
+        # Check database name
+        if(!$database || !array_key_exists($database, self::CONFIG))
+
+            # Stop function
+            return;
+
+        # Fill config
+        Config::set("Database.collection.$database", self::CONFIG[$database]);
 
     }
+
+    /** Public constants
+     ******************************************************
+     */
+
+    /* @const array CONFIG */
+    public const CONFIG = [
+        # MongoDB
+        "mongodb"   =>  [
+            "engine"    =>  "CrazyPHP\Library\Database\Driver\Mangodb",
+            "host"      =>  "localhost",
+            "port"      =>  27017,
+            "root"      =>  [
+                "login"     =>  "admin",
+                "password"  =>  "password",
+            ],
+            "users"     =>  [
+                [
+                    "login" =>  "crazyuser",
+                    "login" =>  "crazypassword",
+                ]
+            ]
+        ],
+        # MariaDB
+        "mariadb"   =>  [
+            "engine"    =>  "CrazyPHP\Library\Database\Driver\Mariadb",
+            "host"      =>  "localhost",
+            "port"      =>  null,
+            "root"      =>  [
+                "login"     =>  "admin",
+                "password"  =>  "password",
+            ],
+            "users"     =>  [
+                [
+                    "login" =>  "crazyuser",
+                    "login" =>  "crazypassword",
+                ]
+            ]
+        ],
+        # MySQL
+        "mysql"     =>  [
+            "engine"    =>  "CrazyPHP\Library\Database\Driver\Mysql",
+            "host"      =>  "localhost",
+            "port"      =>  null,
+            "root"      =>  [
+                "login"     =>  "admin",
+                "password"  =>  "password",
+            ],
+            "users"     =>  [
+                [
+                    "login" =>  "crazyuser",
+                    "login" =>  "crazypassword",
+                ]
+            ]
+        ],
+        # PostgreSQL
+        "postgresql"=>  [
+            "engine"    =>  "CrazyPHP\Library\Database\Driver\Postgresql",
+            "host"      =>  "localhost",
+            "port"      =>  null,
+            "root"      =>  [
+                "login"     =>  "admin",
+                "password"  =>  "password",
+            ],
+            "users"     =>  [
+                [
+                    "login" =>  "crazyuser",
+                    "login" =>  "crazypassword",
+                ]
+            ]
+        ]
+    ];
 
 }

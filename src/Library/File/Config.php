@@ -12,8 +12,8 @@
  */
 namespace CrazyPHP\Library\File;
 
-/** Dependances
- * 
+/**
+ * Dependances
  */
 use CrazyPHP\Exception\CrazyException;
 use Symfony\Component\Finder\Finder;
@@ -70,7 +70,7 @@ class Config{
                 /* Get config file */
 
                 # Replace separator
-                str_replace(self::SEPARATOR, "___", $input);
+                $input = str_replace(self::SEPARATOR, "___", $input);
 
                 # Explode to get first value
                 $configFolder = explode("___", $input, 1)[0];
@@ -84,6 +84,18 @@ class Config{
                     ->name(["$configFolder.*", $configFolder])
                     ->in(File::path(self::FOLDER_PATH))
                 ;
+
+                # Check not multiple file
+                if($finder->count() === 0)
+        
+                    # New Exception
+                    throw new CrazyException(
+                        "No config file found for \"$configFolder\".", 
+                        500,
+                        [
+                            "custom_code"   =>  "config-006",
+                        ]
+                    );
 
                 # Check not multiple file
                 if($finder->count() > 1)
@@ -161,7 +173,7 @@ class Config{
         /* Get config file */
 
         # Replace separator
-        str_replace(self::SEPARATOR, "___", $input);
+        $input = str_replace(self::SEPARATOR, "___", $input);
 
         # Explode to get first value
         $configFolder = explode("___", $input, 1)[0];
@@ -175,6 +187,18 @@ class Config{
             ->name(["$configFolder.*", $configFolder])
             ->in(File::path(self::FOLDER_PATH))
         ;
+
+        # Check not multiple file
+        if($finder->count() === 0)
+
+            # New Exception
+            throw new CrazyException(
+                "No config file found for \"$configFolder\".", 
+                500,
+                [
+                    "custom_code"   =>  "config-005",
+                ]
+            );
 
         # Check not multiple file
         if($finder->count() > 1)
@@ -235,8 +259,80 @@ class Config{
      */
     public static function set(string $input = "", $data = null) :void {
 
-        # Return result
-        return;
+        # Check input
+        if(!$input)
+
+            # Return result
+            return;
+
+        /* Get config file */
+
+        # Replace separator
+        $input = str_replace(self::SEPARATOR, "___", $input);
+
+        # Explode to get first value
+        $configFolder = explode("___", $input, 2)[0];
+
+        # New finder
+        $finder = new Finder();
+
+        # Search files
+        $finder
+            ->files()
+            ->name(["$configFolder.*", $configFolder])
+            ->in(File::path(self::FOLDER_PATH))
+        ;
+
+        # Check not multiple file
+        if($finder->count() === 0)
+
+            # New Exception
+            throw new CrazyException(
+                "No config file found for \"$configFolder\".", 
+                500,
+                [
+                    "custom_code"   =>  "config-004",
+                ]
+            );
+
+        # Check not multiple file
+        if($finder->count() > 1)
+
+            # New Exception
+            throw new CrazyException(
+                "Conflict of config file with the same name for \"$configFolder\".", 
+                500,
+                [
+                    "custom_code"   =>  "config-003",
+                ]
+            );
+
+
+        # Iteration of files
+        foreach ($finder as $file){
+
+            # Get path file
+            $filePath = $file->getPathname();
+
+            # Get mime type
+            $fileMime = File::guessMime($filePath);
+
+            # break;
+            break;
+
+        }
+
+        # Set file instance class
+        $fileInstance = File::MIMTYPE_TO_CLASS[$fileMime];
+
+        # Create content
+        $content = [];
+
+        # Fill value in content
+        Arrays::fill($content, $input, $data);
+
+        # Update config
+        $fileInstance::update($filePath, $content, true);
 
     }
 

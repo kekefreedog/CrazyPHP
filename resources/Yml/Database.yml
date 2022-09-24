@@ -10,9 +10,13 @@
 # @copyright  2022-2022 Kévin Zarshenas
 # #
 Database:
-  mongodb:
-    engine: mangodb
-    port: null
-    root:
-      login: root
-      password: password
+  # Collection of database
+  collection:
+    # Mongo DB
+    mongodb: false
+    # Mongo DB
+    mariadb: false
+    # MySQL
+    mysql: false
+    # PostgreSQL
+    postgresql: false

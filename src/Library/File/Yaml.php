@@ -213,7 +213,7 @@ class Yaml{
             # Put new json content in file
             file_put_contents(
                 $path,
-                YamlS::dump($result)
+                YamlS::dump($result, 10)
             );
 
         # Return result
@@ -246,7 +246,7 @@ class Yaml{
             # Put new yaml content in file
             file_put_contents(
                 $path,
-                YamlS::dump($result)
+                YamlS::dump($result, 10, 4)
             );
 
         # Return result
