@@ -13,6 +13,9 @@ Structure:
   "@app_root":
     folders:
       .mongo: null
+      .mysql: null
+      .mariadb: null
+      .postgresql: null
       .cache:
         folders:
           app: null

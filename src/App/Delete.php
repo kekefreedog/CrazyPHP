@@ -16,6 +16,7 @@ namespace CrazyPHP\App;
  * Dependances
  */
 use CrazyPHP\Docker\Delete as DockerDelete;
+use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\File\Structure;
 use CrazyPHP\Interface\CrazyCommand;
 use CrazyPHP\Library\Cache\Cache;
@@ -180,8 +181,13 @@ class Delete implements CrazyCommand {
         # New docker compose delete instance
         $instance = new DockerDelete();
 
-        # Run instance
-        $instance->run();
+        # Catch error
+        try {
+
+            # Run instance
+            $instance->run();
+
+        } catch (CrazyException $e) { }
 
         # Return this
         return $this;

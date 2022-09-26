@@ -1,6 +1,7 @@
 version: '3.1'
 services:
     
+    {{!-- NGINX --}}
     # NGINX
     webserver:
         image: 'nginx:alpine'
@@ -15,6 +16,7 @@ services:
         ports:
             - '48000:80'
 
+    {{!-- PHP 8 --}}
     # PHP
     php-fpm:
         build: phpdocker/php-fpm
@@ -29,19 +31,7 @@ services:
             # If {app.framework.path} - './vendor/kzarshenas/crazyphp:/Users/kzarshenas/Sites/CrazyPHP'
             {{#if _config.App.framework.path}}- './vendor/kzarshenas/crazyphp:{{_config.App.framework.path}}'{{/if}}
 
-{{#if _config.Database.collection.mongodb}}
-    # MANGO
-    mongo:
-        image: mongo:6.0
-        restart: always
-        env_file:
-            - './docker/variables.env'
-        ports:
-            - "27017:{{_config.Database.collection.mongodb.port}}"
-        volumes:
-            - '~/apps/mongo:{{_config.App.root}}/.mongo'
-{{/if}}
-
+    {{!-- NODE JS --}}
     # NODEJS (NPM)
     node:
         image: "node:18"
@@ -55,3 +45,67 @@ services:
         expose:
             - "8081"
         command: "npm update"
+
+    {{!-- Mongo DB --}}
+{{#if _config.Database.collection.mongodb}}
+    # MANGO
+    mongo:
+        image: mongo:6.0
+        restart: always
+        env_file:
+            - './docker/variables.env'
+        ports:
+            - {{_config.Database.collection.mongodb.port}}:27017
+        volumes:
+            - '~/apps/mongo:{{_config.App.root}}/.mongo'
+{{/if}}
+
+    {{!-- MySQL --}}
+{{#if _config.Database.collection.mysql}}
+    # MYSQL
+    mysql:
+        image: mysql:8
+        restart: always
+        ports:
+            - {{_config.Database.collection.mysql.port}}:3306
+        volumes:
+            - '~/apps/mysql:{{_config.App.root}}/.mysql'
+        environment:
+            - MYSQL_ROOT_PASSWORD={{_config.Database.collection.mysql.root.password}}
+            - MYSQL_PASSWORD={{_config.Database.collection.mysql.users.[0].password}}
+            - MYSQL_USER={{_config.Database.collection.mysql.users.[0].login}}
+            - MYSQL_DATABASE={{_config.Database.collection.mysql.database.[0]}}
+{{/if}}
+
+    {{!-- MariaDB --}}
+{{#if _config.Database.collection.mariadb}}
+    # MARIADB
+    mariadb:
+        image: 'mariadb:10.3'
+        restart: always
+        environment:
+            - MYSQL_ROOT_PASSWORD={{_config.Database.collection.mariadb.root.password}}
+            - MYSQL_PASSWORD={{_config.Database.collection.mariadb.users.[0].password}}
+            - MYSQL_USER={{_config.Database.collection.mariadb.users.[0].login}}
+            - MYSQL_DATABASE={{_config.Database.collection.mariadb.database.[0]}}
+        ports:
+           - {{_config.Database.collection.mysql.port}}:3306
+        volumes:
+            - '~/apps/mariadb:{{_config.App.root}}/.mariadb'
+{{/if}}
+
+    {{!-- PostgreSQL --}}
+{{#if _config.Database.collection.postgresql}}
+    # POSTGRESQL
+    postgresql:
+        image: postgres:14.1-alpine
+        restart: always
+        environment:
+            - POSTGRES_USER={{_config.Database.collection.postgresql.users.[0].login}}
+            - POSTGRES_PASSWORD={{_config.Database.collection.postgresql.users.[0].password}}
+            - POSTGRES_DB={{_config.Database.collection.postgresql.database.[0]}}
+        ports:
+            - {{_config.Database.collection.postgresql.port}}:5432
+        volumes: 
+            - '~/apps/postgresql:{{_config.App.root}}/.postgresql'
+{{/if}}

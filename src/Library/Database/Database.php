@@ -72,6 +72,9 @@ class Database {
         "mongodb"   =>  [
             "engine"    =>  "CrazyPHP\Library\Database\Driver\Mangodb",
             "host"      =>  "localhost",
+            "database"  =>  [
+                "admin"
+            ],
             "port"      =>  27017,
             "root"      =>  [
                 "login"     =>  "admin",
@@ -79,8 +82,8 @@ class Database {
             ],
             "users"     =>  [
                 [
-                    "login" =>  "crazyuser",
-                    "login" =>  "crazypassword",
+                    "login"     =>  "crazyuser",
+                    "password"  =>  "crazypassword",
                 ]
             ]
         ],
@@ -88,15 +91,18 @@ class Database {
         "mariadb"   =>  [
             "engine"    =>  "CrazyPHP\Library\Database\Driver\Mariadb",
             "host"      =>  "localhost",
-            "port"      =>  null,
+            "port"      =>  3306,
+            "database"  =>  [
+                "crazy_db"
+            ],
             "root"      =>  [
-                "login"     =>  "admin",
+                "login"     =>  "root",
                 "password"  =>  "password",
             ],
             "users"     =>  [
                 [
-                    "login" =>  "crazyuser",
-                    "login" =>  "crazypassword",
+                    "login"     =>  "crazyuser",
+                    "password"  =>  "crazypassword",
                 ]
             ]
         ],
@@ -104,15 +110,18 @@ class Database {
         "mysql"     =>  [
             "engine"    =>  "CrazyPHP\Library\Database\Driver\Mysql",
             "host"      =>  "localhost",
-            "port"      =>  null,
+            "port"      =>  3306,
+            "database"  =>  [
+                "crazy_db"
+            ],
             "root"      =>  [
-                "login"     =>  "admin",
+                "login"     =>  "root",
                 "password"  =>  "password",
             ],
             "users"     =>  [
                 [
-                    "login" =>  "crazyuser",
-                    "login" =>  "crazypassword",
+                    "login"     =>  "crazyuser",
+                    "password"  =>  "crazypassword",
                 ]
             ]
         ],
@@ -120,15 +129,14 @@ class Database {
         "postgresql"=>  [
             "engine"    =>  "CrazyPHP\Library\Database\Driver\Postgresql",
             "host"      =>  "localhost",
-            "port"      =>  null,
-            "root"      =>  [
-                "login"     =>  "admin",
-                "password"  =>  "password",
+            "port"      =>  5432,
+            "database"  =>  [
+                "crazy_db"
             ],
             "users"     =>  [
                 [
-                    "login" =>  "crazyuser",
-                    "login" =>  "crazypassword",
+                    "login"     =>  "crazyuser",
+                    "password"  =>  "crazypassword",
                 ]
             ]
         ]

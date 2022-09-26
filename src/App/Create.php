@@ -114,7 +114,6 @@ class Create implements CrazyCommand {
                 "mariadb"       =>  "MariaDB",
                 "mysql"         =>  "MySQL",
                 "postgresql"    =>  "PostgreSQL",
-                "none"          =>  "No Database",
             ],
         ],
     ];
