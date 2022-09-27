@@ -58,6 +58,12 @@ services:
             - {{_config.Database.collection.mongodb.port}}:27017
         volumes:
             - '~/apps/mongo:{{_config.App.root}}/.mongo'
+        environment:
+            - MONGO_INITDB_DATABASE={{_config.Database.collection.mongodb.database.[0]}}
+            - MONGO_INITDB_ROOT_USERNAME={{_config.Database.collection.mongodb.root.login}}
+            - MONGO_INITDB_ROOT_PASSWORD={{_config.Database.collection.mongodb.root.password}}
+            - MONGODB_CONNSTRING=mongodb://{{_config.Database.collection.mongodb.root.login}}:{{_config.Database.collection.mongodb.root.password}}@mongodb
+
 {{/if}}
 
     {{!-- MySQL --}}
