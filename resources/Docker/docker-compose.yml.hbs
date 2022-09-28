@@ -57,7 +57,7 @@ services:
         ports:
             - {{_config.Database.collection.mongodb.port}}:27017
         volumes:
-            - '~/apps/mongo:{{_config.App.root}}/.mongo'
+            - '{{_config.App.root}}/.database/mongo:/data/db'
         environment:
             - MONGO_INITDB_DATABASE={{_config.Database.collection.mongodb.database.[0]}}
             - MONGO_INITDB_ROOT_USERNAME={{_config.Database.collection.mongodb.root.login}}
@@ -75,7 +75,7 @@ services:
         ports:
             - {{_config.Database.collection.mysql.port}}:3306
         volumes:
-            - '~/apps/mysql:{{_config.App.root}}/.mysql'
+            - '{{_config.App.root}}/.database/mysql:/var/lib/mysql'
         environment:
             - MYSQL_ROOT_PASSWORD={{_config.Database.collection.mysql.root.password}}
             - MYSQL_PASSWORD={{_config.Database.collection.mysql.users.[0].password}}
@@ -97,7 +97,7 @@ services:
         ports:
            - {{_config.Database.collection.mysql.port}}:3306
         volumes:
-            - '~/apps/mariadb:{{_config.App.root}}/.mariadb'
+            - '{{_config.App.root}}/.database/mariadb:/var/lib/mysql'
 {{/if}}
 
     {{!-- PostgreSQL --}}
@@ -113,5 +113,5 @@ services:
         ports:
             - {{_config.Database.collection.postgresql.port}}:5432
         volumes: 
-            - '~/apps/postgresql:{{_config.App.root}}/.postgresql'
+            - '{{_config.App.root}}/.database/postgresql:/var/lib/postgresql/data'
 {{/if}}

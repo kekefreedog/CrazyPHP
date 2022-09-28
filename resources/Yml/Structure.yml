@@ -12,10 +12,12 @@
 Structure:
   "@app_root":
     folders:
-      .mongo: null
-      .mysql: null
-      .mariadb: null
-      .postgresql: null
+      .database:
+        folders:
+          mongo: null
+          mysql: null
+          mariadb: null
+          postgresql: null
       .cache:
         folders:
           app: null
@@ -90,3 +92,5 @@ Structure:
             source: "@crazyphp_root/resources/Php/app/Index.php"
     files:
       package.json: null
+      .gitignore:
+        source : "@crazyphp_root/resources/Git/.gitignore"
