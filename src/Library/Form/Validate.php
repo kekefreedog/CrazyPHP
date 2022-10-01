@@ -213,7 +213,7 @@ class Validate {
             );
 
         # Check if required
-        if( ( $input["required"] ?? false ) && !$input['value'])
+        if(($input["required"] ?? false ) && !$input['value'])
 
             # If default value
             if($input['default'] ?? false)

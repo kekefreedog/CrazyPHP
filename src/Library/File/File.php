@@ -240,6 +240,60 @@ class File {
     }
 
     /**
+     * Open
+     * 
+     * Open file, depending of file mimetype
+     * 
+     * @param string $path path of file to open
+     * @param string|false $customInstance Custom Instance for open file
+     * @return
+     */
+    public static function open(string $path = "", string|false $customInstance = false){
+
+        # Get path
+        $path = self::path($path);
+
+        # Declare result
+        $result = null;
+
+        # Check file exists
+        if(!File::exists($path))
+
+            # Return result
+            return $result;
+
+        # Check if custom instance
+        if($customInstance){
+
+            # Open file with it
+            $result = $customInstance::open($path);
+
+        }else{
+            
+            # Guess mimetype
+            $mime = File::guessMime($path);
+
+            # Check instance is available
+            if(isset(self::MIMTYPE_TO_CLASS[$mime])){
+
+                # Get instance for read file
+                $instance = self::MIMTYPE_TO_CLASS[$mime];
+
+                # Set result
+                $result = $instance::open($path);
+
+            }else{
+
+                # Set result
+                $result = self::read($path);
+
+            }
+            
+        }
+
+    }
+
+    /**
      * Get Last Modified Date
      * 
      * Get last modified date of file or group of files
