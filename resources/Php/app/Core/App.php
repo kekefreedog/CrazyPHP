@@ -15,7 +15,7 @@ namespace App\Core;
 /**
  * Dependances
  */
-use App\Core\Kernel;
+use CrazyPHP\Core\Core;
 
  /**
  * App
@@ -26,7 +26,7 @@ use App\Core\Kernel;
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2022 Kévin Zarshenas
  */
-class App extends Kernel {
+class App extends Core {
 
     /**
      * Constructor
@@ -38,8 +38,20 @@ class App extends Kernel {
         /* Parent construct */
         parent::__construct();
 
+        /**
+         * - Set Env Variable of the app
+         */
+        $this->setEnv([
+            # Write your custom env here
+        ]);
+
+        /**
+         * - Run Router Preparation
+         */
+        $this->runRoutersPreparation();
+
         /* Messahe */
-        echo "Your app is working !";
+        echo "Your app is working !!";
 
     }
 

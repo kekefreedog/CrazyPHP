@@ -153,7 +153,7 @@ class Env{
      ******************************************************
      */
 
-    /* @var string PREFIX used in global */
+    /* @const string PREFIX used in global */
     public const PREFIX = "__CRAZY_APP";
 
 }

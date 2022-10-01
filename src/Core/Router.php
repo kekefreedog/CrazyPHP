@@ -87,14 +87,25 @@ class Router extends VendorRouter {
                 ]
             );
 
-        # Iteration of collection
-        foreach($collectionParsed as $item)
+        # Iteration of groups
+        foreach(LibraryRouter::GROUPS as $group)
 
-            # Check type
-            if($item["type"] == "router")
+            # Check group not empty
+            if(!empty($collectionParsed[$group]))
 
-                # Add router
-                $this->addRoute($item["pattern"], $item["controller"], strtolower($item["method"]), $item["name"]);
+                # Iteration of collection
+                foreach($collectionParsed[$group] as $item)
+
+                    # Check type
+                    if($item["type"] == "router")
+
+                        # Add router
+                        $this->addRoute(
+                            $item["pattern"], 
+                            $item["controller"], 
+                            strtolower($item["method"]), 
+                            $item["name"]
+                        );
 
     }
 

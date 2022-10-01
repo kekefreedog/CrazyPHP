@@ -20,21 +20,9 @@ require __DIR__.'/../vendor/autoload.php';
 /**
  * Dependances
  */
-use CrazyPHP\Exception\CrazyException;
 use App\Core\App;
 
-/* Try */
-try {
-
-    /** 
-     * Register Application
-     */
-    new App();
-
-/* Catch errors */
-} catch (CrazyException $e) {
-
-    /* Display errors */
-    echo 'Exception reçue : ',  $e->getMessage(), "\n";
-
-}
+/** 
+ * New Application Instance
+ */
+new App();

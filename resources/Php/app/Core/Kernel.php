@@ -19,7 +19,7 @@ namespace App\Core;
 /**
  * Kernel
  *
- * Main kernel methods
+ * Allow to overwrite core methods or add custom
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
@@ -32,8 +32,6 @@ class Kernel{
      * 
      * @return self
      */
-    public function __construct(){
-
-    }
+    public function __construct(){}
 
 }

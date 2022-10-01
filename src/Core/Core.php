@@ -15,7 +15,12 @@ namespace  CrazyPHP\Core;
 /**
  * Dependances
  */
+use CrazyPHP\Exception\CrazyException;
+use CrazyPHP\Library\File\File;
 use CrazyPHP\Core\Instance;
+use CrazyPHP\Model\Env;
+use App\Core\Kernel;
+
 
 /**
  * Core
@@ -26,7 +31,7 @@ use CrazyPHP\Core\Instance;
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2022 Kévin Zarshenas
  */
-class Core {
+class Core extends Kernel {
 
     /** Parameter
      ******************************************************
@@ -45,8 +50,86 @@ class Core {
      */
     public function __construct(){
 
+        # Parent constructor
+        parent::__construct();
+
         # Load instances
-        $instance = new Instance();
+        $this->instance = new Instance();
+
+    }
+
+    /** Public methods | Env
+     ******************************************************
+     */
+
+    /**
+     * Set Env
+     */
+    public function setEnv(array $customEnv = []):void {
+
+        # Env to push
+        $envToPush = [
+            "app_root"      =>  $_SERVER["DOCUMENT_ROOT"]."/..",
+            "crazyphp_root" =>  $_SERVER["DOCUMENT_ROOT"]."/../vendor/kzarshenas/crazyphp",
+        ];
+
+        # Merge custom env
+        if(!empty($customEnv))
+
+            # Iteration of custom env
+            foreach($customEnv as $k => $v)
+
+                # Check k is string
+                if(!is_string($k) || !$k)
+        
+                    # New Exception
+                    throw new CrazyException(
+                        "Please check custom env \"$k\" => \"$v\". Actually env name looks not valid, you have to cheoose a char string name.",
+                        500,
+                        [
+                            "custom_code"   =>  "core-002",
+                        ]
+                    );
+
+                else
+
+                    # Push env in env to push
+                    $envToPush[$k]  =   $v;
+
+        # Set envs
+        Env::set($envToPush);
+
+    }
+
+    /** Public methods | Router
+     ******************************************************
+     */
+
+    /**
+     * Run Routers Preparation
+     * 
+     * Prepare router instance
+     * 
+     * @return void
+     */
+    public function runRoutersPreparation():void {
+
+        # Check instance router
+        if(!isset($this->instance->router))
+        
+            # New Exception
+            throw new CrazyException(
+                "Please check if router instance is correctly launch in your app.",
+                500,
+                [
+                    "custom_code"   =>  "core-001",
+                ]
+            );
+
+        # Push collection in router instance
+        $this->instance->router->pushCollection();
+
+        $this->instance->router->dumpOnDisk(File::path('@app_root/.cache/cache.php'));
 
     }
 

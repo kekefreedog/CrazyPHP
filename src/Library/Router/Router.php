@@ -73,32 +73,34 @@ class Router {
 
         /* Get methods | end */
 
-        /* Prepare router.app */
+        /* Prepare router */
 
-            # Declare pages
-            $methods = [];
+            # Iteration of group
+            foreach(self::GROUPS as $group){
 
-            # Get app prefix
-            $appPrefix = (isset($collection["Router"]["app"]) && $collection["Router"]["app"]) ?
-                trim($collection["Router"]["app"], "/") :
-                    "/";
+                # Get app prefix
+                $appPrefix = (isset($collection["Router"][$group]) && $collection["Router"][$group]) ?
+                    trim($collection["Router"][$group], "/") :
+                        "/";
 
-            # Check
-            if($collection["Router"]["app"] ?? false && !empty($collection["Router"]["app"])){
+                # Check
+                if($collection["Router"][$group] ?? false && !empty($collection["Router"][$group])){
 
-                # Iteration of app
-                foreach($collection["Router"]["app"] as $appRouter){
+                    # Iteration of app
+                    foreach($collection["Router"][$group] as $appRouter){
 
-                    # Get parse router result
-                    $router = self::parseRouter($appRouter, $appPrefix, $methods);
+                        # Get parse router result
+                        $router = self::parseRouter($appRouter, $appPrefix, $methods);
 
-                    # Check router
-                    if(!empty($router))
+                        # Check router
+                        if(!empty($router))
 
-                        # Push router in result
-                        $result["app"] = $router;
+                            # Push router in result
+                            $result[$group] = $router;
 
+                    }
                 }
+                
             }
 
         # Return result
@@ -219,8 +221,8 @@ class Router {
      ******************************************************
      */
 
-    /* @const METHODS Methods supported */
-    const METHODS = [
+    /* @const array METHODS Methods supported */
+    public const METHODS = [
         'GET',
         'POST',
         'PUT',
@@ -228,5 +230,8 @@ class Router {
         'OPTION',
         'PATCH'
     ];
+
+    /* @const array GROUPS Type of router */
+    public const GROUPS = ["app", "api", "assets"];
 
 }
