@@ -10,12 +10,12 @@
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2022 Kévin Zarshenas
  */
-namespace CrazyPHP\App;
+namespace CrazyPHP\Model\App;
 
 /**
  * Dependances
  */
-use CrazyPHP\Docker\Delete as DockerDelete;
+use CrazyPHP\Model\Docker\Delete as DockerDelete;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\File\Structure;
 use CrazyPHP\Interface\CrazyCommand;

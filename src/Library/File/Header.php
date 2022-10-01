@@ -21,7 +21,7 @@ use CrazyPHP\Library\Time\DateTime;
 use CrazyPHP\Library\File\Composer;
 use CrazyPHP\Library\Cache\Cache;
 use CrazyPHP\Library\File\File;
-use CrazyPHP\App\Create;
+use CrazyPHP\Model\App\Create;
 
 /**
  * Header

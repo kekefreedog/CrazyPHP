@@ -23,8 +23,8 @@ use CrazyPHP\Library\File\Docker;
 use splitbrain\phpcli\Options;
 use League\CLImate\CLImate;
 use splitbrain\phpcli\CLI;
-use CrazyPHP\App\Create;
-use CrazyPHP\App\Delete;
+use CrazyPHP\Model\App\Create;
+use CrazyPHP\Model\App\Delete;
 use CrazyPHP\Cli\Form;
 
 /**
@@ -996,7 +996,7 @@ class Core extends CLI {
                 "command"   =>  [
                     ## Project
                     "project"   =>  [
-                        "class"     =>  "\CrazyPHP\App\Create",
+                        "class"     =>  "\CrazyPHP\Model\App\Create",
                         "parameter" =>  "application",
                     ],
                 ],
@@ -1007,7 +1007,7 @@ class Core extends CLI {
                 "command"   =>  [
                     ## Project
                     "project"   =>  [
-                        "class"     =>  "\CrazyPHP\App\Delete",
+                        "class"     =>  "\CrazyPHP\Model\App\Delete",
                     ],
                 ],
             ],
@@ -1015,19 +1015,19 @@ class Core extends CLI {
         "CrazyDocker"   =>  [
             # Command new
             "new"   =>  [
-                "class"     =>  "\CrazyPHP\Docker\Install",
+                "class"     =>  "\CrazyPHP\Model\Docker\Install",
             ],
             # Command delete
             "delete"=>  [
-                "class"     =>  "\CrazyPHP\Docker\Delete",
+                "class"     =>  "\CrazyPHP\Model\Docker\Delete",
             ],
             # Command run
             "up"   =>  [
-                "class"     =>  "\CrazyPHP\Docker\Up",
+                "class"     =>  "\CrazyPHP\Model\Docker\Up",
             ],
             # Command down
             "down"  =>  [
-                "class"     =>  "\CrazyPHP\Docker\Down",
+                "class"     =>  "\CrazyPHP\Model\Docker\Down",
             ]
         ]
     ];

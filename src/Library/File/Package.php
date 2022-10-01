@@ -18,7 +18,7 @@ namespace CrazyPHP\Library\File;
 use CrazyPHP\Library\File\Composer;
 use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\File\Json;
-use CrazyPHP\App\Create;
+use CrazyPHP\Model\App\Create;
 
 /**
  * Package

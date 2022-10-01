@@ -10,12 +10,12 @@
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2022 Kévin Zarshenas
  */
-namespace CrazyPHP\Docker;
+namespace CrazyPHP\Model\Docker;
 
 /**
  * Dependances
  */
-use CrazyPHP\Docker\Down as DockerDown;
+use CrazyPHP\Model\Docker\Down as DockerDown;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\File\Structure;
 use CrazyPHP\Interface\CrazyCommand;

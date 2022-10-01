@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 /**
- * Manage Docker Compose
+ * Run Docker Compose
  *
  * TDB
  *
@@ -10,7 +10,7 @@
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2022 Kévin Zarshenas
  */
-namespace CrazyPHP\Docker;
+namespace CrazyPHP\Model\Docker;
 
 /**
  * Dependances
@@ -22,15 +22,15 @@ use CrazyPHP\Library\File\Docker;
 use CrazyPHP\Library\File\File;
 
 /**
- * Down docker compose
+ * Up docker compose
  *
- * Classe for run step by step docker compose
+ * Classe for Up step by step docker compose
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2022 Kévin Zarshenas
  */
-class Down implements CrazyCommand {
+class Up implements CrazyCommand {
 
     /**
      * Constructor
@@ -136,7 +136,7 @@ class Down implements CrazyCommand {
          * Start
          * 1. Start docker compose
          */
-        $this->runDown();
+        $this->runStart();
 
         # Return current instance
         return $this;
@@ -160,7 +160,7 @@ class Down implements CrazyCommand {
                 "\"".Docker::DOCKER_COMPOSE_COMMAND."\" isn't available in your shell", 
                 500,
                 [
-                    "custom_code"   =>  "Down-001",
+                    "custom_code"   =>  "Run-001",
                 ]
             );
 
@@ -172,7 +172,7 @@ class Down implements CrazyCommand {
                 "\"docker-compose.yml\" doesn't exist, please install CrazyDocker first",
                 500,
                 [
-                    "custom_code"   =>  "Down-002",
+                    "custom_code"   =>  "Run-003",
                 ]
             );
 
@@ -182,26 +182,26 @@ class Down implements CrazyCommand {
     }
 
     /**
-     * Down
+     * Start
      * 
-     * Down Docker Compose
+     * Start Docker Compose
      * 
      * @return self
      */
-    public function runDown():self {
+    public function runStart():self {
 
         # Run docker compose
-        $result = Docker::down();
+        $result = Docker::up();
 
         # Check result
         if($result > 0)
             
             # New error
             throw new CrazyException(
-                "Docker compose down failed",
+                "Docker compose launch failed",
                 500,
                 [
-                    "custom_code"   =>  "Down-002",
+                    "custom_code"   =>  "Run-002",
                 ]
             );
         

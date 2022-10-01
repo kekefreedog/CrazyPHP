@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 /**
- * Run Docker Compose
+ * New application
  *
  * TDB
  *
@@ -10,27 +10,30 @@
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2022 Kévin Zarshenas
  */
-namespace CrazyPHP\Docker;
+namespace CrazyPHP\Model\Docker;
 
 /**
  * Dependances
  */
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Interface\CrazyCommand;
-use CrazyPHP\Library\Cli\Command;
+use CrazyPHP\Library\File\Structure;
+use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\File\Docker;
+use CrazyPHP\Library\System\Os;
 use CrazyPHP\Library\File\File;
+use CrazyPHP\Model\Env;
 
 /**
- * Up docker compose
+ * Create new Application
  *
- * Classe for Up step by step docker compose
+ * Classe for create step by step new application
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2022 Kévin Zarshenas
  */
-class Up implements CrazyCommand {
+class Install implements CrazyCommand {
 
     /**
      * Constructor
@@ -126,87 +129,85 @@ class Up implements CrazyCommand {
     public function run():self {
 
         /**
-         * Check
-         * 1. Check command docker-compose
-         * 2. Check docker-compose.yml file
+         * Run Structure Folder
+         * 1. Prepare folder structure
          */
-        $this->runCheck();
+        $this->runStructureFolder();
 
-        /**
-         * Start
-         * 1. Start docker compose
-         */
-        $this->runStart();
-
-        # Return current instance
+        # Return instance
         return $this;
 
     }
 
     /**
-     * Check
+     * Run Structure Folder
      * 
-     * Check docker compose command
+     * Prepare folder structure
      * 
      * @return self
      */
-    public function runCheck():self {
+    public function runStructureFolder():self {
 
-        # Check command
-        if(!Command::exists(Docker::DOCKER_COMPOSE_COMMAND))
-            
-            # New error
-            throw new CrazyException(
-                "\"".Docker::DOCKER_COMPOSE_COMMAND."\" isn't available in your shell", 
-                500,
-                [
-                    "custom_code"   =>  "Run-001",
-                ]
-            );
+        # Get path of structure
+        $structurePath = File::path(Docker::STRUCTURE_PATH);
 
-        # Check docker compse exists
-        if(!File::exists(Docker::DOCKER_COMPOSE_PATH))
-            
-            # New error
-            throw new CrazyException(
-                "\"docker-compose.yml\" doesn't exist, please install CrazyDocker first",
-                500,
-                [
-                    "custom_code"   =>  "Run-003",
-                ]
-            );
+        # Get data for render
+        $data = self::_getData();
 
-        # Return self
+        # Run creation of docker structure
+        Structure::create($structurePath, $data);
+
+        # Return instance
         return $this;
 
     }
 
-    /**
-     * Start
-     * 
-     * Start Docker Compose
-     * 
-     * @return self
+    /** Private methods
+     ******************************************************
      */
-    public function runStart():self {
 
-        # Run docker compose
-        $result = Docker::up();
+    /**
+     * Get data
+     * 
+     * Get all data needed for template engine
+     * 
+     * @return array
+     */
+    private function _getData():array {
 
-        # Check result
-        if($result > 0)
+        # Set result
+        $result = [];
+
+        # Set config
+        $config = Config::get([
+            "App", "Database"
+        ]);
+
+        # Push config in result
+        $result['_config'] = $config;
+
+        # Check if windows
+        if(Os::isWindows()){
+
+            # Update _config.App.root
+            $value = $config['_config']['App']['root'];
             
-            # New error
-            throw new CrazyException(
-                "Docker compose launch failed",
-                500,
-                [
-                    "custom_code"   =>  "Run-002",
-                ]
-            );
-        
-        # Return self
-        return $this;
+            # Change \ or \\ by /
+            $value = str_replace(["\\", "\\\\"], "/", $value);
+
+            # Split by : of disk
+            $explodedValue = explode(":", $value, 2);
+
+            # Set new value
+            $value = "/mnt/".strtolower($explodedValue[0]).$explodedValue[1];
+
+            # Set $value = _config.App.root
+            $result['_config']['App']['root'] = $value;
+
+        }
+
+        # Return result
+        return $result;
 
     }
 

@@ -20,7 +20,7 @@ use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\Cli\Command;
 use CrazyPHP\Library\File\Json;
-use CrazyPHP\App\Create;
+use CrazyPHP\Model\App\Create;
 
 /**
  * Composer
