@@ -73,7 +73,7 @@ class Config{
                 $input = str_replace(self::SEPARATOR, "___", $input);
 
                 # Explode to get first value
-                $configFolder = explode("___", $input, 1)[0];
+                $configFolder = explode("___", $input, 2)[0];
 
                 # New finder
                 $finder = new Finder();
@@ -151,6 +151,108 @@ class Config{
     }
 
     /**
+     * Get Value
+     * 
+     * Get value on config from key
+     * 
+     * @param string $input Name of config(s)
+     * 
+     * @return
+     */
+    public static function getValue(string $input = "") {
+
+
+        # Declare result
+        $result = [];
+
+        # Check input
+        if(!$input)
+
+            # Return result
+            return $result;
+
+        # Check config has input
+        if(self::has($input)){
+
+            /* Get config file */
+
+            # Replace separator
+            $input = str_replace(self::SEPARATOR, "___", $input);
+
+            # Explode to get first value
+            $configFolder = explode("___", $input, 2)[0];
+
+            # New finder
+            $finder = new Finder();
+
+            # Search files
+            $finder
+                ->files()
+                ->name(["$configFolder.*", $configFolder])
+                ->in(File::path(self::FOLDER_PATH))
+            ;
+
+            # Check not multiple file
+            if($finder->count() === 0)
+    
+                # New Exception
+                throw new CrazyException(
+                    "No config file found for \"$configFolder\".", 
+                    500,
+                    [
+                        "custom_code"   =>  "config-006",
+                    ]
+                );
+
+            # Check not multiple file
+            if($finder->count() > 1)
+
+                # New Exception
+                throw new CrazyException(
+                    "Conflict of config file with the same name for \"$configFolder\".", 
+                    500,
+                    [
+                        "custom_code"   =>  "config-001",
+                    ]
+                );
+
+            # Iteration of files
+            foreach ($finder as $file){
+
+                # Get path file
+                $filePath = $file->getPathname();
+
+                # Get mime type
+                $fileMime = File::guessMime($filePath);
+
+                # break;
+                break;
+
+            }
+
+            # Check file path and file mime
+            if(!$filePath || !$fileMime || !isset(File::MIMTYPE_TO_CLASS[$fileMime]))
+
+                # Return result
+                return $result;
+
+            # Set file instance class
+            $fileInstance = File::MIMTYPE_TO_CLASS[$fileMime];
+
+            # Read file path
+            $content = $fileInstance::open($filePath);
+
+            # Get value
+            $result = Arrays::parseKey($input, $content);
+
+        }
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
      * Has
      * 
      * Get single file of parameter exists 
@@ -176,7 +278,7 @@ class Config{
         $input = str_replace(self::SEPARATOR, "___", $input);
 
         # Explode to get first value
-        $configFolder = explode("___", $input, 1)[0];
+        $configFolder = explode("___", $input, 2)[0];
 
         # New finder
         $finder = new Finder();

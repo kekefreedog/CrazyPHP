@@ -16,6 +16,7 @@ namespace CrazyPHP\Model;
  * Dependances
  */
 use CrazyPHP\Exception\CrazyException;
+use Symfony\Component\Finder\Finder;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\File\Composer;
 use CrazyPHP\Library\File\Header;
@@ -38,42 +39,45 @@ class Config{
      ******************************************************
      */
     
+    /* @const DEFAULT_PATH PATH by default where stored config files */
+    public const DEFAULT_PATH = "@app_root/config";
+
     /**
      * Default Config files
      */
     public const DEFAULT_CONFIG_FILES = [
         "App"       =>  [
             "path_source"   =>  "@app_root"."/composer.json",
-            "path_target"   =>  "@app_root"."/config/App.yml",
+            "path_target"   =>  self::DEFAULT_PATH."/App.yml",
             "action_set"    =>  "_setAppConfig",
         ],
         /* "Template"  =>  [
             "path_source"   =>  "@crazyphp_root"."/resources/Yml/Template.yml",
-            "path_target"   =>  "@app_root"."/config/Template.yml",
+            "path_target"   =>  self::DEFAULT_CONFIG_FILES."/Template.yml",
         ],
         "Router"    =>  [
             "path_source"   =>  "@crazyphp_root"."/resources/Yml/Router.yml",
-            "path_target"   =>  "@app_root"."/config/Router.yml",
+            "path_target"   =>  self::DEFAULT_CONFIG_FILES."/Router.yml",
         ],
         "Firewall"  =>  [
             "path_source"   =>  "@crazyphp_root"."/resources/Yml/Firewall.yml",
-            "path_target"   =>  "@app_root"."/config/Firewall.yml",
+            "path_target"   =>  self::DEFAULT_CONFIG_FILES."/Firewall.yml",
         ],
         "Database"  =>  [
             "path_source"   =>  "@crazyphp_root"."/resources/Yml/Database.yml",
-            "path_target"   =>  "@app_root"."/config/Database.yml",
+            "path_target"   =>  self::DEFAULT_CONFIG_FILES."/Database.yml",
         ],
         "Head"      =>  [
             "path_source"   =>  "@crazyphp_root"."/resources/Yml/Head.yml",
-            "path_target"   =>  "@app_root"."/config/Head.yml",
+            "path_target"   =>  self::DEFAULT_CONFIG_FILES."/Head.yml",
         ],
         "Style"     =>  [
             "path_source"   =>  "@crazyphp_root"."/resources/Yml/Style.yml",
-            "path_target"   =>  "@app_root"."/config/Style.yml",
+            "path_target"   =>  self::DEFAULT_CONFIG_FILES."/Style.yml",
         ],
         "Bridge"    =>  [
             "path_source"   =>  "@crazyphp_root"."/resources/Yml/Bridge.yml",
-            "path_target"   =>  "@app_root"."/config/Bridge.yml",
+            "path_target"   =>  self::DEFAULT_CONFIG_FILES."/Bridge.yml",
         ], */
     ];
 
@@ -82,15 +86,15 @@ class Config{
      */
 
     /**
-     * Set
+     * Setup
      * 
-     * Set config files
+     * Setup config files
      * 
      * @param array|string $config Config to set
      * 
      * @return void
      */
-    public static function set(array|string $configs = "*"):void {
+    public static function setup(array|string $configs = "*"):void {
 
         # Check config
         if(is_string($configs))
@@ -167,6 +171,133 @@ class Config{
             # TBC...
 
         }
+
+    }
+
+    /**
+     * Exists
+     * 
+     * Check config file exists
+     * 
+     * @param string $config Config name to search
+     * @param string $folder Folder where search config
+     * @return bool
+     */
+    public static function exists(string $config = "", string $folder = self::DEFAULT_PATH):bool {
+
+        # Set result
+        $result = false;
+
+        # Get path
+        $folderPath = File::path($folder);
+
+        # Check config and folder
+        if(!$config || !$folderPath || !File::exists($folderPath))
+
+            # Return false
+            return $result;
+
+        # New finder instance
+        $finder = new Finder();
+
+        # Prepare finder
+        $finder->files()->name(["$config.*", $config])->in($folderPath);
+
+        # Check finder result
+        if($finder->hasResults())
+
+            # Set result
+            $result = true;
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Create
+     * 
+     * Create config files
+     * 
+     * @param string $name Name of the new config
+     * @param array $data Data of the new config
+     * @param string $folder Folder where create config
+     * @return string Path of the new config file
+     */
+    public static function create(string $name = "", array $data = [], string $folder = self::DEFAULT_PATH, string $format = "yml"):string {
+
+        # Result
+        $result = "";
+
+        # Get folder path
+        $folderPath = File::path($folder);
+
+        # Process name
+        $name = ucfirst(strtolower($name));
+
+        # Get target_path
+        $targetPath = "$folderPath/$name.$format";
+
+
+        # Check folder
+        if(!$folderPath || !File::exists($folderPath))
+            
+            # New error
+            throw new CrazyException(
+                "Folder \"$folder\" given isn't valid", 
+                500,
+                [
+                    "custom_code"   =>  "config-002",
+                ]
+            );
+
+        # Check name of config
+        if(!$name)
+            
+            # New error
+            throw new CrazyException(
+                "Name \"$name\" given isn't valid", 
+                500,
+                [
+                    "custom_code"   =>  "config-003",
+                ]
+            );
+
+        # Check config already exists
+        if(File::exists($targetPath))
+            
+            # New error
+            throw new CrazyException(
+                "Config \"$name.$format\" already exists", 
+                500,
+                [
+                    "custom_code"   =>  "config-004",
+                ]
+            );
+
+        # Get instance of current format
+        $formatInstance = File::MIMTYPE_TO_CLASS[File::EXTENSION_TO_MIMETYPE[$format] ?? false] ?? false;
+
+        # Check format instance
+        if(!$formatInstance)
+            
+            # New error
+            throw new CrazyException(
+                "Format \"$format\" isn't valid", 
+                500,
+                [
+                    "custom_code"   =>  "config-005",
+                ]
+            );
+
+        # Create file
+        $formatInstance::create($targetPath, [$name => $data], Header::get($format));
+
+        # Set result
+        $result = $targetPath;
+
+        # Return result
+        return $result;
 
     }
 

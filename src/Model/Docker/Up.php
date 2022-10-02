@@ -15,11 +15,16 @@ namespace CrazyPHP\Model\Docker;
 /**
  * Dependances
  */
+use CrazyPHP\Library\File\Config as FileConfig;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Interface\CrazyCommand;
+use CrazyPHP\Library\File\Composer;
+use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\Cli\Command;
 use CrazyPHP\Library\File\Docker;
 use CrazyPHP\Library\File\File;
+use CrazyPHP\Library\File\Json;
+use CrazyPHP\Model\Config;
 
 /**
  * Up docker compose
@@ -138,6 +143,18 @@ class Up implements CrazyCommand {
          */
         $this->runStart();
 
+        /**
+         * Get Services
+         * 1. Get current services and store them
+         */
+        $this->runGetServices();
+
+        /**
+         * Run Composer Install
+         * 1. Execute command composer install in php service
+         */
+        $this->runComposerUpdate();
+
         # Return current instance
         return $this;
 
@@ -160,7 +177,7 @@ class Up implements CrazyCommand {
                 "\"".Docker::DOCKER_COMPOSE_COMMAND."\" isn't available in your shell", 
                 500,
                 [
-                    "custom_code"   =>  "Run-001",
+                    "custom_code"   =>  "up-001",
                 ]
             );
 
@@ -172,7 +189,7 @@ class Up implements CrazyCommand {
                 "\"docker-compose.yml\" doesn't exist, please install CrazyDocker first",
                 500,
                 [
-                    "custom_code"   =>  "Run-003",
+                    "custom_code"   =>  "up-003",
                 ]
             );
 
@@ -201,10 +218,92 @@ class Up implements CrazyCommand {
                 "Docker compose launch failed",
                 500,
                 [
-                    "custom_code"   =>  "Run-002",
+                    "custom_code"   =>  "up-002",
                 ]
             );
         
+        # Return self
+        return $this;
+
+    }
+
+    /**
+     * Get Services
+     * 
+     * Get services ran
+     * 
+     * @return self
+     */
+    public function runGetServices():self {
+        
+        # Command
+        $command = "docker-compose ps --format json";
+
+        # Exec command
+        $result = Command::exec($command);
+
+        # Check result.output.0 is json
+        if(!Json::check($result["output"][0] ?? false))
+            
+            # New error
+            throw new CrazyException(
+                "Please check docker-compose up has been already execute.",
+                500,
+                [
+                    "custom_code"   =>  "up-003",
+                ]
+            );
+
+        # Open json
+        $data = json_decode($result["output"][0], true);
+
+        # Decalre Content
+        $content = [];
+
+        # Iteration of NAME_TO_SERVICE
+        foreach(Docker::NAME_TO_SERVICE as $name => $service){
+
+            # Get service
+            $serviceData = Arrays::filterByKey($data, "Service", $service);
+
+            # Check if service in data
+            if(!empty($serviceData))
+
+                # Fill content
+                $content['services'][$name] = $serviceData[array_key_first($serviceData)];
+
+        }
+
+        # Check create config
+        if(Config::exists("Docker"))
+
+            # Set config
+            FileConfig::set("Docker.services", $content['services']);
+
+        # Create config
+        else
+
+            # Create config Docker
+            Config::create("Docker", $content);
+        
+
+        # Return self
+        return $this;
+
+    }
+
+    /**
+     * Update composer
+     * 
+     * Install composer in service
+     * 
+     * @return self
+     */
+    public function runComposerUpdate(){
+
+        # Execute command
+        Composer::exec("update", "", false);
+
         # Return self
         return $this;
 

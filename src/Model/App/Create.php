@@ -453,7 +453,7 @@ class Create implements CrazyCommand {
     public function runConfig():Create {
 
         # Set config
-        Config::set();
+        Config::setup();
 
         # Return instance
         return $this;
@@ -504,9 +504,6 @@ class Create implements CrazyCommand {
 
                 # Push setup in config of database
                 Database::setupConfig($value);
-                
-        # Return instance
-        return $this;
 
         /* Vendor for Mongo DB */
 
@@ -516,6 +513,9 @@ class Create implements CrazyCommand {
             Composer::requirePackage("mongodb/mongodb", true, false);
 
         }
+                
+        # Return instance
+        return $this;
 
     }
 

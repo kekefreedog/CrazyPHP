@@ -17,10 +17,12 @@ namespace CrazyPHP\Model\Docker;
  */
 use CrazyPHP\Model\Docker\Down as DockerDown;
 use CrazyPHP\Exception\CrazyException;
+use Symfony\Component\Finder\Finder;
 use CrazyPHP\Library\File\Structure;
 use CrazyPHP\Interface\CrazyCommand;
 use CrazyPHP\Library\File\Docker;
 use CrazyPHP\Library\File\File;
+use CrazyPHP\Model\Config;
 
 /**
  * Delete docker compose
@@ -176,6 +178,27 @@ class Delete implements CrazyCommand {
 
         # Get path of structure
         $structurePath = File::path(Docker::STRUCTURE_PATH);
+
+        # Check docker config
+        if(Config::exists("Docker")){
+
+            # New finder
+            $finder = new Finder();
+
+            # Prepare finder
+            $finder->files()->name(["Docker", "Docker.*"])->in(File::path(Config::DEFAULT_PATH));
+
+            # Check if has result
+            if($finder->hasResults())
+
+                # Iteration of files
+                foreach ($finder as $file)
+
+                    # Unlink file
+                    unlink($file->getRealPath());
+
+
+        }
 
         # Run creation of docker structure
         Structure::remove($structurePath);

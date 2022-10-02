@@ -15,12 +15,14 @@ namespace CrazyPHP\Library\File;
 /**
  * Dependances
  */
+use CrazyPHP\Library\File\Config as FileConfig;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\Cli\Command;
 use CrazyPHP\Library\File\Json;
 use CrazyPHP\Model\App\Create;
+use CrazyPHP\Model\Config;
 
 /**
  * Composer
@@ -135,7 +137,10 @@ class Composer{
         ],
         "remove"    =>  [
             "command"   =>  "remove"
-        ]
+        ],
+        "search"    =>  [
+            "command"   =>  "search"
+        ],
     ];
 
     /** Public Static Methods
@@ -414,11 +419,23 @@ class Composer{
                 ]
             );
 
+        # Check docker config
+        if(Config::exists("Docker") && FileConfig::has("Docker.services.php.Name") && $dockerServiceName = FileConfig::getValue("Docker.services.php.Name"))
+
+                # Prepare docker
+                $dockerCommand = "docker exec -it $dockerServiceName ";
+
+        # Else
+        else
+
+            # Empty docker command
+            $dockerCommand = "";
+
         # Peepare command
         $argument = self::COMMAND_SUPPORTED[$commandName]["command"].($argument ? " $argument" : "");
 
         # Get result of exec
-        $result = Command::exec("composer", $argument);
+        $result = Command::exec($dockerCommand."composer", $argument);
 
         # Check result
         if($checkError && ($result["result_code"] !== null || $result["result_code"] > 0))
@@ -450,7 +467,7 @@ class Composer{
     public static function requirePackage(string $package = "", bool $checkPackage = true, bool $updateComposer = true, string $file = "composer.json"):void {
 
         # Check package name
-        if(strpos($package, "/") === false || !$package)
+        if(!$package)
                     
             # New error
             throw new CrazyException(
@@ -499,7 +516,7 @@ class Composer{
      * @param string $package Package name
      * @return bool
      */
-    public function checkPackageExists(string $package = ""){
+    public static function checkPackageExists(string $package = ""){
 
         # Set result
         $result = false;
@@ -511,7 +528,7 @@ class Composer{
             return $result;
 
         # Search package
-        $result = self::exec("search -N", $package);
+        $result = self::exec("search", "-N $package", false);
 
         # Check result
         if(isset($result["output"]) && $result["output"][0] == $package)

@@ -15,11 +15,13 @@ namespace CrazyPHP\Model\Docker;
 /**
  * Dependances
  */
+use CrazyPHP\Library\File\Config as FileConfig;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Interface\CrazyCommand;
 use CrazyPHP\Library\Cli\Command;
 use CrazyPHP\Library\File\Docker;
 use CrazyPHP\Library\File\File;
+use CrazyPHP\Model\Config;
 
 /**
  * Down docker compose
@@ -138,6 +140,12 @@ class Down implements CrazyCommand {
          */
         $this->runDown();
 
+        /**
+         * Clean Docker Config
+         * 1. Clean Docker Config
+         */
+        $this->runCleanDockerConfig();
+
         # Return current instance
         return $this;
 
@@ -205,6 +213,26 @@ class Down implements CrazyCommand {
                 ]
             );
         
+        # Return self
+        return $this;
+
+    }
+
+    /**
+     * Docker Config 
+     * 
+     * Clean Docker config
+     * 
+     * @return self
+     */
+    public function runCleanDockerConfig():self {
+
+        # Check docker and docker.service
+        if(Config::exists("Docker") && FileConfig::has("Docker.services"))
+
+            # Clean Docker.services
+            FileConfig::set("Docker.services", null);
+
         # Return self
         return $this;
 

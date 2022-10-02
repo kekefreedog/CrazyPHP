@@ -5,6 +5,14 @@ WORKDIR "{{_config.App.root}}"
 RUN apt-get update; \
     apt-get -y --no-install-recommends install \
         git \ 
-        php8.1-mongodb; \
+        libcurl4-openssl-dev \
+        pkg-config \
+        libssl-dev \ 
+        libsslcommon2-dev \
+        php8.1-mongodb \
+    apt-get install php-pear \
     apt-get clean; \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
+
+RUN pecl install mongodb \
+&& echo "extension=mongodb.so" > /usr/local/etc/php/conf.d/ext-mongodb.ini

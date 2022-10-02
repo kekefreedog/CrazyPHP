@@ -149,10 +149,21 @@ class Docker{
      */
     public const STRUCTURE_PATH = "@crazyphp_root/resources/Docker/Structure.yml";
 
-    /* @var string DOCKER_COMPOSE_PATH */
+    /* @const string DOCKER_COMPOSE_PATH */
     public const DOCKER_COMPOSE_PATH = "@app_root/docker-compose.yml";
 
-    /* @var string DOCKER_COMPOSE_COMMAND */
+    /* @const string DOCKER_COMPOSE_COMMAND */
     public const DOCKER_COMPOSE_COMMAND = "docker-compose";
+
+    /* @const array NAME_TO_SERVICE Name to services */
+    public const NAME_TO_SERVICE = [
+        "http"      =>  "webserver",
+        "php"       =>  "php-fpm",
+        "node"      =>  "node",
+        "mongo"     =>  "mongo",
+        "mysql"     =>  "mysql",
+        "mariadb"   =>  "mariadb",
+        "postgresql"=>  "postgresql",
+    ];
 
 }
