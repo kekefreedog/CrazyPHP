@@ -59,7 +59,7 @@ class Router {
                 foreach($methodsTemp as $method)
 
                     # Check method is valid
-                    if(strtoupper($method) && in_array($method, self::METHODS))
+                    if(strtoupper($method) && in_array(strtoupper($method), self::METHODS))
 
                         # Push method
                         $methods[] = strtoupper($method);
@@ -79,8 +79,8 @@ class Router {
             foreach(self::GROUPS as $group){
 
                 # Get app prefix
-                $appPrefix = (isset($collection["Router"][$group]) && $collection["Router"][$group]) ?
-                    trim($collection["Router"][$group], "/") :
+                $currentPrefix = (isset($collection["Router"]["prefix"][$group]) && $collection["Router"]["prefix"][$group]) ?
+                    trim($collection["Router"]["prefix"][$group], "/") :
                         "/";
 
                 # Check
@@ -90,7 +90,7 @@ class Router {
                     foreach($collection["Router"][$group] as $appRouter){
 
                         # Get parse router result
-                        $router = self::parseRouter($appRouter, $appPrefix, $methods);
+                        $router = self::parseRouter($appRouter, $currentPrefix, $methods);
 
                         # Check router
                         if(!empty($router))
@@ -124,7 +124,11 @@ class Router {
         $result = [];
 
         # Check patterns
-        if(!isset($router["patterns"]) || empty($router["patterns"]))
+        if(
+            empty($router) ||
+            !isset($router["patterns"]) || 
+            empty($router["patterns"])
+        )
 
             # Stop function
             return $result;
@@ -136,7 +140,7 @@ class Router {
         if(!isset($router["methods"]) || empty($router["methods"]))
 
             # Set get
-            $router["methods"] = "GET";
+            $router["methods"] = ["GET"];
 
         # Check router is array
         if(!is_array($router["methods"])) $router["methods"] = [$router["methods"]];
@@ -145,22 +149,23 @@ class Router {
         foreach($router["methods"] as $method){
 
             # Check current router
-            if(!in_array(strtoupper($router["methods"]), $methodsAllowed))
+            if(!in_array(strtoupper($method), $methodsAllowed))
 
                 # Continue iteration
                 continue;
 
             # Check patterns is array
-            if(!is_array($router["patterns"])) $router["patterns"] = [$router["patterns"]];
+            if(!is_array($router["patterns"])) 
+                $router["patterns"] = [$router["patterns"]];
 
             # Iteration of patterns
             foreach($router["patterns"] as $pattern){
 
-                # Process patterns if prefix
-                if($prefix) $pattern = ltrim($pattern, "/");
-
-                # Prepare data 
+                # Set and/or clear data 
                 $data = [];
+
+                # Clean pattern
+                $pattern = trim($pattern, "/");
 
                 # Fill name in data
                 if(!isset($router["name"]) || empty($router["name"]))
@@ -197,10 +202,10 @@ class Router {
                     $data["controller"] = $router["controller"]."::".$method;
 
                 # Fill pattern
-                $data["pattern"] = "/$prefix/$pattern";
+                $data["pattern"] = "/$prefix/$pattern/";
 
                 # Fill method
-                $data["method"] = strtolower($method);
+                $data["method"] = strtoupper($method);
 
                 # Fill type
                 $data["type"] = "router";
@@ -232,6 +237,6 @@ class Router {
     ];
 
     /* @const array GROUPS Type of router */
-    public const GROUPS = ["app", "api", "assets"];
+    public const GROUPS = ["app", "api", "asset"];
 
 }

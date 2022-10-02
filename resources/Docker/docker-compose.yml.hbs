@@ -30,6 +30,8 @@ services:
             # Dev
             # If {app.framework.path} - './vendor/kzarshenas/crazyphp:/Users/kzarshenas/Sites/CrazyPHP'
             {{#if _config.App.framework.path}}- './vendor/kzarshenas/crazyphp:{{_config.App.framework.path}}'{{/if}}
+        environment:
+            - PHP_DISPLAY_ERRORS=1
 
     {{!-- NODE JS --}}
     # NODEJS (NPM)

@@ -19,7 +19,6 @@ use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\Cache\Cache;
 use CrazyPHP\Library\File\File;
-use Phpfastcache\CacheManager;
 use LightnCandy\LightnCandy;
 use DateTime;
 

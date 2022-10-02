@@ -18,6 +18,7 @@ namespace  CrazyPHP\Core;
 use CrazyPHP\Library\Router\Router as LibraryRouter;
 use Mezon\Router\Router as VendorRouter;
 use CrazyPHP\Exception\CrazyException;
+use CrazyPHP\Library\Cache\Cache;
 use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\File\File;
 
@@ -32,6 +33,13 @@ use CrazyPHP\Library\File\File;
  */
 class Router extends VendorRouter {
 
+    /** Parameters
+     ******************************************************
+     */
+
+    /* @var Cache|null $cache Cache instance */
+    public ?Cache $cache = null;
+
     /**
      * Constructor
      * 
@@ -44,13 +52,46 @@ class Router extends VendorRouter {
 
     }
 
+    /** Public methods
+     ******************************************************
+     */
+
     /**
      * PushCollection
      * 
      * Push collection of router in current instance
      * @return void
      */
-    public function pushCollection(string $collectionPath = "l"):void {
+    public function pushCollection(string $collectionPath = ""):void {
+
+        # Prepare collection name
+        $collectionName = $collectionPath ?
+            pathinfo($collectionPath, PATHINFO_FILENAME) :
+                "ConfigRouter";
+
+        # Get key
+        $key = str_replace(
+            ["{", "}", "(", ")", "/", "\\", "@", ":"],
+            ".",
+            Cache::getCacheName(__CLASS__).".RouterCollectionCached.$collectionName"
+        );
+
+        # New cache instance
+        $this->cache = new Cache();
+
+        # Set lastModifiedDate
+        $lastModifiedDate = File::getLastModifiedDate($collectionPath ? File::path($collectionPath) : File::path("@app_root/config/Router.yml"));
+
+        # Check cache is valid
+        if($this->cache->hasUpToDate($key, $lastModifiedDate)){
+
+            # Load From Cache
+            $this->loadFromCache($key);
+
+            # Stop function
+            return;
+            
+        }
 
         # Check collection path
         if($collectionPath)
@@ -67,10 +108,16 @@ class Router extends VendorRouter {
         /* Add Pages */
 
         # Check router.page
-        if(!isset($collection["Router"]["pages"]) && empty($collection["Router"]["pages"]))
+        if(!isset($collection["Router"]) || empty($collection["Router"]))
 
-            # Stop function
-            return;
+            # New Exception
+            throw new CrazyException(
+                "No page is declared in your router collection",
+                500,
+                [
+                    "custom_code"   =>  "router-002",
+                ]
+            );
 
         # Parse collection
         $collectionParsed = LibraryRouter::parseCollection($collection);
@@ -97,15 +144,101 @@ class Router extends VendorRouter {
                 foreach($collectionParsed[$group] as $item)
 
                     # Check type
-                    if($item["type"] == "router")
+                    if($item["type"] == "router"){
 
                         # Add router
                         $this->addRoute(
                             $item["pattern"], 
                             $item["controller"], 
-                            strtolower($item["method"]), 
+                            $item["method"], 
                             $item["name"]
                         );
+
+                    }
+
+        # Dump On cache
+        $this->dumpOnCache($key);
+
+    }
+
+    /**
+     * Dump On Cache
+     * 
+     * Put on cache the current routes
+     * 
+     * @param string $key Key of the cached router collection to create or u^date
+     * @return void
+     */
+    public function dumpOnCache(string $key = ""):void {
+
+        # Check key
+        if(!$key)
+            
+            # New Exception
+            throw new CrazyException(
+                "Key of the cache isn't valid for create router cache.",
+                500,
+                [
+                    "custom_code"   =>  "router-003",
+                ]
+            );
+        
+        # Prepare data
+        $data = [
+            0 => $this->staticRoutes,
+            1 => $this->paramRoutes,
+            2 => $this->routeNames,
+            3 => $this->cachedRegExps,
+            4 => $this->cachedParameters,
+            5 => $this->regExpsWereCompiled
+        ];
+        
+        # Put on Cache
+        $this->cache->set($key, $data);
+
+    }
+
+    /**
+     * Load From Cache
+     * 
+     * Get route from the cache
+     * 
+     * @param string $key Key of the current cached router collection
+     * @return void
+     */
+    public function loadFromCache(string $key = ""):void {
+
+        # Check key
+        if(!$key)
+            
+            # New Exception
+            throw new CrazyException(
+                "Key of the cache isn't valid for load router cache.",
+                500,
+                [
+                    "custom_code"   =>  "router-004",
+                ]
+            );
+
+        print_r($data);
+
+        # Get cached data
+        $data = $this->cache->get($key);
+
+        # Check data
+        if(empty($data))
+            
+            # New Exception
+            throw new CrazyException(
+                "Oups... Cached router collection is empty and can't be load...",
+                500,
+                [
+                    "custom_code"   =>  "router-005",
+                ]
+            );
+
+            # Ingest data
+            list ($this->staticRoutes, $this->paramRoutes, $this->routeNames, $this->cachedRegExps, $this->cachedParameters, $this->regExpsWereCompiled) = $data;
 
     }
 

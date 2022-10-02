@@ -20,7 +20,7 @@ Router:
       middleware : {}
   api:
     - 
-  assets:
+  asset:
     - name: Favicon
       controller: App\Controller\Assets\Favicon
       patterns:
@@ -30,10 +30,11 @@ Router:
       middleware : {}
   websocket:
     - 
-  pagesPrefix: [a:language]
-  apiPrefix: api
-  assetsPrefix: asset
-  websocketPrefix: direct
+  prefix:
+    app: "[a:language]"
+    api: api
+    asset: asset
+    websocket: stream
   methods:
     - get
     - post

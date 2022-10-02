@@ -254,8 +254,15 @@ class Cache extends Psr16Adapter {
                         "TemplatesCompilated"
                     ]
                 ]
-            ]
-        ]
+            ],
+            "Core"  =>  [
+                "Router"    =>  [
+                    "RouterCollectionCached"    =>  [
+                        "ConfigRouter"
+                    ],
+                ],
+            ],
+        ],
     ];
 
 }
