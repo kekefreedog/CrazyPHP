@@ -432,6 +432,96 @@ class Composer{
                 ]
             );
 
+        return $result;
+
+    }
+
+    /**
+     * Require
+     * 
+     * Add requiere vendor in composer
+     * 
+     * @param string $package Package to add in composer
+     * @param bool $checkPackage Check package exits
+     * @param bool $updateComposer Update composer
+     * @param string $file Composer file
+     * @return void
+     */
+    public static function requirePackage(string $package = "", bool $checkPackage = true, bool $updateComposer = true, string $file = "composer.json"):void {
+
+        # Check package name
+        if(strpos($package, "/") === false || !$package)
+                    
+            # New error
+            throw new CrazyException(
+                "Composer package name \"$package\” you want require looks strange, please respect \"vendor/package\" format !", 
+                500,
+                [
+                    "custom_code"   =>  "composer-004",
+                ]
+            );
+        
+        # Check chack package
+        if($checkPackage && !self::checkPackageExists($package))
+                    
+            # New error
+            throw new CrazyException(
+                "Package  \"$package\” doesn't exit on composer db.", 
+                500,
+                [
+                    "custom_code"   =>  "composer-005",
+                ]
+            );
+
+        # Array to merge
+        $arrayToMerge = [
+            "require"   =>  [
+                $package    =>  "*"
+            ]
+        ];
+
+        # Add package in json in composer.json
+        self::set($arrayToMerge);
+
+        # Check update Composer
+        if($updateComposer)
+
+            # Composer Update
+            Composer::exec("update", "", false);
+
+    } 
+
+    /**
+     * Check Package Exists
+     * 
+     * Check package exists on composer
+     * 
+     * @param string $package Package name
+     * @return bool
+     */
+    public function checkPackageExists(string $package = ""){
+
+        # Set result
+        $result = false;
+
+        # Check name
+        if(!$package)
+
+            # Return result
+            return $result;
+
+        # Search package
+        $result = self::exec("search -N", $package);
+
+        # Check result
+        if(isset($result["output"]) && $result["output"][0] == $package)
+
+            # Set result
+            $result = true;
+
+        # Return result
+        return $result;
+
     }
 
     /** Private Static Methods

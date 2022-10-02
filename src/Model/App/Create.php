@@ -508,6 +508,15 @@ class Create implements CrazyCommand {
         # Return instance
         return $this;
 
+        /* Vendor for Mongo DB */
+
+        # Check if mongo set in current app
+        if(in_array('mongodb', $databaseValues)){
+
+            Composer::requirePackage("mongodb/mongodb", true, false);
+
+        }
+
     }
 
     /**

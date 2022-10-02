@@ -220,8 +220,6 @@ class Router extends VendorRouter {
                 ]
             );
 
-        print_r($data);
-
         # Get cached data
         $data = $this->cache->get($key);
 
