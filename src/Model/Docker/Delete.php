@@ -20,6 +20,7 @@ use CrazyPHP\Exception\CrazyException;
 use Symfony\Component\Finder\Finder;
 use CrazyPHP\Library\File\Structure;
 use CrazyPHP\Interface\CrazyCommand;
+use CrazyPHP\Library\Cli\Command;
 use CrazyPHP\Library\File\Docker;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Model\Config;
@@ -135,8 +136,14 @@ class Delete implements CrazyCommand {
         $this->runDockerComposeDown();
 
         /**
-         * Start
-         * 1. Start docker compose
+         * Remove docker-compose container
+         * 1. Remove docker compose
+         */
+        $this->runDockeComposeRemove();
+
+        /**
+         * Remove structure folder
+         * 1. Remove folder and file
          */
         $this->runStructureFolder();
 
@@ -162,6 +169,26 @@ class Delete implements CrazyCommand {
         $instance->run();
 
         # Return self
+        return $this;
+
+    }
+
+    /**
+     * Run Docker Compose Remove
+     * 
+     * Remove Dcoker Containers
+     * 
+     * @return self
+     */
+    public function runDockeComposeRemove():self {
+        
+        # Command
+        $command = "docker-compose rm -f -s -v";
+
+        # Exec command
+        Command::exec($command);
+
+        # Return instance
         return $this;
 
     }

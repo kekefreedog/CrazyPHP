@@ -118,13 +118,14 @@ class Router {
      * @param array $methodsAllowed Methods allowed
      * @return array
      */
-    public static function parseRouter(array $router = [], string $prefix = "/", array $methodsAllowed = self::METHODS):array {
+    public static function parseRouter(array|null $router = [], string $prefix = "/", array $methodsAllowed = self::METHODS):array {
 
         # Prepare result
         $result = [];
 
         # Check patterns
         if(
+            $router === null ||
             empty($router) ||
             !isset($router["patterns"]) || 
             empty($router["patterns"])

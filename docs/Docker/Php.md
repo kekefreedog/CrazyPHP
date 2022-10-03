@@ -4,6 +4,6 @@
 
 For use shell command of php server, use bellow shell command
 ```sh
-docker-compose exec mongo bash
+docker exec -it crazytest-php-fpm-1 bash
 ```
 

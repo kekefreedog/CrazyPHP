@@ -50,7 +50,7 @@ class Docker{
         $result = "";
 
         # Prepare command shell
-        $command = self::DOCKER_COMPOSE_COMMAND." up".($detach ? " -d" : "");
+        $command = self::DOCKER_COMPOSE_COMMAND." up".($detach ? " -d --no-color" : "");
 
         # Exec command
         exec($command, $empty, $result);

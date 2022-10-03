@@ -19,7 +19,7 @@ services:
     {{!-- PHP 8 --}}
     # PHP
     php-fpm:
-        build: phpdocker/php-fpm
+        build: docker/php-fpm
         restart: always
         working_dir: '{{_config.App.root}}' # /Users/kzarshenas/Sites/CrazyTest
         env_file:

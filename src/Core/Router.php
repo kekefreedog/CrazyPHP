@@ -185,12 +185,12 @@ class Router extends VendorRouter {
         
         # Prepare data
         $data = [
-            0 => $this->staticRoutes,
-            1 => $this->paramRoutes,
-            2 => $this->routeNames,
-            3 => $this->cachedRegExps,
-            4 => $this->cachedParameters,
-            5 => $this->regExpsWereCompiled
+            0 => $this->staticRoutes ?? null,
+            1 => $this->paramRoutes ?? null,
+            2 => $this->routeNames ?? null,
+            3 => $this->cachedRegExps ?? null,
+            4 => $this->cachedParameters ?? null,
+            5 => $this->regExpsWereCompiled ?? null
         ];
         
         # Put on Cache
@@ -236,7 +236,7 @@ class Router extends VendorRouter {
             );
 
             # Ingest data
-            list ($this->staticRoutes, $this->paramRoutes, $this->routeNames, $this->cachedRegExps, $this->cachedParameters, $this->regExpsWereCompiled) = $data;
+        list ($this->staticRoutes, $this->paramRoutes, $this->routeNames, $this->cachedRegExps, $this->cachedParameters, $this->regExpsWereCompiled) = $data;
 
     }
 

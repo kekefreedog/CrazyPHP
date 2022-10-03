@@ -20,6 +20,7 @@ use CrazyPHP\Interface\CrazyCommand;
 use CrazyPHP\Library\File\Structure;
 use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\File\Docker;
+use CrazyPHP\Library\Cli\Command;
 use CrazyPHP\Library\System\Os;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Model\Env;
@@ -134,6 +135,12 @@ class Install implements CrazyCommand {
          */
         $this->runStructureFolder();
 
+        /**
+         * Run Docker Compose Build
+         * 1. Build docker-compose container
+         */
+        $this->runDockerComposeBuild();
+
         # Return instance
         return $this;
 
@@ -158,6 +165,26 @@ class Install implements CrazyCommand {
         Structure::create($structurePath, $data);
 
         # Return instance
+        return $this;
+
+    }
+    
+    /**
+     * Run Docker Compose Build
+     * 
+     * Build docker compose containes
+     * 
+     * @return self
+     */
+    public function runDockerComposeBuild():self {
+        
+        # Command
+        $command = "docker-compose build";
+
+        # Exec command
+        Command::exec($command);
+
+        # Return self
         return $this;
 
     }
