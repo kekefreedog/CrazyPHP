@@ -73,7 +73,7 @@ class Database {
             "engine"    =>  "CrazyPHP\Library\Database\Driver\Mangodb",
             "host"      =>  "localhost",
             "database"  =>  [
-                "admin"
+                "admin", "crazyphp"
             ],
             "port"      =>  27017,
             "root"      =>  [

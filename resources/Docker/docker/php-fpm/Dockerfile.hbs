@@ -5,6 +5,6 @@ WORKDIR "{{_config.App.root}}"
 RUN apt-get update; \
     apt-get -y --no-install-recommends install \
         git \ 
-        php8.1-mongodb; \
-    apt-get clean; \
+{{#if _config.Database.collection.mongodb}}        php8.1-mongodb; \
+{{/if}}    apt-get clean; \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*

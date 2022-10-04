@@ -129,8 +129,6 @@ class Core extends Kernel {
         # Push collection in router instance
         $this->instance->router->pushCollection();
 
-        $this->instance->router->dumpOnDisk(File::path('@app_root/.cache/cache.php'));
-
     }
 
 }

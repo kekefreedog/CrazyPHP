@@ -18,12 +18,15 @@ namespace CrazyPHP\Library\Cache;
 
 use Phpfastcache\Exceptions\PhpfastcacheInvalidArgumentException;
 use Phpfastcache\Exceptions\PhpfastcacheSimpleCacheException;
+use Phpfastcache\Drivers\Mongodb\Config as MemcachedConfig;
 use Phpfastcache\Core\Pool\ExtendedCacheItemPoolInterface;
 use Phpfastcache\Config\ConfigurationOptionInterface;
 use Phpfastcache\Config\ConfigurationOption;
+use CrazyPHP\Exception\CrazyException;
 use Phpfastcache\Helper\Psr16Adapter;
 use Psr\SimpleCache\CacheInterface;
 use CrazyPHP\Library\Time\DateTime;
+use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\File\File;
 use Phpfastcache\CacheManager;
 use CrazyPHP\Model\Env;
@@ -59,18 +62,35 @@ class Cache extends Psr16Adapter {
      * @param ConfigurationOptionInterface $config Config of the cache
      * @return Create
      */
-    public function __construct(string|ExtendedCacheItemPoolInterface $driver = "Files", ConfigurationOptionInterface $config = null){
+    public function __construct(string|ExtendedCacheItemPoolInterface $driver = "", ConfigurationOptionInterface $config = null){
 
-        # Set path of cache
-        CacheManager::setDefaultConfig(
-            new ConfigurationOption([
-                'path'              => self::_getPath(),
-                'itemDetailedDate'  => true,
-            ])
-        );
+        # Get Configuration
+        $configuration = $this->getConfiguration($driver, $config);
 
-        # Set driver instance
-        $driverInstance = CacheManager::getInstance('files');
+        # Check driver is
+        ## Files
+        if($configuration["driver"] == "Files"){
+
+            # Set path of cache
+            CacheManager::setDefaultConfig(
+                new ConfigurationOption($configuration["options"])
+            );
+
+            # Set driver instance
+            $driverInstance = CacheManager::getInstance('files');
+
+        }else
+        ## Mongodb
+        if($configuration["driver"] == "Mongodb"){
+
+            # Set driver instance
+            $driverInstance = CacheManager::getInstance(
+                $configuration["driver"], 
+                new MemcachedConfig($configuration["options"])
+            );
+
+        }
+
 
         # Parent constructor
         parent::__construct($driverInstance);
@@ -232,6 +252,98 @@ class Cache extends Psr16Adapter {
 
     }
 
+    /**
+     * Get configuration
+     * 
+     * Get configuration driver & options
+     * 
+     * @param string|ExtendedCacheItemPoolInterface $driver Driver to force
+     * @param ConfigurationOptionInterface $config Config to force
+     * @return array
+     */
+    public function getConfiguration(string|ExtendedCacheItemPoolInterface $driver = "", ConfigurationOptionInterface $config = null){
+
+        # Set result
+        $result = [];
+
+        # Check not test
+        if(Env::has("phpunit_test") && Env::get("phpunit_test"))
+
+            # Set driver
+            $driver = "Files";
+
+        # Get driver if empty
+        if(!$driver){
+
+            # Get mongodb config
+            $mongodbConfig = Config::getValue("Database.collection.mongodb");
+
+            # Check mongodb config
+            if($mongodbConfig && !empty($mongodbConfig))
+
+                # Set driver
+                $driver = "Mongodb";
+
+        }
+
+        # Check driver
+        if(!$driver || !in_array($driver, self::DRIVES_ALLOWED))
+
+            # New Exception
+            throw new CrazyException(
+                "Driver \"$driver\" for your cache instance isn't valid...",
+                500,
+                [
+                    "custom_code"   =>  "cache-001",
+                ]
+            );
+
+        # Push driver in result
+        $result["driver"] = $driver;
+
+        # Check config
+        if(!empty($config)){
+
+            # Push config
+            $result["options"] = $config;
+
+        }else
+        # Check if files driver
+        if($driver == "Files"){
+
+            # Set Files config
+            $result["options"] = [
+                'path'              => self::_getPath(),
+                'itemDetailedDate'  => true,
+            ];
+
+        }else
+        # Check if mongodb driver
+        if($driver == "Mongodb"){
+
+            # Get cache config
+
+            # Set Mongodb config
+            $result["options"] = [
+                'itemDetailedDate'  =>  true,
+                "host"              =>  $mongodbConfig["host"]/*  == "localhost" ? "127.0.0.1" : $mongodbConfig["host"] */,
+                "port"              =>  $mongodbConfig["port"],
+                "username"          =>  $mongodbConfig["root"]["login"],
+                "password"          =>  $mongodbConfig["root"]["password"],
+                # "username"          =>  $mongodbConfig["users"][0]["crazyuser"],
+                # "password"          =>  $mongodbConfig["users"][0]["crazypassword"],
+                "collectionName"    =>  "cache", 
+                "databaseName"      =>  "crazyphp", 
+                "timeout"           =>  1
+            ];
+
+        }
+
+        # Return result
+        return $result;
+
+    }
+
     /** Private constants
      ******************************************************
      */
@@ -263,6 +375,11 @@ class Cache extends Psr16Adapter {
                 ],
             ],
         ],
+    ];
+
+    /* @const array DRIVES_ALLOWED */
+    public const DRIVES_ALLOWED = [
+        "Files", "Mongodb"
     ];
 
 }

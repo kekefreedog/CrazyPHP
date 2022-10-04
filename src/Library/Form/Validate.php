@@ -396,7 +396,21 @@ class Validate {
      */
     public static function isEmail(string $input = ""):bool {
 
-        return filter_var($input, FILTER_VALIDATE_EMAIL);
+        return filter_var($input, FILTER_VALIDATE_EMAIL) ? true : false;
+
+    }
+
+    /**
+     * Is Ip Adress
+     * 
+     * Check string is ip adress
+     * 
+     * @param string $input String to check
+     * @return bool
+     */
+    public static function isIpAddress(string $input = ""):bool {
+
+        return filter_var($input, FILTER_VALIDATE_IP) ? true : false;
 
     }
 

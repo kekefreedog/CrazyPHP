@@ -24,6 +24,7 @@ use CrazyPHP\Library\Cli\Command;
 use CrazyPHP\Library\File\Docker;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Library\File\Json;
+use CrazyPHP\Library\Form\Validate;
 use CrazyPHP\Model\Config;
 
 /**
@@ -250,7 +251,7 @@ class Up implements CrazyCommand {
                 "Please check docker-compose up has been already execute.",
                 500,
                 [
-                    "custom_code"   =>  "up-003",
+                    "custom_code"   =>  "up-004",
                 ]
             );
 
@@ -293,13 +294,110 @@ class Up implements CrazyCommand {
     }
 
     /**
+     * Run Set Database Host
+     * 
+     * Set host from docker
+     * 
+     * @return self
+     */
+    public function runSetDatabaseHost():self {
+
+        # Get database config
+        $databaseConfig = FileConfig::getValue("Database.collection");
+
+        # Get docker Config
+        $dockerConfig = FileConfig::getValue("Docker.services");
+
+        # Check docker service config
+        if(!$dockerConfig || empty($dockerConfig))
+
+            # New error
+            throw new CrazyException(
+                "Please execute `php vendor/kzarshenas/crazyphp/bin/CrazyDocker new` first.",
+                500,
+                [
+                    "custom_code"   =>  "up-006",
+                ]
+            );
+
+        # Check database config
+        if($databaseConfig && !empty($databaseConfig))
+
+            # Iteration des configs
+            foreach($databaseConfig as $database => $config){
+
+                # Get service name
+                $dockerServiceName = $config["docker"]["service"]["name"];
+
+                # Check docker service name
+                if(!$dockerServiceName)
+
+                    # New error
+                    throw new CrazyException(
+                        "Please execute `php vendor/kzarshenas/crazyphp/bin/CrazyDocker new` first.",
+                        500,
+                        [
+                            "custom_code"   =>  "up-005",
+                        ]
+                    );
+
+                # Get docker service id
+                $dockerServiceConfig = Arrays::filterByKey($dockerConfig, "Service", $dockerServiceName);
+
+                # Exract value
+                $dockerServiceId = $dockerServiceConfig[array_key_first($dockerServiceConfig)]["ID"];
+
+                # Check docker service name
+                if(!$dockerServiceId)
+
+                    # New error
+                    throw new CrazyException(
+                        "Can't get ID of \"$dockerServiceName\“...",
+                        500,
+                        [
+                            "custom_code"   =>  "up-006",
+                        ]
+                    );
+
+                # Prepare command
+                $command = "docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $dockerServiceId";
+
+                # Execute command
+                $result = Command::exec($command);
+
+                # Get host name
+                $hostname = $result["output"][0] ?? null;
+
+                # Check docker service name
+                if(!Validate::isIpAddress($hostname))
+
+                    # New error
+                    throw new CrazyException(
+                        "IP \"$hostname\” of \"$dockerServiceName\“ isn't valid...",
+                        500,
+                        [
+                            "custom_code"   =>  "up-007",
+                        ]
+                    );
+
+                # Update host of current database
+                FileConfig::setValue("Database.collection.$database.host", $hostname);
+
+            }
+
+        # Return self
+        return $this;
+
+    }
+
+    /**
      * Update composer
      * 
      * Install composer in service
      * 
      * @return self
      */
-    public function runComposerUpdate(){
+    public function runComposerUpdate():self {
 
         # Execute command
         Composer::exec("update", "", false);

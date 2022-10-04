@@ -1,4 +1,4 @@
-# Php with Docke
+# Php with Docker
 
 ## USe shell command
 

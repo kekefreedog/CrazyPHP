@@ -146,6 +146,10 @@ class Router extends VendorRouter {
                     # Check type
                     if($item["type"] == "router"){
 
+                        echo "<pre>";
+                        print_r($item);
+                        echo "</pre>";
+                        
                         # Add router
                         $this->addRoute(
                             $item["pattern"], 

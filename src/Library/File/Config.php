@@ -439,6 +439,24 @@ class Config{
     }
 
     /**
+     * Set value
+     * 
+     * Set Value in Config file
+     * 
+     * @param string $key Parameter of config to set
+     * @param $data to push in key parameter
+     * @return void
+     */
+    public static function setValue(string $key = "", $data = null, $CreateIfNotExists = true):void {
+
+        /*########
+        ## HERE ##
+        ########*/
+        
+
+    }
+
+    /**
      * Update
      * 
      * Update value in config
@@ -449,7 +467,7 @@ class Config{
      * 
      * @return void
      */
-    public static function update(string $input = "", $data = null, bool $setValueIFNotExits = false) :void {
+    public static function update(string $input = "", $data = null, bool $setValueIfNotExits = false) :void {
 
         # Return result
         return;

@@ -136,6 +136,12 @@ class Install implements CrazyCommand {
         $this->runStructureFolder();
 
         /**
+         * Run Update Database Config
+         * 1. Set docker information in config of databases
+         */
+        $this->runUpdateDatabaseConfig();
+
+        /**
          * Run Docker Compose Build
          * 1. Build docker-compose container
          */
@@ -163,6 +169,43 @@ class Install implements CrazyCommand {
 
         # Run creation of docker structure
         Structure::create($structurePath, $data);
+
+        # Return instance
+        return $this;
+
+    }
+
+    /**
+     * Run Update Database Config
+     * 
+     * Set docker service name in congif of databases
+     * 
+     * @return self
+     */
+    public function runUpdateDatabaseConfig():self {
+
+        # parameters
+        $parameters = [
+            "mongodb"   =>  "mongo",
+            "mysql"     =>  "mysql",
+            "mysql"     =>  "mariadb",
+            "postgresql"=>  "postgresql",
+
+        ];
+
+        # Get database config
+        $databaseConfig = Config::getValue("Database.collection");
+
+        # Iteration config of databse
+        foreach($databaseConfig as $name => $config)
+
+            # If name is in paramters
+            if(array_key_exists($name, $parameters)){
+
+                # Set config
+                Config::setValue("Database.collection.$name.docker.service.name", $name, true);
+
+            }
 
         # Return instance
         return $this;
