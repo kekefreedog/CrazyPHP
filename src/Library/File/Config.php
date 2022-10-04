@@ -93,7 +93,7 @@ class Config{
                         "No config file found for \"$configFolder\".", 
                         500,
                         [
-                            "custom_code"   =>  "config-006",
+                            "custom_code"   =>  "config-001",
                         ]
                     );
 
@@ -105,7 +105,7 @@ class Config{
                         "Conflict of config file with the same name for \"$configFolder\".", 
                         500,
                         [
-                            "custom_code"   =>  "config-001",
+                            "custom_code"   =>  "config-002",
                         ]
                     );
 
@@ -200,7 +200,7 @@ class Config{
                     "No config file found for \"$configFolder\".", 
                     500,
                     [
-                        "custom_code"   =>  "config-006",
+                        "custom_code"   =>  "config-003",
                     ]
                 );
 
@@ -212,7 +212,7 @@ class Config{
                     "Conflict of config file with the same name for \"$configFolder\".", 
                     500,
                     [
-                        "custom_code"   =>  "config-001",
+                        "custom_code"   =>  "config-004",
                     ]
                 );
 
@@ -310,7 +310,7 @@ class Config{
                 "Conflict of config file with the same name for \"$configFolder\".", 
                 500,
                 [
-                    "custom_code"   =>  "config-002",
+                    "custom_code"   =>  "config-006",
                 ]
             );
 
@@ -393,7 +393,7 @@ class Config{
                 "No config file found for \"$configFolder\".", 
                 500,
                 [
-                    "custom_code"   =>  "config-004",
+                    "custom_code"   =>  "config-007",
                 ]
             );
 
@@ -405,7 +405,7 @@ class Config{
                 "Conflict of config file with the same name for \"$configFolder\".", 
                 500,
                 [
-                    "custom_code"   =>  "config-003",
+                    "custom_code"   =>  "config-008",
                 ]
             );
 
@@ -447,12 +447,123 @@ class Config{
      * @param $data to push in key parameter
      * @return void
      */
-    public static function setValue(string $key = "", $data = null, $CreateIfNotExists = true):void {
+    public static function setValue(string $key = "", $data = null, $createIfNotExists = true, $path = self::FOLDER_PATH):void {
 
-        /*########
-        ## HERE ##
-        ########*/
-        
+        # Prepare config folder
+        $path = File::path(self::FOLDER_PATH);
+
+        # Parse key
+        $key = str_replace(self::SEPARATOR, "___", $key);
+
+        # Explode keys 
+        $keys = explode("___", $key);
+
+        # Check config file
+        if(!$path || empty($keys))
+
+            # Stop script
+            return;
+
+        # New finder
+        $finder = new Finder();
+
+        # Search files
+        $finder
+            ->files()
+            ->name([$keys[0].".*", $keys[0]])
+            ->in($path)
+        ;
+
+        # Check not multiple file
+        if($finder->count() === 0)
+
+            # New Exception
+            throw new CrazyException(
+                "No config file found for \"".$keys[0]."\".", 
+                500,
+                [
+                    "custom_code"   =>  "config-009",
+                ]
+            );
+
+        # Check not multiple file
+        if($finder->count() > 1)
+
+            # New Exception
+            throw new CrazyException(
+                "Conflict of config file with the same name for \"".$keys[0]."\".", 
+                500,
+                [
+                    "custom_code"   =>  "config-010",
+                ]
+            );
+
+        # Iteration of files
+        foreach ($finder as $file){
+
+            # Get path file
+            $filePath = $file->getPathname();
+
+            # break;
+            break;
+
+        }
+
+        # Get mime type
+        $fileMime = File::guessMime($filePath);
+
+        # Set file instance class
+        $fileInstance = File::MIMTYPE_TO_CLASS[$fileMime];
+
+
+        # Get mime type
+        $fileData = $fileInstance::open($filePath);
+
+        # Check if is array
+        if(!is_array($fileData))
+
+            # New Exception
+            throw new CrazyException(
+                "Config \"".$keys[0]."\" isn't valid... Array waited !", 
+                500,
+                [
+                    "custom_code"   =>  "config-011",
+                ]
+            );
+
+        # Declare cursor
+        $cursor = $fileData;
+
+        # Declare result
+        $result = [];
+        $resultCursor = &$result;
+
+        # Iteration filedata
+        $i=0;while(isset($keys[$i])){
+
+            # Check
+            if($createIfNotExists || isset($cursor[$keys[$i]])){
+
+                # Update the cursor
+                $cursor = $cursor[$keys[$i]];
+
+                # Update result
+                $resultCursor[$keys[$i]] = [];
+
+                # Update result cursor
+                $resultCursor = &$resultCursor[$keys[$i]];
+
+            }else
+
+                return;
+
+        $i++;}
+
+        # Set last resultCursor
+        $resultCursor = $data;
+
+        # Set result yaml
+        $fileInstance::set($filePath, $result);
 
     }
 

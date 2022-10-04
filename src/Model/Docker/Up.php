@@ -326,8 +326,14 @@ class Up implements CrazyCommand {
             # Iteration des configs
             foreach($databaseConfig as $database => $config){
 
+                # Check config
+                if(empty($config))
+
+                    # Continue
+                    continue;
+
                 # Get service name
-                $dockerServiceName = $config["docker"]["service"]["name"];
+                $dockerServiceName = $config["docker"]["service"]["name"] ?? false;
 
                 # Check docker service name
                 if(!$dockerServiceName)

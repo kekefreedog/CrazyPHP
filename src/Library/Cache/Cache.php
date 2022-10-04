@@ -30,6 +30,7 @@ use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\File\File;
 use Phpfastcache\CacheManager;
 use CrazyPHP\Model\Env;
+use Phpfastcache\Drivers\Mongodb\Driver;
 
 /**
  * Cache
@@ -83,14 +84,25 @@ class Cache extends Psr16Adapter {
         ## Mongodb
         if($configuration["driver"] == "Mongodb"){
 
+            # Set config
+            $config = new MemcachedConfig();
+            $config
+                ->setHost($configuration["options"]["host"])
+                ->setPort($configuration["options"]["port"])
+                ->setUsername($configuration["options"]["username"])
+                ->setPassword($configuration["options"]["password"])
+                ->setDatabaseName($configuration["options"]["databaseName"])
+                ->setCollectionName($configuration["options"]["collectionName"])
+                ->setItemDetailedDate($configuration["options"]["itemDetailedDate"])
+            ;
+
             # Set driver instance
             $driverInstance = CacheManager::getInstance(
                 $configuration["driver"], 
-                new MemcachedConfig($configuration["options"])
+                $config
             );
 
         }
-
 
         # Parent constructor
         parent::__construct($driverInstance);
@@ -326,15 +338,12 @@ class Cache extends Psr16Adapter {
             # Set Mongodb config
             $result["options"] = [
                 'itemDetailedDate'  =>  true,
-                "host"              =>  $mongodbConfig["host"]/*  == "localhost" ? "127.0.0.1" : $mongodbConfig["host"] */,
+                "host"              =>  $mongodbConfig["host"],
                 "port"              =>  $mongodbConfig["port"],
                 "username"          =>  $mongodbConfig["root"]["login"],
                 "password"          =>  $mongodbConfig["root"]["password"],
-                # "username"          =>  $mongodbConfig["users"][0]["crazyuser"],
-                # "password"          =>  $mongodbConfig["users"][0]["crazypassword"],
                 "collectionName"    =>  "cache", 
-                "databaseName"      =>  "crazyphp", 
-                "timeout"           =>  1
+                "databaseName"      =>  "crazyphp",
             ];
 
         }

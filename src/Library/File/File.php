@@ -291,6 +291,9 @@ class File {
             
         }
 
+        # Return result
+        return $result;
+
     }
 
     /**
