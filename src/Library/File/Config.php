@@ -563,7 +563,7 @@ class Config{
         $resultCursor = $data;
 
         # Set result yaml
-        $fileInstance::set($filePath, $result);
+        $fileInstance::update($filePath, $result);
 
     }
 

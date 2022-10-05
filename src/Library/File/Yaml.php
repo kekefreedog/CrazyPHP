@@ -237,6 +237,8 @@ class Yaml{
         # Open yaml
         $old_value = $result = self::open($path);
 
+        print_r($old_value);
+
         # Get result
         $result = Arrays::mergeMultidimensionalArrays($createIfNotExists, $result, $values);
 

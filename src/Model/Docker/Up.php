@@ -18,13 +18,13 @@ namespace CrazyPHP\Model\Docker;
 use CrazyPHP\Library\File\Config as FileConfig;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Interface\CrazyCommand;
+use CrazyPHP\Library\Form\Validate;
 use CrazyPHP\Library\File\Composer;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\Cli\Command;
 use CrazyPHP\Library\File\Docker;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Library\File\Json;
-use CrazyPHP\Library\Form\Validate;
 use CrazyPHP\Model\Config;
 
 /**
@@ -149,6 +149,12 @@ class Up implements CrazyCommand {
          * 1. Get current services and store them
          */
         $this->runGetServices();
+
+        /**
+         * Prepare Database
+         * 1. Prepare users and databse
+         */
+        $this->runPrepareDatabase();
 
         /**
          * Run Composer Install
@@ -370,7 +376,6 @@ class Up implements CrazyCommand {
 
                 # Execute command
                 $result = Command::exec($command);
-
                 # Get host name
                 $hostname = $result["output"][0] ?? null;
 
@@ -388,6 +393,41 @@ class Up implements CrazyCommand {
 
                 # Update host of current database
                 FileConfig::setValue("Database.collection.$database.host", $hostname);
+
+            }
+
+        # Return self
+        return $this;
+
+    }
+
+    /**
+     * Prepare database
+     * 
+     * Prepare users and database
+     */
+    public function runPrepareDatabase():self {
+
+        # Get database config
+        $config = FileConfig::get("Database");
+
+        # Check config > collection
+        if(!isset($config["Database"]["collection"]) || empty($config["Database"]["collection"]))
+
+            # Stop
+            return $this;
+
+        # Iteration des databses
+        foreach($config["Database"]["collection"] as $database)
+
+            # Check database instance
+            if(isset($database["engine"]) && $database["engine"]){
+
+                # Get instance
+                $instance = $database["engine"];
+
+                # Setup database
+                $instance::setup($database);
 
             }
 

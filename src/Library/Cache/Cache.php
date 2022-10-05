@@ -102,6 +102,8 @@ class Cache extends Psr16Adapter {
                 $config
             );
 
+            exit;
+
         }
 
         # Parent constructor
