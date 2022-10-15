@@ -14,6 +14,10 @@ Structure:
     folders:
       docker:
         folders:
+          bin:
+            files:
+              SetupDatabase:
+                source: "@crazyphp_root/resources/Docker/docker/bin/SetupDatabase"
           nginx:
             files:
               nginx.conf:

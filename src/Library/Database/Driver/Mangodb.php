@@ -15,9 +15,12 @@ namespace CrazyPHP\Library\Database\Driver;
 /**
  * Dependances
  */
+use MongoDB\Driver\Exception\CommandException as MongoDbCommandException;
 use CrazyPHP\Library\File\Config as FileConfig;
+use CrazyPHP\Library\Cli\Command as CliCommand;
 use CrazyPHP\Interface\CrazyDatabaseDriver;
 use CrazyPHP\Exception\CrazyException;
+use MongoDB\Driver\Manager;
 use MongoDB\Client;
 
 /**
@@ -44,6 +47,11 @@ class Mangodb implements CrazyDatabaseDriver {
      * @var $client Client of current database
      */
     public $client = null;
+
+    /**
+     * @var $manager Manager of current database
+     */
+    public $manager = null;
 
     /**
      * Constructor
@@ -75,6 +83,16 @@ class Mangodb implements CrazyDatabaseDriver {
         # Connection
         $connection = [];
 
+        # Check if root
+        if($user === "root"){
+
+            # Set login
+            $connection["login"] = $this->config["root"]["login"];
+
+            # Set passord
+            $connection["password"] = $this->config["root"]["password"];
+
+        }else
         # Check user
         if($user === "" || !array_key_exists($user, $this->config["users"]))
 
@@ -87,16 +105,7 @@ class Mangodb implements CrazyDatabaseDriver {
                 ]
             );
 
-        # Check if root
-        if($user === "root"){
-
-            # Set login
-            $connection["login"] = $this->config["root"]["login"];
-
-            # Set passord
-            $connection["password"] = $this->config["root"]["password"];
-
-        }else
+        else
         # Check if key
         if(isset($this->config["users"][$user]) && !empty($this->config["users"][$user])){
 
@@ -120,6 +129,14 @@ class Mangodb implements CrazyDatabaseDriver {
         # Get host
         $connection["host"] = $this->config["host"];
 
+        # Datanbase name
+        $connection["database"] = $user === "root" ?
+            "admin" :
+                $this->config["database"][0];
+        
+
+            # Set database
+
         # Get port
         $connection["port"] = $this->config["port"];
 
@@ -129,12 +146,175 @@ class Mangodb implements CrazyDatabaseDriver {
         # Set client
         $this->client = new Client($connectionString);
 
+        # Set manager
+        $this->manager = new Manager($connectionString);
+
         # Return self
         return $this;
 
     }
 
-    /** Public Methods | Utilisites
+    /** Public Methods | User
+     ******************************************************
+     */
+
+    /**
+     * Create User
+     * 
+     * Create new user
+     * 
+     * @param string $user User name
+     * @param string $password Password
+     * @param string|array databases Name of database
+     * @param string|array $options Options for create user
+     * @return self
+     */
+    public function createUser(string $user = "", string $password = "", string|array $databases = [], string|array $options = []):self{
+
+        # Check client
+        if(!$this->manager)
+
+            # New Exception
+            throw new CrazyException(
+                "Please execute \"newClient\" method before \"".__METHOD__."\" method...",
+                500,
+                [
+                    "custom_code"   =>  "mongodb-003",
+                ]
+            );
+
+        # Check user
+        if(!$user)
+
+            # New Exception
+            throw new CrazyException(
+                "User parameter is empty...",
+                500,
+                [
+                    "custom_code"   =>  "mongodb-004",
+                ]
+            );
+
+        # Check databases
+        if(empty($databases))
+
+            # Set databases
+            $databases = $this->config["database"] ?? ["admin"];
+
+        # Check is not array
+        elseif(!is_array($databases))
+
+            # Convert to array
+            $databases = [$databases];
+
+        # Prepare command
+        $command = [
+            "createUser"    =>  $user,
+            "pwd"           =>  $password,
+            "roles"         =>  $options["roles"] ?? ["readWrite"],
+        ];
+
+        # Iteration of databases
+        foreach($databases as $database){
+
+            # Select database
+            $databaseInstance = $this->client->selectDatabase($database);
+
+            # Try
+            try{
+
+                # Create user
+                $result = $databaseInstance->command($command);
+
+            }catch(MongoDbCommandException $e){
+
+                # Get message
+                $result = $e->getMessage();
+
+            }
+
+            # Check message
+            if(is_string($result) && strpos($result, "already exists") === false)
+
+                # New Exception
+                throw new CrazyException(
+                    "Error when creating user in MongoDB \"$result\"",
+                    500,
+                    [
+                        "custom_code"   =>  "mongodb-005",
+                    ]
+                );
+
+        }
+
+        # Return self
+        return $this;
+
+    }
+
+    /**
+     * Create Users From Config
+     * 
+     * Create users from config
+     * 
+     * @return self
+     */
+    public function createUserFromConfig():self {
+
+        # Check client
+        if(!$this->client)
+
+            # New Exception
+            throw new CrazyException(
+                "Please execute \"newClient\" method before \"".__METHOD__."\" method...",
+                500,
+                [
+                    "custom_code"   =>  "mongodb-006",
+                ]
+            );
+
+        # Set users
+        $users = $this->config["users"] ?? null;
+
+        # Check users
+        if(!empty($users))
+
+            # Iteration of users
+            foreach($users as $user)
+
+                # Create user
+                $this->createUser($user["login"], $user["password"]);
+
+        # Return self
+        return $this;
+
+    }
+
+    /** Public Methods | Database
+     ******************************************************
+     */
+
+    /**
+     * Get All Databases
+     * 
+     * Get All Databases in Mongo DB
+     * 
+     * @return array
+     */
+    public function getAllDatabases():array {
+
+        # Declare result
+        $result = [];
+
+        # Get list of databases
+        $result = $this->client->listDatabases();
+
+        # Return result
+        return $result;
+
+    }
+
+    /** Public Static Methods | Utilities
      ******************************************************
      */
 
@@ -146,7 +326,7 @@ class Mangodb implements CrazyDatabaseDriver {
      * @param array $options Option from Config > Database
      * @return bool
      */
-    public function test():bool {
+    public static function test():bool {
 
         # Set result
         $result = false;
@@ -171,15 +351,15 @@ class Mangodb implements CrazyDatabaseDriver {
 
         # Set result
         $result =                
-            $options["protocol"]."://".
-            $options["username"] ?: ''.
+            ($options["protocol"] ?? "mongodb")."://".
+            ( $options["login"] ?: '' ).
             ( 
                 $options["password"] ? 
                     ":".$options["password"] : 
                         '' 
             ).
             ( 
-                $options["username"] ? 
+                $options["login"] || $options["password"] ? 
                     '@' : 
                         ''
             ).
@@ -190,12 +370,12 @@ class Mangodb implements CrazyDatabaseDriver {
                          ''
             ).
             (
-                $options["databaseName"] ? 
-                    "/".$options["databaseName"] :
+                $options["database"] ? 
+                    "/".$options["database"] :
                         ''
             ).
             (
-                count($options["options"]) > 0 ? 
+                isset($options["options"]) && count($options["options"]) > 0 ? 
                     '?' . http_build_query($options["options"]) : 
                         ''
             )
@@ -219,24 +399,14 @@ class Mangodb implements CrazyDatabaseDriver {
      */
     public static function setup():void {
 
-        
+        # Test mongodb
+        $driver = new self();
 
-    }
+        # New root client
+        $driver->newClient("root");
 
-    /**
-     * Create Users
-     * 
-     * Create new user
-     * 
-     * @return void
-     */
-    public static function createUser(array $options):void {
-
-        # New instance
-        $instance = new self;
-
-        # Connect as root
-        $instance->newClient("root");
+        # Create config user
+        $driver->createUserFromConfig();
 
     }
 

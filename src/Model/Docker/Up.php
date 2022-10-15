@@ -151,16 +151,16 @@ class Up implements CrazyCommand {
         $this->runGetServices();
 
         /**
-         * Prepare Database
-         * 1. Prepare users and databse
-         */
-        $this->runPrepareDatabase();
-
-        /**
          * Run Composer Install
          * 1. Execute command composer install in php service
          */
         $this->runComposerUpdate();
+
+        /**
+         * Prepare Database
+         * 1. Prepare users and databse
+         */
+        $this->runPrepareDatabase();
 
         # Return current instance
         return $this;
@@ -196,7 +196,7 @@ class Up implements CrazyCommand {
                 "\"docker-compose.yml\" doesn't exist, please install CrazyDocker first",
                 500,
                 [
-                    "custom_code"   =>  "up-003",
+                    "custom_code"   =>  "up-002",
                 ]
             );
 
@@ -225,7 +225,7 @@ class Up implements CrazyCommand {
                 "Docker compose launch failed",
                 500,
                 [
-                    "custom_code"   =>  "up-002",
+                    "custom_code"   =>  "up-003",
                 ]
             );
         
@@ -322,7 +322,7 @@ class Up implements CrazyCommand {
                 "Please execute `php vendor/kzarshenas/crazyphp/bin/CrazyDocker new` first.",
                 500,
                 [
-                    "custom_code"   =>  "up-006",
+                    "custom_code"   =>  "up-005",
                 ]
             );
 
@@ -349,7 +349,7 @@ class Up implements CrazyCommand {
                         "Please execute `php vendor/kzarshenas/crazyphp/bin/CrazyDocker new` first.",
                         500,
                         [
-                            "custom_code"   =>  "up-005",
+                            "custom_code"   =>  "up-006",
                         ]
                     );
 
@@ -367,7 +367,7 @@ class Up implements CrazyCommand {
                         "Can't get ID of \"$dockerServiceName\“...",
                         500,
                         [
-                            "custom_code"   =>  "up-006",
+                            "custom_code"   =>  "up-007",
                         ]
                     );
 
@@ -387,47 +387,12 @@ class Up implements CrazyCommand {
                         "IP \"$hostname\” of \"$dockerServiceName\“ isn't valid...",
                         500,
                         [
-                            "custom_code"   =>  "up-007",
+                            "custom_code"   =>  "up-008",
                         ]
                     );
 
                 # Update host of current database
                 FileConfig::setValue("Database.collection.$database.host", $hostname);
-
-            }
-
-        # Return self
-        return $this;
-
-    }
-
-    /**
-     * Prepare database
-     * 
-     * Prepare users and database
-     */
-    public function runPrepareDatabase():self {
-
-        # Get database config
-        $config = FileConfig::get("Database");
-
-        # Check config > collection
-        if(!isset($config["Database"]["collection"]) || empty($config["Database"]["collection"]))
-
-            # Stop
-            return $this;
-
-        # Iteration des databses
-        foreach($config["Database"]["collection"] as $database)
-
-            # Check database instance
-            if(isset($database["engine"]) && $database["engine"]){
-
-                # Get instance
-                $instance = $database["engine"];
-
-                # Setup database
-                $instance::setup($database);
 
             }
 
@@ -450,6 +415,77 @@ class Up implements CrazyCommand {
 
         # Return self
         return $this;
+
+    }
+
+    /**
+     * Prepare database
+     * 
+     * Prepare users and database
+     */
+    public function runPrepareDatabase():self {        
+        
+        # Check docker config
+        if(Config::exists("Docker") && FileConfig::has("Docker.services.php.Name") && $dockerServiceName = FileConfig::getValue("Docker.services.php.Name")){}else
+
+            # New error
+            throw new CrazyException(
+                "Docker config isn't valid...",
+                500,
+                [
+                    "custom_code"   =>  "up-009",
+                ]
+            );
+
+        # Prepare docker
+        $command = "docker exec -it $dockerServiceName php docker/bin/SetupDatabase";
+
+        # Execute command
+        $result = Command::exec($command);
+
+        print_r($result);
+
+        # Return self
+        return $this;
+
+    }
+
+    /** Public static methods | Database
+     ******************************************************
+     */
+
+    /**
+     * Prepare database
+     * 
+     * @return void
+     */
+    public static function prepareDatabase():void {
+
+        # Get database config
+        $config = FileConfig::get("Database");
+
+        # Check config > collection
+        if(!isset($config["Database"]["collection"]) || empty($config["Database"]["collection"]))
+
+            # Stop
+            return;
+
+        # Iteration des databses
+        foreach($config["Database"]["collection"] as $database)
+
+            # Check database instance
+            if(isset($database["engine"]) && $database["engine"]){
+
+                # Get instance
+                $instance = $database["engine"];
+
+                # Setup database
+                $instance::setup($database);
+
+            }
+
+        # Return self
+        return;
 
     }
 

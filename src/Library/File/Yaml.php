@@ -168,10 +168,13 @@ class Yaml{
         # If it doesn't work...
         } catch (ParseException $exception) {
 
-            print_r($exception->getMessage());
-
             # New Exception
             throw new CrazyException(
+                ( 
+                    $exception->getMessage() ?
+                        PHP_EOL.$exception->getMessage().PHP_EOL :
+                            ""
+                ).
                 "Content of  \"$filename\" isn't yaml...",
                 500,
                 [
@@ -236,8 +239,6 @@ class Yaml{
 
         # Open yaml
         $old_value = $result = self::open($path);
-
-        print_r($old_value);
 
         # Get result
         $result = Arrays::mergeMultidimensionalArrays($createIfNotExists, $result, $values);

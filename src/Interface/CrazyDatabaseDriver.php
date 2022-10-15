@@ -56,7 +56,33 @@ interface CrazyDatabaseDriver {
      */
     public function newClient(string|int $user = ""):self;
 
-    /** Public Methods | Utilisites
+    /** Public Methods | User
+     ******************************************************
+     */
+
+    /**
+     * Create Users
+     * 
+     * Create new user
+     * 
+     * @param string $user User name
+     * @param string $password Password
+     * @param string|array databases Name of database
+     * @param string|array $options Options for create user
+     * @return self
+     */
+    public function createUser(string $user = "", string $password = "", string|array $databases = [], string|array $options = []):self;
+
+    /**
+     * Create Users From Config
+     * 
+     * Create users from config
+     * 
+     * @return self
+     */
+    public function createUserFromConfig():self;
+
+    /** Public Static Methods | Utilities
      ******************************************************
      */
 
@@ -68,7 +94,7 @@ interface CrazyDatabaseDriver {
      * @param array $options Option from Config > Database
      * @return bool
      */
-    public function test():bool;
+    public static function test():bool;
 
     /** Public Static Methods
      ******************************************************
@@ -82,15 +108,6 @@ interface CrazyDatabaseDriver {
      * @return void
      */
     public static function setup():void;
-
-    /**
-     * Create Users
-     * 
-     * Create new user
-     * 
-     * @return void
-     */
-    public static function createUser(array $options):void;
 
     /** Public constants
      ******************************************************

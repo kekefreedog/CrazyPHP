@@ -22,6 +22,7 @@ use Phpfastcache\Drivers\Mongodb\Config as MemcachedConfig;
 use Phpfastcache\Core\Pool\ExtendedCacheItemPoolInterface;
 use Phpfastcache\Config\ConfigurationOptionInterface;
 use Phpfastcache\Config\ConfigurationOption;
+use Phpfastcache\Drivers\Mongodb\Driver;
 use CrazyPHP\Exception\CrazyException;
 use Phpfastcache\Helper\Psr16Adapter;
 use Psr\SimpleCache\CacheInterface;
@@ -30,7 +31,6 @@ use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\File\File;
 use Phpfastcache\CacheManager;
 use CrazyPHP\Model\Env;
-use Phpfastcache\Drivers\Mongodb\Driver;
 
 /**
  * Cache
@@ -101,8 +101,6 @@ class Cache extends Psr16Adapter {
                 $configuration["driver"], 
                 $config
             );
-
-            exit;
 
         }
 
@@ -342,10 +340,10 @@ class Cache extends Psr16Adapter {
                 'itemDetailedDate'  =>  true,
                 "host"              =>  $mongodbConfig["host"],
                 "port"              =>  $mongodbConfig["port"],
-                "username"          =>  $mongodbConfig["root"]["login"],
-                "password"          =>  $mongodbConfig["root"]["password"],
+                "username"          =>  $mongodbConfig["users"][0]["login"],
+                "password"          =>  $mongodbConfig["users"][0]["password"],
                 "collectionName"    =>  "cache", 
-                "databaseName"      =>  "crazyphp",
+                "databaseName"      =>  "crazy_db",
             ];
 
         }
