@@ -131,4 +131,31 @@ class Core extends Kernel {
 
     }
 
+    /**
+     * Run Router Redirection
+     * 
+     * @return void
+     */
+    public function runRouterRedirection():void {
+
+        # Check instance router
+        if(!isset($this->instance->router))
+        
+            # New Exception
+            throw new CrazyException(
+                "Please check if router instance is correctly launch in your app.",
+                500,
+                [
+                    "custom_code"   =>  "core-002",
+                ]
+            );
+
+        # Get request uri
+        $request_uri = $_SERVER["REQUEST_URI"];
+        
+        # Call route controller
+        $this->instance->router->callRoute($request_uri);
+
+    }
+
 }

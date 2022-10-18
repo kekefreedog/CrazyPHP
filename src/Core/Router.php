@@ -144,11 +144,7 @@ class Router extends VendorRouter {
                 foreach($collectionParsed[$group] as $item)
 
                     # Check type
-                    if($item["type"] == "router"){
-
-                        echo "<pre>";
-                        print_r($item);
-                        echo "</pre>";
+                    if($item["type"] == "router")
                         
                         # Add router
                         $this->addRoute(
@@ -157,8 +153,6 @@ class Router extends VendorRouter {
                             $item["method"], 
                             $item["name"]
                         );
-
-                    }
 
         # Dump On cache
         $this->dumpOnCache($key);

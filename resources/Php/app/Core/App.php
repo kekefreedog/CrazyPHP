@@ -50,6 +50,11 @@ class App extends Core {
          */
         $this->runRoutersPreparation();
 
+        /**
+         * - Router redirection to controller
+         */
+        $this->runRouterRedirection();
+
         /* Messahe */
         echo "Your app is working !!";
 
