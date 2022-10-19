@@ -51,12 +51,14 @@ class App extends Core {
         $this->runRoutersPreparation();
 
         /**
+         * - Run Middlewares Preparation
+         */
+        $this->runMiddlewaresPreparation();
+
+        /**
          * - Router redirection to controller
          */
         $this->runRouterRedirection();
-
-        /* Messahe */
-        echo "Your app is working !!";
 
     }
 

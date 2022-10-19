@@ -17,8 +17,11 @@ namespace  CrazyPHP\Core;
  */
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\File\File;
+use CrazyPHP\Core\Middleware;
 use CrazyPHP\Core\Instance;
 use CrazyPHP\Model\Env;
+use ReflectionMethod;
+use ReflectionClass;
 use App\Core\Kernel;
 
 
@@ -155,6 +158,43 @@ class Core extends Kernel {
         
         # Call route controller
         $this->instance->router->callRoute($request_uri);
+
+    }
+
+    /** Public methods | Router
+     ******************************************************
+     */
+    
+    
+    /**
+     * Run Middlewares Preparation
+     * 
+     * @return void
+     */
+    public function runMiddlewaresPreparation():void {
+
+        # New reflection
+        $reflection = new ReflectionClass("CrazyPHP\Core\Middleware");
+
+        # Get static methods
+        $staticMethods = $reflection->getMethods(ReflectionMethod::IS_STATIC|ReflectionMethod::IS_PUBLIC);
+
+        # Check static methods
+        if(empty($staticMethods))
+
+            # Stop function
+            return;
+
+        /** @var ReflectionMethod $staticMethod */
+        foreach($staticMethods as $staticMethod)
+
+            # Register middleware
+            $this->instance->router->registerMiddleware(
+                "*", 
+                function(string $route, ...$parameters) use ($staticMethod){
+                    return $staticMethod->class::{$staticMethod->name}($route, ...$parameters);
+                }
+            );
 
     }
 
