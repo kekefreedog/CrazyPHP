@@ -551,6 +551,9 @@ class File {
      * Correspondance Extension and Mimetype
      */
     public const EXTENSION_TO_MIMETYPE = [
+        # Html
+        "html"  =>  "text/html",
+        "htm"   =>  "text/html",
         # Yml
         "yml"   =>  "text/yaml",
         "yaml"  =>  "text/yaml",

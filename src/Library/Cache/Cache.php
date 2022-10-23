@@ -195,6 +195,27 @@ class Cache extends Psr16Adapter {
 
     }
 
+    /**
+     * Get Key With Cache Name
+     * 
+     * @param string $context Context like __METHOD__ or __CLASS__ or __FUNCTION__
+     * @param string $customName custum name
+     * @return string
+     */
+    public static function getKeyWithCacheName(string $context = "", string $customName = ""):string {
+
+        # Get key
+        $result = str_replace(
+            ["{", "}", "(", ")", "/", "\\", "@", ":"],
+            ".",
+            static::getCacheName($context, $customName)
+        );
+
+        # Return result
+        return $result;
+
+    }
+
     /** Private methods
      ******************************************************
      */

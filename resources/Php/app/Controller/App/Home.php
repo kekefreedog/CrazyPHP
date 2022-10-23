@@ -29,14 +29,15 @@ use CrazyPHP\Core\Response;
  */
 class Home extends Controller {
 
+    /**
+     * Get
+     */
     public static function get($request){
 
-        # New response
-        $response = new Response();
-
         # Set response
-        $response
-            ->setContent("Hello world !!!")
+        (new Response())
+            # ->addHeader("content-type", "application/json")
+            ->setContent("Hello world !!!!")
             ->send();
 
     }

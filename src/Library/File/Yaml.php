@@ -322,4 +322,31 @@ class Yaml{
 
     }
 
+    /**
+     * Encode
+     * 
+     * Encode data to yaml
+     * 
+     * @param string|bool|null|array $input
+     * @return string
+     */
+    public static function encode(string|bool|null|array $input = "") {
+
+        # Set result
+        $result = [];
+
+        # Check input
+        if(!is_array($input))
+
+            # Set result
+            $input = [$input];
+
+        # Encode result
+        $result = YamlS::dump($input, 10);
+
+        # Return result
+        return $result;
+
+    }
+
 }

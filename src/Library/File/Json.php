@@ -304,4 +304,30 @@ class Json{
 
     }
 
+    /**
+     * Encode
+     * 
+     * Encode data to json
+     * 
+     * @return string|bool|null|array
+     */
+    public static function encode(string|bool|null|array $input = ""){
+
+        # Set result
+        $result = [];
+
+        # Check input
+        if(!is_array($input))
+
+            # Set result
+            $input = [$input];
+
+        # Encode result
+        $result = json_encode($input);
+
+        # Return result
+        return $result;
+
+    }
+
 }

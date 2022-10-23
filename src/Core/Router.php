@@ -21,6 +21,7 @@ use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Cache\Cache;
 use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\File\File;
+use CrazyPHP\Model\Context;
 
 /**
  * Router
@@ -55,6 +56,36 @@ class Router extends VendorRouter {
     /** Public methods
      ******************************************************
      */
+
+    /**
+     * call Route Extended
+     * 
+     * Call Route and prepare context
+     * 
+     * @param string $request_uri Request uri from server
+     * @return 
+     */
+    public function callRouteExtended(string $request_uri = ""){
+        
+        # Check request uri
+        if(!$request_uri)
+
+            # Fill request uri
+            $request_uri = $_SERVER["REQUEST_URI"];
+
+        # Call route controller
+        $controller = $this->getCallback($request_uri);
+
+        # Get Class Name
+        $className = strstr(ltrim(strrchr($controller, '\\'), '\\'), '::', true);
+
+        # Fill context
+        Context::setCurrentRoute($className);
+
+        # Call route
+        return $this->callRoute($request_uri);
+
+    }
 
     /**
      * PushCollection
@@ -144,7 +175,7 @@ class Router extends VendorRouter {
                 foreach($collectionParsed[$group] as $item)
 
                     # Check type
-                    if($item["type"] == "router")
+                    if($item["type"] == "router"){
                         
                         # Add router
                         $this->addRoute(
@@ -153,6 +184,8 @@ class Router extends VendorRouter {
                             $item["method"], 
                             $item["name"]
                         );
+
+                    }
 
         # Dump On cache
         $this->dumpOnCache($key);
@@ -233,7 +266,7 @@ class Router extends VendorRouter {
                 ]
             );
 
-            # Ingest data
+        # Ingest data
         list ($this->staticRoutes, $this->paramRoutes, $this->routeNames, $this->cachedRegExps, $this->cachedParameters, $this->regExpsWereCompiled) = $data;
 
     }

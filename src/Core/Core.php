@@ -152,12 +152,9 @@ class Core extends Kernel {
                     "custom_code"   =>  "core-002",
                 ]
             );
-
-        # Get request uri
-        $request_uri = $_SERVER["REQUEST_URI"];
         
         # Call route controller
-        $this->instance->router->callRoute($request_uri);
+        $this->instance->router->callRouteExtended();
 
     }
 

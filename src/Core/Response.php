@@ -16,8 +16,10 @@ namespace  CrazyPHP\Core;
  * Dependances
  */
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
+use Nyholm\Psr7\Response as Psr17Response;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Http\Message\StreamInterface;
+use CrazyPHP\Library\File\File;
 use \resource;
 
 /**
@@ -47,6 +49,9 @@ class Response {
     /** @var ?ResponseInterface $response */
     public $response = null;
 
+    /** @var array */
+    public $header = [];
+
     /**
      * Constructor
      * 
@@ -68,16 +73,116 @@ class Response {
      * 
      * Set content of response
      * 
-     * @param string|resource|StreamInterface $body
+     * @param string|array|resource|StreamInterface $body
      * @return self
      */
-    public function setContent(string|resource|StreamInterface $body = ""):self {
+    public function setContent(string|array|resource|StreamInterface $body = ""):self {
+
+        # Check if array
+        if(is_array($body))
+
+            # Check if know format
+            if(isset(File::MIMTYPE_TO_CLASS[self::getContentType()])){
+
+                # Get instance
+                $instance = File::MIMTYPE_TO_CLASS[self::getContentType()];
+
+                # Encode body
+                $body = $instance::encode($body);
+            
+            }
 
         # Create stream
-        $stream = $this->instance->createStream($body);
+        $stream = (gettype($body) == "StreamInterface") ? 
+            $body :
+                $this->instance->createStream($body);
 
         # Set content
         $this->content = $stream;
+
+        # Return self
+        return $this;
+
+    }
+
+    /**
+     * Set content type
+     * 
+     * Set content type of the response
+     * 
+     * @param string $name Type of content
+     * @param string $charset Character settings of the content type
+     * @return self
+     */
+    public function setContentType(string $name = "html", string $charset = "UTF-8"):self {
+
+        # Check name
+        if(!$name)
+
+            # Return self
+            return $this;
+
+        # Check name is in extenson to mimetype
+        if(array_key_exists(strtolower($name), File::EXTENSION_TO_MIMETYPE))
+
+            #Set name
+            $name = File::EXTENSION_TO_MIMETYPE[$name];
+
+        # Check charset
+        if($charset)
+
+            $name .= "; charset=$charset";
+
+        # Push name in header
+        $this->header["content-type"] = $name;
+
+        # Return self
+        return $this;
+
+    }
+
+    /**
+     * Get content type
+     * 
+     * Get content type of response
+     * 
+     * @param bool $hideCharset
+     * @return string
+     */
+    public function getContentType(bool $hideCharset = true):string {
+
+        # Set result
+        $result = "";
+
+        # Check content-type is set
+        if(isset($this->header["content-type"]))
+        
+            # Set result
+            $result = $this->header["content-type"];
+
+        # Check withCharset
+        if($hideCharset)
+
+            $result = explode("; ", $result, 2)[0];
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Add Header
+     * 
+     * Add new header
+     * 
+     * @param string $name Name of the header
+     * @param string|bool|null $value Value of the header
+     * @return self
+     */
+    public function addHeader(string $name = "", string|bool|null $value = ""):self {
+
+        # Add header in current instance
+        $this->header[$name] = $value;
 
         # Return self
         return $this;
@@ -111,12 +216,12 @@ class Response {
      */
     public function prepare():void {
 
-        # Reponse fill
-        $this->response = $this
-            ->instance
-            ->createResponse($this->statutCode)
-            ->withBody($this->content)
-        ;
+        # Create response
+        $this->response = new Psr17Response(
+            $this->statutCode, 
+            $this->header, 
+            $this->content
+        );
 
     }
 

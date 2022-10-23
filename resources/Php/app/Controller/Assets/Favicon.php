@@ -15,7 +15,10 @@ namespace App\Controller\Assets;
 /**
  * Dependances
  */
-
+use Symfony\Component\Finder\Finder;
+use CrazyPHP\Core\Controller;
+use CrazyPHP\Core\Response;
+use CrazyPHP\Core\Media;
 
  /**
  * App
@@ -26,11 +29,18 @@ namespace App\Controller\Assets;
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2022 Kévin Zarshenas
  */
-class Favicon {
+class Favicon extends Controller {
 
     public static function get(){
 
-        echo "hello";
+        # New media instance
+        $media = new Media();
+
+        # Set response
+        (new Response())
+            ->setContentType("json")
+            ->setContent($content)
+            ->send();
 
     }
 
