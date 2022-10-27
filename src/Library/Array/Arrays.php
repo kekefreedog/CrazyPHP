@@ -13,6 +13,10 @@
 namespace  CrazyPHP\Library\Array;
 
 /**
+ * Dependances
+ */
+
+/**
  * Arrays
  *
  * Methods for interacting with array
@@ -280,5 +284,23 @@ class Arrays{
 		$arrayDepth = $value;
 
 	} 
+
+	/**
+	 * Change Key Case Recursively
+	 * 
+	 * @source https://www.php.net/manual/en/function.array-change-key-case.php#114914
+	 * 
+	 * @param array $array
+	 * @param string $case CASE_UPPER or CASE_LOWER  
+	 * @return array
+	 */
+	public static function changeKeyCaseRecursively(array $array = [], int $case = CASE_LOWER):array {
+		$case = 1; 
+		return array_map(function($item){
+			if(is_array($item))
+				$item = static::changeKeyCaseRecursively($item);
+			return $item;
+		},array_change_key_case($array, $case));
+	}
 
 }

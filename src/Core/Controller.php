@@ -57,6 +57,24 @@ class Controller {
 
     }
 
+    /**
+     * Get Parameters Url
+     * 
+     * Get parameters from url
+     * 
+     * @return array|null
+     */
+    public static function getParametersUrl():array|null {
+
+        # Get value from context
+        $result = Context::get("routes.current.parameters");
+
+        # Return result
+        return $result;
+
+    }
+
+
     /** Public static methods | Config
      ******************************************************
      */

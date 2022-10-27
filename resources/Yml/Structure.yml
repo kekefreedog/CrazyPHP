@@ -31,6 +31,42 @@ Structure:
           Png: null
           Scss: null
           Yaml: null
+          Favicon: 
+            files:
+              android-chrome-192x192.png:
+                source: "@crazyphp_root/ressources/Favicon/android-chrome-192x192.png"
+              android-chrome-512x512.png:
+                source: "@crazyphp_root/ressources/Favicon/android-chrome-512x512.png"
+              apple-touch-icon-57x57.png:
+                source: "@crazyphp_root/ressources/Favicon/apple-touch-icon-57x57.png"
+              apple-touch-icon-60x60.png:
+                source: "@crazyphp_root/ressources/Favicon/apple-touch-icon-60x60.png"
+              apple-touch-icon-72x72.png:
+                source: "@crazyphp_root/ressources/Favicon/apple-touch-icon-72x72.png"
+              apple-touch-icon-76x76.png:
+                source: "@crazyphp_root/ressources/Favicon/apple-touch-icon-76x76.png"
+              apple-touch-icon-114x114.png:
+                source: "@crazyphp_root/ressources/Favicon/apple-touch-icon-114x114.png"
+              apple-touch-icon-120x120.png:
+                source: "@crazyphp_root/ressources/Favicon/apple-touch-icon-120x120.png"
+              apple-touch-icon-144x144.png:
+                source: "@crazyphp_root/ressources/Favicon/apple-touch-icon-144x144.png"
+              apple-touch-icon-152x152.png:
+                source: "@crazyphp_root/ressources/Favicon/apple-touch-icon-152x152.png"
+              apple-touch-icon-180x180.png:
+                source: "@crazyphp_root/ressources/Favicon/apple-touch-icon-180x180.png"
+              apple-touch-icon.png:
+                source: "@crazyphp_root/ressources/Favicon/apple-touch-icon.png"
+              favicon-16x16.png:
+                source: "@crazyphp_root/ressources/Favicon/favicon-16x16.png"
+              favicon-32x32.png:
+                source: "@crazyphp_root/ressources/Favicon/favicon-32x32.png"
+              favicon.ico:
+                source: "@crazyphp_root/ressources/Favicon/favicon.ico"
+              mstile-150x150.png:
+                source: "@crazyphp_root/ressources/Favicon/mstile-150x150.png"
+              safari-pinned-tab.svg:
+                source: "@crazyphp_root/ressources/Favicon/safari-pinned-tab.svg"
       # Config
       config:
         files:

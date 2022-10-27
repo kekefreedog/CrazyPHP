@@ -17,6 +17,7 @@ namespace CrazyPHP\Model;
  */
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Router\Router;
+use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\Cache;
 use CrazyPHP\Model\Env;
@@ -43,13 +44,126 @@ class Context{
      * 
      * @return array
      */
-    public static function get():array {
+    public static function get(string $key = ""):array|string|bool|int|null {
+        
+        # Set result
+        $result = null;
+
+        # Get context
+        $cursor = $GLOBALS[static::PREFIX] ?? [];
+
+        # Parse where
+        $key = str_replace(self::SEPARATOR, "___", $key);
+
+        # Explode where 
+        $keys = explode("___", $key);
+
+        # Check config file
+        if(!empty($keys))
+
+            # Iteration filedata
+            $i=0;while(isset($keys[$i])){
+
+                # Set current key
+                $currentKey = strtoupper($keys[$i]);
+
+                # Check current key exists
+                if(isset($cursor[$currentKey]))
+
+                    # Set cursor
+                    $cursor = $cursor[$currentKey];
+
+                else
+
+                    # Stop function
+                    return $result;
+
+            $i++;}
 
         # Set result
-        $result = $GLOBALS[static::PREFIX] ?? [];
-        
+        $result = $cursor;
+
         # Return result
         return $result;
+
+    }
+
+    /**
+     * Set
+     * 
+     * Set values in context
+     * 
+     * @param string|null|array|bool $what What content you want to put in context
+     * @param string $where Where do you want to put it (if empty, go to the root of context)
+     * @param bool $mergeValues Merge values if is array content
+     * @param bool $createIfNotExists Create parameter if not exisiting
+     * @return void
+     */
+    public static function set(string|null|array|bool $what = "", string $where = "", bool $mergeValues = false, bool $createIfNotExists = true):void {
+
+        # Parse where
+        $where = str_replace(self::SEPARATOR, "___", $where);
+
+        # Explode where 
+        $keys = explode("___", $where);
+
+        # Get context
+        $context = $GLOBALS[static::PREFIX] ?? [];
+
+        # Set cursor
+        $cursor = &$context;
+
+        # Check config file
+        if(!empty($keys))
+
+            # Iteration filedata
+            $i=0;while(isset($keys[$i])){
+
+                # Set current key
+                $currentKey = strtoupper($keys[$i]);
+
+                # Check current key exists
+                if(isset($cursor[$currentKey]) || $createIfNotExists)
+
+                    # Set cursor
+                    $cursor = &$cursor[$currentKey];
+
+                else
+
+                    # Stop function
+                    return;
+
+            $i++;}
+
+        # Check if what and cursor content are array
+        if(is_array($what) && is_array($cursor) && $mergeValues)
+
+            # Merge arrays
+            $cursor = Arrays::mergeMultidimensionalArrays(true, $cursor, $what);
+
+        else
+
+            # Set value
+            $cursor = $what;
+
+        # Case
+        $context = Arrays::changeKeyCaseRecursively($context, CASE_UPPER);
+
+        # Fill context
+        $GLOBALS[static::PREFIX] = $context;
+
+    }
+
+    /**
+     * Update
+     * 
+     * @param string|null|array|bool $what What content you want to put in context
+     * @param string $where Where do you want to put it (if empty, go to the root of context)
+     * @return void
+     */
+    public static function update(string|null|array|bool $what = "", string $where = ""):void {
+
+        static::set($what, $where, true, false);
 
     }
 
@@ -74,6 +188,9 @@ class Context{
         # Route collection
         $data = Router::getByName($routeName);
 
+        # Case change
+        $data = Arrays::changeKeyCaseRecursively($data, CASE_UPPER);
+
         # Fill context
         $GLOBALS[static::PREFIX]["ROUTES"]["CURRENT"] = $data;
 
@@ -86,5 +203,7 @@ class Context{
     /** @const PREFIX */
     public const PREFIX = "__CRAZY_CONTEXT";
 
+    /** @const SEPARATOR */
+    public const SEPARATOR = ["/", "."];
 
 }

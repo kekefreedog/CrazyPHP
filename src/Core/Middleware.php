@@ -17,6 +17,7 @@ namespace  CrazyPHP\Core;
  */
 use Nyholm\Psr7Server\ServerRequestCreator;
 use Nyholm\Psr7\Factory\Psr17Factory;
+use CrazyPHP\Model\Context;
 
 /**
  * Middleware
@@ -28,6 +29,25 @@ use Nyholm\Psr7\Factory\Psr17Factory;
  * @copyright  2022-2022 Kévin Zarshenas
  */
 class Middleware{
+
+    /**
+     * Fill Context
+     * 
+     * Fill context with current router settings
+     */
+    public static function FillContext(string $route, ...$parameters){
+
+        # Set current route in context
+        Context::set(
+            [
+                "route"         =>  $route,
+                "parameters"    =>  $parameters
+            ],
+            "routes.current",
+            true
+        );
+
+    }
 
     /**
      * Server Request Creator
