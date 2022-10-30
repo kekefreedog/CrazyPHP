@@ -85,6 +85,8 @@ Structure:
             source: "@crazyphp_root/resources/Yml/Style.yml"
           Template.yml:
             source: "@crazyphp_root/resources/Yml/Template.yml"
+          Asset.yml:
+            source: "@crazyphp_root/resources/Yml/Asset.yml"
       # Documentation
       docs:
         folders:

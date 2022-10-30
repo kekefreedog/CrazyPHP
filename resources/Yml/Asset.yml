@@ -1,0 +1,28 @@
+# #
+# Asset
+#
+# Define asset collection
+#
+# YAML version 1.2
+#
+# @package    kzarshenas/crazyphp
+# @author     kekefreedog <kevin.zarshenas@gmail.com>
+# @copyright  2022-2022 Kévin Zarshenas
+# #
+Asset:
+  favicon:
+    android-chrome-192x192: "@app_assets/Favicon/android-chrome-192x192.png"
+    android-chrome-512x512: "@app_assets/Favicon/android-chrome-512x512.png"
+    apple-touch-icon-57x57: "@app_assets/Favicon/apple-touch-icon-57x57.png"
+    apple-touch-icon-60x60: "@app_assets/Favicon/apple-touch-icon-60x60.png"
+    apple-touch-icon-72x72: "@app_assets/Favicon/apple-touch-icon-72x72.png"
+    apple-touch-icon-76x76: "@app_assets/Favicon/apple-touch-icon-76x76.png"
+    apple-touch-icon-114x114: "@app_assets/Favicon/apple-touch-icon-114x114.png"
+    apple-touch-icon-152x152: "@app_assets/Favicon/apple-touch-icon-152x152.png"
+    apple-touch-icon-180x180: "@app_assets/Favicon/apple-touch-icon-180x180.png"
+    apple-touch-icon: "@app_assets/Favicon/apple-touch-icon.png"
+    favicon-16x16: "@app_assets/Favicon/favicon-16x16.png"
+    favicon-32x32: "@app_assets/Favicon/favicon-32x32.png"
+    favicon: "@app_assets/Favicon/favicon.ico"
+    mstile-150x150: "@app_assets/Favicon/mstile-150x150.png"
+    safari-pinned-tab: "@app_assets/Favicon/safari-pinned-tab.svg"

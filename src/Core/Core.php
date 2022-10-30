@@ -74,6 +74,7 @@ class Core extends Kernel {
         $envToPush = [
             "app_root"      =>  $_SERVER["DOCUMENT_ROOT"]."/..",
             "crazyphp_root" =>  $_SERVER["DOCUMENT_ROOT"]."/../vendor/kzarshenas/crazyphp",
+            "app_assets"    =>  $_SERVER["DOCUMENT_ROOT"]."/../assets"
         ];
 
         # Merge custom env
