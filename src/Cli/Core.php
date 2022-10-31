@@ -105,6 +105,15 @@ class Core extends CLI {
                 "help"          =>  "Shut down compose instance",
             ],
         ],
+        # Asset
+        "CrazyAsset"    =>  [
+            # Register Config
+            [
+                "type"          =>  "command",
+                "long"          =>  "register",
+                "help"          =>  "Register config asset in your crazy application"
+            ]
+        ]
     ];
 
     /** Arguments
@@ -927,7 +936,96 @@ class Core extends CLI {
 
     }
 
-    /** Provate methods
+    /** Protected Methods Action | For CrazyAsset
+     ******************************************************
+     */
+
+    
+
+    /**
+     * Action Crazy Asset Register
+     * 
+     * Action for register current asset config
+     * 
+     * @param array $inputs Collection of inputs with opts, args & cmd
+     * @return void
+     */
+    protected function actionCrazyAssetRegister(array $inputs = []):void {
+
+        # Declare result
+        $result = [];
+
+        # New climate
+        $climate = new CLImate();
+
+        # Add asci folder
+        $climate->addArt(self::ASCII_ART["crazyphp"]);
+        
+        # Draw crazy php logo
+        $climate->draw('crazyphp');
+
+        # Title of current action
+        $climate->backgroundBlue()->out("🚀 Run Register Config Asset")->br();
+          
+        # Check command is in router
+        $this->_checkInRouter($inputs);
+
+        # Get router
+        $router = self::ROUTERS[$this->scriptName][$inputs['cmd']];
+
+        # Get function
+        $function = $router["function"];
+
+        # Message
+        $input = $climate
+            ->br()
+            ->lightMagenta()
+            ->bold()
+            ->confirm('✅ Do you want register asset config ? ✅')
+        ;
+
+        # Check action confirmed
+        if (!$input->confirmed()){
+
+            # Stop message
+            $climate
+                ->br()
+                ->bold()
+                ->red("✋ Action canceled ✋")
+                ->br()
+            ;
+
+            # Stop action
+            return;
+
+        }
+
+        # Message start
+        $climate
+            ->br()
+            ->yellow("🟠 Run Register Config")
+        ;
+
+        # Run function
+        $function();
+
+        # Message end
+        $climate
+            ->green("🟢 Register Config ran with success")
+        ;
+
+        # Success message
+        $climate
+            ->br()
+            ->lightGreen()
+            ->bold()
+            ->out("🎉 Asset registered with success 🎉")
+            ->br()
+        ;
+
+    }
+
+    /** Private methods
      ******************************************************
      */
 
@@ -1028,6 +1126,12 @@ class Core extends CLI {
             # Command down
             "down"  =>  [
                 "class"     =>  "\CrazyPHP\Model\Docker\Down",
+            ]
+        ],
+        "CrazyAsset"    =>  [
+            # Command register
+            "register"  =>  [
+                "function"  =>  "\CrazyPHP\Model\Asset::registerConfig"
             ]
         ]
     ];

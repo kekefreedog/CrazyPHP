@@ -17,9 +17,11 @@ namespace  CrazyPHP\Core;
  */
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use Nyholm\Psr7\Response as Psr17Response;
+use CrazyPHP\Exception\CrazyException;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Http\Message\StreamInterface;
 use CrazyPHP\Library\File\File;
+use CrazyPHP\Model\Asset;
 use \resource;
 
 /**
@@ -73,10 +75,10 @@ class Response {
      * 
      * Set content of response
      * 
-     * @param string|array|resource|StreamInterface $body
+     * @param $body
      * @return self
      */
-    public function setContent(string|array|resource|StreamInterface $body = ""):self {
+    public function setContent(/* string|array|resource|StreamInterface */$body = ""):self {
 
         # Check if array
         if(is_array($body))
@@ -92,10 +94,46 @@ class Response {
             
             }
 
+        # Get type object
+        if(gettype($body) == "object" && method_exists($body, "getPath")){
+            
+            # Set Stream
+            $stream = $this->instance->createStreamFromFile($body->getPath());
+
+            # Set content type
+            $this->setContentType($body->getMimeType());
+
+        }else
+        # Get type object
+        if(gettype($body) == "resource" && method_exists($body, "open"))
+            
+            # Set Stream
+            $stream = $this->instance->createStreamFromFile($body->open());
+            
+        else
         # Create stream
-        $stream = (gettype($body) == "StreamInterface") ? 
-            $body :
-                $this->instance->createStream($body);
+        if(gettype($body) == "StreamInterface")
+
+            # Set stream
+            $stream = $body;
+            
+        else
+        # If String
+        if(is_string($body))
+        
+            # Set Stream
+            $stream = $this->instance->createStream($body);
+                
+        else
+
+            # New error
+            throw new CrazyException(
+                "Body given is not valid type", 
+                500,
+                [
+                    "custom_code"   =>  "core-001",
+                ]
+            );
 
         # Set content
         $this->content = $stream;
@@ -127,6 +165,10 @@ class Response {
 
             #Set name
             $name = File::EXTENSION_TO_MIMETYPE[$name];
+
+        else
+
+            $name = $name;
 
         # Check charset
         if($charset)

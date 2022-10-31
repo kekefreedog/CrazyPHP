@@ -62,12 +62,25 @@ class Controller {
      * 
      * Get parameters from url
      * 
+     * @param string $name Name of the parameter  
      * @return array|null
      */
-    public static function getParametersUrl():array|null {
+    public static function getParametersUrl(string $name = ""):string|array|null {
 
-        # Get value from context
-        $result = Context::get("routes.current.parameters");
+        # Set result
+        $result = null;
+
+        # Check name
+        if(!$name)
+
+            # Get value from context
+            $result = Context::get("routes.current.parameters");
+
+        else
+
+            # Get value from context
+            $result = Context::get("routes.current.parameters.$name");
+        
 
         # Return result
         return $result;
