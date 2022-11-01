@@ -11,11 +11,14 @@
  * @copyright  2022-2022 Kévin Zarshenas
  */
 namespace App\Controller\Assets;
+
 /**
  * Dependances
  */
+use CrazyPHP\Core\Media\Favicon as MediaFavion;
 use CrazyPHP\Core\Controller;
 use CrazyPHP\Core\Response;
+use CrazyPHP\Core\File;
 
  /**
  * App
@@ -26,12 +29,9 @@ use CrazyPHP\Core\Response;
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2022 Kévin Zarshenas
  */
-class Manifest extends Controller {
+class manifest extends Controller {
 
-    /**
-     * Get
-     */
-    public static function get(){
+    public static function get($request){
 
         # Get config
         $config = self::getConfig("App");
@@ -65,6 +65,7 @@ class Manifest extends Controller {
         (new Response())
             ->setContentType("json")
             ->setContent($data)
+            ->allowCache("public", 604800, true)
             ->send();
 
     }

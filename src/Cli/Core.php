@@ -15,16 +15,17 @@ namespace  CrazyPHP\Cli;
 /**
  * Dependances
  */
+use CrazyPHP\Exception\MongodbException;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Form\Validate;
 use CrazyPHP\Library\File\Composer;
 use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\File\Docker;
 use splitbrain\phpcli\Options;
-use League\CLImate\CLImate;
-use splitbrain\phpcli\CLI;
 use CrazyPHP\Model\App\Create;
 use CrazyPHP\Model\App\Delete;
+use League\CLImate\CLImate;
+use splitbrain\phpcli\CLI;
 use CrazyPHP\Cli\Form;
 
 /**
@@ -716,12 +717,23 @@ class Core extends CLI {
                 ->yellow("🟠 Run ".str_replace("run", "", strtolower($action)))
             ;
 
-            # Execute
-            $instance->{$action}();
+            # Try catch error
+            try{
+
+                # Execute
+                $instance->{$action}();
+
+            }catch(MongodbException $e){
+
+                # Display message
+                $e->getMessageForTerminal();
+
+            }
 
             # Message end
             $climate
                 ->green("🟢 ".ucfirst(str_replace("run", "", strtolower($action)))." ran with success")
+                ->br()
             ;
 
         }

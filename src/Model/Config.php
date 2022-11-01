@@ -238,7 +238,6 @@ class Config{
         # Get target_path
         $targetPath = "$folderPath/$name.$format";
 
-
         # Check folder
         if(!$folderPath || !File::exists($folderPath))
             

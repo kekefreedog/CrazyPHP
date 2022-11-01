@@ -105,10 +105,10 @@ class Response {
 
         }else
         # Get type object
-        if(gettype($body) == "resource" && method_exists($body, "open"))
+        if(is_resource($body))
             
             # Set Stream
-            $stream = $this->instance->createStreamFromFile($body->open());
+            $stream = $this->instance->createStreamFromResource($body);
             
         else
         # Create stream
@@ -225,6 +225,50 @@ class Response {
 
         # Add header in current instance
         $this->header[$name] = $value;
+
+        # Return self
+        return $this;
+
+    }
+
+    /**
+     * Allow Cache
+     * 
+     * Allow Content to be cached by client
+     * 
+     * @param string $directive Directive of cache (public, private)
+     * @param int $maxAge Max age of cache
+     * @param bool $noTransform Not allow client to modify content
+     * @return self
+     */
+    public function allowCache(string $directive = "public", int $maxAge = 604800, bool $noTransform = false):self {
+
+        # Declare value
+        $value = "";
+
+        # Check directive
+        if($directive)
+
+            # Append directive in value
+            $value .= $directive;
+
+        # Check max age
+        if($maxAge)
+
+            # Append max age
+            $value .= ($value ? ", " : "")."max-age=$maxAge";
+
+        # Check no transform
+        if($noTransform)
+
+            # Append no tranform
+            $value .= ($value ? ", " : "")."no-transform";
+
+        # Check value
+        if($value)
+
+            # Push on header
+            $this->addHeader("Cache-Control", $value);
 
         # Return self
         return $this;

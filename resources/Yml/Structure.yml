@@ -85,8 +85,10 @@ Structure:
                     source: "@crazyphp_root/resources/Php/app/Controller/App/Home.php"
               Assets:
                 files:
-                  Favicon.php
+                  Favicon.php:
                     source: "@crazyphp_root/resources/Php/app/Controller/Assets/Favicon.php"
+                  Manifest.php:
+                    source: "@crazyphp_root/resources/Php/app/Controller/Assets/Manifest.php"
           # Model folder
           Model: null
           # View folder

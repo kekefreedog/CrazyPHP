@@ -11,12 +11,19 @@
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2022 Kévin Zarshenas
  */
-require __DIR__."./../../vendor/autoload.php";
+require __DIR__."/../../vendor/autoload.php";
 
 /**
  * Dependances
  */
 use CrazyPHP\Model\Docker\Up;
+use CrazyPHP\Model\Env;
+
+# Define env constants
+Env::set([
+    "app_root"      =>  getcwd(),
+    "crazyphp_root" =>  getcwd()."/vendor/kzarshenas/crazyphp",
+]);
 
 # Execute setup database
-Up::prepareDatabase();
+Up::prepareDatabase(); 

@@ -108,7 +108,7 @@ class Asset{
             $cache->set($keyCollection, $parsedAssets);
 
             # Update time
-            $updatedTime = $cache->set($keyUpdatedTime, new DateTime("now"));
+            $updatedTime = $cache->set($keyUpdatedTime, new DateTime("now"), 0);
 
         }
 
@@ -202,6 +202,12 @@ class Asset{
 
         # Key of collection
         $keyCollection = Cache::getKeyWithCacheName(__CLASS__, "Collection");
+
+        # Check if key collection is in cache
+        if(!$this->cache->has($keyCollection))
+
+            # Register cache
+            self::registerConfig();
 
         # Get cached collection
         $collection = $this->cache->get($keyCollection);

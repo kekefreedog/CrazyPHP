@@ -36,7 +36,6 @@ class Home extends Controller {
 
         # Set response
         (new Response())
-            # ->addHeader("content-type", "application/json")
             ->setContent("Hello world !!!!")
             ->send();
 

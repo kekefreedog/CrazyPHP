@@ -15,6 +15,7 @@ namespace CrazyPHP\Model\App;
 /**
  * Dependances
  */
+use Phpfastcache\Exceptions\PhpfastcacheDriverCheckException;
 use CrazyPHP\Model\Docker\Delete as DockerDelete;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\File\Structure;
@@ -132,11 +133,21 @@ class Delete implements CrazyCommand {
      */
     public function runCacheCleaner():Delete {
 
-        # New cache instance
-        $cache = new Cache();
+        # Try catch Check Driver Exception
+        try{
 
-        # Clear cache
-        $cache->clear();
+            # New cache instance
+            $cache = new Cache();
+
+            # Clear cache
+            $cache->clear();
+
+        }catch(PhpfastcacheDriverCheckException $e){
+
+            # Echo message
+            echo "〜 No Mongodb driver for cache... continue".PHP_EOL;
+
+        }
 
         # Clear cache path
         File::removeAll(Cache::PATH);

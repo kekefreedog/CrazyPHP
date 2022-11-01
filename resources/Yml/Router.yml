@@ -24,9 +24,11 @@ Router:
     - name: Favicon
       controller: App\Controller\Assets\Favicon
       patterns:
-        - /favicon/[s:favicon]
+        - /asset/favicon/[s:favicon]
+        - /favicon.ico
       methods:
         - get
+      prefix: false
       middleware : {}
     - name: Manifest
       controller: App\Controller\Assets\Manifest

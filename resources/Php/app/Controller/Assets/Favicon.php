@@ -15,10 +15,10 @@ namespace App\Controller\Assets;
 /**
  * Dependances
  */
-use Symfony\Component\Finder\Finder;
+use CrazyPHP\Core\Media\Favicon as MediaFavion;
 use CrazyPHP\Core\Controller;
 use CrazyPHP\Core\Response;
-use CrazyPHP\Core\Media;
+use CrazyPHP\Core\File;
 
  /**
  * App
@@ -31,17 +31,26 @@ use CrazyPHP\Core\Media;
  */
 class Favicon extends Controller {
 
-    public static function get(){
+    public static function get($request){
 
-        # New media instance
-        $media = new Media();
+        # Get parameter
+        $faviconName = self::getParametersUrl(MediaFavion::PARAMETER_NAME);
+
+        # Prepare favion media
+        $favicon = new MediaFavion($faviconName ?: "favicon");
 
         # Set response
         (new Response())
-            ->setContentType("json")
-            ->setContent($content)
+            ->setContent($favicon)
+            ->allowCache("public", 604800, true)
             ->send();
 
     }
+
+    /** Public constants
+     ******************************************************
+     */
+
+    public const PATH = "@app_root/assets/Favicon";
 
 }

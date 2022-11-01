@@ -183,9 +183,10 @@ class Json{
      * @param string $path Path of the json file
      * @param array $values Values to put on json
      * @param bool $invertMerge Invert merge sort
+     * @param bool $mergeValues Merge value allowed with old data
      * @return array
      */
-    public static function set(string $path = "", array $values = [], $invertMerge = false):array{
+    public static function set(string $path = "", array $values = [], $invertMerge = false, bool $mergeValues = true):array{
 
         # Set result
         $result = [];
@@ -194,9 +195,14 @@ class Json{
         $old_value = $result = self::open($path);
 
         # Get result
-        $result = $invertMerge ?
-            Arrays::mergeMultidimensionalArrays(true, $values, $result) :
-                Arrays::mergeMultidimensionalArrays(true, $result, $values);
+        $result = 
+            $mergeValues ?
+                (
+                    $invertMerge ?
+                        Arrays::mergeMultidimensionalArrays(true, $values, $result) :
+                            Arrays::mergeMultidimensionalArrays(true, $result, $values)
+                ) :
+                    $values;
 
         # Check difference between old value & result
         if($old_value !== $result)

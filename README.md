@@ -28,6 +28,24 @@ Create docker compose :
 php vendor/kzarshenas/crazyphp/bin/CrazyDocker new
 ```
 
+Delete docker compose :
+
+```sh
+php vendor/kzarshenas/crazyphp/bin/CrazyDocker delete
+```
+
+Up docker compose :
+
+```sh
+php vendor/kzarshenas/crazyphp/bin/CrazyDocker up
+```
+
+Down docker compose :
+
+```sh
+php vendor/kzarshenas/crazyphp/bin/CrazyDocker down
+```
+
 ## Dev
 
 Run test (usign PHPUnit)

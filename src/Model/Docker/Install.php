@@ -49,6 +49,9 @@ class Install implements CrazyCommand {
         # Ingest data
         $this->inputs = $inputs;
 
+        # Add env that declare cache must use FILES
+        Env::set(["cache_driver"=>"Files"]);
+
     }
 
     /** Public constants
@@ -178,20 +181,11 @@ class Install implements CrazyCommand {
     /**
      * Run Update Database Config
      * 
-     * Set docker service name in congif of databases
+     * Set docker service name in config of databases
      * 
      * @return self
      */
     public function runUpdateDatabaseConfig():self {
-
-        # parameters
-        $parameters = [
-            "mongodb"   =>  "mongo",
-            "mysql"     =>  "mysql",
-            "mysql"     =>  "mariadb",
-            "postgresql"=>  "postgresql",
-
-        ];
 
         # Get database config
         $databaseConfig = Config::getValue("Database.collection");
@@ -199,11 +193,11 @@ class Install implements CrazyCommand {
         # Iteration config of databse
         foreach($databaseConfig as $name => $config)
 
-            # If name is in paramters
-            if(array_key_exists($name, $parameters)){
+            # If name is in parameters
+            if(array_key_exists($name, Docker::DATABASE_TO_SERVICE) && $databaseConfig[$name]){
 
                 # Set config
-                Config::setValue("Database.collection.$name.docker.service.name", $name, true);
+                Config::setValue("Database.collection.$name.docker.service.name", Docker::DATABASE_TO_SERVICE[$name], true);
 
             }
 

@@ -21,6 +21,7 @@ use CrazyPHP\Library\Cli\Command as CliCommand;
 use CrazyPHP\Interface\CrazyDatabaseDriver;
 use CrazyPHP\Exception\CrazyException;
 use MongoDB\Driver\Manager;
+use MongoDB\Database;
 use MongoDB\Client;
 
 /**
@@ -295,6 +296,24 @@ class Mangodb implements CrazyDatabaseDriver {
      */
 
     /**
+     * Create Database
+     * 
+     * @return void
+     */
+    public function createDatabase():void {
+
+        # Switch to database
+        $database = $this->client->{$this->config["database"][0]};
+
+        # Check if current database has collection
+        if(!$this->hasCollection("cache", $database))
+
+            # Create collection
+            $database->createCollection("cache");
+
+    }
+
+    /**
      * Get All Databases
      * 
      * Get All Databases in Mongo DB
@@ -308,6 +327,113 @@ class Mangodb implements CrazyDatabaseDriver {
 
         # Get list of databases
         $result = $this->client->listDatabases();
+
+        # Return result
+        return $result;
+
+    }
+
+    /** Public Methods | Collection
+     ******************************************************
+     */
+
+    /**
+     * Get All Collections
+     * 
+     * Get Collection from database
+     * 
+     * @param string $database Name of the database (by default the first one in config file)
+     * @return array|null
+     */
+    public function getAllCollections(string|Database $database = ""):array|null {
+
+        # Set result
+        $result = null;
+
+        # Check is string
+        if(is_string($database)){
+
+            # Check database
+            if(!$database)
+
+                # Get main database
+                $database = $this->config["database"][0];
+                
+            # Get database object
+            $databaseObject = $this->client->$database;
+
+        }else
+
+            # Set object directly
+            $databaseObject = $database;
+
+        # Get database object
+        $databaseObject = $this->client->$database;
+
+        # Get collections of current database
+        $result = $databaseObject->listCollectionNames();
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Has Collection
+     * 
+     * Check database has collection
+     * 
+     * @param string $name Name of the collection
+     * @param string $database Name of the database (by default the first one in config file)
+     * @return array|null
+     */
+    public function hasCollection(string $collection = "", string|Database $database = ""):bool {
+
+        # Set result
+        $result = false;
+
+        # Check collection
+        if(!$collection)
+
+            # Return result
+            return $result;
+
+        # Check is string
+        if(is_string($database)){
+
+            # Check database
+            if(!$database)
+
+                # Get main database
+                $database = $this->config["database"][0];
+                
+            # Get database object
+            $databaseObject = $this->client->$database;
+
+        }else
+
+            # Set object directly
+            $databaseObject = $database;
+
+        # Get collections of current database
+        $collections = $databaseObject->listCollectionNames();
+
+        # Check collection
+        if(!empty($collections))
+
+            # Iteration of collections
+            foreach($collections as $collectionName)
+
+                # Check is equal to current collection
+                if($collectionName == $collection){
+
+                    # Update result
+                    $result = true;
+
+                    # break loop
+                    break;
+
+                }
 
         # Return result
         return $result;
@@ -404,6 +530,9 @@ class Mangodb implements CrazyDatabaseDriver {
 
         # New root client
         $driver->newClient("root");
+
+        # Create database
+        $driver->createDatabase();
 
         # Create config user
         $driver->createUserFromConfig();

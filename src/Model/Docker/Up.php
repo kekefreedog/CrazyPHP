@@ -16,6 +16,7 @@ namespace CrazyPHP\Model\Docker;
  * Dependances
  */
 use CrazyPHP\Library\File\Config as FileConfig;
+use CrazyPHP\Exception\MongodbException;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Interface\CrazyCommand;
 use CrazyPHP\Library\Form\Validate;
@@ -26,6 +27,7 @@ use CrazyPHP\Library\File\Docker;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Library\File\Json;
 use CrazyPHP\Model\Config;
+use CrazyPHP\Model\Env;
 
 /**
  * Up docker compose
@@ -50,6 +52,9 @@ class Up implements CrazyCommand {
 
         # Ingest data
         $this->inputs = $inputs;
+
+        # Add env that declare cache must use FILES
+        Env::set(["cache_driver"=>"Files"]);
 
     }
 
@@ -282,17 +287,18 @@ class Up implements CrazyCommand {
         }
 
         # Check create config
-        if(Config::exists("Docker"))
+        if(Config::exists("Docker")){
 
             # Set config
             FileConfig::set("Docker.services", $content['services']);
 
         # Create config
-        else
+        }else{
 
             # Create config Docker
             Config::create("Docker", $content);
         
+        }
 
         # Return self
         return $this;
@@ -443,7 +449,29 @@ class Up implements CrazyCommand {
         # Execute command
         $result = Command::exec($command);
 
-        print_r($result);
+        # Check if error 255
+        if(isset($result['result_code']) && $result['result_code'] == 255){
+
+            # New Mondodb Exception
+            throw new MongodbException(
+                $result["output"][0], 
+                intval($result['result_code'])
+            );
+
+        }else
+        # Check error
+        if(isset($result['result_code']) && $result['result_code'] != 0){
+
+            # Print error code
+            echo "Error code : ".$result['result_code'].PHP_EOL;
+
+            # Print messages
+            print_r($result["output"]);
+
+            # End to line
+            echo PHP_EOL;
+
+        }
 
         # Return self
         return $this;

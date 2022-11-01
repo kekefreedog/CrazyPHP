@@ -44,7 +44,7 @@ class Config{
      * 
      * @return array
      */
-    public static function get(string|array $inputs = "") :array {
+    public static function get(string|array $inputs = ""):array {
 
         # Declare result
         $result = [];
@@ -532,38 +532,39 @@ class Config{
             );
 
         # Declare cursor
-        $cursor = $fileData;
-
-        # Declare result
-        $result = [];
-        $resultCursor = &$result;
+        $cursor = &$fileData;
 
         # Iteration filedata
         $i=0;while(isset($keys[$i])){
 
-            # Check
-            if($createIfNotExists || isset($cursor[$keys[$i]])){
+            # Check cursor.key isset
+            if(!isset($cursor[$keys[$i]]))
 
-                # Update the cursor
-                $cursor = $cursor[$keys[$i]];
+                # Check if key should be create
+                if($createIfNotExists)
 
-                # Update result
-                $resultCursor[$keys[$i]] = [];
+                    # Create key
+                    $cursor[$keys[$i]] = [];
 
-                # Update result cursor
-                $resultCursor = &$resultCursor[$keys[$i]];
+                # Else
+                else
 
-            }else
+                    # Exit
+                    return;
 
-                return;
+            # Update the cursor
+            $cursor = &$cursor[$keys[$i]];
 
         $i++;}
 
-        # Set last resultCursor
-        $resultCursor = $data;
+        # Set value in cursor
+        $cursor = $data;
 
-        # Set result yaml
-        $fileInstance::update($filePath, $result);
+        # Set last resultCursor
+        $result = $fileData;
+
+        # Set result
+        $fileInstance::set($filePath, $result);
 
     }
 
@@ -598,6 +599,145 @@ class Config{
 
         # Return result
         return;
+
+    }
+
+    /**
+     * Remove value
+     * 
+     * Set Value in Config file
+     * 
+     * @param string $key Parameter of config to set
+     * @param $data to push in key parameter
+     * @return void
+     */
+    public static function removeValue(string $key = "", $data = null, $path = self::FOLDER_PATH):void {
+
+        # Prepare config folder
+        $path = File::path(self::FOLDER_PATH);
+
+        # Parse key
+        $key = str_replace(self::SEPARATOR, "___", $key);
+
+        # Explode keys 
+        $keys = explode("___", $key);
+
+        # Check config file
+        if(!$path || empty($keys))
+
+            # Stop script
+            return;
+
+        # New finder
+        $finder = new Finder();
+
+        # Search files
+        $finder
+            ->files()
+            ->name([$keys[0].".*", $keys[0]])
+            ->in($path)
+        ;
+
+        # Check not multiple file
+        if($finder->count() === 0)
+
+            # New Exception
+            throw new CrazyException(
+                "No config file found for \"".$keys[0]."\".", 
+                500,
+                [
+                    "custom_code"   =>  "config-009",
+                ]
+            );
+
+        # Check not multiple file
+        if($finder->count() > 1)
+
+            # New Exception
+            throw new CrazyException(
+                "Conflict of config file with the same name for \"".$keys[0]."\".", 
+                500,
+                [
+                    "custom_code"   =>  "config-010",
+                ]
+            );
+
+        # Iteration of files
+        foreach ($finder as $file){
+
+            # Get path file
+            $filePath = $file->getPathname();
+
+            # break;
+            break;
+
+        }
+
+        # Get mime type
+        $fileMime = File::guessMime($filePath);
+
+        # Set file instance class
+        $fileInstance = File::MIMTYPE_TO_CLASS[$fileMime];
+
+
+        # Get mime type
+        $fileData = $fileInstance::open($filePath);
+
+        # Check if is array
+        if(!is_array($fileData))
+
+            # New Exception
+            throw new CrazyException(
+                "Config \"".$keys[0]."\" isn't valid... Array waited !", 
+                500,
+                [
+                    "custom_code"   =>  "config-011",
+                ]
+            );
+
+        # Declare cursor
+        $cursor = &$fileData;
+        $parentCursor = null;
+
+        # Iteration filedata
+        $i=0;while(isset($keys[$i])){
+
+            # Check cursor.key isset
+            if(!isset($cursor[$keys[$i]]))
+
+                    # Exit
+                    return;
+
+            # Check if the last cursor
+            $j = $i+1;
+            if(!isset($keys[$j]))
+
+                # Parent Cursor 
+                $parentCursor = &$cursor;
+
+            else
+
+                # Update the cursor
+                $cursor = &$cursor[$keys[$i]];
+
+        $i++;}
+
+        # Check parent cursor
+        if($parentCursor){
+
+            # Last valid key
+            $i--;
+
+            # Unset value
+            unset($parentCursor[$keys[$i]]);
+
+        }
+
+        # Set last resultCursor
+        $result = $fileData;
+
+        # Set result
+        $fileInstance::set($filePath, $result, false, false);
 
     }
 

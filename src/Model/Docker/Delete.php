@@ -15,6 +15,7 @@ namespace CrazyPHP\Model\Docker;
 /**
  * Dependances
  */
+use CrazyPHP\Library\File\Config as FileConfig;
 use CrazyPHP\Model\Docker\Down as DockerDown;
 use CrazyPHP\Exception\CrazyException;
 use Symfony\Component\Finder\Finder;
@@ -142,6 +143,12 @@ class Delete implements CrazyCommand {
         $this->runDockeComposeRemove();
 
         /**
+         * Run Update Database Config
+         * 1. Unset docker service name in config of databases
+         */
+        $this->runUpdateDatabaseConfig();
+
+        /**
          * Remove structure folder
          * 1. Remove folder and file
          */
@@ -187,6 +194,34 @@ class Delete implements CrazyCommand {
 
         # Exec command
         Command::exec($command);
+
+        # Return instance
+        return $this;
+
+    }
+
+    /**
+     * Run Update Database Config
+     * 
+     * Unset docker service name in config of databases
+     * 
+     * @return self
+     */
+    public function runUpdateDatabaseConfig():self {
+
+        # Get database config
+        $databaseConfig = FileConfig::getValue("Database.collection");
+
+        # Iteration config of databse
+        foreach($databaseConfig as $name => $config)
+
+            # If name is in parameters
+            if(array_key_exists($name, Docker::DATABASE_TO_SERVICE) && $databaseConfig[$name]){
+
+                # Set config
+                FileConfig::removeValue("Database.collection.$name.docker");
+
+            }
 
         # Return instance
         return $this;

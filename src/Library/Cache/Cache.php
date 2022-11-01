@@ -300,7 +300,10 @@ class Cache extends Psr16Adapter {
         $result = [];
 
         # Check not test
-        if(Env::has("phpunit_test") && Env::get("phpunit_test"))
+        if(
+            (Env::has("phpunit_test") && Env::get("phpunit_test")) ||
+            (Env::has("cache_driver") && Env::get("cache_driver") == "Files")
+        )
 
             # Set driver
             $driver = "Files";
@@ -317,10 +320,17 @@ class Cache extends Psr16Adapter {
                 # Set driver
                 $driver = "Mongodb";
 
+            # Else default driver
+            else
+
+                $driver = "Files";
+
         }
 
         # Check driver
-        if(!$driver || !in_array($driver, self::DRIVES_ALLOWED))
+        if(!$driver || !in_array($driver, self::DRIVERS_ALLOWED)){
+
+            echo $driver;
 
             # New Exception
             throw new CrazyException(
@@ -330,6 +340,8 @@ class Cache extends Psr16Adapter {
                     "custom_code"   =>  "cache-001",
                 ]
             );
+
+        }
 
         # Push driver in result
         $result["driver"] = $driver;
@@ -407,8 +419,8 @@ class Cache extends Psr16Adapter {
         ],
     ];
 
-    /* @const array DRIVES_ALLOWED */
-    public const DRIVES_ALLOWED = [
+    /* @const array DRIVERS_ALLOWED */
+    public const DRIVERS_ALLOWED = [
         "Files", "Mongodb"
     ];
 
