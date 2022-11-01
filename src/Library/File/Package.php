@@ -15,8 +15,11 @@ namespace CrazyPHP\Library\File;
 /**
  * Dependances
  */
+use CrazyPHP\Library\File\Config as FileConfig;
+use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\File\Composer;
 use CrazyPHP\Library\Form\Process;
+use CrazyPHP\Library\Cli\Command;
 use CrazyPHP\Library\File\Json;
 use CrazyPHP\Model\App\Create;
 
@@ -98,10 +101,59 @@ class Package{
             "description"   =>  "Funding information of your app",
             "type"          =>  "ARRAY",
         ],
+        # Dependencies
+        "devDependencies"  =>  [
+            "name"          =>  "Dev Dependencies",
+            "description"   =>  "Dev Dependencies of your app",
+            "type"          =>  "ARRAY",
+            "default"       =>  self::DEFAULT_DEV_DEPENDENCIES,
+        ]
+    ];
+
+    /** @const array DEFAULT_DEPENDENCIES */
+    public const DEFAULT_DEV_DEPENDENCIES = [
+        # Front
+        "@materializecss/materialize"   =>  "*",
+        "handlebars"                    =>  "*",
+        "sweetalert2"                   =>  "*",
+        "tippy.js"                      =>  "*",
+        "@fortawesome/fontawesome-free" =>  "*",
+        "material-symbols"              =>  "*",
+        "material-icons"                =>  "*",
+        "@clipboard"                    =>  "*",
+        # Back | Webpack
+        "webpack"                       =>  "*",
+        "webpack-cli"                   =>  "*",
+        "url-loader"                    =>  "*",
+        "file-loader"                   =>  "*",
+        "rimraf"                        =>  "*",
+        "remove-files-webpack-plugin"   =>  "*",
+        "style-loader"                  =>  "*",
+        "css-loader"                    =>  "*",
+        "mini-css-extract-plugin"       =>  "*",
+        "sass-loader"                   =>  "*",
+        # Back | Sass
+        "sass"                          =>  "*",
     ];
 
     # Default value
     const DEFAULT_VALUE = [
+    ];
+
+    /* @const array COMMAND_SUPPORTED supported command */
+    public const COMMAND_SUPPORTED = [
+        "install"   =>  [
+            "command"   =>  "i"
+        ],
+        "update"   =>  [
+            "command"   =>  "up"
+        ],
+        "uninstall"    =>  [
+            "command"   =>  "r"
+        ],
+        "search"    =>  [
+            "command"   =>  "s"
+        ],
     ];
 
     /** Public Static Methods
@@ -269,6 +321,185 @@ class Package{
             # Clean name
             $inputs["name"] = Process::clean($inputs["name"])
             ;
+
+    }
+
+    /**
+     * Exec
+     * 
+     * Execute command
+     * 
+     * @param string $commandName Command name to execute
+     * @param string $argument Argument for the command
+     * @param string $checkError Check error of exec
+     * @return
+     */
+    public static function exec(string $commandName = "", string $argument = "", bool $checkError = true) {
+
+        # Result
+        $result = null;
+
+        # Check command
+        if(!$commandName || !array_key_exists($commandName, self::COMMAND_SUPPORTED))
+                
+            # New error
+            throw new CrazyException(
+                "\"$commandName\” isn't supported with Npm (package)", 
+                500,
+                [
+                    "custom_code"   =>  "package-001",
+                ]
+            );
+
+        # Check docker config
+        if(Config::exists("Docker") && FileConfig::has("Docker.services.node.Name") && $dockerServiceName = FileConfig::getValue("Docker.services.node.Name"))
+
+                # Prepare docker
+                $dockerCommand = "docker exec -it $dockerServiceName ";
+
+        # Else
+        else
+
+            # Empty docker command
+            $dockerCommand = "";
+
+        # Peepare command
+        $argument = self::COMMAND_SUPPORTED[$commandName]["command"].($argument ? " $argument" : "");
+
+        # Get result of exec
+        $result = Command::exec($dockerCommand."npm", $argument);
+
+        # Check result
+        if($checkError && ($result["result_code"] !== null || $result["result_code"] > 0))
+            
+            # New error
+            throw new CrazyException(
+                "Npm (package) ".$argument." failed".(is_array($result["output"]) ? " : ".json_encode($result["output"]) : ""),
+                500,
+                [
+                    "custom_code"   =>  "package-002",
+                ]
+            );
+
+        return $result;
+
+    }
+
+    /** Public Static Methods | Dependencies
+     ******************************************************
+     */
+
+    /**
+     * Install Dependencies
+     * 
+     * Install all dependencies in package
+     * 
+     * @return void
+     */
+    public static function installDependencies():void {
+
+        # Prepare command
+        $result = self::exec("install");
+
+    }
+
+    /**
+     * Update Dependencies
+     * 
+     * Update all dependencies in package
+     * 
+     * @return void
+     */
+    public static function updateDependencies():void {
+
+        # Prepare command
+        $result = self::exec("update");
+
+    }
+
+    /**
+     * Add Dependency
+     * 
+     * Add dependency in package
+     * 
+     * @param string $name Name of the package
+     * @param string $version Version of the package (optionnal)
+     * @return void
+     */
+    public static function addDependency(string $name = "", string $version = "latest"):void {
+
+        # Check name
+        if(!$name)
+
+            # Stop function
+            return;
+
+        # Append name in command
+        $command = $name;
+
+        # Check if version
+        if($version)
+
+            # Append version in command
+            $command .= "@$version";
+
+        # Prepare command
+        $result = self::exec("install", $command);
+
+    }
+
+    /**
+     * Update Dependency
+     * 
+     * Add dependency in package
+     * 
+     * @param string $name Name of the package
+     * @param string $version Version of the package (optionnal)
+     * @return void
+     */
+    public static function updateDependency(string $name = "", string $version = ""):void {
+
+        # Check name
+        if(!$name)
+
+            # Stop function
+            return;
+
+        # Append name in command
+        $command = $name;
+
+        # Check if version
+        if($version)
+
+            # Append version in command
+            $command .= "@$version";
+
+        # Prepare command
+        $result = self::exec($version ? "install" : "update", $command);
+
+    }
+
+    /**
+     * Remove Dependency
+     * 
+     * Remove dependency in package
+     * 
+     * @param string $name Name of the package
+     * @return void
+     */
+    public static function removeDependencies(string $name = ""):void {
+
+        # Check name
+        if(!$name)
+
+            # Stop function
+            return;
+
+        # Append name in command
+        $command = $name;
+
+        # Prepare command
+        $result = self::exec("uninstall", $command);
 
     }
 
