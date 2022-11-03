@@ -52,13 +52,13 @@ class Package{
         "description"   =>  Create::REQUIRED_VALUES[1],
         # Version
         "version"       =>  [
-            "name"          =>  "Version",
+            "name"          =>  "version",
             "description"   =>  "Version of your crazy project",
             "type"          =>  "VARCHAR",
         ],
         # Keywords
         "keywords"      =>  [
-            "name"          =>  "Keywords",
+            "name"          =>  "keywords",
             "description"   =>  "Keywords about your app",
             "type"          =>  "ARRAY",
         ],
@@ -66,7 +66,7 @@ class Package{
         "homepage"      =>  Create::REQUIRED_VALUES[5],
         # Licence
         "license"       =>  [
-            "name"          =>  "Licence",
+            "name"          =>  "licence",
             "description"   =>  "Licence of your app",
             "type"          =>  "VARCHAR",
         ],
@@ -97,16 +97,17 @@ class Package{
         ],
         # Funding
         "funding"       =>  [
-            "name"          =>  "Funding",
+            "name"          =>  "funding",
             "description"   =>  "Funding information of your app",
             "type"          =>  "ARRAY",
         ],
         # Dependencies
         "devDependencies"  =>  [
-            "name"          =>  "Dev Dependencies",
+            "name"          =>  "devDependencies",
             "description"   =>  "Dev Dependencies of your app",
             "type"          =>  "ARRAY",
             "default"       =>  self::DEFAULT_DEV_DEPENDENCIES,
+            "required"      =>  true,
         ]
     ];
 
@@ -288,20 +289,23 @@ class Package{
         # Table of conversion
         $conversionCollection = [
             "authors__name"     =>  "authors_name",
-            "authors__email"    =>  "authors_email"
+            "authors__email"    =>  "authors_email",
         ];
 
         # Check inputs
         if(!empty($inputs))
 
-            # Iteration of conversionCollection
-            foreach($conversionCollection as $search => $replacement)
+            # Iteration inputs
+            foreach($inputs as &$input)
 
-                # if search
-                if($inputs[$search] ?? false)
+                # Iteration of conversionCollection
+                foreach($conversionCollection as $search => $replacement)
 
-                    # Replace name
-                    $inputs[$search] = $replacement;
+                    # if search
+                    if($input["name"] == $search)
+
+                        # Replace name
+                        $input["name"] = $replacement;
 
     }
 
@@ -352,10 +356,10 @@ class Package{
             );
 
         # Check docker config
-        if(Config::exists("Docker") && FileConfig::has("Docker.services.node.Name") && $dockerServiceName = FileConfig::getValue("Docker.services.node.Name"))
+        if(Config::exists("Docker") && FileConfig::has("Docker.services.node.Service") && $dockerNodeService = FileConfig::getValue("Docker.services.node.Service"))
 
                 # Prepare docker
-                $dockerCommand = "docker exec -it $dockerServiceName ";
+                $dockerCommand = "docker run $dockerNodeService ";
 
         # Else
         else

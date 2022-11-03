@@ -22,6 +22,7 @@ use CrazyPHP\Interface\CrazyCommand;
 use CrazyPHP\Library\Form\Validate;
 use CrazyPHP\Library\File\Composer;
 use CrazyPHP\Library\Array\Arrays;
+use CrazyPHP\Library\File\Package;
 use CrazyPHP\Library\Cli\Command;
 use CrazyPHP\Library\File\Docker;
 use CrazyPHP\Library\File\File;
@@ -166,6 +167,12 @@ class Up implements CrazyCommand {
          * 1. Prepare users and databse
          */
         $this->runPrepareDatabase();
+
+        /**
+         * Run Npm Package Installation
+         * 1. Intall NPM vendor
+         */
+        $this->runNpmPackageInstallation();
 
         # Return current instance
         return $this;
@@ -514,6 +521,18 @@ class Up implements CrazyCommand {
 
         # Return self
         return;
+
+    }
+
+    /**
+     * Prepare Npm Package Installation
+     * 
+     * @return void
+     */
+    public static function runNpmPackageInstallation():void {
+
+        # Install current package files
+        Package::exec("install");
 
     }
 

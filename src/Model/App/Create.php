@@ -380,10 +380,18 @@ class Create implements CrazyCommand {
             );
 
         # Decalare input
-        $inputs = $this->inputs["application"];
+        $inputs = array_merge(
+            $this->inputs["application"],
+            [   
+                Package::DEFAULT_PROPERTIES["devDependencies"]
+            ]
+        );
+        $inputs[array_key_last($inputs)]["name"]="devDependencies";
 
         # Adapt inputs
         Package::adaptCreateInputs($inputs);
+
+        print_r($inputs);
 
         # Wash input
         $inputs = Process::wash($inputs, Package::DEFAULT_PROPERTIES);
