@@ -121,7 +121,7 @@ class Package{
         "@fortawesome/fontawesome-free" =>  "*",
         "material-symbols"              =>  "*",
         "material-icons"                =>  "*",
-        "@clipboard"                    =>  "*",
+        "clipboard"                     =>  "*",
         # Back | Webpack
         "webpack"                       =>  "*",
         "webpack-cli"                   =>  "*",
@@ -155,6 +155,9 @@ class Package{
         "search"    =>  [
             "command"   =>  "s"
         ],
+        "start"     =>  [
+            "command"   =>  "start"
+        ]
     ];
 
     /** Public Static Methods
@@ -356,7 +359,11 @@ class Package{
             );
 
         # Check docker config
-        if(Config::exists("Docker") && FileConfig::has("Docker.services.node.Service") && $dockerNodeService = FileConfig::getValue("Docker.services.node.Service"))
+        if(
+            Config::exists("Docker") &&
+            FileConfig::has("Docker.services.node.Service") &&
+            $dockerNodeService = FileConfig::getValue("Docker.services.node.Service")
+        )
 
                 # Prepare docker
                 $dockerCommand = "docker run $dockerNodeService ";
@@ -370,8 +377,11 @@ class Package{
         # Peepare command
         $argument = self::COMMAND_SUPPORTED[$commandName]["command"].($argument ? " $argument" : "");
 
+        # Get root of your app
+        $rootPath = FileConfig::getValue("App.root");
+
         # Get result of exec
-        $result = Command::exec($dockerCommand."npm", $argument);
+        $result = Command::exec($dockerCommand."npm --prefix $rootPath", $argument);
 
         # Check result
         if($checkError && ($result["result_code"] !== null || $result["result_code"] > 0))

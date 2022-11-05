@@ -10,6 +10,9 @@ composer.lock
 node_modules
 package-lock.json
 
+# Git
+.git
+
 # Etc
 .DS_Store
 ._*
