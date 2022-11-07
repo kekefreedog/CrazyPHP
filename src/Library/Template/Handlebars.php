@@ -38,19 +38,24 @@ class Handlebars {
      */
     private $options = [
         # Template available "crazy_preset" or "performance_preset"
-        'template'  =>  "crazy_preset",
+        'template'  =>  self::CRAZY_PRESET,
         'useCache'  =>  true,
     ];
 
     /**
-     * @var string|null $key Key og the cache of the current template
+     * @var ?string $key Key og the cache of the current template
      */
     private $key = null;
 
     /**
-     * @var string|null $key Key og the cache of the current template
+     * @var ?string $key Key og the cache of the current template
      */
     private $renderableClass = null;
+
+    /**
+     * @var ?array $partials Partial
+     */
+    private $partials = null;
 
     /**
      * Constructor
@@ -58,7 +63,7 @@ class Handlebars {
      * Ingest data
      * 
      * @param array $options Options
-     * @return Handlebars
+     * @return self
      */
     public function __construct(array $options = []){
         
@@ -66,10 +71,27 @@ class Handlebars {
         if(!empty($options))
 
             # Iterations of options
-            foreach($options as $key => $option)
+            foreach($options as $key => $option){
 
-                # Puhs option
-                $this->options[$key] = $option;
+                # Check if partials
+                if(
+                    $key == "partials" && 
+                    (
+                        is_null($option) ||
+                        is_array($option)
+                    )
+                )
+
+                    # Set partials
+                    $this->partials = $option;
+
+                # Regular option
+                else
+
+                    # Puhs option
+                    $this->options[$key] = $option;
+
+            }
 
     }
 
@@ -115,6 +137,26 @@ class Handlebars {
         # Get key
         $this->key = self::getKey($collectionKey, Cache::getCacheName(__CLASS__).".templateCached.");
 
+        # Prepare template
+        if(
+            isset($this->options["template"]) &&
+            !empty($this->options["template"])
+        ){
+
+            # Set template
+            $template = $this->options["template"];
+
+            # Check partials
+            if($this->partials && !empty($this->partials))
+
+                # Set partials
+                $template["partials"] = $this->partials;
+
+        }else
+
+            # Set default template
+            $template = self::CRAZY_PRESET;
+
         # Check cache is enable
         if($this->options["useCache"]){
 
@@ -131,7 +173,7 @@ class Handlebars {
                 $file = File::read($inputs);
 
                 # Compile
-                $compile = $this->compile($file);
+                $compile = $this->compile($file, $template);
 
                 # Set Cache
                 $cache->set($this->key, $compile);
@@ -321,6 +363,13 @@ class Handlebars {
      */
     public const CRAZY_PRESET = [
         "flags" =>  LightnCandy::FLAG_HANDLEBARSJS/*  | LightnCandy::FLAG_ERROR_LOG */,
+    ];
+
+    /**
+     * Crazy Preset with the maximum of compatibility
+     */
+    public const HTML_STRUCTURE = [
+        "flags" =>  LightnCandy::FLAG_HANDLEBARSJS|LightnCandy::FLAG_RUNTIMEPARTIAL|LightnCandy::FLAG_SPVARS| LightnCandy::FLAG_ERROR_LOG,
     ];
 
     /**

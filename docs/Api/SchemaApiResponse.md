@@ -87,57 +87,25 @@
     },
     // Errors
     "_user_interface": {
-        "framework" : {
+        /* Only for first load */
+        "structure": {
+            "doctype": "<!DOCTYPE html>",
             "html": {
                 "attributes": {
-                    "class": "loading",
-                    "data-textdirection": "ltr"
-                }
-            },
-            "body": {
-                "attributes": {
-                    "class": [
-                        "vertical-layout",
-                        "page-header-light",
-                        "vertical-menu-collapsible",
-                        "preload-transitions",
-                        "2-columns"
-                    ],
-                    "data-open": "click",
-                    "data-menu": "vertical-dark-menu",
-                    "data-col": "2-columns"
+                    "lang": "fr",
+                    "elements": {
+                        "head": {
+                            "attributes": {/* ... */},
+                            "elements": {/* ... */}
+                        },
+                        "body": {
+                            "attributes": {/* ... */},
+                            "elements": {/* ... */}
+                        },
+                    }
                 }
             }
-        },
-        "popup": {
-            "header": {
-                "logo": {
-                    "img": null,
-                    "color": null
-                },
-                "content": {
-                    "icon": {
-                        "class": null,
-                        "text": null
-                    },
-                    "text": null,
-                    "description": null
-                },
-                "actions": {
-                    "refresh": true,
-                    "options": true,
-                    "close": true
-                }
-            }
-        },
-        "action" : [
-            {
-                "type": "update",
-                "target": [
-                    "#id.class", "span"
-                ]
-            }
-        ]
+        }
     },
     // Config
     "_config": {

@@ -15,6 +15,7 @@ namespace CrazyPHP\Model\App;
 /**
  * Dependances
  */
+use CrazyPHP\Library\File\Config as FileConfig;
 use CrazyPHP\Library\Database\Database;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Interface\CrazyCommand;
@@ -23,6 +24,7 @@ use CrazyPHP\Library\File\Composer;
 use CrazyPHP\Library\File\Package;
 use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\Array\Arrays;
+use CrazyPHP\Library\Cli\Command;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Library\File\Json;
 use CrazyPHP\Model\Config;
@@ -239,6 +241,11 @@ class Create implements CrazyCommand {
         */
        $this->runComposerUpdate();
 
+        /**
+         * Run Front Script
+         */
+        $this->runFrontScript();
+
        /**
         * Run Webpack
         * 1. Prepare webpack config
@@ -391,8 +398,6 @@ class Create implements CrazyCommand {
         # Adapt inputs
         Package::adaptCreateInputs($inputs);
 
-        print_r($inputs);
-
         # Wash input
         $inputs = Process::wash($inputs, Package::DEFAULT_PROPERTIES);
 
@@ -414,7 +419,7 @@ class Create implements CrazyCommand {
             # Create composer file
             Package::create($composer);
 
-        # Set composer.json
+        # Set package.json
         # - Reqire script to be executed from the project folder 
         Package::set($inputs, $composer);
 
@@ -554,7 +559,23 @@ class Create implements CrazyCommand {
     public function runComposerUpdate():self {
 
         # Composer Update
-        Composer::exec("update", "", false);
+        $log = Composer::exec("update", "", false);
+
+        # Return instance
+        return $this;
+
+    }
+
+    /**
+     * Run Front Script
+     * 
+     * Steps :
+     * 
+     * @return self
+     */
+    public function runFrontScript():self {
+
+        # 
 
         # Return instance
         return $this;
@@ -569,6 +590,31 @@ class Create implements CrazyCommand {
      * @return Create
      */
     public function runWebpack():Create {
+
+        # Check NPM local installation
+        if(Command::exists("npm")){
+
+            # Set config App.local.npm = true
+            FileConfig::setValue("App.local.npm", true, true);
+
+            # Set NPM local
+            $localNpm = true;
+
+        }
+
+        # Check npm in local
+        if(!$localNpm){
+
+            # Echo message
+            echo "Webpack will be run later, in docker instance.".PHP_EOL;
+
+            # Stop current run
+            return $this;
+
+        }
+
+            # Install npm dependences
+            Package::exec("install", "", false);
 
         # Return instance
         return $this;

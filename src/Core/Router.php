@@ -73,8 +73,11 @@ class Router extends VendorRouter {
             # Fill request uri
             $request_uri = $_SERVER["REQUEST_URI"];
 
+        # Get usefull path
+        $url = parse_url($request_uri, PHP_URL_PATH);
+
         # Call route controller
-        $controller = $this->getCallback($request_uri);
+        $controller = $this->getCallback($url);
 
         # Get Class Name
         $className = strstr(ltrim(strrchr($controller, '\\'), '\\'), '::', true);
@@ -83,7 +86,7 @@ class Router extends VendorRouter {
         Context::setCurrentRoute($className);
 
         # Call route
-        return $this->callRoute($request_uri);
+        return $this->callRoute($url);
 
     }
 

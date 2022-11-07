@@ -532,7 +532,7 @@ class Up implements CrazyCommand {
     public static function runNpmPackageInstallation():void {
 
         # Install current package files
-        Package::exec("install");
+        # Package::exec("install");
 
     }
 

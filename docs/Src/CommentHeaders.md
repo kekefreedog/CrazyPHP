@@ -82,3 +82,87 @@ class Toto{
 # @copyright  2022-2022 Kévin Zarshenas
 # #
 ```
+
+## TS Headers
+
+### TS header for TS file.
+
+```ts
+/**
+ * TITLE
+ *
+ * TBD
+ *
+ * @package    kzarshenas/crazyphp
+ * @author     kekefreedog <kevin.zarshenas@gmail.com>
+ * @copyright  2022-2022 Kévin Zarshenas
+ */
+```
+
+### Separator in TS File.
+
+```ts
+/** Separator
+ ******************************************************
+ */
+```
+
+### TS header for TS Class.
+
+```ts
+/**
+ * TITLE
+ *
+ * TBD
+ *
+ * @package    kzarshenas/crazyphp
+ * @author     kekefreedog <kevin.zarshenas@gmail.com>
+ * @copyright  2022-2022 Kévin Zarshenas
+ */
+class Toto {}
+```
+
+### TS header in TS Methods
+
+```ts
+class Toto {
+
+    /**
+     * TITLE
+     *
+     * TBD
+     */
+    public titi(){}
+
+}
+```
+
+### Separator in TS Class
+
+```ts
+class Toto {
+
+    /** Public Static Methods
+     ******************************************************
+     */
+
+}
+```
+
+## HBS Headers
+
+### HBS header for HBS file.
+
+```hbs
+{{!--
+  ! TITLE
+  !
+  ! TBD
+  !
+  ! HANDLEBARS.JS version 4.7.7
+  !
+  ! @package    kzarshenas/crazyphp
+  ! @author     kekefreedog <kevin.zarshenas@gmail.com>
+  ! @copyright  2022-2022 Kévin Zarshenas
+  !--}}
+```

@@ -134,6 +134,7 @@ class Package{
         "mini-css-extract-plugin"       =>  "*",
         "sass-loader"                   =>  "*",
         # Back | Sass
+        "typescript"                    =>  "*",
         "sass"                          =>  "*",
     ];
 
@@ -360,6 +361,7 @@ class Package{
 
         # Check docker config
         if(
+            !FileConfig::getValue("App.local.npm") &&
             Config::exists("Docker") &&
             FileConfig::has("Docker.services.node.Service") &&
             $dockerNodeService = FileConfig::getValue("Docker.services.node.Service")
