@@ -96,15 +96,27 @@ class Structure {
      * 
      * Prepare template
      * 
+     * @param ?array $customResponse Custom Response in the data
+     * @param bool $merge Merge custom response with current data
      * @return self
      */
-    public function render():string {
+    public function render(?array $customResponse = null, bool $merge = true):string {
 
         # Set result
         $result = "";
 
+        # Set response
+        $response = $this->response;
+
+
+        # Check custom response
+        if($customResponse !== null)
+
+            # Merge data
+            $response = Arrays::mergeMultidimensionalArrays(true, $response, $customResponse);
+
         # Set result
-        $result = $this->instance["Handlebars"]->render($this->response);
+        $result = $this->instance["Handlebars"]->render($response);
 
         # Return result
         return $result;
@@ -121,15 +133,15 @@ class Structure {
      * Set element in html structure
      * 
      * @param string $parent Parent of element
+     * @param array|string $attributesOrContent Attributes of element
      * @param string $tag Tag name of element
-     * @param array|string $attributes Attributes of element
      * @param bool $createParentIfNotExists Create parent if not exists
      * @return self
      */
     public function setElement(
         string $parent = "html.body", 
-        string $tag = "div", 
-        array|string|null $attributes = null, 
+        array|string|null $attributesOrContent = null, 
+        ?string $tag = null, 
         ?array $children = null,
         bool $createParentIfNotExists = true,
     ):self {
@@ -137,13 +149,14 @@ class Structure {
         ## Check inputs values
 
         # Check tag
-        if(!$tag)
+        if($tag === "")
 
             # $et default tag
             $tag = "div";
 
-        # Check cas
         else
+        # Check case
+        if($tag)
 
             # Set cas of current tag
             $tag = strtolower($tag);
@@ -192,10 +205,7 @@ class Structure {
             $current = Arrays::filterByKey($cursor, "tag", $keys[$i]);
 
             # Check key in response
-            if(
-                !empty($current) ||
-                $createParentIfNotExists
-            ){
+            if(!empty($current)){
                 
                 # Get current key
                 $currentKey = array_key_first($current);
@@ -210,30 +220,64 @@ class Structure {
                 $cursor = &$cursor[$currentKey]["elements"];
 
             }else
+            # Check if parent can be create
+            if($createParentIfNotExists){
+
+                # New parent
+                $parent = [];
+
+                # Fill tag
+                $parent["tag"] = $keys[$i] ? $keys[$i] : "div";
+
+                # Create elements
+                $parent["elements"] = [];
+
+                # New key
+                $key = (int)array_key_last($cursor) + 1;
+
+                # Push to current cursor
+                $cursor[$key] = $parent;
+
+                # Update cursor
+                $cursor = &$cursor[$key]["elements"];
+
+
+            }else
 
                 # Return self
                 return $this;
 
         $i++;}
 
-        # Prepare element
-        $element = [
-            "tag"   =>  $tag
-        ];
+        # Set elements
+        $element = [];
 
-        # Check attributes
-        if(!empty($attributes) || $attributes)
+        # Check if content
+        if($tag === null){
 
-            # Set attributes
-            $element["attributes"] = is_string($attributes) ? 
-                [$attributes => null] :
-                    $attributes;
+            # Set html
+            $element["html"] = $attributesOrContent;
 
-        # Check children
-        if($children && !empty($children))
+        }else{
+            # Prepare element
+            $element["tag"] = $tag;
 
-            # Set children
-            $element["elements"] = $children;
+            # Check attributes
+            if(!empty($attributesOrContent) || $attributesOrContent)
+
+                # Set attributes
+                $element["attributes"] = is_string($attributesOrContent) ? 
+                    [$attributesOrContent => null] :
+                        $attributesOrContent;
+
+            # Check children
+            if($children && !empty($children))
+
+                # Set children
+                $element["elements"] = $children;
+
+        }
+
 
         # Create element in cursor
         $cursor[] = $element;
@@ -367,7 +411,7 @@ class Structure {
         $children = $head->get();
 
         # Set element
-        $this->setElement("html", "head", $attributes, $children);
+        $this->setElement("html", $attributes, "head", $children);
 
         # Return current instance
         return $this;
@@ -388,7 +432,28 @@ class Structure {
     public function setBody(string|array|null $attributes = null):self {
 
         # Set element
-        $this->setElement("html", "body", $attributes);
+        $this->setElement("html", $attributes, "body");
+
+        # Return current instance
+        return $this;
+
+    }
+
+    /**
+     * Set Body Content
+     * 
+     * Set Body Content
+     * 
+     * @param ?string $content Content to put in body
+     * @return self
+     */
+    public function setBodyContent(?string $content = ""):self {
+
+        # Check content
+        if($content !== null)
+
+            # Set element
+            $this->setElement("html.body", $content, null);
 
         # Return current instance
         return $this;
@@ -419,9 +484,13 @@ class Structure {
         # Generate html structure from `elements` objects 
         "htmlElement"      =>  "{{#if elements}}".
                                     "{{#each elements as |element|}}".
-                                        "<{{element.tag}}{{> htmlAttribute this=element}}>".
-                                            "{{#if element.elements}}{{> htmlElement elements=element.elements}}{{/if}}".
-                                        "</{{element.tag}}>".
+                                        "{{#if element.html}}".
+                                            "{{{html}}}".
+                                        "{{else}}".
+                                            "<{{element.tag}}{{> htmlAttribute this=element}}>".
+                                                "{{#if element.elements}}{{> htmlElement elements=element.elements}}{{/if}}".
+                                            "</{{element.tag}}>".
+                                        "{{/if}}".
                                     "{{/each}}".
                                 "{{/if}}",
         # Generate attribute, need `element` object

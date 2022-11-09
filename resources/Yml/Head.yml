@@ -9,7 +9,7 @@
 # @author     kekefreedog <kevin.zarshenas@gmail.com>
 # @copyright  2022-2022 Kévin Zarshenas
 # #
-Head:
+Head :
   main:
     - tag: meta
       attributes:
@@ -21,11 +21,7 @@ Head:
     - tag: meta
       attributes:
         name: viewport
-        content:
-          width: device-width
-            initial-scale: 1.0
-            user-scalable: 0
-            minimal-ui: null
+        content: "width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui"
     - tag: meta
       attributes:
         name: application-name
@@ -57,4 +53,52 @@ Head:
     - tag: link
       attributes:
         rel: manifest
-        href: manifest.json
+        href: /manifest.json
+    # Favicons
+    - tag: link
+      attributes:
+        rel: apple-touch-icon
+        sizes: 180x180
+        type: image/png
+        href: /asset/favicon/apple-touch-icon.png
+    - tag: link
+      attributes:
+        rel: icon
+        sizes: 32x32
+        type: image/png
+        href: /asset/favicon/favicon-32x32.png
+    - tag: link
+      attributes:
+        rel: icon
+        sizes: 16x16
+        type: image/png
+        href: /asset/favicon/favicon-16x16.png
+    - tag: link
+      attributes:
+        rel: icon
+        href: /asset/favicon/favicon.ico
+    - tag: link
+      attributes:
+        rel: mask-icon
+        href: /asset/favicon/safari-pinned-tab.svg
+        color: '#5bbad5'
+    - tag: meta
+      attributes:
+        name: apple-mobile-web-app-title
+        content: '{{app.name}}'
+    - tag: meta
+      attributes:
+        name: application-name
+        content: '{{app.name}}'
+    - tag: meta
+      attributes:
+        name: msapplication-TileColor
+        content: '#603cba'
+    - tag: meta
+      attributes:
+        name: msapplication-config
+        content: /asset/favicon/browserconfig.xml
+    - tag: meta
+      attributes:
+        name: theme-color
+        content: "#ffffff"

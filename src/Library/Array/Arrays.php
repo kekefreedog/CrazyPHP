@@ -99,7 +99,7 @@ class Arrays{
 		return array_filter(
 			$array, 
 			function ($var) use ($keyValue, $key) {
-				return ($var[$key] == $keyValue);
+				return (isset($var[$key]) ? $var[$key] == $keyValue : []);
 			}
 		);
 

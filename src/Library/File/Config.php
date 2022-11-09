@@ -75,65 +75,79 @@ class Config{
                 # Explode to get first value
                 $configFolder = explode("___", $input, 2)[0];
 
-                # New finder
-                $finder = new Finder();
+                # Check if config is cached on global variables
+                if(isset($GLOBALS[self::PREFIX]) && array_key_exists($configFolder, $GLOBALS[self::PREFIX])){
 
-                # Search files
-                $finder
-                    ->files()
-                    ->name(["$configFolder.*", $configFolder])
-                    ->in(File::path(self::FOLDER_PATH))
-                ;
+                    # Get content
+                    $content = $GLOBALS[self::PREFIX][$configFolder];
 
-                # Check not multiple file
-                if($finder->count() === 0)
-        
-                    # New Exception
-                    throw new CrazyException(
-                        "No config file found for \"$configFolder\".", 
-                        500,
-                        [
-                            "custom_code"   =>  "config-001",
-                        ]
-                    );
+                ### Else get it
+                }else{
 
-                # Check not multiple file
-                if($finder->count() > 1)
+                    # New finder
+                    $finder = new Finder();
 
-                    # New Exception
-                    throw new CrazyException(
-                        "Conflict of config file with the same name for \"$configFolder\".", 
-                        500,
-                        [
-                            "custom_code"   =>  "config-002",
-                        ]
-                    );
+                    # Search files
+                    $finder
+                        ->files()
+                        ->name(["$configFolder.*", $configFolder])
+                        ->in(File::path(self::FOLDER_PATH))
+                    ;
 
-                # Iteration of files
-                foreach ($finder as $file){
+                    # Check not multiple file
+                    if($finder->count() === 0)
+            
+                        # New Exception
+                        throw new CrazyException(
+                            "No config file found for \"$configFolder\".", 
+                            500,
+                            [
+                                "custom_code"   =>  "config-001",
+                            ]
+                        );
 
-                    # Get path file
-                    $filePath = $file->getPathname();
+                    # Check not multiple file
+                    if($finder->count() > 1)
 
-                    # Get mime type
-                    $fileMime = File::guessMime($filePath);
+                        # New Exception
+                        throw new CrazyException(
+                            "Conflict of config file with the same name for \"$configFolder\".", 
+                            500,
+                            [
+                                "custom_code"   =>  "config-002",
+                            ]
+                        );
 
-                    # break;
-                    break;
+                    # Iteration of files
+                    foreach ($finder as $file){
+
+                        # Get path file
+                        $filePath = $file->getPathname();
+
+                        # Get mime type
+                        $fileMime = File::guessMime($filePath);
+
+                        # break;
+                        break;
+
+                    }
+
+                    # Check file path and file mime
+                    if(!$filePath || !$fileMime || !isset(File::MIMTYPE_TO_CLASS[$fileMime]))
+
+                        # Return result
+                        return $result;
+
+                    # Set file instance class
+                    $fileInstance = File::MIMTYPE_TO_CLASS[$fileMime];
+
+                    # Read file path
+                    $content = $fileInstance::open($filePath);
+
+                    # Set content in global
+                    $GLOBALS[self::PREFIX][$configFolder] = $content;
 
                 }
-
-                # Check file path and file mime
-                if(!$filePath || !$fileMime || !isset(File::MIMTYPE_TO_CLASS[$fileMime]))
-
-                    # Return result
-                    return $result;
-
-                # Set file instance class
-                $fileInstance = File::MIMTYPE_TO_CLASS[$fileMime];
-
-                # Read file path
-                $content = $fileInstance::open($filePath);
 
                 # Get value
                 $valueToPush = Arrays::parseKey($input, $content);
@@ -182,65 +196,79 @@ class Config{
             # Explode to get first value
             $configFolder = explode("___", $input, 2)[0];
 
-            # New finder
-            $finder = new Finder();
+            # Check if config is cached on global variables
+            if(isset($GLOBALS[self::PREFIX]) && array_key_exists($configFolder, $GLOBALS[self::PREFIX])){
 
-            # Search files
-            $finder
-                ->files()
-                ->name(["$configFolder.*", $configFolder])
-                ->in(File::path(self::FOLDER_PATH))
-            ;
+                # Get content
+                $content = $GLOBALS[self::PREFIX][$configFolder];
 
-            # Check not multiple file
-            if($finder->count() === 0)
-    
-                # New Exception
-                throw new CrazyException(
-                    "No config file found for \"$configFolder\".", 
-                    500,
-                    [
-                        "custom_code"   =>  "config-003",
-                    ]
-                );
+            # Get content and set cache
+            }else{
 
-            # Check not multiple file
-            if($finder->count() > 1)
+                # New finder
+                $finder = new Finder();
 
-                # New Exception
-                throw new CrazyException(
-                    "Conflict of config file with the same name for \"$configFolder\".", 
-                    500,
-                    [
-                        "custom_code"   =>  "config-004",
-                    ]
-                );
+                # Search files
+                $finder
+                    ->files()
+                    ->name(["$configFolder.*", $configFolder])
+                    ->in(File::path(self::FOLDER_PATH))
+                ;
 
-            # Iteration of files
-            foreach ($finder as $file){
+                # Check not multiple file
+                if($finder->count() === 0)
+        
+                    # New Exception
+                    throw new CrazyException(
+                        "No config file found for \"$configFolder\".", 
+                        500,
+                        [
+                            "custom_code"   =>  "config-003",
+                        ]
+                    );
 
-                # Get path file
-                $filePath = $file->getPathname();
+                # Check not multiple file
+                if($finder->count() > 1)
 
-                # Get mime type
-                $fileMime = File::guessMime($filePath);
+                    # New Exception
+                    throw new CrazyException(
+                        "Conflict of config file with the same name for \"$configFolder\".", 
+                        500,
+                        [
+                            "custom_code"   =>  "config-004",
+                        ]
+                    );
 
-                # break;
-                break;
+                # Iteration of files
+                foreach ($finder as $file){
+
+                    # Get path file
+                    $filePath = $file->getPathname();
+
+                    # Get mime type
+                    $fileMime = File::guessMime($filePath);
+
+                    # break;
+                    break;
+
+                }
+
+                # Check file path and file mime
+                if(!$filePath || !$fileMime || !isset(File::MIMTYPE_TO_CLASS[$fileMime]))
+
+                    # Return result
+                    return $result;
+
+                # Set file instance class
+                $fileInstance = File::MIMTYPE_TO_CLASS[$fileMime];
+
+                # Read file path
+                $content = $fileInstance::open($filePath);
+
+                # Set content
+                $GLOBALS[self::PREFIX][$configFolder] = $content;
 
             }
-
-            # Check file path and file mime
-            if(!$filePath || !$fileMime || !isset(File::MIMTYPE_TO_CLASS[$fileMime]))
-
-                # Return result
-                return $result;
-
-            # Set file instance class
-            $fileInstance = File::MIMTYPE_TO_CLASS[$fileMime];
-
-            # Read file path
-            $content = $fileInstance::open($filePath);
 
             # Get value
             $result = Arrays::parseKey($input, $content);
@@ -280,60 +308,76 @@ class Config{
         # Explode to get first value
         $configFolder = explode("___", $input, 2)[0];
 
-        # New finder
-        $finder = new Finder();
-
-        # Search files
-        $finder
-            ->files()
-            ->name(["$configFolder.*", $configFolder])
-            ->in(File::path(self::FOLDER_PATH))
-        ;
-
-        # Check not multiple file
-        if($finder->count() === 0)
-
-            # New Exception
-            throw new CrazyException(
-                "No config file found for \"$configFolder\".", 
-                500,
-                [
-                    "custom_code"   =>  "config-005",
-                ]
-            );
-
-        # Check not multiple file
-        if($finder->count() > 1)
-
-            # New Exception
-            throw new CrazyException(
-                "Conflict of config file with the same name for \"$configFolder\".", 
-                500,
-                [
-                    "custom_code"   =>  "config-006",
-                ]
-            );
 
 
-        # Iteration of files
-        foreach ($finder as $file){
+        # Check if config is cached on global variables
+        if(isset($GLOBALS[self::PREFIX]) && array_key_exists($configFolder, $GLOBALS[self::PREFIX])){
 
-            # Get path file
-            $filePath = $file->getPathname();
+            # Get content
+            $content = $GLOBALS[self::PREFIX][$configFolder];
 
-            # Get mime type
-            $fileMime = File::guessMime($filePath);
+        # Check in files
+        }else{
 
-            # break;
-            break;
+            # New finder
+            $finder = new Finder();
+
+            # Search files
+            $finder
+                ->files()
+                ->name(["$configFolder.*", $configFolder])
+                ->in(File::path(self::FOLDER_PATH))
+            ;
+
+            # Check not multiple file
+            if($finder->count() === 0)
+
+                # New Exception
+                throw new CrazyException(
+                    "No config file found for \"$configFolder\".", 
+                    500,
+                    [
+                        "custom_code"   =>  "config-005",
+                    ]
+                );
+
+            # Check not multiple file
+            if($finder->count() > 1)
+
+                # New Exception
+                throw new CrazyException(
+                    "Conflict of config file with the same name for \"$configFolder\".", 
+                    500,
+                    [
+                        "custom_code"   =>  "config-006",
+                    ]
+                );
+
+
+            # Iteration of files
+            foreach ($finder as $file){
+
+                # Get path file
+                $filePath = $file->getPathname();
+
+                # Get mime type
+                $fileMime = File::guessMime($filePath);
+
+                # break;
+                break;
+
+            }
+
+            # Set file instance class
+            $fileInstance = File::MIMTYPE_TO_CLASS[$fileMime];
+
+            # Read file path
+            $content = $fileInstance::open($filePath);
+
+            # Set content
+            $GLOBALS[self::PREFIX][$configFolder] = $content;
 
         }
-
-        # Set file instance class
-        $fileInstance = File::MIMTYPE_TO_CLASS[$fileMime];
-
-        # Read file path
-        $content = $fileInstance::open($filePath);
 
         # Get value
         $valueToCheck = Arrays::parseKey($input, $content);
@@ -434,7 +478,10 @@ class Config{
         Arrays::fill($content, $input, $data);
 
         # Update config
-        $fileInstance::update($filePath, $content, true);
+        $content = $fileInstance::update($filePath, $content, true);
+
+        # Update or set global cache
+        $GLOBALS[self::PREFIX][$configFolder] = $content;
 
     }
 
@@ -565,6 +612,9 @@ class Config{
 
         # Set result
         $fileInstance::set($filePath, $result);
+
+        # Set cache
+        $GLOBALS[self::PREFIX[$keys[0]]] = $result;
 
     }
 
@@ -739,6 +789,9 @@ class Config{
         # Set result
         $fileInstance::set($filePath, $result, false, false);
 
+        # Set cache
+        $GLOBALS[self::PREFIX[$keys[0]]] = $result;
+
     }
 
     /**
@@ -816,10 +869,13 @@ class Config{
      ******************************************************
      */
 
-    /* @var config path */
+    /** @const config path */
     public const FOLDER_PATH = "@app_root/config";
 
-    /* @var separator */
+    /** @const separator */
     public const SEPARATOR = ["/", "."];
+
+    /** @const string PREFIX  */
+    public const PREFIX = "__CRAZY_CONFIG";
 
 }
