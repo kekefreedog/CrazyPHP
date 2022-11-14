@@ -39,8 +39,14 @@ class Config{
      ******************************************************
      */
     
-    /* @const DEFAULT_PATH PATH by default where stored config files */
+    /** @const DEFAULT_PATH PATH by default where stored config files */
     public const DEFAULT_PATH = "@app_root/config";
+
+    /** @const string REGEX */
+    public const REGEX = "{{(.*?)}}";
+
+    /** @const string PREFIX  */
+    public const PREFIX = "__CRAZY_CONFIG";
 
     /**
      * Default Config files
@@ -292,6 +298,9 @@ class Config{
         # Create file
         $formatInstance::create($targetPath, [$name => $data], Header::get($format));
 
+        # Set content
+        $GLOBALS[self::PREFIX][$name] = $data;
+
         # Set result
         $result = $targetPath;
 
@@ -350,6 +359,9 @@ class Config{
 
         # Create yaml
         Yaml::create($config['path_target'], ["App" => $composerContent], Header::get("yml"));
+
+        # Set content in cache
+        $GLOBALS[self::PREFIX]["App"] = $composerContent;
 
     }
 

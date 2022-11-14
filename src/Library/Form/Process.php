@@ -15,9 +15,14 @@ namespace  CrazyPHP\Library\Form;
 /**
  * Dependances
  */
+use CrazyPHP\Library\File\Config as FileConfig;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Form\Validate;
 use CrazyPHP\Library\Array\Arrays;
+use CrazyPHP\Library\File\File;
+use CrazyPHP\Model\Config;
+use ReflectionMethod;
+use ReflectionClass;
 
 /**
  * Process form values
@@ -182,6 +187,109 @@ class Process {
 
                     # Process value
                     $input['value'] = $this->{$process}($input['value']);
+
+
+    }
+
+    /**
+     * Recursive array exploration
+     * 
+     * @param array $inputs Input to explore
+     * @param callable $callable Function for !array value
+     * @return array
+     */
+    private static function _recursiveArrayExploration(array &$inputs = [], string|callable|object $callable = ""):void {
+
+        # Set reflection
+        $reflection = new ReflectionClass(__CLASS__);
+
+        # Set check
+        $check = false;
+
+        # Check if reflection class
+        if(gettype($callable) == "object" && get_class($callable) == "ReflectionMethod"){
+
+            $function = $callable;
+
+            # Get parameters
+            $parameters = $function->getParameters();
+
+            # Check first parameter
+            if(isset($parameters[0])){
+
+                # Set check 
+                $check = $parameters[0]->getType()->getname();
+
+            }
+
+        }else
+        # Check input
+        if(empty($inputs))
+
+            # Stop function
+            return;
+
+        # Check function
+        if(is_string($callable) && (is_callable($callable) || function_exists($callable))){
+
+            # Set function
+            $function = $callable;
+
+        }else
+        # If string and method exists
+        if(is_string($callable) && $reflection->hasMethod($callable)){
+
+            # Set function
+            $function = $reflection->getMethod($callable);
+
+            # Get parameters
+            $parameters = $function->getParameters();
+
+            # Check first parameter
+            if(isset($parameters[0])){
+
+                # Set check 
+                $check = $parameters[0]->getType()->getname();
+
+            }
+
+        # Error
+        }else
+            
+            # New error
+            throw new CrazyException(
+                "Given callable function for arrat exploration isn't valid",
+                500,
+                [
+                    "custom_code"   =>  "process-003",
+                ]
+            );
+
+
+        # Iteration of inputs
+        foreach($inputs as &$input)
+
+            # Check input is array
+            if(is_array($input))
+
+                # Call itself
+                static::_recursiveArrayExploration($input, $function);
+
+            # Else call function
+            else
+
+                # If check
+                if(
+                    (
+                        !$check
+                    ) || (
+                        $check &&
+                        gettype($input) == $check
+                    )
+                )
+
+                    # Call finction
+                    $input = $function($input);
 
 
     }
@@ -651,6 +759,94 @@ class Process {
         $result = [];
 
         $result = $inputs;
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * EnvAndCacheValues
+     * 
+     * Process value or value in array and replace values depending of following rules :
+     * - Value get @
+     * - Value get "{{" & "}}"
+     * 
+     * @param any $inputs Input to process
+     * @return any
+     */
+    public static function envAndCacheValues($inputs = []) {
+
+        # Set result
+        $result = $inputs;
+
+        # Check result
+        if(!in_array($type = gettype($inputs), ["string", "array"]))
+
+            # Return result
+            return $result;
+
+        # Check if string
+        if(is_string($inputs)){
+
+            # Check env
+            $result = File::path((string)$inputs);
+
+            
+        # Check config
+        }else{
+
+            # Check conig
+            static::_recursiveArrayExploration($inputs, "configValue");
+
+        }
+
+    }
+
+    /**
+     * Config Value
+     * 
+     * @param string $input Input to process
+     * @return string
+     */
+    public static function configValue(string $input = ""):string {
+
+        # Set result
+        $result = $input;
+
+        # Check has "{{" and "}}"
+        if(strpos($input, "{{") && strpos($input, "}}")){
+        
+            # Search values
+            preg_match_all(
+                Config::REGEX,
+                $input,
+                $results
+            );
+
+            # Check results
+            if(!empty($results))
+
+                # Iteration of result
+                foreach($results as $v){
+
+                    # Clean result
+                    $v = trim((string)$v, "{}");
+
+                    # Get config value
+                    $configValue = FileConfig::getValue($v);
+
+                    # Check config value is string
+                    if(!is_string($configValue))
+
+                        # Set config value
+                        $configValue = "";
+
+                    # Replace result
+                    $result = str_replace("{{$result}}", $configValue, $result);
+
+                }
+        }
 
         # Return result
         return $result;

@@ -18,6 +18,7 @@ namespace CrazyPHP\Library\File;
 use CrazyPHP\Exception\CrazyException;
 use Symfony\Component\Finder\Finder;
 use CrazyPHP\Library\Array\Arrays;
+use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\Cache\Cache;
 
 /**
@@ -145,7 +146,8 @@ class Config{
                     $content = $fileInstance::open($filePath);
 
                     # Set content in global
-                    $GLOBALS[self::PREFIX][$configFolder] = $content;
+                    # $GLOBALS[self::PREFIX][$configFolder] = $content;
+                    self::_setGlobalCache($configFolder, $content);
 
                 }
 
@@ -266,7 +268,8 @@ class Config{
                 $content = $fileInstance::open($filePath);
 
                 # Set content
-                $GLOBALS[self::PREFIX][$configFolder] = $content;
+                # $GLOBALS[self::PREFIX][$configFolder] = $content;
+                self::_setGlobalCache($configFolder, $content);
 
             }
 
@@ -375,7 +378,8 @@ class Config{
             $content = $fileInstance::open($filePath);
 
             # Set content
-            $GLOBALS[self::PREFIX][$configFolder] = $content;
+            # $GLOBALS[self::PREFIX][$configFolder] = $content;
+            self::_setGlobalCache($configFolder, $content);
 
         }
 
@@ -481,7 +485,8 @@ class Config{
         $content = $fileInstance::update($filePath, $content, true);
 
         # Update or set global cache
-        $GLOBALS[self::PREFIX][$configFolder] = $content;
+        # $GLOBALS[self::PREFIX][$configFolder] = $content;
+        static::_setGlobalCache($configFolder, $content);
 
     }
 
@@ -614,7 +619,8 @@ class Config{
         $fileInstance::set($filePath, $result);
 
         # Set cache
-        $GLOBALS[self::PREFIX[$keys[0]]] = $result;
+        # $GLOBALS[self::PREFIX][$keys[0]] = $result;
+        self::_setGlobalCache($keys[0], $result);
 
     }
 
@@ -837,9 +843,38 @@ class Config{
 
     }
 
-    /** Private static key
+    /** Private static methods
      ******************************************************
      */
+
+    /**
+     * Set Gobal Cache
+     * 
+     * Set cached value of parameter in global variable
+     * 
+     * @param string $key Key in cache
+     * @param array $value Value to cache
+     * @return void
+     */
+    private static function _setGlobalCache(string $key = "", array $value = []):void {
+
+        # Process value
+        $value = Process::envAndCacheValues($value);
+
+        # Check key
+        if($key)
+
+            # Set globals
+            $GLOBALS[self::PREFIX][$key] = $value;
+
+        # If key valid
+        else
+
+            # Set globals
+            $GLOBALS[self::PREFIX] = $value;
+
+
+    }
 
     /**
      * get Key

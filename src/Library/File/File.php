@@ -395,7 +395,7 @@ class File {
             return $input;
 
         # Regex expression for select word starting after @
-        $regex = '/@[\w]+/';
+        $regex = Env::REGEX;
         
         # Search values
         preg_match_all(

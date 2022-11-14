@@ -153,7 +153,10 @@ class Env{
      ******************************************************
      */
 
-    /* @const string PREFIX used in global */
+    /** @const string PREFIX used in global */
     public const PREFIX = "__CRAZY_APP";
+
+    /** @const string REGEX Regex expression for select word starting after @ */
+    public const REGEX = '/@[\w]+/';
 
 }
