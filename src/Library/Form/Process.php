@@ -195,102 +195,33 @@ class Process {
      * Recursive array exploration
      * 
      * @param array $inputs Input to explore
-     * @param callable $callable Function for !array value
+     * @param ?callable $callable Function for !array value
      * @return array
      */
-    private static function _recursiveArrayExploration(array &$inputs = [], string|callable|object $callable = ""):void {
+    private static function _recursiveArrayExploration(array &$inputs = [], ?callable $callable = null):void {
 
-        # Set reflection
-        $reflection = new ReflectionClass(__CLASS__);
-
-        # Set check
-        $check = false;
-
-        # Check if reflection class
-        if(gettype($callable) == "object" && get_class($callable) == "ReflectionMethod"){
-
-            $function = $callable;
-
-            # Get parameters
-            $parameters = $function->getParameters();
-
-            # Check first parameter
-            if(isset($parameters[0])){
-
-                # Set check 
-                $check = $parameters[0]->getType()->getname();
-
-            }
-
-        }else
-        # Check input
-        if(empty($inputs))
+        # Check callable
+        if(!$callable)
 
             # Stop function
             return;
 
-        # Check function
-        if(is_string($callable) && (is_callable($callable) || function_exists($callable))){
-
-            # Set function
-            $function = $callable;
-
-        }else
-        # If string and method exists
-        if(is_string($callable) && $reflection->hasMethod($callable)){
-
-            # Set function
-            $function = $reflection->getMethod($callable);
-
-            # Get parameters
-            $parameters = $function->getParameters();
-
-            # Check first parameter
-            if(isset($parameters[0])){
-
-                # Set check 
-                $check = $parameters[0]->getType()->getname();
-
-            }
-
-        # Error
-        }else
-            
-            # New error
-            throw new CrazyException(
-                "Given callable function for arrat exploration isn't valid",
-                500,
-                [
-                    "custom_code"   =>  "process-003",
-                ]
-            );
-
-
         # Iteration of inputs
-        foreach($inputs as &$input)
+        foreach($inputs as $key => $input)
 
             # Check input is array
             if(is_array($input))
 
                 # Call itself
-                static::_recursiveArrayExploration($input, $function);
+                static::_recursiveArrayExploration($inputs[$key], $callable);
 
             # Else call function
-            else
+            else{
 
-                # If check
-                if(
-                    (
-                        !$check
-                    ) || (
-                        $check &&
-                        gettype($input) == $check
-                    )
-                )
+                # Call finction
+                $inputs[$key] = $callable($input);
 
-                    # Call finction
-                    $input = $function($input);
-
+            }
 
     }
 
@@ -766,7 +697,7 @@ class Process {
     }
 
     /**
-     * EnvAndCacheValues
+     * Env And Cache Values
      * 
      * Process value or value in array and replace values depending of following rules :
      * - Value get @
@@ -775,31 +706,43 @@ class Process {
      * @param any $inputs Input to process
      * @return any
      */
-    public static function envAndCacheValues($inputs = []) {
-
-        # Set result
-        $result = $inputs;
+    public static function envAndConfigValues($inputs = []) {
 
         # Check result
-        if(!in_array($type = gettype($inputs), ["string", "array"]))
+        if(!is_array($inputs) && !is_string($inputs))
 
             # Return result
-            return $result;
+            return $inputs;
 
         # Check if string
         if(is_string($inputs)){
 
             # Check env
-            $result = File::path((string)$inputs);
+            $inputs = File::path((string)$inputs);
 
+            # Check config
+            $inputs = static::configValue($inputs);
             
         # Check config
         }else{
 
             # Check conig
-            static::_recursiveArrayExploration($inputs, "configValue");
+            static::_recursiveArrayExploration(
+                $inputs, 
+                function($input){
+                    $result = $input;
+                    if(is_string($input) && $input){
+                        $result = File::path($input);
+                        $result = static::configValue($result);
+                    }
+                    return $result;
+                }
+            );
 
         }
+
+        # Return result
+        return $inputs;
 
     }
 
@@ -815,7 +758,7 @@ class Process {
         $result = $input;
 
         # Check has "{{" and "}}"
-        if(strpos($input, "{{") && strpos($input, "}}")){
+        if(strpos($input, "{{") !== false && strpos($input, "}}") !== false){
         
             # Search values
             preg_match_all(
@@ -824,14 +767,21 @@ class Process {
                 $results
             );
 
+            # Clean result
+            $results = array_unique(
+                array_map(
+                    function($v){
+                        return is_string($v) ? trim($v, "{}") : $v;
+                    },
+                    $results[1]
+                )
+            );
+
             # Check results
             if(!empty($results))
 
                 # Iteration of result
                 foreach($results as $v){
-
-                    # Clean result
-                    $v = trim((string)$v, "{}");
 
                     # Get config value
                     $configValue = FileConfig::getValue($v);
@@ -843,7 +793,7 @@ class Process {
                         $configValue = "";
 
                     # Replace result
-                    $result = str_replace("{{$result}}", $configValue, $result);
+                    $result = str_replace("{{".$v."}}", $configValue, $result);
 
                 }
         }

@@ -20,6 +20,7 @@ use Symfony\Component\Finder\Finder;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\Cache\Cache;
+use CrazyPHP\Model\Env;
 
 /**
  * Config
@@ -80,7 +81,8 @@ class Config{
                 if(isset($GLOBALS[self::PREFIX]) && array_key_exists($configFolder, $GLOBALS[self::PREFIX])){
 
                     # Get content
-                    $content = $GLOBALS[self::PREFIX][$configFolder];
+                    # $content = $GLOBALS[self::PREFIX][$configFolder];
+                    $content = self::_getGlobalCache($configFolder);
 
                 ### Else get it
                 }else{
@@ -161,6 +163,9 @@ class Config{
 
         }
 
+        # Process result
+        $result = Process::envAndConfigValues($result);
+
         # Return result
         return $result;
 
@@ -172,11 +177,10 @@ class Config{
      * Get value on config from key
      * 
      * @param string $input Name of config(s)
-     * 
+     * @param string $location Location of config files
      * @return
      */
-    public static function getValue(string $input = "") {
-
+    public static function getValue(string $input = ""){
 
         # Declare result
         $result = [];
@@ -190,6 +194,11 @@ class Config{
         # Check config has input
         if(self::has($input)){
 
+            # Set location
+            $location = Env::has("config_location") ?
+                Env::get("config_location") :
+                    self::FOLDER_PATH;
+
             /* Get config file */
 
             # Replace separator
@@ -199,10 +208,11 @@ class Config{
             $configFolder = explode("___", $input, 2)[0];
 
             # Check if config is cached on global variables
-            if(isset($GLOBALS[self::PREFIX]) && array_key_exists($configFolder, $GLOBALS[self::PREFIX])){
+            if(isset($GLOBALS[self::PREFIX]) && array_key_exists($configFolder, $GLOBALS[self::PREFIX]) && $GLOBALS[self::PREFIX][$configFolder] !== null){
 
                 # Get content
-                $content = $GLOBALS[self::PREFIX][$configFolder];
+                # $content = $GLOBALS[self::PREFIX][$configFolder];
+                $content = self::_getGlobalCache($configFolder);
 
             # Get content and set cache
             }else{
@@ -214,7 +224,7 @@ class Config{
                 $finder
                     ->files()
                     ->name(["$configFolder.*", $configFolder])
-                    ->in(File::path(self::FOLDER_PATH))
+                    ->in(File::path($location))
                 ;
 
                 # Check not multiple file
@@ -274,9 +284,12 @@ class Config{
             }
 
             # Get value
-            $result = Arrays::parseKey($input, $content);
+            $result = Arrays::parseKey($input, $content, self::SEPARATOR);
 
         }
+
+        # Process result
+        $result = Process::envAndConfigValues($result);
 
         # Return result
         return $result;
@@ -317,10 +330,16 @@ class Config{
         if(isset($GLOBALS[self::PREFIX]) && array_key_exists($configFolder, $GLOBALS[self::PREFIX])){
 
             # Get content
-            $content = $GLOBALS[self::PREFIX][$configFolder];
+            # $content = $GLOBALS[self::PREFIX][$configFolder];
+            $content = self::_getGlobalCache($configFolder);
 
         # Check in files
         }else{
+
+            # Set location
+            $location = Env::has("config_location") ?
+                Env::get("config_location") :
+                    self::FOLDER_PATH;
 
             # New finder
             $finder = new Finder();
@@ -329,7 +348,7 @@ class Config{
             $finder
                 ->files()
                 ->name(["$configFolder.*", $configFolder])
-                ->in(File::path(self::FOLDER_PATH))
+                ->in(File::path($location))
             ;
 
             # Check not multiple file
@@ -796,7 +815,8 @@ class Config{
         $fileInstance::set($filePath, $result, false, false);
 
         # Set cache
-        $GLOBALS[self::PREFIX[$keys[0]]] = $result;
+        # $GLOBALS[self::PREFIX][$keys[0]] = $result;
+        self::_setGlobalCache($keys[0], $result);
 
     }
 
@@ -859,7 +879,7 @@ class Config{
     private static function _setGlobalCache(string $key = "", array $value = []):void {
 
         # Process value
-        $value = Process::envAndCacheValues($value);
+        # $value = Process::envAndConfigValues($value);
 
         # Check key
         if($key)
@@ -873,6 +893,32 @@ class Config{
             # Set globals
             $GLOBALS[self::PREFIX] = $value;
 
+    }
+
+    /**
+     * Get GLobal Cache
+     * 
+     * Get cached value of parameter in global variable
+     *
+     * @param string $key Key in cache
+     * @return void
+     */
+    private static function _getGlobalCache(string $key = "") {
+
+        # Check key
+        if($key)
+
+            # Set globals
+            $result = $GLOBALS[self::PREFIX][$key];
+
+        # If key valid
+        else
+
+            # Set globals
+            $result = $GLOBALS[self::PREFIX];
+
+        # Return key
+        return $result;
 
     }
 
@@ -908,7 +954,7 @@ class Config{
     public const FOLDER_PATH = "@app_root/config";
 
     /** @const separator */
-    public const SEPARATOR = ["/", "."];
+    public const SEPARATOR = ["/", ".", "___"];
 
     /** @const string PREFIX  */
     public const PREFIX = "__CRAZY_CONFIG";
