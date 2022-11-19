@@ -72,4 +72,43 @@ class Os {
 
     }
 
+    /**
+     * Is Mac
+     * 
+     * @source https://stackoverflow.com/questions/15845928/determine-if-operating-system-is-mac
+     * 
+     * Check if current os is windows
+     * 
+     * @return bool
+     */
+    public static function isMac():bool {
+
+        # Declare result
+        $result = false;
+
+        # Get user agent
+        $user_agent = getenv("HTTP_USER_AGENT");
+        $vs = getenv("VSCODE_GIT_ASKPASS_NODE");
+
+        # Get win dir
+        if(
+            (
+                is_string($user_agent) &&
+                preg_match('/macintosh|mac os x/i', $user_agent)
+            ) || (
+                is_string($vs) &&
+                strpos($vs, "MacOS")!==false
+            ) 
+        ){
+
+            # Set result
+            $result = true;
+
+        }
+
+        # Return result
+        return $result;
+
+    }
+
 }

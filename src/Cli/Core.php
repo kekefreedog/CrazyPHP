@@ -735,8 +735,28 @@ class Core extends CLI {
 
             }catch(MongodbException $e){
 
-                # Display message
-                $e->getMessageForTerminal();
+                # Check code
+                if($e->getCode() == 255){
+
+                    # Message end
+                    $climate
+                        ->green("🟡 Relaunch ".str_replace("run", "", strtolower($action))."...")
+                        ->br()
+                    ;
+
+                    # Relaunch current method
+                    $this->actionCrazyDockerUp();
+
+                    # Stop current function
+                    return;
+
+
+                }else{
+
+                    # Display message
+                    $e->getMessageForTerminal();
+
+                }
 
             }
 
@@ -768,7 +788,6 @@ class Core extends CLI {
             ->out("🎉 Docker compose run up with success 🎉")
             ->br()
         ;
-
 
     }
 
@@ -1133,7 +1152,7 @@ class Core extends CLI {
         }
 
         # New instance of class
-        $instance = new $class();
+        $instance = new $class($inputs);
 
         # Get story line
         $storyline = $instance->getStoryline();

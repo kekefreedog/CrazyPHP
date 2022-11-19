@@ -21,6 +21,7 @@ use Symfony\Component\Finder\Finder;
 use CrazyPHP\Library\File\Package;
 use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\File\File;
+use CrazyPHP\Library\System\Os;
 use DateTime;
 
 /**
@@ -47,6 +48,9 @@ class Run implements CrazyCommand {
         # Ingest data
         $this->inputs = $inputs;
 
+        # Set scripts
+        $this->script = $this->inputs["args"][0] ?? null;
+
     }
 
     /** Private Parameters
@@ -55,6 +59,9 @@ class Run implements CrazyCommand {
 
     /** @var ?string $script Script name to run  */
     private $script = null;
+
+    /** @var bool $watch Bool for check if watch mode is enable */
+    private $watch = false;
 
     /** Public static methods
      ******************************************************
@@ -172,6 +179,12 @@ class Run implements CrazyCommand {
     public function run():self {
 
         /**
+         * Run Check Watch Script
+         * 1. Check if watch script and add it to Config Front
+         */
+        $this->runCheckIfWatch();
+
+        /**
          * Run Webpack Script
          * 1. Generate js file for js and ts front scripts
          */
@@ -179,9 +192,44 @@ class Run implements CrazyCommand {
 
         /**
          * Run Set Generated Files on Config
+         * 1. Put files generated on config Front
          */
         $this->runGeneratedFilesOnConfig();
 
+
+        # Return self
+        return $this;
+
+    }
+
+    /**
+     * Run Check If Watch
+     * 
+     * Run Check Watch Script
+     * 
+     * Steps :
+     * 1. Check if watch script and add it to Config Front
+     * 
+     * @return self
+     */
+    public function runCheckIfWatch():self {
+
+        # Get read script
+        $scripts = Package::read("scripts");
+
+        # Get command of current script that will be executed
+        $command = $scripts[$this->script];
+
+        # Check if "--watch" in command
+        if(strpos($command, "--watch") !== false){
+
+            # Push value in front config
+            Config::setValue("Front.lastBuild.watch", true);
+
+            # Set watch
+            $this->watch = true;
+
+        }
 
         # Return self
         return $this;
@@ -198,11 +246,17 @@ class Run implements CrazyCommand {
      */
     public function runWebpackScript():self {
 
-        # Prepare command
-        $command = $this->script ?: $this->inputs["args"][0] ?? null;
+        # Check if watch
+        if($this->watch)
+
+            # Watch Script In Progress 
+            echo 
+                "Current watch is in progress... (Press `Ctrl` + `C` to stop script)"
+            ;
+
 
         # Run script
-        $result = Package::exec("run", $command, false);
+        $result = Package::exec("run", $this->script, false);
 
         # Return self
         return $this;
@@ -227,6 +281,7 @@ class Run implements CrazyCommand {
             "files" =>  null,
             "hash"  =>  null,
             "date"  =>  null,
+            "watch" =>  false,
         ];
 
         # Search new generated file

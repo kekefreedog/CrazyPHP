@@ -133,6 +133,7 @@ class Package{
         "sass-loader"                               =>  "*",
         "webpack"                                   =>  "*",
         "webpack-cli"                               =>  "*",
+        "webpack-dev-server"                        =>  "*",
         # Back | Sass           
         "sass"                                      =>  "*",
         # Back | Ts         
@@ -218,7 +219,7 @@ class Package{
      * @param string $file File to read data
      * @return string
      */
-    public static function read(string $parameter = "", string $file = "package.json"):string {
+    public static function read(string $parameter = "", string $file = "package.json") {
 
         # Check parameter in path
         if(array_key_exists($file, self::PATH))

@@ -25,7 +25,7 @@ Head :
     - tag: meta
       attributes:
         name: application-name
-        content: '{{app.name}}'
+        content: '{{App.name}}'
     - tag: meta
       attributes:
         name: theme-color
@@ -33,15 +33,15 @@ Head :
     - tag: meta
       attributes:
         name: description
-        content: '{{app.description}}'
+        content: '{{App.description}}'
     - tag: meta
       attributes:
         name: robots
-        content: '{{app.indexing}}'
+        content: '{{App.indexing}}'
     - tag: meta
       attributes:
         name: googlebot
-        content: '{{app.indexing}}'
+        content: '{{App.indexing}}'
     - tag: meta
       attributes:
         name: google
@@ -85,11 +85,11 @@ Head :
     - tag: meta
       attributes:
         name: apple-mobile-web-app-title
-        content: '{{app.name}}'
+        content: '{{App.name}}'
     - tag: meta
       attributes:
         name: application-name
-        content: '{{app.name}}'
+        content: '{{App.name}}'
     - tag: meta
       attributes:
         name: msapplication-TileColor

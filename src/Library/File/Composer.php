@@ -180,7 +180,7 @@ class Composer{
      * @param string $file File to read data
      * @return string
      */
-    public static function read(string $parameter = "", string $file = "composer.json"):string {
+    public static function read(string $parameter = "", string $file = "composer.json") {
 
         # Set result
         $result = "";

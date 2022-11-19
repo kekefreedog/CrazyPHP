@@ -17,8 +17,10 @@ namespace CrazyPHP\Library\Html;
  */
 use CrazyPHP\Library\Template\Handlebars;
 use CrazyPHP\Exception\CrazyException;
+use Symfony\Component\Finder\Finder;
 use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\Array\Arrays;
+use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\Html\Head;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Model\Context;
@@ -48,6 +50,9 @@ class Structure {
     private $instance = [
         "Handlebars"    =>  null,
     ];
+
+    /** @var bool $watch Bool for check if watch mode is enable */
+    private $watch = false;
 
     /**
      * Constructor
@@ -454,6 +459,82 @@ class Structure {
 
             # Set element
             $this->setElement("html.body", $content, null);
+
+        # Return current instance
+        return $this;
+
+    }
+
+    /**
+     * Set Js Scripts
+     * 
+     * Set Js Scripts in body
+     * 
+     * @return self
+     */
+    public function setJsScripts():self {
+
+        # Declare scripts
+        $configFront = [];
+
+        # Get watch value
+        $this->watch = Config::getValue("Front.lastBuild.watch");
+
+        # Check watch
+        if($this->watch){
+
+            # New finder
+            $finder = new Finder();
+
+            # Search js generated
+            $finder
+                ->files()
+                ->name("*.js")
+                ->in(File::path("@app_root/public/dist"))
+            ;
+
+            # Check files
+            if(!$finder->hasResults())
+                            
+                # New error
+                throw new CrazyException(
+                    "It looks generation of js files with watch mode enable failed...", 
+                    500,
+                    [
+                        "custom_code"   =>  "structure-003",
+                    ]
+                );
+
+            # Iteration of finder
+            foreach($finder as $file)
+
+                # Push in scripts
+                $configFront[] = $file->getRelativePathname();
+
+        }else{
+
+            # Get value from config
+            $configFront = Config::getValue("Front.lastBuild.files");
+
+            # Check value
+            if(!$configFront || empty($configFront))
+                        
+                # New error
+                throw new CrazyException(
+                    "Please check that you are correctly build Js Files with this command : `php vendor/kzarshenas/crazyphp/bin/CrazyFront run build`", 
+                    500,
+                    [
+                        "custom_code"   =>  "structure-004",
+                    ]
+                );
+
+        }
+
+        # Iteration of config value
+        foreach($configFront as $file)
+
+            # Add in the body
+            $this->setElement("html.body", ["src" => "/dist/$file"], "script");
 
         # Return current instance
         return $this;

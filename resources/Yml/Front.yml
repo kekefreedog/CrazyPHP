@@ -13,5 +13,6 @@ Front:
   lastBuild:
     files: null
     hash: null
+    watch: false
     date: null
   scripts: null

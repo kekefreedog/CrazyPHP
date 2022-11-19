@@ -18,6 +18,8 @@ namespace App\Controller\App;
 use CrazyPHP\Core\Controller;
 use CrazyPHP\Core\Response;
 
+use CrazyPHP\Library\Html\Structure;
+
  /**
  * App
  *
@@ -34,9 +36,21 @@ class Home extends Controller {
      */
     public static function get($request){
 
+        # Set structure
+        $structure = (new Structure())
+            ->setDoctype()
+            ->setLanguage()
+            ->setHead()
+            ->setBodyContent("<pre>".var_export($GLOBALS, true)."</pre>")
+            ->setJsScripts()
+            ->prepare()
+            ->render()
+        ;
+
+
         # Set response
         (new Response())
-            ->setContent("Hello world !!!!")
+            ->setContent($structure)
             ->send();
 
     }
