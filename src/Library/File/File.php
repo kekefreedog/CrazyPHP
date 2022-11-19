@@ -507,6 +507,8 @@ class File {
      * 
      * Remove recursively all content in folder
      * 
+     * @source https://stackoverflow.com/questions/3338123/how-do-i-recursively-delete-a-directory-and-its-entire-contents-files-sub-dir
+     * 
      * @param string $path Path to remove
      * @return void
      */
@@ -522,7 +524,6 @@ class File {
             return;
 
         # Remove 
-        # https://stackoverflow.com/questions/3338123/how-do-i-recursively-delete-a-directory-and-its-entire-contents-files-sub-dir
         $rrmdir = function ($dir, $call) { 
             if (is_dir($dir)) { 
               $objects = scandir($dir);

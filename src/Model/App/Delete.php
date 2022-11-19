@@ -78,10 +78,28 @@ class Delete implements CrazyCommand {
     public function run():self {
 
         /**
+         * Run Cache Cleaner
+         * - Clear Cache Files
+         */
+        $this->runCacheCleaner();
+
+        /**
          * Run Structure Folder
          * 1. Delete structure folder
          */
         $this->runStructureFolder();
+
+        /**
+         * Run Docker Compose
+         * 1. Remove docker composer
+         */
+        $this->runDockerCompose();
+
+        /**
+         * Run Clean Front Files
+         * 1. Clean public and package / vendor files
+         */
+        $this->runCleanFrontFiles();
 
         # Return this
         return $this;
@@ -129,6 +147,9 @@ class Delete implements CrazyCommand {
     /**
      * Run Cache Cleaner
      * 
+     * Steps :
+     * - Clear Cache Files
+     * 
      * @return Delete
      */
     public function runCacheCleaner():Delete {
@@ -174,6 +195,12 @@ class Delete implements CrazyCommand {
         Structure::remove($structurePath);
         Structure::remove($structurePath);
 
+        # Remove app folder
+        File::removeAll("@app_root/app");
+
+        # Remove .database folder
+        File::removeAll("@app_root/.database");
+
         # Return instance
         return $this;
 
@@ -199,6 +226,22 @@ class Delete implements CrazyCommand {
             $instance->run();
 
         } catch (CrazyException $e) { }
+
+        # Return this
+        return $this;
+
+    }
+
+    /**
+     * Run Clean Front Files
+     * 
+     * Steps :
+     * 1. Clean Front Files
+     */
+    public function runCleanFrontFiles():self {
+
+        # Remove all inside file
+        File::removeAll("@app_root/public");
 
         # Return this
         return $this;

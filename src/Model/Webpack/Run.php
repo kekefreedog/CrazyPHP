@@ -237,7 +237,7 @@ class Run implements CrazyCommand {
         ;
 
         # Check if finder has result
-        if(!$finder->hasResults()){
+        if($finder->hasResults()){
 
             # Convert files
             $result["files"] = [];
