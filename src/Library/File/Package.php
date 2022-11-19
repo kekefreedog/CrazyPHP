@@ -41,8 +41,10 @@ class Package{
 
     # Path of composer
     public const PATH = [
-        "package.json" =>  __DIR__."/../../../package.json",
-        "package-lock.json" =>  __DIR__."/../../../package-lock.json",
+        # "package.json" =>  __DIR__."/../../../package.json",
+        # "package-lock.json" =>  __DIR__."/../../../package-lock.json",
+        "package.json" =>  "@app_root/package.json",
+        "package-lock.json" =>  "@app_root/package-lock.json",
     ];
 
     # Default properties of composer
@@ -115,25 +117,29 @@ class Package{
     /** @const array DEFAULT_DEPENDENCIES */
     public const DEFAULT_DEV_DEPENDENCIES = [
         # Front
-        "@fortawesome/fontawesome-free" =>  "*",
-        "@materializecss/materialize"   =>  "*",
-        "clipboard"                     =>  "*",
-        "handlebars"                    =>  "*",
-        "sweetalert2"                   =>  "*",
-        "tippy.js"                      =>  "*",
-        "material-symbols"              =>  "*",
-        "material-icons"                =>  "*",
-        # Back | Webpack
-        "url-loader"                    =>  "*",
-        "file-loader"                   =>  "*",
-        "style-loader"                  =>  "*",
-        "css-loader"                    =>  "*",
-        "sass-loader"                   =>  "*",
-        "webpack"                       =>  "*",
-        "webpack-cli"                   =>  "*",
-        # Back | Sass
-        "typescript"                    =>  "*",
-        "sass"                          =>  "*",
+        "@fortawesome/fontawesome-free"             =>  "*",
+        "@materializecss/materialize"               =>  "*",
+        "clipboard"                                 =>  "*",
+        "handlebars"                                =>  "*",
+        "sweetalert2"                               =>  "*",
+        "tippy.js"                                  =>  "*",
+        "material-symbols"                          =>  "*",
+        "material-icons"                            =>  "*",
+        # Back | Webpack            
+        "url-loader"                                =>  "*",
+        "file-loader"                               =>  "*",
+        "style-loader"                              =>  "*",
+        "css-loader"                                =>  "*",
+        "sass-loader"                               =>  "*",
+        "webpack"                                   =>  "*",
+        "webpack-cli"                               =>  "*",
+        # Back | Sass           
+        "sass"                                      =>  "*",
+        # Back | Ts         
+        "typescript"                                =>  "*",
+        "ts-loader"                                 =>  "*",
+        "fork-ts-checker-webpack-plugin"            =>  "*",
+        "fork-ts-checker-notifier-webpack-plugin"   =>  "*",
     ];
 
     # Default value
@@ -191,6 +197,9 @@ class Package{
             # Update path
             $path = self::PATH[$path];
 
+        # Get path
+        $path = File::path($path);
+
         # Check if file already exists
         if(!file_exists($path))
 
@@ -216,6 +225,9 @@ class Package{
 
             # Get value of index
             $file = self::PATH[$file];
+
+        # Get path
+        $file = File::path($file);
 
         # update
         return Composer::read($parameter, $file);
@@ -272,6 +284,9 @@ class Package{
 
             # Get value of index
             $file = self::PATH[$file];
+
+        # Get path
+        $file = File::path($file);
 
         # update
         return Composer::update($values, $createIfNotExists, $file);

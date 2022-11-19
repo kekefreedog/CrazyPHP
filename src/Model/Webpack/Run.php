@@ -202,7 +202,7 @@ class Run implements CrazyCommand {
         $command = $this->script ?: $this->inputs["args"][0] ?? null;
 
         # Run script
-        $result = Package::exec("run", $command);
+        $result = Package::exec("run", $command, false);
 
         # Return self
         return $this;
@@ -237,7 +237,7 @@ class Run implements CrazyCommand {
         ;
 
         # Check if finder has result
-        if(!$finder->hasResults){
+        if(!$finder->hasResults()){
 
             # Convert files
             $result["files"] = [];
