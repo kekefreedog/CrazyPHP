@@ -20,6 +20,7 @@ use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\File\Composer;
 use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\Cli\Command;
+use CrazyPHP\Library\File\File;
 use CrazyPHP\Library\File\Json;
 use CrazyPHP\Model\App\Create;
 
@@ -114,25 +115,22 @@ class Package{
     /** @const array DEFAULT_DEPENDENCIES */
     public const DEFAULT_DEV_DEPENDENCIES = [
         # Front
+        "@fortawesome/fontawesome-free" =>  "*",
         "@materializecss/materialize"   =>  "*",
+        "clipboard"                     =>  "*",
         "handlebars"                    =>  "*",
         "sweetalert2"                   =>  "*",
         "tippy.js"                      =>  "*",
-        "@fortawesome/fontawesome-free" =>  "*",
         "material-symbols"              =>  "*",
         "material-icons"                =>  "*",
-        "clipboard"                     =>  "*",
         # Back | Webpack
-        "webpack"                       =>  "*",
-        "webpack-cli"                   =>  "*",
         "url-loader"                    =>  "*",
         "file-loader"                   =>  "*",
-        "rimraf"                        =>  "*",
-        "remove-files-webpack-plugin"   =>  "*",
         "style-loader"                  =>  "*",
         "css-loader"                    =>  "*",
-        "mini-css-extract-plugin"       =>  "*",
         "sass-loader"                   =>  "*",
+        "webpack"                       =>  "*",
+        "webpack-cli"                   =>  "*",
         # Back | Sass
         "typescript"                    =>  "*",
         "sass"                          =>  "*",
@@ -140,6 +138,13 @@ class Package{
 
     # Default value
     const DEFAULT_VALUE = [
+    ];
+
+    /** @const array DEFAULT_SCRIPTS */
+    public const DEFAULT_SCRIPTS = [
+        "build" =>  "webpack --mode production --config webpack.prod.js",
+        "dev"   =>  "webpack --mode development --config webpack.dev.js",
+        "watch" =>  "webpack --watch --mode development --config webpack.dev.js"
     ];
 
     /* @const array COMMAND_SUPPORTED supported command */
@@ -158,7 +163,10 @@ class Package{
         ],
         "start"     =>  [
             "command"   =>  "start"
-        ]
+        ],
+        "run"       =>  [
+            "command"   =>  "run"
+        ],
     ];
 
     /** Public Static Methods
@@ -234,6 +242,9 @@ class Package{
 
             # Get value of index
             $file = self::PATH[$file];
+
+        # Get reel path
+        $file = File::path($file);
 
         # Process value
         self::process($values);
@@ -516,6 +527,91 @@ class Package{
 
         # Prepare command
         $result = self::exec("uninstall", $command);
+
+    }
+
+    /** Public Static Methods | Read Package
+     ******************************************************
+     */
+
+    /**
+     * Get Scripts Name
+     * 
+     * Get Scripts Name inside Package
+     * 
+     * @return ?array
+     */
+    public static function getScriptsName():?array {
+
+        # Set result
+        $result = null;
+
+        # Get package
+        $package = File::open(static::PATH["package.json"]);
+
+        # Check if scripts exists
+        if(!array_key_exists("scripts", $package) || empty($package["scripts"]))
+
+            # Return result
+            return $result;
+
+        # Get keys of package
+        $result = array_keys($package["scripts"]);
+
+        # Return null
+        return $result;
+
+    }
+
+    /**
+     * Has Script
+     * 
+     * Check Script has Script Name
+     * 
+     * @param string $name Name of the script
+     * @return bool
+     */
+    public static function hasScript(string $name = ""):bool {
+
+        # Set result
+        $result = false;
+
+        # Check name
+        if(!$name)
+
+            # Return result
+            return $result;
+
+        # Get Package content
+        $package = File::open(static::PATH["package.json"]);
+
+        # Check script
+        if(array_key_exists("scripts", $package) && isset($package["scripts"][$name]))
+
+            # Set result
+            $result = true;
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Set Default Script
+     * 
+     * Set Default script on package
+     * @return void
+     */
+    public static function setDefaultScripts():void {
+
+        # Set default config into package
+        static::set(
+            ["scripts"   =>  self::DEFAULT_SCRIPTS],
+            "@app_root/package.json"
+        );
+
+        # Update front config
+        FileConfig::setValue("Front.scripts", array_keys(self::DEFAULT_SCRIPTS));
 
     }
 

@@ -40,6 +40,8 @@ Structure:
             source: "@crazyphp_root/resources/Yml/Database.yml"
           Firewall.yml:
             source: "@crazyphp_root/resources/Yml/Firewall.yml"
+          Front.yml:
+            source: "@crazyphp_root/resources/Yml/Front.yml"
           Head.yml:
             source: "@crazyphp_root/resources/Yml/Head.yml"
           Router.yml:
@@ -99,12 +101,21 @@ Structure:
           Library: null
           # Bridge with other api
           Bridge: null
-          # Script JS
-          Front: null
+          # Script JS / TS
+          Front:
+            files:
+              index.ts:
+                source: "@crazyphp_root/resources/Ts/index.ts"
         files:
           Index.php:
             source: "@crazyphp_root/resources/Php/app/Index.php"
     files:
-      package.json: null
       .gitignore:
         source : "@crazyphp_root/resources/Git/.gitignore"
+      tsconfig.json:
+        source: "@crazyphp_root/resources/Ts/tsconfig.json"
+      package.json: null
+      webpack.dev.js: 
+        source: "@crazyphp_root/resources/Webpack/webpack.dev.js"
+      webpack.prod.js: 
+        source: "@crazyphp_root/resources/Webpack/webpack.prod.js"

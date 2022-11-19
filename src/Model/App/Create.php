@@ -25,6 +25,7 @@ use CrazyPHP\Library\File\Package;
 use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\Cli\Command;
+use CrazyPHP\Model\Webpack\Run;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Library\File\Json;
 use CrazyPHP\Model\Config;
@@ -134,6 +135,9 @@ class Create implements CrazyCommand {
      */
     private $logs = true;
 
+    /** @var bool $npm_local */
+    private $npm_local = false;
+
     /**
      * Constructor
      * 
@@ -189,14 +193,6 @@ class Create implements CrazyCommand {
         $this->runComposer();
 
         /**
-         * Run NPM
-         * 0. Check package.json exists
-         * 1. Fill package.json
-         * 2. Run npm install
-         */
-        $this->runNpm();
-
-        /**
          * Run Structure Folder
          * 1. Create structure folder
          * 2. Check permissions
@@ -210,6 +206,14 @@ class Create implements CrazyCommand {
          * 2. Create app routes
          */
         $this->runConfig();
+
+        /**
+         * Run NPM
+         * 0. Check package.json exists
+         * 1. Fill package.json
+         * 2. Run npm install
+         */
+        $this->runNpm();
 
         /**
          * Run User Interface
@@ -363,6 +367,51 @@ class Create implements CrazyCommand {
     }
 
     /**
+     * Run Structure Folder
+     * 
+     * Steps : 
+     * 1. Create structure folder
+     * 2. Check permissions
+     * 
+     * @return Create
+     */
+    public function runStructureFolder():Create {
+
+        # Get path of structure
+        $structurePath = File::path(Structure::DEFAULT_TEMPLATE);
+
+        # Get data for render
+        $data = self::_getData();
+
+        # Run creation of docker structure
+        Structure::create($structurePath, $data);
+
+        # Return instance
+        return $this;
+
+    }
+
+    /**
+     * Run Config
+     * 
+     * Steps : 
+     * 0. Check configs files exists
+     * 1. Fill config files
+     * 2. Create app routes
+     * 
+     * @return Create
+     */
+    public function runConfig():Create {
+
+        # Set config
+        Config::setup();
+
+        # Return instance
+        return $this;
+
+    }
+
+    /**
      * Run NPM
      * 
      * Steps : 
@@ -423,50 +472,8 @@ class Create implements CrazyCommand {
         # - Reqire script to be executed from the project folder 
         Package::set($inputs, $composer);
 
-        # Return instance
-        return $this;
-
-    }
-
-    /**
-     * Run Structure Folder
-     * 
-     * Steps : 
-     * 1. Create structure folder
-     * 2. Check permissions
-     * 
-     * @return Create
-     */
-    public function runStructureFolder():Create {
-
-        # Get path of structure
-        $structurePath = File::path(Structure::DEFAULT_TEMPLATE);
-
-        # Get data for render
-        $data = self::_getData();
-
-        # Run creation of docker structure
-        Structure::create($structurePath, $data);
-
-        # Return instance
-        return $this;
-
-    }
-
-    /**
-     * Run Config
-     * 
-     * Steps : 
-     * 0. Check configs files exists
-     * 1. Fill config files
-     * 2. Create app routes
-     * 
-     * @return Create
-     */
-    public function runConfig():Create {
-
-        # Set config
-        Config::setup();
+        # Set default scripts
+        Package::setDefaultScripts();
 
         # Return instance
         return $this;
@@ -598,12 +605,12 @@ class Create implements CrazyCommand {
             FileConfig::setValue("App.local.npm", true, true);
 
             # Set NPM local
-            $localNpm = true;
+            $this->npm_local = true;
 
         }
 
         # Check npm in local
-        if(!$localNpm){
+        if(!$this->npm_local){
 
             # Echo message
             echo "Webpack will be run later, in docker instance.".PHP_EOL;
@@ -613,8 +620,8 @@ class Create implements CrazyCommand {
 
         }
 
-            # Install npm dependences
-            Package::exec("install", "", false);
+        # Install npm dependences
+        Package::exec("install", "", false);
 
         # Return instance
         return $this;
@@ -627,6 +634,24 @@ class Create implements CrazyCommand {
      * @return Create
      */
     public function runFirstCompilation():Create {
+
+        # Check if npm installed in local
+        if(!$this->npm_local)
+
+            # Stop method
+            return $this;
+
+        # Get first script in package
+        $scriptName = FileConfig::getValue("Front.scripts")[0];
+
+        # Run Compilation
+        $webpack = new Run();
+
+        # Run webapck
+        $webpack
+            ->setScript($scriptName)
+            ->run()
+        ;
 
         # Return instance
         return $this;

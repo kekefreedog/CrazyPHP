@@ -27,6 +27,7 @@ use CrazyPHP\Model\App\Delete;
 use League\CLImate\CLImate;
 use splitbrain\phpcli\CLI;
 use CrazyPHP\Cli\Form;
+use CrazyPHP\Library\File\Package;
 
 /**
  * Core
@@ -112,6 +113,15 @@ class Core extends CLI {
             [
                 "type"          =>  "command",
                 "long"          =>  "register",
+                "help"          =>  "Register config asset in your crazy application"
+            ]
+        ],
+        # Front
+        "CrazyFront"    =>  [
+            # Register Config
+            [
+                "type"          =>  "command",
+                "long"          =>  "run",
                 "help"          =>  "Register config asset in your crazy application"
             ]
         ]
@@ -912,6 +922,9 @@ class Core extends CLI {
 
         }
 
+        # Get class
+        $class = $router["class"];
+
         # New instance of class
         $instance = new $class();
 
@@ -951,8 +964,6 @@ class Core extends CLI {
     /** Protected Methods Action | For CrazyAsset
      ******************************************************
      */
-
-    
 
     /**
      * Action Crazy Asset Register
@@ -1037,11 +1048,132 @@ class Core extends CLI {
 
     }
 
+    /** Protected Methods Action | For CrazyFront
+     ******************************************************
+     */
+
+    /** 
+     * Action Run
+     * 
+     * Run script of NPM package file
+     * 
+     * @param array $inputs Collection of inputs with opts, args & cmd
+     */
+    protected function actionCrazyFrontRun(array $inputs = []){
+
+        # New climate
+        $climate = new CLImate();
+
+        # Add asci folder
+        $climate->addArt(self::ASCII_ART["crazyphp"]);
+        
+        # Draw crazy php logo
+        $climate->draw('crazyphp');
+
+        # Title of current action
+        $climate->backgroundBlue()->out("🚀 Run Register Config Asset")->br();
+          
+        # Check command is in router
+        $this->_checkInRouter($inputs);
+
+        # Get router
+        $router = self::ROUTERS[$this->scriptName][$inputs['cmd']];
+
+        # Check script name
+        if(!isset($inputs["args"][0]) || empty($inputs["args"][0]))
+            
+            # New error
+            throw new CrazyException(
+                "Command empty, please run the script with the npm script name after \"run\" option", 
+                500,
+                [
+                    "custom_code"   =>  "core-001",
+                ]
+            );
+
+        # Get script name
+        $scriptName = $inputs["args"][0];
+
+        if(!Package::hasScript($inputs["args"][0]))
+
+            # New error
+            throw new CrazyException(
+                "Script given \"$scriptName\" doesn't exists in your package.json File", 
+                500,
+                [
+                    "custom_code"   =>  "core-002",
+                ]
+            );
+
+        # Get function
+        $class = $router["class"];
+
+        # Message
+        $input = $climate
+            ->br()
+            ->lightMagenta()
+            ->bold()
+            ->confirm("✅ Do you want run NPM \"$scriptName\" script ? ✅")
+        ;
+
+        # Check action confirmed
+        if (!$input->confirmed()){
+
+            # Stop message
+            $climate
+                ->br()
+                ->bold()
+                ->red("✋ Action canceled ✋")
+                ->br()
+            ;
+
+            # Stop action
+            return;
+
+        }
+
+        # New instance of class
+        $instance = new $class();
+
+        # Get story line
+        $storyline = $instance->getStoryline();
+
+        # Iteration storyline
+        foreach($storyline as $action){
+
+            # Message start
+            $climate
+                ->br()
+                ->yellow("🟠 Run ".str_replace("run", "", strtolower($action)))
+            ;
+
+            # Execute
+            $instance->{$action}();
+
+            # Message end
+            $climate
+                ->green("🟢 ".ucfirst(str_replace("run", "", strtolower($action)))." ran with success")
+            ;
+
+        }
+
+        # Success message
+        $climate
+            ->br()
+            ->lightRed()
+            ->bold()
+            ->out("🎉 Docker removed with success 🎉")
+            ->br()
+        ;
+
+    }
+
     /** Private methods
      ******************************************************
      */
 
-    /** Check in router
+    /** 
+     * Check in router
      * 
      * Check inputs data is in router
      * 
@@ -1066,7 +1198,7 @@ class Core extends CLI {
                 "Please fill a valid command and valid arguments", 
                 500,
                 [
-                    "custom_code"   =>  "core-001",
+                    "custom_code"   =>  "core-003",
                 ]
             );
 
@@ -1078,7 +1210,7 @@ class Core extends CLI {
                 "Please write a valid command and valid arguments", 
                 500,
                 [
-                    "custom_code"   =>  "core-002",
+                    "custom_code"   =>  "core-004",
                 ]
             );  
 
@@ -1143,7 +1275,13 @@ class Core extends CLI {
         "CrazyAsset"    =>  [
             # Command register
             "register"  =>  [
-                "function"  =>  "\CrazyPHP\Model\Asset::registerConfig"
+                "function"  =>  "\CrazyPHP\Model\Asset::registerConfig",
+            ]
+        ],
+        "CrazyFront"    =>  [
+            # Command run
+            "run"       =>  [
+                "class"     =>  "\CrazyPHP\Model\Webpack\Run",
             ]
         ]
     ];

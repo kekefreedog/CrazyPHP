@@ -1,0 +1,17 @@
+# #
+# Front
+#
+# Define default config of the front config of the Crazy App
+#
+# YAML version 1.2
+#
+# @package    kzarshenas/crazyphp
+# @author     kekefreedog <kevin.zarshenas@gmail.com>
+# @copyright  2022-2022 Kévin Zarshenas
+# #
+Front:
+  lastBuild:
+    files: null
+    hash: null
+    date: null
+  scripts: null
