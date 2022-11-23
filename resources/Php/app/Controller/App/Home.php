@@ -41,12 +41,11 @@ class Home extends Controller {
             ->setDoctype()
             ->setLanguage()
             ->setHead()
-            ->setBodyContent("<pre>".var_export($GLOBALS, true)."</pre>")
+            ->setBodyTemplate("@app_root/app/Environment/Component/LoadingScreen/template.hbs")
             ->setJsScripts()
             ->prepare()
             ->render()
         ;
-
 
         # Set response
         (new Response())

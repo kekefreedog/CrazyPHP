@@ -466,6 +466,60 @@ class Structure {
     }
 
     /**
+     * Set Body Template
+     * 
+     * Set Body Hbs Template 
+     * 
+     * @param string|array|null $template Template to load
+     * @param $preset Preset of the template
+     * @return self
+     */
+    public function setBodyTemplate(string|array|null $template = null, $preset = null):self {
+
+        # Check template
+        if(!$template || empty($template))
+
+            # Return current instance
+            return $this;
+
+        # Check extension of template
+        if(in_array(strtolower(pathinfo($template, PATHINFO_EXTENSION)), Handlebars::EXTENSIONS))
+
+            # Set instance
+            $instance = "CrazyPHP\Library\Template\Handlebars";
+
+        # Check preset
+        if($preset)
+
+            # Prepare option
+            $option = [
+                'template'  =>  $preset,
+            ];
+
+        # Else
+        else
+
+            # Set option
+            $option = [];
+
+        # Prepare template
+        $templateInstance = new $instance($option);
+
+        # Load template
+        $templateInstance->load($template);
+
+        # Rendered template
+        $renderedTemplate = $templateInstance->render();
+
+        # Set body with template render
+        $this->setBodyContent($renderedTemplate);
+
+        # Return current instance
+        return $this;
+
+    }
+
+    /**
      * Set Js Scripts
      * 
      * Set Js Scripts in body
@@ -490,6 +544,7 @@ class Structure {
             $finder
                 ->files()
                 ->name("*.js")
+                ->depth('== 0')
                 ->in(File::path("@app_root/public/dist"))
             ;
 

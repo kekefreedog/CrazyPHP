@@ -132,7 +132,7 @@ class Handlebars {
             if($input)
 
                 # Push filename in collection
-                $collectionKey[] = pathinfo($input, PATHINFO_FILENAME);
+                $collectionKey[] = File::path(pathinfo($input, PATHINFO_FILENAME));
 
         # Get key
         $this->key = self::getKey($collectionKey, Cache::getCacheName(__CLASS__).".templateCached.");
@@ -377,6 +377,13 @@ class Handlebars {
      */
     public const PERFORMANCE_PRESET = [
         "flags" =>  LightnCandy::FLAG_BESTPERFORMANCE,
+    ];
+
+    /**
+     * Extension of handlebars template
+     */
+    public const EXTENSIONS = [
+        "handlebars", "hbs"
     ];
     
 

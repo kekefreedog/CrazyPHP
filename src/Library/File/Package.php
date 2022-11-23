@@ -134,6 +134,7 @@ class Package{
         "webpack"                                   =>  "*",
         "webpack-cli"                               =>  "*",
         "webpack-dev-server"                        =>  "*",
+        "js-yaml"                                   =>  "*",
         # Back | Sass           
         "sass"                                      =>  "*",
         # Back | Ts         

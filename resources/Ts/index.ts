@@ -8,5 +8,20 @@
  * @copyright  2022-2022 Kévin Zarshenas
  */
 
- console.log("hello");
- 
+/** Styles
+ ******************************************************
+*/
+require("./style");
+
+/** JS Libraires
+ ******************************************************
+*/
+require("@materializecss/materialize/dist/js/materialize.js");
+
+document.addEventListener(
+    "click", 
+    e => {
+        console.log(e);
+    },
+    { capture: true }
+);

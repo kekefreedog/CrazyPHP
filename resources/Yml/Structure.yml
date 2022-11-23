@@ -103,9 +103,34 @@ Structure:
           Bridge: null
           # Script JS / TS
           Front:
+            folders:
+              style:
+                files:
+                  index.ts:
+                    source: "@crazyphp_root/resources/Ts/style.ts"
             files:
               index.ts:
                 source: "@crazyphp_root/resources/Ts/index.ts"
+          Environment:
+            folders:
+              Component:
+                folders:
+                  LoadingScreen:
+                    files:
+                      index.ts:
+                        source: "@crazyphp_root/resources/Environment/Component/LoadingScreen/index.ts"
+                      style.scss:
+                        source: "@crazyphp_root/resources/Environment/Component/LoadingScreen/style.scss"
+                      template.hbs:
+                        source: "@crazyphp_root/resources/Environment/Component/LoadingScreen/template.hbs"
+              Page:
+                folders:
+                  Home:
+                    files:
+                      source: "@crazyphp_root/resources/Environment/Page/Home/index.ts"
+              Structure:
+                folders:
+                  Navigation: null
         files:
           Index.php:
             source: "@crazyphp_root/resources/Php/app/Index.php"

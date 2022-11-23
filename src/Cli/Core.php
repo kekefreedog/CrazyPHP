@@ -1195,9 +1195,9 @@ class Core extends CLI {
         # Success message
         $climate
             ->br()
-            ->lightRed()
+            ->lightBlue()
             ->bold()
-            ->out("🎉 Docker removed with success 🎉")
+            ->out("🎉 Front JS generated with success 🎉")
             ->br()
         ;
 

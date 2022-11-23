@@ -217,6 +217,9 @@ class File {
         # Iteration of paths
         foreach($paths as $path){
 
+            # Prepare path
+            $path = self::path($path);
+
             # Check path
             if(!$path || !file_exists($path))
 
@@ -317,6 +320,9 @@ class File {
 
         # Iteration des inputs
         foreach($inputs as $input){
+
+            # Ger file
+            $input = File::path($input);
 
             # Result
             $newResult = DateTime::lastUpdateFile($input);

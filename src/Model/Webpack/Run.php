@@ -288,6 +288,7 @@ class Run implements CrazyCommand {
         $finder
             ->files()
             ->name('*.js')
+            ->depth('== 0')
             ->in(File::path("@app_root/public/dist"))
         ;
 
