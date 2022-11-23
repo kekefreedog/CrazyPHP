@@ -660,9 +660,10 @@ class Core extends CLI {
      * Action for up docker compose for the current app
      * 
      * @param array $inputs Collection of inputs with opts, args & cmd
+     * @param bool $relaunch Check if the current method is the relaunch of itself...
      * @return void
      */
-    protected function actionCrazyDockerUp(array $inputs = []):void {
+    protected function actionCrazyDockerUp(array $inputs = [], bool $relaunch = false):void {
 
         # Declare result
         $result = [];
@@ -670,14 +671,24 @@ class Core extends CLI {
         # New climate
         $climate = new CLImate();
 
-        # Add asci folder
-        $climate->addArt(self::ASCII_ART["crazyphp"]);
-        
-        # Draw crazy php logo
-        $climate->draw('crazyphp');
+        # Check if relaunch
+        if(!$relaunch){
 
-        # Title of current action
-        $climate->backgroundBlue()->out("🚀 Run up Docker Compose")->br();
+            # Add asci folder
+            $climate->addArt(self::ASCII_ART["crazyphp"]);
+            
+            # Draw crazy php logo
+            $climate->draw('crazyphp');
+
+            # Title of current action
+            $climate->backgroundBlue()->out("🚀 Run up Docker Compose")->br();
+
+        }else{
+
+            # Title of current action
+            $climate->backgroundBlue()->out("Relaunch up Docker Compose")->br();
+
+        }
           
         # Check command is in router
         $this->_checkInRouter($inputs);
@@ -688,27 +699,32 @@ class Core extends CLI {
         # Get class
         $class = $router["class"];
 
-        # Message
-        $input = $climate
-            ->br()
-            ->lightBlue()
-            ->bold()
-            ->confirm('✅ Do you want run up docker compose ? ✅')
-        ;
+        # Check if relaunch
+        if(!$relaunch){
 
-        # Check action confirmed
-        if (!$input->confirmed()){
-
-            # Stop message
-            $climate
+            # Message
+            $input = $climate
                 ->br()
+                ->lightBlue()
                 ->bold()
-                ->red("✋ Action canceled ✋")
-                ->br()
+                ->confirm('✅ Do you want run up docker compose ? ✅')
             ;
 
-            # Stop action
-            return;
+            # Check action confirmed
+            if (!$input->confirmed()){
+
+                # Stop message
+                $climate
+                    ->br()
+                    ->bold()
+                    ->red("✋ Action canceled ✋")
+                    ->br()
+                ;
+
+                # Stop action
+                return;
+
+            }
 
         }
 
@@ -745,7 +761,7 @@ class Core extends CLI {
                     ;
 
                     # Relaunch current method
-                    $this->actionCrazyDockerUp();
+                    $this->actionCrazyDockerUp($inputs, true);
 
                     # Stop current function
                     return;

@@ -41,8 +41,8 @@ class Composer{
 
     # Path of composer
     public const PATH = [
-        "composer.json" =>  "@app_root"."/composer.json",
-        "composer.lock" =>  "@app_root"."/composer.lock",
+        "composer.json" =>  "@app_root/composer.json",
+        "composer.lock" =>  "@app_root/composer.lock",
     ];
 
     # Default properties of composer
