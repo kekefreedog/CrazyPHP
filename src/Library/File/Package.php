@@ -118,7 +118,7 @@ class Package{
     public const DEFAULT_DEV_DEPENDENCIES = [
         # Front
         "@fortawesome/fontawesome-free"             =>  "*",
-        "@materializecss/materialize"               =>  "*",
+        "@materializecss/materialize"               =>  "1.1.0",
         "clipboard"                                 =>  "*",
         "handlebars"                                =>  "*",
         "sweetalert2"                               =>  "*",
@@ -131,9 +131,11 @@ class Package{
         "style-loader"                              =>  "*",
         "css-loader"                                =>  "*",
         "sass-loader"                               =>  "*",
+        "yaml-loader"                               =>  "*",
         "webpack"                                   =>  "*",
         "webpack-cli"                               =>  "*",
         "webpack-dev-server"                        =>  "*",
+        # Custom file
         "js-yaml"                                   =>  "*",
         # Back | Sass           
         "sass"                                      =>  "*",
@@ -368,9 +370,10 @@ class Package{
      * @param string $commandName Command name to execute
      * @param string $argument Argument for the command
      * @param string $checkError Check error of exec
+     * @param bool $liveResult Display result in live
      * @return
      */
-    public static function exec(string $commandName = "", string $argument = "", bool $checkError = true) {
+    public static function exec(string $commandName = "", string $argument = "", bool $checkError = true, bool $liveResult = false) {
 
         # Result
         $result = null;
@@ -411,7 +414,7 @@ class Package{
         $rootPath = FileConfig::getValue("App.root");
 
         # Get result of exec
-        $result = Command::exec($dockerCommand."npm --prefix $rootPath", $argument);
+        $result = Command::exec($dockerCommand."npm --prefix $rootPath", $argument, $liveResult);
 
         # Check result
         if($checkError && ($result["result_code"] !== null || $result["result_code"] > 0))

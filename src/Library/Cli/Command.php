@@ -69,9 +69,10 @@ class Command{
      * 
      * @param string $command Command  to execute
      * @param string $argument Argument for the command
+     * @param bool $liveResult Display result in live
      * @return
      */
-    public static function exec(string $command = "", string $argument = "") {
+    public static function exec(string $command = "", string $argument = "", bool $liveResult = false) {
 
         # Prepare result
         $result = [
@@ -88,8 +89,35 @@ class Command{
         # Prepare command
         $command = $command.($argument ? " $argument" : "");
 
-        # Exec command
-        exec($command, $result["output"], $result["result_code"]);
+        # Check if live result enable
+        if($liveResult){
+
+            # End all output buffers if any
+            while (@ob_end_flush()); 
+
+            # Create process from command
+            $proc = popen($command, 'r');
+
+            # Change type of output
+            $result["output"] = [];
+
+            # Read the process
+            while (!feof($proc)){
+
+                # Display result
+                echo $result["output"][] = fread($proc, 4096);
+                
+                # Flush
+                @flush();
+
+            }
+
+        }else{
+
+                # Exec command
+                exec($command, $result["output"], $result["result_code"]);
+
+        }
 
         # Return result
         return $result;

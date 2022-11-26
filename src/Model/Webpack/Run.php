@@ -256,7 +256,7 @@ class Run implements CrazyCommand {
 
 
         # Run script
-        $result = Package::exec("run", $this->script, false);
+        $result = Package::exec("run", $this->script, false, $this->watch ? false : true);
 
         # Return self
         return $this;
