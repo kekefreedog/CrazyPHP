@@ -29,7 +29,7 @@
      ******************************************************
      */
 
-    abstract shadowMode:ShadowRootMode|null; 
+    abstract shadowMode:ShadowRootMode|null;
 
     /**
      * Constructor 
@@ -38,6 +38,9 @@
 
         // Parent constructor
         super();
+
+        // Set html inner
+        this.innerHTML = "";
 
     }
 
@@ -63,8 +66,76 @@
             mode = "closed";
         }
         
-        if(mode !== null)
-            this.attachShadow({mode:mode});
+        // check
+        if(mode === null){
+
+            // Stop function
+            return;
+
+        }
+
+        // Attach Shadow
+        this.attachShadow({mode:mode});
+    }
+
+    /**
+     * Set Html Content
+     * 
+     * Set inner Html
+     * 
+     * @return void
+     */
+    public setHtmlContent = (content:string):void => {
+
+        // Check content
+        if(!content)
+
+            // Stop function
+            return;
+
+        // Check shadow
+        if(this.shadowMode === null){
+
+            // Append to inner html
+            this.innerHTML += content;
+    
+        }else if(this.shadowRoot !== null){
+
+            // St shadowUse
+            this.shadowRoot.innerHTML += content;
+
+        }
+
+    }
+
+    /**
+     * Set Style Content
+     * 
+     * Set Style
+     * 
+     * @return void
+     */
+    public setStyleContent = (content:CrazyelementStyle):void => {
+
+        // Check content
+        if(!content)
+
+            // Stop function
+            return;
+
+        // Check shadow
+        if(this.shadowRoot === null){
+
+            // Append to inner html
+            this.innerHTML += "<style>"+content.default.toString()+"</style>";
+    
+        }else if(this.shadowRoot !== null){
+
+            // St shadowUse
+            this.shadowRoot.innerHTML += "<style>"+content.default.toString()+"</style>";
+
+        }
+
     }
 
 }
