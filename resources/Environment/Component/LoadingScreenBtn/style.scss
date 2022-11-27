@@ -1,16 +1,84 @@
-/**
- * Loading Screen Btn (Style)
- *
- * Customisable Loadine Sreen Btn
- *
- * @package    kzarshenas/crazyphp
- * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2022 Kévin Zarshenas
- */
+/// /// ///
+/// Loading Screen Btn (Style)
+///
+/// Customisable Loadine Sreen Btn
+///
+/// @package    kzarshenas/crazyphp
+/// @author     kekefreedog <kevin.zarshenas@gmail.com>
+/// @copyright  2022-2022 Kévin Zarshenas
+/// /// ///
 
-.loading-screen {
-    background: red;
-    &.toto {
-        color:blue;
+/* Dependances */
+@import "./../../../Front/style/scss/color_collection.scss";
+
+/* Variables */
+$component_logoScreenBtn_width: 10rem;
+$component_logoScreenBtn_height: $component_logoScreenBtn_width;
+$component_logoScreenBtn_imageWidth: $component_logoScreenBtn_width - 2rem;
+$component_logoScreenBtn_imageHeight: $component_logoScreenBtn_height - 2rem;
+$component_logoScreenBtn_preloaderHeight: $component_logoScreenBtn_width - 1;
+$component_logoScreenBtn_preloaderColorName: "purple";
+$component_logoScreenBtn_preloaderColorVariante: "lighten-1";
+
+
+/* Loading */
+.loading-screen-btn-container {
+
+    // Type
+    display: block;
+
+    // Dimension
+    width: $component_logoScreenBtn_width;
+    height: $component_logoScreenBtn_height;
+
+    // Border
+    border-radius: 100%;
+
+    // Flex
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    /* Children */
+
+    .loading-screen-btn-preloader {
+
+        // Position
+        position: absolute;
+
+        // Dimension
+        width: $component_logoScreenBtn_preloaderHeight;
+        height: $component_logoScreenBtn_preloaderHeight;
+
+        /* Children */
+
+        .spinner-layer{
+
+            // Color
+            border-color: map-get(map-get($colors, $component_logoScreenBtn_preloaderColorName), $component_logoScreenBtn_preloaderColorVariante);
+
+        }
+
     }
+
+    .loading-screen-btn-logo-container {
+
+        // Flex
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        /* Children */
+        img {
+
+            // Dimension
+            width: $component_logoScreenBtn_imageWidth;
+            height: $component_logoScreenBtn_imageHeight;
+            object-fit: contain;
+
+        }
+
+
+    }
+
 }

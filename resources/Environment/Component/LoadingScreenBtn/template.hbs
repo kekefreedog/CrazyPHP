@@ -10,27 +10,25 @@
   ! @copyright  2022-2022 Kévin Zarshenas
   !--}}
 
-{{!-- Parent --}}
-<div class="loading-screen">
-    {{!-- Button --}}
-    <a class="btn">
-        {{!-- Pre Loader --}}
-        <div class="preloader-wrapper big active">
-            <div class="spinner-layer spinner-blue-only">
-                <div class="circle-clipper left">
-                    <div class="circle"></div>
-                </div>
-                <div class="gap-patch">
-                    <div class="circle"></div>
-                </div>
-                <div class="circle-clipper right">
-                    <div class="circle"></div>
-                </div>
+
+{{!-- Container --}}
+<a class="loading-screen-btn-container white">
+    {{!-- Pre Loader --}}
+    <div class="loading-screen-btn-preloader preloader-wrapper active">
+        <div class="spinner-layer">
+            <div class="circle-clipper left">
+                <div class="circle"></div>
+            </div>
+            <div class="gap-patch">
+                <div class="circle"></div>
+            </div>
+            <div class="circle-clipper right">
+                <div class="circle"></div>
             </div>
         </div>
-        {{!-- Icon --}}
-        <div>
-            <img alt="logo" src="https://materializecss.com/res/materialize.svg" />
-        </div>
-    </a>
-</div>
+    </div>
+    {{!-- Icon --}}
+    <div class="loading-screen-btn-logo-container">
+        <img class="loading-screen-btn-logo" alt="logo" src="/asset/favicon/android-chrome-192x192.png" />
+    </div>
+</a>

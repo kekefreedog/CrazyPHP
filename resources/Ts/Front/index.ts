@@ -32,8 +32,10 @@ require("./library");
  * Declare only compenent to load on all page of your app
  */
 import LoadingScreenBtn from "./../Environment/Component/LoadingScreenBtn";
+import FullScreenContainer from "./../Environment/Component/FullScreenContainer";
 let globalComponentsCollection = {
      "loading-screen-btn": LoadingScreenBtn,
+     "full-screen-container": FullScreenContainer,
  };
 
 /** Actions

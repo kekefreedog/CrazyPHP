@@ -1,0 +1,29 @@
+
+
+// Fit content to the window view size
+.screen-fit {
+
+    // Dimension
+    width: 100%;
+    height: 100vh;
+
+}
+
+// Proporties about 
+.screen-flex {
+
+    // Position
+    display: flex;
+
+    /* Brothers */
+
+    // Place element in the center of the ciew window
+    &.screen-center {
+
+        // Position
+        justify-content: center;
+        align-items: center;
+
+    }
+
+}

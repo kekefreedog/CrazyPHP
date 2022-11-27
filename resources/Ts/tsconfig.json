@@ -10,7 +10,8 @@
         "importHelpers": true,
         "skipLibCheck": true,
         "noImplicitAny": false,
-        "typeRoots": ["./node_modules/@types", "./src/types"],
+        "typeRoots": ["./node_modules/@types", "./app/Front/types"],
         "strictPropertyInitialization": false
-    }
+    },
+    "exclude": ["./vendor/kzarshenas/crazyphp/resources/"]
 }

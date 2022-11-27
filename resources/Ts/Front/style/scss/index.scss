@@ -1,0 +1,15 @@
+/// /// ///
+/// Index SCSS Files
+///
+/// Define all SCSS File to load by default in your app
+///
+/// @package    kzarshenas/crazyphp
+/// @author     kekefreedog <kevin.zarshenas@gmail.com>
+/// @copyright  2022-2022 Kévin Zarshenas
+/// /// /// 
+
+// Import color
+@import './color_collection.scss', './color_gradient_collection.scss', './color_class.scss';
+
+// Import dimensions
+@import './dimensions.scss';

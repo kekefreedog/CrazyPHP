@@ -29,7 +29,11 @@
      ******************************************************
      */
 
+    /** @var shadowMode:ShadowRootMode|null Shadow Mode : "Open", "Closed" or null */
     abstract shadowMode:ShadowRootMode|null;
+
+    /** @var shadowEl:ShadowRoot */
+    abstract shadow:ShadowRoot|null;
 
     /**
      * Constructor 
@@ -69,13 +73,16 @@
         // check
         if(mode === null){
 
+            // Set shadow
+            this.shadow = null;
+
             // Stop function
             return;
 
         }
 
         // Attach Shadow
-        this.attachShadow({mode:mode});
+        this.shadow = this.attachShadow({mode:mode});
     }
 
     /**
@@ -103,6 +110,30 @@
 
             // St shadowUse
             this.shadowRoot.innerHTML += content;
+
+        }
+
+    }
+
+    /**
+     * Append Html Node
+     * 
+     * Append Hyml Node in the root of webcomponent
+     * 
+     * @return void
+     */
+    public appendHtmlNode = (node:HTMLElement|Node):void => {
+
+        // Check shadow
+        if(this.shadow === null){
+
+            // Append on this
+            this.appendChild(node);
+
+        }else{
+
+            // Append on shadow
+            this.shadow.appendChild(node);
 
         }
 

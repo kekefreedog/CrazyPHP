@@ -12,6 +12,10 @@
 Structure:
   "@app_root":
     folders:
+      .vscode:
+        files:
+          settings.json:
+            source: "@crazyphp_root/resources/Vscode/settings.json"
       .database:
         folders:
           mongo: null
@@ -63,6 +67,8 @@ Structure:
       logs: null
       # Public folder
       public:
+        folders:
+          dist: null
         files:
           index.php:
             source: "@crazyphp_root/resources/Php/public/index.php"
@@ -108,10 +114,26 @@ Structure:
                 files:
                   index.ts:
                     source: "@crazyphp_root/resources/Ts/Front/style/index.ts"
+                folders:
+                  scss:
+                    files:
+                      color_class.scss:
+                        source: "@crazyphp_root/resources/Ts/Front/style/scss/color_class.scss"
+                      color_collection.scss:
+                        source: "@crazyphp_root/resources/Ts/Front/style/scss/color_collection.scss"
+                      color_gradient_collection.scss:
+                        source: "@crazyphp_root/resources/Ts/Front/style/scss/color_gradient_collection.scss"
+                      dimensions.scss:
+                        source: "@crazyphp_root/resources/Ts/Front/style/scss/dimensions.scss"
+                      index.scss:
+                        source: "@crazyphp_root/resources/Ts/Front/style/scss/index.scss"
               library:
                 files:
                   index.ts:
                     source: "@crazyphp_root/resources/Ts/Front/library/index.ts"
+              types:
+                files:
+                  index.d.ts: "@crazyphp_root/resources/Ts/Front/types/index.d.ts"
             files:
               index.ts:
                 source: "@crazyphp_root/resources/Ts/Front/index.ts"
@@ -120,7 +142,7 @@ Structure:
               Component:
                 folders:
                   # Loading Screen
-                  LoadingScreen:
+                  LoadingScreenBtn:
                     files:
                       index.ts:
                         source: "@crazyphp_root/resources/Environment/Component/LoadingScreenBtn/index.ts"
@@ -128,6 +150,10 @@ Structure:
                         source: "@crazyphp_root/resources/Environment/Component/LoadingScreenBtn/style.scss"
                       template.hbs:
                         source: "@crazyphp_root/resources/Environment/Component/LoadingScreenBtn/template.hbs"
+                  FullScreenContainer:
+                    files:  
+                      index.ts:
+                        source: "@crazyphp_root/resources/Environment/Component/FullScreenContainer/index.ts"
               Page:
                 folders:
                   # Home
