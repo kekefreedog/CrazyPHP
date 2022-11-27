@@ -21,7 +21,7 @@ const StyleCompilated:CrazyelementStyle = require("!!css-loader!sass-loader!./st
 export default class LoadingScreenBtn extends Crazyelement {
 
     /**
-     * 
+     * Constructor
      */
     constructor(){
 
@@ -45,7 +45,8 @@ export default class LoadingScreenBtn extends Crazyelement {
      ******************************************************
      */
     
-    //public shadowMode:ShadowRootMode|null = null;
-    public shadowMode:ShadowRootMode|null = "open";
+    /** @const shadowMode:ShadowRootMode|null Define Shadow mode "Open", "Closed" or null */
+    public shadowMode:ShadowRootMode|null = null;
+
 
 }

@@ -180,3 +180,42 @@ class Toto {
   ! @copyright  2022-2022 Kévin Zarshenas
   !--}}
 ```
+
+## SCSS Headers
+
+### SCSS header for SCSS file.
+
+```scss
+/// /// ///
+/// Color Class Generator
+///
+/// Define class "color" and "color-text"
+///
+/// @package    kzarshenas/crazyphp
+/// @author     kekefreedog <kevin.zarshenas@gmail.com>
+/// @copyright  2022-2022 Kévin Zarshenas
+/// /// ///
+```
+
+### SCSS header for SCSS Function
+
+```scss
+/// Function Name
+/// 
+/// Description
+/// 
+/// @author Kevin Zarshenas
+/// 
+/// @param {Number} $value - Value to convert
+/// @param {String} $unit - Unit to convert to
+/// @return {Number} Converted angle
+```
+
+### SCSS Separator
+
+
+```scss
+/// Public Static Methods
+///////////////////////////////////////////////////////
+///
+```
