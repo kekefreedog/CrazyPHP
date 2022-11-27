@@ -1,7 +1,7 @@
 /**
  * Index
  *
- * Index of the front script
+ * Index of the front script for declare types
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>

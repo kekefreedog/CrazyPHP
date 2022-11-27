@@ -8,5 +8,3 @@
 
 /* Template */
 var template = require("./template.hbs");
-
-console.log("youpi");

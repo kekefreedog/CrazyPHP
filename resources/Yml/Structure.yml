@@ -107,27 +107,37 @@ Structure:
               style:
                 files:
                   index.ts:
-                    source: "@crazyphp_root/resources/Ts/style.ts"
+                    source: "@crazyphp_root/resources/Ts/Front/style/index.ts"
+              library:
+                files:
+                  index.ts:
+                    source: "@crazyphp_root/resources/Ts/Front/library/index.ts"
             files:
               index.ts:
-                source: "@crazyphp_root/resources/Ts/index.ts"
+                source: "@crazyphp_root/resources/Ts/Front/index.ts"
           Environment:
             folders:
               Component:
                 folders:
+                  # Loading Screen
                   LoadingScreen:
                     files:
                       index.ts:
-                        source: "@crazyphp_root/resources/Environment/Component/LoadingScreen/index.ts"
+                        source: "@crazyphp_root/resources/Environment/Component/LoadingScreenBtn/index.ts"
                       style.scss:
-                        source: "@crazyphp_root/resources/Environment/Component/LoadingScreen/style.scss"
+                        source: "@crazyphp_root/resources/Environment/Component/LoadingScreenBtn/style.scss"
                       template.hbs:
-                        source: "@crazyphp_root/resources/Environment/Component/LoadingScreen/template.hbs"
+                        source: "@crazyphp_root/resources/Environment/Component/LoadingScreenBtn/template.hbs"
               Page:
                 folders:
+                  # Home
                   Home:
                     files:
                       source: "@crazyphp_root/resources/Environment/Page/Home/index.ts"
+                  # Index
+                  Index:
+                    files:
+                      source: "@crazyphp_root/resources/Environment/Page/Index/index.ts"
               Structure:
                 folders:
                   Navigation: null

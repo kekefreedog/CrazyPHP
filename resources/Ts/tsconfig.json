@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "target": "es5",
+        "target": "es6",
         "lib": ["es6", "dom"],
         "module": "esnext",
         "moduleResolution": "node",
@@ -9,6 +9,8 @@
         "strict": true,
         "importHelpers": true,
         "skipLibCheck": true,
-        "noImplicitAny": false
+        "noImplicitAny": false,
+        "typeRoots": ["./node_modules/@types", "./src/types"],
+        "strictPropertyInitialization": false
     }
 }

@@ -11,8 +11,10 @@
 # #
 Style:
   framework:
-    - name: Dogfalo/materialize
+    - name:  materializecss/materialize
       source: github
-      author: Dogfalo
+      author: Alvin Wang, Alan Chang
       package: materialize
-      branch: v1-dev
+      branch: main
+  components:
+    - LoadingScreenBtn: loading-screen-btn

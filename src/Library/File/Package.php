@@ -118,7 +118,7 @@ class Package{
     public const DEFAULT_DEV_DEPENDENCIES = [
         # Front
         "@fortawesome/fontawesome-free"             =>  "*",
-        "@materializecss/materialize"               =>  "1.1.0",
+        "@materializecss/materialize"               =>  "^1.1.0",
         "clipboard"                                 =>  "*",
         "handlebars"                                =>  "*",
         "sweetalert2"                               =>  "*",
@@ -126,22 +126,25 @@ class Package{
         "material-symbols"                          =>  "*",
         "material-icons"                            =>  "*",
         # Back | Webpack            
+        "webpack"                                   =>  "*",
+        "webpack-cli"                               =>  "*",
+        "webpack-dev-server"                        =>  "*",
         "url-loader"                                =>  "*",
         "file-loader"                               =>  "*",
         "style-loader"                              =>  "*",
         "css-loader"                                =>  "*",
         "sass-loader"                               =>  "*",
+        "ts-loader"                                 =>  "*",
         "yaml-loader"                               =>  "*",
-        "webpack"                                   =>  "*",
-        "webpack-cli"                               =>  "*",
-        "webpack-dev-server"                        =>  "*",
+        "handlebars-loader"                         =>  "*",
         # Custom file
         "js-yaml"                                   =>  "*",
+        "repair"                                    =>  "*",
         # Back | Sass           
         "sass"                                      =>  "*",
         # Back | Ts         
         "typescript"                                =>  "*",
-        "ts-loader"                                 =>  "*",
+        "tslib"                                     =>  "*",
         "fork-ts-checker-webpack-plugin"            =>  "*",
         "fork-ts-checker-notifier-webpack-plugin"   =>  "*",
     ];

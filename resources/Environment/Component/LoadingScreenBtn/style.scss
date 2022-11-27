@@ -1,9 +1,16 @@
 /**
- * Index
+ * Loading Screen Btn (Style)
  *
- * Index of miscellaneous front scripts
+ * Customisable Loadine Sreen Btn
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2022 Kévin Zarshenas
  */
+
+.loading-screen {
+    background: red;
+    &.toto {
+        color:blue;
+    }
+}

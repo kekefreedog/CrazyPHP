@@ -1,16 +1,35 @@
+/**
+ * Webpack config (Dev)
+ *
+ * Webpack config for dev and watch
+ *
+ * @package    kzarshenas/crazyphp
+ * @author     kekefreedog <kevin.zarshenas@gmail.com>
+ * @copyright  2022-2022 Kévin Zarshenas
+ */
+
 /** 
  * Dependances
  */
  const ForkTsCheckerNotifierWebpackPlugin = require('fork-ts-checker-notifier-webpack-plugin');
  const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+ const yaml = require('js-yaml');
  const path = require('path');
+ const fs = require('fs');
  
-  /** 
-   * Config
-   */
-  module.exports = {
+ /**
+  * Open Custom Script
+  */
+ const routers = require("./vendor/kzarshenas/crazyphp/resources/Webpack/routers/index.ts");
+ const routersCollection = routers.load(yaml, fs);
+  
+ /** 
+  * Config
+ */
+ module.exports = {
      entry: {
-         "index": "./app/Front/index.ts"
+         "index": "./app/Front/index.ts",
+         ...routersCollection
      },
      output: {
          filename: '[name].[fullhash:8].js',
@@ -43,6 +62,14 @@
                  test: /.([cm]?ts|tsx)$/,
                  loader: 'ts-loader',
              },
+             {
+                 test: /\.ya?ml$/,
+                 use: 'yaml-loader'
+             },
+             {
+                 test: /\.(handlebars|hbs)$/,
+                 loader: "handlebars-loader"
+             }
          ],
      },
      optimization: {
@@ -66,3 +93,4 @@
          }),
      ],
  };
+ 
