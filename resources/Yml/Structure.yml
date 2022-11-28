@@ -159,11 +159,13 @@ Structure:
                   # Home
                   Home:
                     files:
-                      source: "@crazyphp_root/resources/Environment/Page/Home/index.ts"
+                      index.ts:
+                        source: "@crazyphp_root/resources/Environment/Page/Home/index.ts"
                   # Index
                   Index:
                     files:
-                      source: "@crazyphp_root/resources/Environment/Page/Index/index.ts"
+                      template.hbs:
+                        source: "@crazyphp_root/resources/Environment/Page/Index/template.hbs"
               Structure:
                 folders:
                   Navigation: null

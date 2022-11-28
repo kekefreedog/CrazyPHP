@@ -256,6 +256,13 @@ class Create implements CrazyCommand {
         */
        $this->runWebpack();
 
+
+        /**
+         * Run Check Permission Node Modules
+         * 1. Check permission of some directories
+         */
+        $this->runCheckPermissionNodeModules();
+
         /**
          * Run First Compilation
          * 
@@ -622,6 +629,69 @@ class Create implements CrazyCommand {
 
         # Install npm dependences
         Package::exec("install", "", false);
+
+        # Return instance
+        return $this;
+
+    }
+
+    /**
+     * Run Check Permission Node Modules
+     * 
+     * Steps :
+     * 1. Check permission of some directories
+     * 
+     * @return Create
+     */
+    public function runCheckPermissionNodeModules():Create {
+
+        # Folder to check permission
+        $folders = ["@app_root/node_modules/.bin/webpack"];
+
+        # Iteration des dossiers
+        foreach($folders as $folder){
+
+            # Get reel path
+            $path = File::path($folder);
+
+            # Check path
+            if(file_exists($path) || is_dir($path)){
+
+                # Check permission
+                $result = chmod($path, 0755);
+
+            # Create folder
+            }else{
+
+                # Create folder
+                $result = mkdir($path, 0755, true);
+
+            }
+
+            # Check result
+            if($result){
+
+                # Echo message
+                echo "Folder \"$path\" successfully checked ✅".PHP_EOL;
+                
+            }else{
+
+                # Check if is dir
+                if(is_dir($path))
+
+                    # Echo message
+                    echo "After installation, please execute \"mkdir 755 $path\" in your terminal with root permission ⚠️".PHP_EOL;
+
+                else
+
+                    # Echo message
+                    echo "After installation, please execute \"chmod 755 $path\" in your terminal with root permission ⚠️".PHP_EOL;
+
+            }
+
+        }
+
+        
 
         # Return instance
         return $this;

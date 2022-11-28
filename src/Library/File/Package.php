@@ -118,7 +118,7 @@ class Package{
     public const DEFAULT_DEV_DEPENDENCIES = [
         # Front
         "@fortawesome/fontawesome-free"             =>  "*",
-        "@materializecss/materialize"               =>  "^1.1.0",
+        "@materializecss/materialize"               =>  "1.1.0",
         "clipboard"                                 =>  "*",
         "handlebars"                                =>  "*",
         "sweetalert2"                               =>  "*",

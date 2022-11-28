@@ -31,6 +31,9 @@ use CrazyPHP\Library\Html\Structure;
  */
 class Home extends Controller {
 
+    /** @const string TEMPLATE */
+    public const TEMPLATE = "@app_root/app/Environment/Page/Index/template.hbs";
+
     /**
      * Get
      */
@@ -41,7 +44,7 @@ class Home extends Controller {
             ->setDoctype()
             ->setLanguage()
             ->setHead()
-            ->setBodyTemplate("@app_root/app/Environment/Component/LoadingScreen/template.hbs")
+            ->setBodyTemplate(self::TEMPLATE)
             ->setJsScripts()
             ->prepare()
             ->render()
