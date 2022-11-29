@@ -85,22 +85,89 @@ $color in $colors {
     @each $color_type,
     $color_value in $color {
         @if $color_type =="base" {
+
+            /* Color */
             .#{$color_name} {
                 background-color: $color_value  !important;
             }
 
+            /* Color text */
             .#{$color_name}-text {
                 color: $color_value  !important;
             }
+
+            /* Light mode */
+            @media (prefers-color-scheme: light) {
+
+                /* Color */
+                .light-mode-#{$color_name} {
+                    background-color: $color_value  !important;
+                }
+    
+                /* Color text */
+                .light-mode-#{$color_name}-text {
+                    color: $color_value  !important;
+                }
+
+            }
+
+            /* Dark mode */
+            @media (prefers-color-scheme: dark) {
+
+                /* Color */
+                .dark-mode-#{$color_name} {
+                    background-color: $color_value  !important;
+                }
+    
+                /* Color text */
+                .dark-mode-#{$color_name}-text {
+                    color: $color_value  !important;
+                }
+
+            }
+
         }
 
         @else if $color_name  !="shades" {
+
+            /* Color Shade */
             .#{$color_name}.#{$color_type} {
                 background-color: $color_value  !important;
             }
 
+            /* Color shade */
             .#{$color_name}-text.text-#{$color_type} {
                 color: $color_value  !important;
+            }
+
+            /* Light mode */
+            @media (prefers-color-scheme: light) {
+
+                /* Color Shade */
+                .light-mode-#{$color_name}.#{$color_type}-light-mode {
+                    background-color: $color_value  !important;
+                }
+    
+                /* Color shade */
+                .light-mode-#{$color_name}-text.text-#{$color_type}-light-mode {
+                    color: $color_value  !important;
+                }
+
+            }
+
+            /* Dark mode */
+            @media (prefers-color-scheme: dark) {
+
+                /* Color Shade */
+                .dark-mode-#{$color_name}.#{$color_type}-dark-mode {
+                    background-color: $color_value  !important;
+                }
+    
+                /* Color shade */
+                .dark-mode-#{$color_name}-text.text-#{$color_type}-dark-mode {
+                    color: $color_value  !important;
+                }
+
             }
         }
     }
@@ -109,13 +176,47 @@ $color in $colors {
 /* Generate class for colors */
 @each $color,
 $color_value in $shades {
+
+    /* Color */
     .#{$color} {
         background-color: $color_value  !important;
     }
 
+    /* Color text */
     .#{$color}-text {
         color: $color_value  !important;
     }
+
+    /* Light mode */
+    @media (prefers-color-scheme: light) {
+
+        /* Color */
+        .light-mode-#{$color} {
+            background-color: $color_value  !important;
+        }
+
+        /* Color text */
+        .light-mode-#{$color}-text {
+            color: $color_value  !important;
+        }
+
+    }
+
+    /* Dark mode */
+    @media (prefers-color-scheme: dark) {
+
+        /* Color */
+        .dark-mode-#{$color} {
+            background-color: $color_value  !important;
+        }
+
+        /* Color text */
+        .dark-mode-#{$color}-text {
+            color: $color_value  !important;
+        }
+
+    }
+
 }
 
 /// Mixin printing a linear-gradient 
