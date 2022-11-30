@@ -218,6 +218,9 @@ class Router {
                     ) :
                         "/$prefix/$pattern/";
 
+                # Check if not double //
+                $data["pattern"] = str_replace("//", "/", $data["pattern"]);
+
                 # Fill method
                 $data["method"] = strtoupper($method);
 

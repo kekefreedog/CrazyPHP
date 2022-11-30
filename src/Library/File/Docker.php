@@ -18,6 +18,7 @@ namespace CrazyPHP\Library\File;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\File\Structure;
 use CrazyPHP\Library\Array\Arrays;
+use CrazyPHP\Library\Cli\Command;
 use CrazyPHP\Library\File\Yaml;
 use CrazyPHP\Library\File\File;
 
@@ -53,7 +54,7 @@ class Docker{
         $command = self::DOCKER_COMPOSE_COMMAND." up".($detach ? " -d --no-color" : "");
 
         # Exec command
-        exec($command, $empty, $result);
+        $result = Command::exec($command);
 
         # Return result
         return $result;

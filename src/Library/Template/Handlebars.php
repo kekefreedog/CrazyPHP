@@ -105,9 +105,10 @@ class Handlebars {
      * Load template from cache
      * 
      * @param string|array $inputs List of templates to load
+     * @param string $customName Custom name to get difference with differents files with same name
      * @return void
      */
-    public function load(string|array $inputs = ""):void {
+    public function load(string|array $inputs = "", string $customName = ""):void {
 
         # Check inputs
         if(empty($inputs))
@@ -135,7 +136,7 @@ class Handlebars {
                 $collectionKey[] = File::path(pathinfo($input, PATHINFO_FILENAME));
 
         # Get key
-        $this->key = self::getKey($collectionKey, Cache::getCacheName(__CLASS__).".templateCached.");
+        $this->key = self::getKey($collectionKey, Cache::getCacheName(__CLASS__).($customName ? ".$customName." : "").".templateCached.");
 
         # Prepare template
         if(

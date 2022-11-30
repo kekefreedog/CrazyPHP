@@ -230,7 +230,7 @@ class Up implements CrazyCommand {
         $result = Docker::up();
 
         # Check result
-        if($result > 0)
+        if($result["result_code"] > 0)
             
             # New error
             throw new CrazyException(

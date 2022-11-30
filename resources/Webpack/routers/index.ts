@@ -35,8 +35,8 @@ let load = (yaml, fs) => {
                 // Iteration of current router type
                 for(let router of doc["Router"][type])
 
-                    // Check name
-                    if(router !== null && ("name" in router) && router["name"]){
+                    // Check name and if file exists
+                    if(router !== null && ("name" in router) && router["name"] && fs.existsSync("./app/Environment/Page/"+router.name+"/index.ts")){
 
                         // Current collection
                         result["page/"+type+"/"+router.name] = "./app/Environment/Page/"+router.name+"/index.ts";

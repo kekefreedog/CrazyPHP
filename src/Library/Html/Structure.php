@@ -506,7 +506,7 @@ class Structure {
         $templateInstance = new $instance($option);
 
         # Load template
-        $templateInstance->load($template);
+        $templateInstance->load($template, Context::get("routes.current.name"));
 
         # Rendered template
         $renderedTemplate = $templateInstance->render();
@@ -537,6 +537,8 @@ class Structure {
         # Check watch
         if($this->watch){
 
+            ## Search generic js files
+
             # New finder
             $finder = new Finder();
 
@@ -566,10 +568,49 @@ class Structure {
                 # Push in scripts
                 $configFront[] = $file->getRelativePathname();
 
+            ## Search current page js files
+
+            # New finder
+            $finder = new Finder();
+
+            # Search js generated
+            $finder
+                ->files()
+                ->name(Context::get("routes.current.name").".*.js")
+                ->depth('== 0')
+                ->in(File::path("@app_root/public/dist/page/app"))
+            ;
+
+            # Check files
+            if(!$finder->hasResults())
+                            
+                # New error
+                throw new CrazyException(
+                    "It looks generation of js files with watch mode enable failed...", 
+                    500,
+                    [
+                        "custom_code"   =>  "structure-003",
+                    ]
+                );
+
+            # Iteration of finder
+            foreach($finder as $file)
+
+                # Push in scripts
+                $configFront[] = "page/app/".$file->getRelativePathname();
+
         }else{
 
             # Get value from config
             $configFront = Config::getValue("Front.lastBuild.files");
+
+            # Current page
+            $currentPage = "page/app/".Context::get("routes.current.name").".".Config::getValue("Front.lastBuild.hash").".js";
+
+            # Js script for current page
+            if(file_exists(File::path("@app_root/public/dist/$currentPage")))
+
+                $configFront[] = $currentPage;
 
             # Check value
             if(!$configFront || empty($configFront))

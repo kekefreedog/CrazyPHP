@@ -105,7 +105,13 @@ class Command{
             while (!feof($proc)){
 
                 # Display result
-                echo $result["output"][] = fread($proc, 4096);
+                $current = fread($proc, 4096);
+
+                # Push message in result
+                $result["output"][] = $current;
+
+                # Echo message
+                echo $current;
                 
                 # Flush
                 @flush();

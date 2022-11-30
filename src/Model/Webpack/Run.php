@@ -19,6 +19,7 @@ use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Interface\CrazyCommand;
 use Symfony\Component\Finder\Finder;
 use CrazyPHP\Library\File\Package;
+use CrazyPHP\Library\Cli\Command;
 use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Library\System\Os;
@@ -179,6 +180,12 @@ class Run implements CrazyCommand {
     public function run():self {
 
         /**
+         * Run Install Npm Dependances
+         * 1. Install npm dependances
+         */
+        $this->runNpmInstall();
+
+        /**
          * Run Check Watch Script
          * 1. Check if watch script and add it to Config Front
          */
@@ -198,6 +205,23 @@ class Run implements CrazyCommand {
 
 
         # Return self
+        return $this;
+
+    }
+
+    /**
+     * Run Npm Install
+     * 
+     * 1. Install npm dependances
+     * 
+     * @return self
+     */
+    public function runNpmInstall():self {
+
+        # Install npm dependences
+        Package::exec("install", "", false);
+
+        # Return instance
         return $this;
 
     }
@@ -273,18 +297,20 @@ class Run implements CrazyCommand {
      */
     public function runGeneratedFilesOnConfig():self {
 
-        # New finder
-        $finder = new Finder();
-
         # Set result
         $result = [
             "files" =>  null,
+            "pages" =>  null,
             "hash"  =>  null,
             "date"  =>  null,
             "watch" =>  false,
         ];
 
-        # Search new generated file
+        ##  Search new generated files
+        # New finder
+        $finder = new Finder();
+
+        # Prepare finder
         $finder
             ->files()
             ->name('*.js')
@@ -303,6 +329,46 @@ class Run implements CrazyCommand {
 
                 # Set in files
                 $result["files"][] = $file->getRelativePathname();
+
+                # Get hash
+                if(!$result["hash"]){
+
+                    # Explode name of the file
+                    $exploded = explode(".", str_replace(".js", "", $file->getFilename()));
+
+                    # Set hash
+                    $result["hash"] = array_pop($exploded);
+
+                }
+
+            }
+
+        }
+
+        ## Search new page generated files
+
+        # New finder
+        $finder = new Finder();
+
+        # Prepare finder
+        $finder
+            ->files()
+            ->name('*.js')
+            ->depth('== 0')
+            ->in(File::path("@app_root/public/dist/page/app"))
+        ;
+
+        # Check if finder has result
+        if($finder->hasResults()){
+
+            # Convert files
+            $result["pages"] = [];
+
+            # Iteration of files
+            foreach ($finder as $file) {
+
+                # Set in files
+                $result["pages"][] = $file->getRelativePathname();
 
                 # Get hash
                 if(!$result["hash"]){
