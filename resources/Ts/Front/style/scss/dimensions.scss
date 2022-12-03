@@ -9,6 +9,35 @@
 
 }
 
+// Fit content at least to the window view size
+.screen-fit-min {
+
+    // Dimension
+    min-width: 100%;
+    min-height: 100vh;
+
+}
+
+// Fit content at least to the window view size
+.screen-fit-min-x {
+
+    // Dimension
+    min-width: 100%;
+    height: 100vh;
+
+}
+
+// Fit content at least to the window view size
+.screen-fit-min-y {
+
+    // Dimension
+    width: 100%;
+    min-height: 100vh;
+
+}
+
+/* Flex */
+
 // Proporties about 
 .screen-flex {
 
@@ -25,5 +54,23 @@
         align-items: center;
 
     }
+
+    /* Children */
+
+    // Grow of flex child
+    .element-flex-grow-1 {
+
+        // Flex
+        flex-grow: 1;
+
+    }
+
+}
+
+// Element Flex
+.element-flex {
+
+    // Position
+    display: flex;
 
 }

@@ -8,6 +8,13 @@
 /// @copyright  2022-2022 Kévin Zarshenas
 /// /// /// 
 
+// Material Icons
+@import '/node_modules/material-icons/iconfont/material-icons.css';
+@import '/node_modules/material-symbols/index.css';
+
+// Font Awesome
+@import '/node_modules/@fortawesome/fontawesome-free/css/all.css';
+
 // Import color
 @import './color_collection.scss', './color_gradient_collection.scss', './color_class.scss';
 
