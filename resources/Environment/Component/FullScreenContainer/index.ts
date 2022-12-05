@@ -18,12 +18,18 @@
   */
  export default class FullScreenContainer extends Crazyelement {
 
-    /** Parameters
-     ******************************************************
-     */
+   /** Parameters
+    ******************************************************
+   */
 
-    /** @var shadowEl:ShadowRoot */
-    public shadow:ShadowRoot|null = null;
+   /** @var shadowEl:ShadowRoot */
+   public shadow:ShadowRoot|null = null;
+
+   /** @var innerHtmlContent:string|null */
+   public innerHtmlContent: string|null;
+
+   /** @var attributesCollection:Object|null */
+   public attributesCollection: Object|null = null;
  
      /**
       * Constructor

@@ -35,6 +35,15 @@
     /** @var shadowEl:ShadowRoot */
     abstract shadow:ShadowRoot|null;
 
+    /** @var innerHtmlContent:string|null */
+    abstract innerHtmlContent: string|null;
+
+    /** @var innerHtmlCallableFunction:string|null */
+    private innerHtmlCallableFunction: CallableFunction|null = null;
+
+    /** @var attributesCollection:Object|null */
+    abstract attributesCollection: Object|null;
+
     /**
      * Constructor 
      */
@@ -47,6 +56,59 @@
         this.innerHTML = "";
 
     }
+
+    /** Lifr Cycle Callbacks | Methods
+     ******************************************************
+     */
+
+    /**
+     * Connected Callback
+     * 
+     * Call when element is created
+     * 
+     * @rreturn void
+     */
+    public connectedCallback() {
+
+        // Check callable function
+        if(this.innerHtmlCallableFunction !== null)
+
+            // Set inner content
+            this.innerHTML = this.innerHtmlCallableFunction();
+
+        // Check innerHtmlContent
+        if(this.innerHtmlContent)
+
+            // Set inner html
+            this.innerHTML = this.innerHtmlContent;
+
+    }
+
+    /**
+     * 
+     */
+    static get observedAttributes() {
+
+        // Set result
+        let result =  ['name'];
+
+        // Return result
+        return result;
+
+    }
+
+    /**
+     * Attributes Changes
+     */
+    public attributeChangedCallback(name:string, oldValue:any, newValue:any) {
+
+        console.log(name);
+
+    }
+
+    /** Crazy Elements | Methods
+     ******************************************************
+     */
 
     /**
      * Set Shadow Mode
@@ -92,7 +154,7 @@
      * 
      * @return void
      */
-    public setHtmlContent = (content:string):void => {
+    public setHtmlContent = (content:string|CallableFunction):void => {
 
         // Check content
         if(!content)
@@ -100,18 +162,28 @@
             // Stop function
             return;
 
-        // Check shadow
-        if(this.shadowMode === null){
+        // Check if CallableFunction
+        if(typeof content === "string")
 
-            // Append to inner html
-            this.innerHTML += content;
-    
-        }else if(this.shadowRoot !== null){
+            // Check shadow
+            if(this.shadowMode === null){
 
-            // St shadowUse
-            this.shadowRoot.innerHTML += content;
+                // Append to inner html
+                this.innerHtmlContent = content;
+        
+            }else if(this.shadowRoot !== null){
 
-        }
+                // St shadowUse
+                this.shadowRoot.innerHTML += content;
+
+            }
+
+        else
+        // Else
+        if(typeof content === "function")
+
+            // Set CallableFunction
+            this.innerHtmlCallableFunction = content;
 
     }
 
@@ -158,7 +230,7 @@
         if(this.shadowRoot === null){
 
             // Append to inner html
-            this.innerHTML += "<style>"+content.default.toString()+"</style>";
+            this.innerHtmlContent += "<style>"+content.default.toString()+"</style>";
     
         }else if(this.shadowRoot !== null){
 
@@ -166,6 +238,69 @@
             this.shadowRoot.innerHTML += "<style>"+content.default.toString()+"</style>";
 
         }
+
+    }
+
+    /**
+     * Set Attributes
+     * 
+     * Set Attributes of current element
+     * 
+     * @param attributesCollection:Object|null
+     * @retirn void
+     */
+    public setAttributes = (attributesCollection:Object|null):void => {
+
+        // Check if attributesCollection is null
+        if(attributesCollection === null && this.attributesCollection !== undefined)
+
+            // Set atrribute
+            attributesCollection = this.attributesCollection;
+
+        // Check attribute collection
+        if(attributesCollection!== null && Object.keys(attributesCollection).length > 0)
+
+            // Iteration
+            for(let attribute in attributesCollection){
+
+                // Set value
+                let value:any = attributesCollection[attribute];
+
+                // Check if bool
+                if(typeof value === "boolean")
+
+                    // Set value
+                    value = value ? "true" : "false";
+
+                else
+                // Array
+                if(typeof value === "object")
+
+                    // Set value
+                    value = JSON.stringify(value);
+                    
+
+                // Set attributes
+                this.setAttribute(attribute, attributesCollection[attribute]);
+
+            }
+
+    }
+
+    /**
+     * Content Data
+     * 
+     * Data for callable function
+     * 
+     * @return void
+     */
+    public static contentData = () => {
+
+        // Set result
+        let result = {};
+
+        // Push attributes
+        //result.attributes = this.observedAttributes();
 
     }
 

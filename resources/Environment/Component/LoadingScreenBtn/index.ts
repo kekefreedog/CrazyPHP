@@ -11,46 +11,45 @@
 /**
  * Dependances
  */
-import Crazyelement from "./../../../../vendor/kzarshenas/crazyphp/src/Front/Crazyelement";
+import Crazycomponent from "./../../../../vendor/kzarshenas/crazyphp/src/Front/Crazycomponent";
 const TemplateCompilated:CallableFunction = require("./template.hbs");
 const StyleCompilated:CrazyelementStyle = require("!!css-loader!sass-loader!./style.scss");
 
 /**
- * 
+ * Loading Screen Button
+ *
+ * Webcomponent for Regular Button
+ *
+ * @package    kzarshenas/crazyphp
+ * @author     kekefreedog <kevin.zarshenas@gmail.com>
+ * @copyright  2022-2022 Kévin Zarshenas
  */
-export default class LoadingScreenBtn extends Crazyelement {
+export default class LoadingScreenBtn extends Crazycomponent {
 
     /** Parameters
-     ******************************************************
-     */
+ ******************************************************
+    */
 
-    /** @var shadowEl:ShadowRoot */
-    public shadow:ShadowRoot|null = null;
+    /** @var properties Propoerties of the current component */
+    public properties:Object = {};
 
     /**
-     * Constructor
-     */
+ * Constructor
+ */
     constructor(){
 
-        // Call parent constructor
-        super();
+    // Call parent constructor
+    super();
 
-        // Shadow Mode
-        this.attachShadowMode();
+    // Set attributes by default
+    this.setDefaultProperties(this.properties);
 
-        // Set content
-        this.setHtmlContent(TemplateCompilated({}));
-
-        // Set style
-        this.setStyleContent(StyleCompilated);
+    // Set Content
+    this.setHtmlAndCss(
+        TemplateCompilated,
+        StyleCompilated
+    );
 
     }
-
-    /** Constants
-     ******************************************************
-     */
-    
-    /** @const shadowMode:ShadowRootMode|null Define Shadow mode "Open", "Closed" or null */
-    public shadowMode:ShadowRootMode|null = null;
 
 }
