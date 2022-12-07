@@ -111,6 +111,58 @@ export default abstract class Crazycomponent extends HTMLElement {
     }
 
     /**
+     * Set Properties
+     * 
+     * @param node:node
+     * @return
+     */
+    public setProperties():void {
+
+        // Check properties
+        if(Object.keys(this.properties).length > 0)
+
+            // Iteration of properties
+            for(let propertie in this.properties){
+
+                // let value
+                let value:string = this.properties[propertie].value ?? "";
+
+                // Check if value exists in attributes
+                if(this.hasAttribute(propertie)){
+
+                    // Attribute value
+                    let attributeValue = this.getAttribute(propertie);
+
+                    // Else check type
+                    if(attributeValue !== null && typeof attributeValue === this.properties[propertie].type){
+
+                        // Check if select
+                        if("select" in this.properties && typeof this.properties.select === "object" && this.properties.select !== null){
+
+                            // Check in select
+                            if(attributeValue in this.properties.select)
+
+                                // Push value
+                                value = attributeValue;
+                            
+                        // Push directly value
+                        }else
+
+                            // Push value
+                            value = attributeValue;
+                        
+                    }
+
+                }
+
+                // Set current attribute
+                this.crazy.setAttribute(propertie, value);
+
+            }
+
+    }
+
+    /**
      * Set Html And Css
      * 
      * @param html:Function|string Html or callable html generator
@@ -175,6 +227,9 @@ export default abstract class Crazycomponent extends HTMLElement {
      * Connected Callback
      */
     public connectedCallback() {
+
+        // Set attributes by default
+        this.setProperties();
 
         // Set html content
         this.innerHTML = this.render();

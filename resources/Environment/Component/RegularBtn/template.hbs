@@ -1,1 +1,33 @@
-<a class="btn-floating btn-large waves-effect waves-light red"><i class="material-icons">delete</i></a>
+{{!-- regular-btn --}}
+
+{{!-- A --}}
+<a 
+    {{!-- Classes --}}
+    class="
+        {{!-- Type : floating | --}}
+        btn-{{attributes.type}} 
+        {{!-- Depth : flat | 1 | 2 | 3 | 4 | 5--}}
+        {{#is attributes.depth "flat"}}
+            btn-flat
+        {{else}}
+            z-depth-{{{@root.attributes.depth}}}
+        {{/is}}
+        {{!-- Size : small | normal | large  --}}
+        btn-{{attributes.size}}
+        {{#if attributes.wave}}
+            waves-effect 
+            {{#is attributes.wave "light"}}
+                waves-light
+            {{/is}}
+        {{/if}} 
+        {{!-- {{attributes.color}} --}}
+    "
+>
+    <i 
+        class="
+            {{attributes.icon-class}}
+        "
+    >
+        {{attributes.icon-text}}
+    </i>
+</a>
