@@ -4,30 +4,63 @@
 <a 
     {{!-- Classes --}}
     class="
-        {{!-- Type : floating | --}}
-        btn-{{attributes.type}} 
-        {{!-- Depth : flat | 1 | 2 | 3 | 4 | 5--}}
+        {{!-- Type : floating | extended --}}
+        {{#isnt attributes.wave "extended"}}
+            btn-{{@root.attributes.type}} 
+        {{/isnt}}
+        {{!-- Depth : flat | 1 | 2 | 3 | 4 | 5 --}}
         {{#is attributes.depth "flat"}}
             btn-flat
         {{else}}
-            z-depth-{{{@root.attributes.depth}}}
+            {{#is @root.attributes.depth "outlined"}}
+                btn-flat btn-outlined
+                {{#if @root.attributes.color-secondary}}
+                    {{colorSuffix @root.attributes.color-secondary "border"}}
+                {{/if}}
+            {{else}}
+                z-depth-{{{@root.attributes.depth}}}
+            {{/is}}
+        {{/is}}
+        {{!-- Shape : round | box --}}
+        {{#is attributes.shape "round"}}
+            btn-{{@root.attributes.shape}}
+        {{/is}}
+        {{#is attributes.shape "box"}}
+            btn-{{@root.attributes.shape}}
         {{/is}}
         {{!-- Size : small | normal | large  --}}
         btn-{{attributes.size}}
         {{#if attributes.wave}}
-            waves-effect 
-            {{#is attributes.wave "light"}}
-                waves-light
-            {{/is}}
+            {{#isnt attributes.wave "false"}}
+                waves-effect 
+                {{#is @root.attributes.wave "light"}}
+                    waves-light
+                {{/is}}
+            {{/isnt}}
         {{/if}} 
-        {{!-- {{attributes.color}} --}}
+        {{#if attributes.color-primary}}
+            {{attributes.color-primary}}
+        {{/if}}
+        {{!-- Icon position --}}
+        {{#is attributes.type "extended"}}
+            icon-{{@root.attributes.icon-position}}
+        {{/is}}
     "
 >
     <i 
         class="
             {{attributes.icon-class}}
+            {{#if attributes.color-secondary}}
+                {{colorSuffix attributes.color-secondary "text"}}
+            {{/if}}
+            {{#is attributes.type "extended"}}
+                {{@root.attributes.icon-position}}
+            {{/is}}
         "
     >
         {{attributes.icon-text}}
     </i>
+    {{#is attributes.type "extended"}}
+        {{{@root.attributes.label}}}
+    {{/is}}
 </a>

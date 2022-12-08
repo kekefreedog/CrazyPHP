@@ -18,6 +18,10 @@
  * @copyright  2022-2022 Kévin Zarshenas
  */
 export default abstract class Crazycomponent extends HTMLElement {
+    
+    /** Attributes
+     ******************************************************
+     */
 
     /** @var properties Propoerties of the current component */
     abstract properties:Object;
@@ -37,6 +41,20 @@ export default abstract class Crazycomponent extends HTMLElement {
         this.crazy = new CrazycomponentAction();
 
     }
+
+    /** Methods | Events
+     ******************************************************
+     */
+
+    /**
+     * Post Render
+     * 
+     * Event executed post render
+     * 
+     * @return void
+     */
+    public postRender():void {};
+
     /** Methods
      ******************************************************
      */
@@ -66,14 +84,14 @@ export default abstract class Crazycomponent extends HTMLElement {
         if(typeof content === "function"){
 
             // Set content in result
-            result += content(collection);
+            result += content(collection).replace(/\s+/g, ' ').trim();
 
         }else
         // String
         if(typeof content === "string" && content){
 
             // Set content in result
-            result += content;
+            result += content.replace(/\s+/g, ' ').trim();
 
         }
 
@@ -81,14 +99,14 @@ export default abstract class Crazycomponent extends HTMLElement {
         if(typeof style === "function"){
 
             // Set style
-            style = style(collection);
+            style = style(collection).replace(/\s+/g, ' ').trim();
 
         }else
         // String
         if(typeof style === "string" && style){
 
             // Set style in result
-            result += style;
+            result += style.replace(/\s+/g, ' ').trim();
 
         }
 
@@ -159,6 +177,40 @@ export default abstract class Crazycomponent extends HTMLElement {
                 this.crazy.setAttribute(propertie, value);
 
             }
+
+    }
+
+    /**
+     * Has Current Attribute
+     * 
+     * Check if current component has attribute
+     * 
+     * @return boolean
+     */
+    public hasCurrentAttribute(name:string):boolean {
+
+        // Declare result
+        let result = this.crazy.hasAttribute(name);
+
+        // Return result
+        return result;
+
+    }
+
+    /**
+     * Get Current Attribute
+     * 
+     * Check if current component has attribute
+     * 
+     * @return string|boolean|null
+     */
+    public getCurrentAttribute(name:string):string|boolean|null {
+
+        // Declare result
+        let result = this.crazy.getAttribute(name);
+
+        // Return result
+        return result;
 
     }
 
@@ -234,6 +286,9 @@ export default abstract class Crazycomponent extends HTMLElement {
         // Set html content
         this.innerHTML = this.render();
 
+        // Execute post render 
+        this.postRender();
+
     };
 
     /**
@@ -253,14 +308,22 @@ export default abstract class Crazycomponent extends HTMLElement {
      */
     public attributeChangedCallback(name:string, oldValue:string, newValue:string):void {
 
+        console.log("toto");
+        console.log(newValue + " >> " + oldValue);
+
         // Check new value isn't the old value
-        if(newValue != oldValue)
+        if(newValue != oldValue){
 
             // Update attribute collection
-            this.crazy.updateAttribute(name, newValue)
+            this.crazy.updateAttribute(name, newValue);
 
-        // Set html content
-        this.innerHTML = this.render();
+            // Set html content
+            this.innerHTML = this.render();
+    
+            // Execute post render 
+            this.postRender();
+            
+        }
 
     };
 
@@ -536,6 +599,29 @@ class CrazycomponentAction {
 
         // Declare result
         let result = Object.keys(this.attributesCurrent);
+
+        // Return result
+        return result;
+
+    }
+
+    /**
+     * Has Attribute
+     * 
+     * Check if current component has attribute
+     * 
+     * @return boolean
+     */
+    public hasAttribute(name:string):boolean {
+
+        // Declare result
+        let result:boolean = true;
+
+        // Check name
+        if(!name || !(name in this.attributesCurrent))
+
+            // Set value
+            result = false;
 
         // Return result
         return result;

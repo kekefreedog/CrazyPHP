@@ -96,6 +96,11 @@ $color in $colors {
                 color: $color_value  !important;
             }
 
+            /* Color border */
+            .#{$color_name}-border {
+                border-color: $color_value  !important;
+            }
+
             /* Light mode */
             @media (prefers-color-scheme: light) {
 
@@ -135,9 +140,14 @@ $color in $colors {
                 background-color: $color_value  !important;
             }
 
-            /* Color shade */
+            /* Color shade text */
             .#{$color_name}-text.text-#{$color_type} {
                 color: $color_value  !important;
+            }
+
+            /* Color shade border */
+            .#{$color_name}-border.border-#{$color_type} {
+                border-color: $color_value  !important;
             }
 
             /* Light mode */
@@ -185,6 +195,11 @@ $color_value in $shades {
     /* Color text */
     .#{$color}-text {
         color: $color_value  !important;
+    }
+
+    /* Color text */
+    .#{$color}-border {
+        border-color: $color_value  !important;
     }
 
     /* Light mode */

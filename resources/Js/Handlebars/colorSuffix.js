@@ -9,15 +9,13 @@
  */
 
 /**
- * Is
+ * Color Suffix
  * 
- * Block helper that renders a block if a is equal to b. 
- * If an inverse block is specified it will be rendered when falsy. 
- * Similar to eq but does not do strict equality.
+ * Add color suffix for convert material color to specific color propoerty
  * 
  * @param a Value to compare
  * @param v Value to compare with
  * 
  * @return boolean
  */
-module.exports = (a, b, options) => (a == b) ? options.fn(this) : options.inverse(this);
+module.exports = (a, suffix, options) => (a && suffix) ? (a.includes(" ") ? a.trim().replace(" ", `-${suffix} ${suffix}-`) : a + `-${suffix}`) : a;

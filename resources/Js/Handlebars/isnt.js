@@ -9,15 +9,15 @@
  */
 
 /**
- * Is
+ * Isn't
  * 
- * Block helper that renders a block if a is equal to b. 
+ * Block helper that renders a block if a is not equal to b. 
  * If an inverse block is specified it will be rendered when falsy. 
- * Similar to eq but does not do strict equality.
+ * Similar to unlessEq but does not use strict equality for comparisons.
  * 
  * @param a Value to compare
  * @param v Value to compare with
  * 
  * @return boolean
  */
-module.exports = (a, b, options) => (a == b) ? options.fn(this) : options.inverse(this);
+module.exports = (a, b, options) => (a != b) ? options.fn(this) : options.inverse(this);

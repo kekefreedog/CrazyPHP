@@ -171,9 +171,15 @@ Structure:
                     files:
                       index.ts:
                         source: "@crazyphp_root/resources/Environment/Page/Home/index.ts"
+                      style.scss:
+                        source: "@crazyphp_root/resources/Environment/Page/Home/style.scss"
+                      template.hbs:
+                        source: "@crazyphp_root/resources/Environment/Page/Home/template.hbs"
                   # Index
                   Index:
                     files:
+                      index.ts:
+                        source: "@crazyphp_root/resources/Environment/Page/Index/index.ts"
                       template.hbs:
                         source: "@crazyphp_root/resources/Environment/Page/Index/template.hbs"
               Structure:

@@ -1,12 +1,242 @@
 /* A */
 a {
 
+    /* Depth */
+    &.btn-outlined {
+
+        /* Border */
+        border: 1px solid;
+        border-color: black;
+
+    }
+
+    /* Extended */
+    &.btn-extended {
+
+        /* Background */
+        background-color: transparent;
+
+        /* Text */
+        text-transform: inherit;
+
+        /* Silblies */
+
+        /* Btn small */
+        &.btn-small {
+
+            /* Silblies */
+            &.btn-round {
+
+                /* Border */
+                border-radius: 16.2px;
+
+                /* Padding */
+                padding-left: 18x;
+                padding-right: 18px;
+
+            }
+                
+            /* Silblies */
+
+            /* Icon right */
+            &.icon-right{
+
+                /* Padding */
+                padding-right: 6px!important;
+
+            }
+
+            /* Icon left */
+            &.icon-left{
+
+                /* Padding */
+                padding-left: 6px!important;
+
+            }
+
+        }
+
+        /* Btn normal */
+        &.btn-normal {
+
+            /* Text */
+            text-decoration: none;
+            text-align: center;
+            letter-spacing: 0.5px;
+
+            /* Border */
+            border: none;
+            
+            /* Dimension */
+            display: inline-block;
+            line-height: 40px;
+            padding: 0 22px;
+
+            /* Placement */
+            vertical-align: middle;
+
+            /* Color */
+            color: #fff;
+
+            /* Transition */
+            transition: background-color 0.2s ease-out;
+
+
+
+            /* Silblies */
+            &.btn-round {
+
+                /* Border */
+                border-radius: 20px;
+
+            }
+
+            /* Dimension */
+            padding-left: 20px;
+            padding-right: 20px;
+            
+            /* Silblies */
+
+            /* Icon right */
+            &.icon-right{
+
+                /* Padding */
+                padding-right: 10px!important;
+
+            }
+
+            /* Icon left */
+            &.icon-left{
+
+                /* Padding */
+                padding-left: 10px!important;
+
+            }
+
+        }
+
+        /* Btn large */
+        &.btn-large {
+
+            /* Silblies */
+            &.btn-round {
+
+                /* Border */
+                border: none;
+                border-radius: 27px;
+
+            }
+
+            /* Dimension */
+            padding-left: 24px;
+            padding-right: 24px;
+            
+            /* Silblies */
+
+            /* Icon right */
+            &.icon-right{
+
+                /* Padding */
+                padding-right: 14px!important;
+
+            }
+
+            /* Icon left */
+            &.icon-left{
+
+                /* Padding */
+                padding-left: 14px!important;
+
+            }
+
+        }
+
+        /* Event */
+        &:hover {
+
+            /* Color */
+            background-color: transparent;
+
+        }
+
+        /* Children */
+        
+
+    }
+
+    /* Shape */
+    &.btn-box {
+
+        /* Border */
+        border-radius: 16px;
+
+        /* Silbies */
+
+        /* Normal size */
+        &.btn-normal {
+
+            /* Dimension */
+            /* width: 40px; */
+
+            /* Border */
+            border-radius: 13px;
+
+        }
+
+        /* Small size */
+        &.btn-small {
+
+            /* Border */
+            border-radius: 10px;
+
+        }
+
+    }
+
+    /* Size */
+
+    /* Small */
+    &.btn-small {
+
+        /* Children */
+        i {
+
+            /* Dimension */
+            height: 32.4px;
+
+        }
+
+    }
+
+    /* Normal */
+    &.btn-normal {
+
+        /* Children */
+        i {
+
+            /* Dimension */
+            height: 40px;
+            line-height: 40px;
+
+        }
+
+    }
+
     /* Children */
 
+    /* Fix */
     &.btn-floating, &.btn-floating:hover {
 
         /* Color */
         background-color: transparent;
+
+    }
+
+    /* Icon */
+    i {
+
+        /* User selection */
+        user-select: none;
 
     }
 
