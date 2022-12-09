@@ -9,6 +9,12 @@
  */
 
 /**
+ * Dependances
+ */
+import routerCollection from '/config/Router.yml';
+import Crazypage from './Crazypage';
+
+/**
  * Page Register
  *
  * Methods for manage page loaded and to load
@@ -19,6 +25,13 @@
  */
  export default class Pageregister {
 
+    /** Methods
+     ******************************************************
+     */
+
+    /** @var routerCollection:Object */
+    private routerCollection:any = [];
+
     /** Parameters
      ******************************************************
      */
@@ -28,8 +41,68 @@
      */
     public constructor(){
 
-
+        // Register Router Collection
+        this.registerRouterCollection(routerCollection);
 
     }
+
+    /** Methods
+     ******************************************************
+     */
+
+    /**
+     * Register
+     * 
+     * Register page in current context
+     * 
+     * @param page:Crazypage
+     * @return void
+     */
+    public register(page:Crazypage):void {
+
+        if(!("name" in page) || typeof page.name !== "string")
+
+            // Return;
+            return;
+
+        // Check if page register already declared
+        let currentContextCollection = this.filterArrayByKeyValue(this.routerCollection.Router.app, "name", page.name);
+        
+        // Check current context
+        if(!currentContextCollection.length)
+
+            // Return
+            return;
+
+        // Push class in instance
+        this.routerCollection.Router.app[0].instance = page;
+
+    }
+
+    /** Methods | Private
+     ******************************************************
+     */
+
+    /**
+     * Register Router Collection
+     * 
+     * @param collection:Object
+     * @return void
+     */
+    private registerRouterCollection(collection:Object){
+
+        // Push object in routerCollection
+        this.routerCollection = collection;
+
+    }
+
+    /**
+     * Array Filter
+     * 
+     * @return any
+     */
+    private filterArrayByKeyValue = (array:Array<any> = [], key:string, keyValue:string) => array.filter(
+        (aEl) => aEl[key] == keyValue
+    );
 
 }

@@ -255,5 +255,15 @@ declare global {
 
     };
 
+    /**
+     * Crazy Page
+     */
+    interface Crazypage {
+
+        /** Name */
+        get name:string;
+
+    }
+
 
 }

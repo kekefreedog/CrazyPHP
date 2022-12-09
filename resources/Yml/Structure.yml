@@ -133,7 +133,10 @@ Structure:
                     source: "@crazyphp_root/resources/Ts/Front/library/index.ts"
               types:
                 files:
-                  index.d.ts: "@crazyphp_root/resources/Ts/Front/types/index.d.ts"
+                  index.d.ts: 
+                    source: "@crazyphp_root/resources/Ts/Front/types/index.d.ts"
+                  global.d.ts: 
+                    source: "@crazyphp_root/resources/Ts/Front/types/global.d.ts"
             files:
               index.ts:
                 source: "@crazyphp_root/resources/Ts/Front/index.ts"

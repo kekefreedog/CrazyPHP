@@ -128,7 +128,7 @@ class Package{
         "material-symbols"                          =>  "*",
         "material-icons"                            =>  "*",
         "@material-design-icons/font"               =>  "*",
-        "i18next"   =>                              =>  "*",
+        "i18next"                                   =>  "*",
         # Back | Webpack            
         "webpack"                                   =>  "*",
         "webpack-cli"                               =>  "*",
