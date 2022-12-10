@@ -56,10 +56,10 @@ class Context{
         $key = str_replace(self::SEPARATOR, "___", $key);
 
         # Explode where 
-        $keys = explode("___", $key);
+        $keys = $key ? explode("___", $key) : $key;
 
         # Check config file
-        if(!empty($keys))
+        if(!empty($keys)){
 
             # Iteration filedata
             $i=0;while(isset($keys[$i])){
@@ -79,6 +79,8 @@ class Context{
                     return $result;
 
             $i++;}
+
+        }
 
         # Set result
         $result = $cursor;

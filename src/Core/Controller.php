@@ -45,12 +45,13 @@ class Controller {
      * 
      * Get context of current route
      * 
+     * @param string $key Key of the context to get
      * @return array
      */
-    public static function getContext():array {
+    public static function getContext(string $key = ""):array {
 
         # Set result
-        $result = Context::get();
+        $result = Context::get($key);
 
         # Return result
         return $result;

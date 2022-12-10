@@ -74,8 +74,16 @@ import Crazypage from './Crazypage';
             // Return
             return;
 
-        // Push class in instance
-        this.routerCollection.Router.app[0].instance = page;
+        // Check if instance already existing
+        if(("instance" in this.routerCollection.Router.app[0]) || !this.routerCollection.Router.app[0]){
+
+            // Push class in instance
+            this.routerCollection.Router.app[0].instance = page;
+
+            // Push date
+            this.routerCollection.Router.app[0].instanceDate = Date.now();
+
+        }
 
     }
 
