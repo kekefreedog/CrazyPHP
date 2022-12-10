@@ -16,9 +16,11 @@ namespace  CrazyPHP\Core;
  * Dependances
  */
 use CrazyPHP\Exception\CrazyException;
+use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\File\Config;
 use CrazyPHP\Model\Context;
 use CrazyPHP\Core\Response;
+use CrazyPHP\Library\File\File;
 
 /**
  * Api Response
@@ -37,6 +39,9 @@ class ApiResponse extends Response {
     
     /** @var ?StreamInterface $content */
     public $apiContent = null;
+    
+    /** @var string|null $engineInstance Classe for convert to response format */
+    public $engineInstance = null;
 
     /**
      * Constructor
@@ -97,7 +102,7 @@ class ApiResponse extends Response {
      * 
      * @param string $where Where put content in content
      * @param string|bool|array|null $content to push
-     * @return void
+     * @return self
      */
     public function pushContent(string $where = "", string|bool|array|null $content = null):self {
 
@@ -143,6 +148,25 @@ class ApiResponse extends Response {
     }
 
     /**
+     * Push Context
+     * 
+     * Push Context in Api Response
+     * @return self
+     */
+    public function pushContext():self {
+
+        # Get context
+        $context = Context::get();
+
+        # Push context
+        $this->pushContent("_context", $context);
+
+        # Return self
+        return $this;
+
+    }
+
+    /**
      * Send
      * 
      * Send response
@@ -151,8 +175,12 @@ class ApiResponse extends Response {
      */
     public function send():void {
 
+        # Convert with engine the api content
+        $dumpApiContent = $this->engineInstance::encode($this->apiContent);
+
+
         # Create stram from content
-        parent::setContent($this->apiContent);
+        parent::setContent($dumpApiContent);
 
         # Create stream from content
         parent::send();
@@ -170,17 +198,45 @@ class ApiResponse extends Response {
      */
     private function _setDefaultParametersApi():void {
 
-        # Check if api
-        if(Context::get("routes.current.group") != "api")
-
-            # Stop function
-            return;
-
         # Get default format of response
-        $responseFormat = (string) Config::getValue("Router.parameters.api.format");
+        $responseFormat = Config::getValue("Router.parameters.api.format");
+
+        # Check response format
+        if(!$responseFormat || $responseFormat === null || !is_string($responseFormat))
+
+            # New Exception
+            throw new CrazyException(
+                (
+                    $responseFormat ? 
+                        "\"$responseFormat\"" :
+                            "Response format"
+                ) . " isn't valid...",
+                500,
+                [
+                    "custom_code"   =>  "apiResponse-002",
+                ]
+            );
 
         # Set default format
         $this->setContentType($responseFormat);
+
+        # Get and set engine to use
+        $engine = File::MIMTYPE_TO_CLASS[File::EXTENSION_TO_MIMETYPE[$responseFormat] ?? null] ?? null;
+
+        # Check engine
+        if(!$engine || $engine === null)
+
+            # New Exception
+            throw new CrazyException(
+                "\"$responseFormat\" isn't supported yet by framework...",
+                500,
+                [
+                    "custom_code"   =>  "apiResponse-003",
+                ]
+            );
+
+        # Set engine
+        $this->engineInstance = $engine;
 
     }
 

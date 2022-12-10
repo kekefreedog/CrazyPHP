@@ -49,8 +49,13 @@ class Context{
         # Set result
         $result = null;
 
+        $temp = $key;
+
         # Get context
         $cursor = $GLOBALS[static::PREFIX] ?? [];
+
+        # Change case
+        $cursor = array_change_key_case((array)$cursor);
 
         # Parse where
         $key = str_replace(self::SEPARATOR, "___", $key);
@@ -65,7 +70,7 @@ class Context{
             $i=0;while(isset($keys[$i])){
 
                 # Set current key
-                $currentKey = strtoupper($keys[$i]);
+                $currentKey = strtolower($keys[$i]);
 
                 # Check current key exists
                 if(isset($cursor[$currentKey]))

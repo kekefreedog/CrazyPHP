@@ -295,7 +295,7 @@ class Arrays{
 	 * @return array
 	 */
 	public static function changeKeyCaseRecursively(array $array = [], int $case = CASE_LOWER):array {
-		$case = 1; 
+		$case = in_array($case, [CASE_UPPER, CASE_LOWER]) ? $case : 1; 
 		return array_map(function($item){
 			if(is_array($item))
 				$item = static::changeKeyCaseRecursively($item);

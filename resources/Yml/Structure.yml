@@ -91,6 +91,12 @@ Structure:
                 files:
                   Home.php:
                     source: "@crazyphp_root/resources/Php/app/Controller/App/Home.php"
+              Api:
+                folders:
+                  v1:
+                    files:
+                      Config.php:
+                        source: "@crazyphp_root/resources/Php/app/Controller/Api/v1/Config.php"
               Assets:
                 files:
                   Favicon.php:

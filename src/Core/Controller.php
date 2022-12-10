@@ -81,7 +81,12 @@ class Controller {
 
             # Get value from context
             $result = Context::get("routes.current.parameters.$name");
-        
+
+        # Check if result is array
+        if(is_array($result))
+
+            # Change key case
+            $result = array_change_key_case($result);
 
         # Return result
         return $result;
