@@ -21,6 +21,7 @@ use Symfony\Component\Finder\Finder;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Core\ApiResponse;
 use CrazyPHP\Core\Controller;
+use CrazyPHP\Library\Time\DateTime;
 
  /**
  * App
@@ -47,8 +48,9 @@ class Config extends Controller {
         # Check if parameters parameters
         if(empty($paramters)){
 
-            # Declare name
+            # Declare name & last modified
             $names = [];
+            $lastModified = null;
 
             # New finder
             $finder = new Finder();
@@ -59,10 +61,21 @@ class Config extends Controller {
             ;
 
             # Prepare config name
-            foreach($finder as $file)
+            foreach($finder as $file){
 
                 # Push name of the file without extension
                 $names[] = $file->getBasename('.' . $file->getExtension());
+
+                # Get last modified date
+                $lastModifiedTemp = (new DateTime)->setTimestamp($file->getMTime());
+
+                # Comparaison
+                if($lastModified === null || $lastModifiedTemp > $lastModified)
+
+                    # Set last modified
+                    $lastModified = $lastModifiedTemp;
+
+            }
 
             # Get all configs
             $configs = FileConfig::get($names);
@@ -77,6 +90,9 @@ class Config extends Controller {
             # Get config value
             $content[$paramters["name"]] = FileConfig::getValue($paramters["name"].".".$paramters["parameter"]);
 
+            # Set last modified date
+            $lastModified = FileConfig::getLastModified($paramters["name"]);
+
         }else
         # Check name is set
         if(isset($paramters["name"])){
@@ -84,11 +100,15 @@ class Config extends Controller {
             # check if config given exists
             $content["config"] = FileConfig::get($paramters["name"]);
 
+            # Set last modified date
+            $lastModified = FileConfig::getLastModified($paramters["name"]);
+
         }
 
 
         # Set response
         (new ApiResponse())
+            ->addLastModified($lastModified)
             ->pushContent("results", $content)
             ->pushContext()
             ->send();

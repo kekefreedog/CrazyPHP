@@ -20,6 +20,7 @@ use Nyholm\Psr7\Response as Psr17Response;
 use CrazyPHP\Exception\CrazyException;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Http\Message\StreamInterface;
+use CrazyPHP\Library\Time\DateTime;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Model\Asset;
 use \resource;
@@ -225,6 +226,30 @@ class Response {
 
         # Add header in current instance
         $this->header[$name] = $value;
+
+        # Return self
+        return $this;
+
+    }
+
+    /**
+     * Add Last Modified
+     * 
+     * Add Last Modified date in header
+     * @return void
+     * @param DateTime|\DateTime|null $datetime Date time of the last modification on current content
+     * @return self
+     */
+    public function addLastModified(DateTime|\DateTime|null $datetime = null):self {
+
+        # Check time
+        if($datetime === null)
+
+            # Return self
+            return $this;
+
+        # Set value on header
+        $this->addHeader("Last-Modified", $datetime->format(Datetime::RFC7231));
 
         # Return self
         return $this;

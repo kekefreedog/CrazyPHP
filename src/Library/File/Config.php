@@ -17,6 +17,7 @@ namespace CrazyPHP\Library\File;
  */
 use CrazyPHP\Exception\CrazyException;
 use Symfony\Component\Finder\Finder;
+use CrazyPHP\Library\Time\DateTime;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\Cache\Cache;
@@ -177,7 +178,6 @@ class Config{
      * Get value on config from key
      * 
      * @param string $input Name of config(s)
-     * @param string $location Location of config files
      * @return
      */
     public static function getValue(string $input = ""){
@@ -290,6 +290,90 @@ class Config{
 
         # Process result
         $result = Process::envAndConfigValues($result);
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Get Value
+     * 
+     * Get value on config from key
+     * 
+     * @param string $key Name of config(s)
+     * @return null
+     */
+    public static function getLastModified(string $key = ""):DateTime{
+
+        # Let result
+        $result = null;
+
+        # Set location
+        $location = Env::has("config_location") ?
+            Env::get("config_location") :
+                self::FOLDER_PATH;
+
+        /* Get config file */
+
+        # Replace separator
+        $key = str_replace(self::SEPARATOR, "___", $key);
+
+        # Explode to get first value
+        $configFolder = explode("___", $key, 2)[0];
+
+        # New finder
+        $finder = new Finder();
+
+        # Search files
+        $finder
+            ->files()
+            ->name(["$configFolder.*", $configFolder])
+            ->in(File::path($location))
+        ;
+
+        # Check not multiple file
+        if($finder->count() === 0)
+
+            # New Exception
+            throw new CrazyException(
+                "No config file found for \"$configFolder\".", 
+                500,
+                [
+                    "custom_code"   =>  "config-003",
+                ]
+            );
+
+        # Iteration of finder
+        foreach($finder as $file){
+
+            # Check result
+            if($result === null)
+
+                # Set result
+                $result = $file->getMTime();
+
+            # Check if update time is lower than current
+            else{
+
+                # Get last modified
+                $temp = $file->getMTime();
+
+                # Comparaison
+                if($temp > $result)
+
+                    # Set result
+                    $result = $temp;
+
+            }
+
+        }
+
+        # Check result
+        if($result !== null)
+
+            # Prepare result
+            $result = (new DateTime())->setTimestamp($result);
 
         # Return result
         return $result;
