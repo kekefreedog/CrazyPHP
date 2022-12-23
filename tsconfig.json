@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "lib": ["es6", "dom", "es2017"],
+        "module": "esnext",
+        "moduleResolution": "node",
+        "sourceMap": true,
+        "strict": true,
+        "importHelpers": true,
+        "skipLibCheck": true,
+        "noImplicitAny": false,
+        "strictPropertyInitialization": false,    
+        "typeRoots": ["./src/Front/*", "./node_modules/@types"],
+        "paths": {
+            "tslib" : ["./node_modules/tslib/tslib.d.ts"]
+        }
+    },
+    "exclude": [
+        "resources",
+        "node_modules"
+    ]
+}

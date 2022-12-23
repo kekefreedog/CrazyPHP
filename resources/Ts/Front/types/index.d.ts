@@ -38,20 +38,6 @@ declare global {
     }
 
     /**
-     * Interface of CrazyObjectInput
-     */
-    interface CrazyObjectInput {
-        globalComponentsCollection:Object;
-    }
-
-    /**
-     * Interface Crazyelement Style
-     */
-    interface CrazyelementStyle {
-        default:any;
-    }
-
-    /**
      * Interface Crazyelement
      */
     interface Crazyelement {
@@ -261,9 +247,8 @@ declare global {
     interface Crazypage {
 
         /** Name */
-        get name:string;
+        get name():string;
 
     }
-
 
 }

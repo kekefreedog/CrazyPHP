@@ -10,7 +10,7 @@
         "importHelpers": true,
         "skipLibCheck": true,
         "noImplicitAny": false,
-        "typeRoots": ["./node_modules/@types", "./app/Front/types"],
+        "typeRoots": ["./node_modules/@types", "./app/Front/types", "./vendor/kzarshenas/crazyphp/src/Front/types"],
         "strictPropertyInitialization": false,
     },
     "exclude": ["./vendor/kzarshenas/crazyphp/resources/"]

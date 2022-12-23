@@ -11,11 +11,11 @@
 /**
  * Dependances
  */
-import Componentregister from "./Componentregister";
-import Configregister from "./Configregister";
-import Pageregister from "./Pageregister";
-import Crazyconsole from "./Crazyconsole";
-import Crazyevents from "./Crazyevents";
+import Componentregister from "./../Library/Componentregister";
+import Configregister from "./../Library/Configregister";
+import Pageregister from "./../Library/Pageregister";
+import Crazyconsole from "./../Library/Crazyconsole";
+import Crazyevents from "./../Library/Crazyevents";
 
 /**
  * Crazy Object
@@ -68,7 +68,6 @@ export default class Crazyobject {
         this.events = new Crazyevents();
 
     }
-
 
     /** Methods | Component Register
      ******************************************************

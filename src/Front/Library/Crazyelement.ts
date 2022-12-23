@@ -23,7 +23,7 @@
  * 
  * Methods for help to create custom elements
  */
- export default abstract class Crazyelement extends HTMLElement {
+export default abstract class Crazyelement extends HTMLElement {
 
     /** Parameters
      ******************************************************

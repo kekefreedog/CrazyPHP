@@ -2,7 +2,11 @@
     "name": "crazyphp",
     "version": "0.0.0",
     "description": "My crazy framework for creating ultra-fast webapps.",
-    "main": "index.js",
+    "main": "src/Front/index.ts",
+    "types": "src/Front/Types/index.d.ts",
+    "files": [
+        "src/Front/"
+    ],
     "repository": {
         "type": "git",
         "url": "git+https://github.com/kekefreedog/CrazyPHP.git"
@@ -12,5 +16,10 @@
     "bugs": {
         "url": "https://github.com/kekefreedog/CrazyPHP/issues"
     },
-    "homepage": "https://github.com/kekefreedog/CrazyPHP#readme"
+    "homepage": "https://github.com/kekefreedog/CrazyPHP#readme",
+    "devDependencies": {
+        "localforage": "^1.10.0",
+        "object-hash": "^3.0.0",
+        "tslib": "^2.4.1"
+    }
 }

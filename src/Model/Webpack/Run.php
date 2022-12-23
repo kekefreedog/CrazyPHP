@@ -52,6 +52,9 @@ class Run implements CrazyCommand {
         # Set scripts
         $this->script = $this->inputs["args"][0] ?? null;
 
+        ## Set flag
+        $this->setFlags($this->inputs["args"]);
+
     }
 
     /** Private Parameters
@@ -63,6 +66,9 @@ class Run implements CrazyCommand {
 
     /** @var bool $watch Bool for check if watch mode is enable */
     private $watch = false;
+
+    /** @var array $flags */
+    private $flags = [];
 
     /** Public static methods
      ******************************************************
@@ -278,9 +284,13 @@ class Run implements CrazyCommand {
                 "Current watch is in progress... (Press `Ctrl` + `C` to stop script)"
             ;
 
-
         # Run script
-        $result = Package::exec("run", $this->script, false, $this->watch ? false : true);
+        $result = Package::exec(
+            "run", 
+            $this->script . (!empty($this->flags) ? " ".implode(" ", $this->flags) : ""),
+            false, 
+            $this->watch ? false : true
+        );
 
         # Return self
         return $this;
@@ -395,5 +405,49 @@ class Run implements CrazyCommand {
         return $this;
 
     }
+
+    /** Public methods
+     ******************************************************
+     */
+
+    /**
+     * Set Flags
+     * 
+     * Set flags in current instance
+     * 
+     * @param array $arguments
+     * @return void
+     */
+    private function setFlags(array $arguments = []) {
+
+        # Delete first argument
+        array_shift($arguments);
+
+        # Check arguments
+        if(empty($arguments))
+
+            # Stop
+            return;
+
+        # Iteration arguments
+        foreach($arguments as $argument)
+
+            # Check if allowed
+            if(in_array($argument, static::FLAGS_ALLOWED))
+
+                # Push in globals flags
+                $this->flags[] = $argument;
+
+    }
+
+    /** Public constants
+     ******************************************************
+     */
+
+    /** @const array FLAGS_ALLOWED */
+    public const FLAGS_ALLOWED = [
+        # Get more errors
+        "--stats-error-details",
+    ];
 
 }

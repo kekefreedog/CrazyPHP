@@ -11,7 +11,7 @@
 /**
  * Dependances
  */
-import routerCollection from '/config/Router.yml';
+import Crazyrequest from './Crazyrequest';
 import Crazypage from './Crazypage';
 
 /**
@@ -41,8 +41,18 @@ import Crazypage from './Crazypage';
      */
     public constructor(){
 
+        let request = new Crazyrequest("/api/v1/config/");
+
+        let config = request.fetch().then(
+            result => {
+
+                console.log(result);
+
+            }
+        );
+
         // Register Router Collection
-        this.registerRouterCollection(routerCollection);
+        // this.registerRouterCollection(routerCollection);
 
     }
 
