@@ -54,6 +54,12 @@ export default class Crazyrequest{
     /** @var request */
     public request:Request;
 
+    /** @param lastResponse */
+    public lastResponse?:Response;
+
+    /** @param lastResponse */
+    public lastResponseContentType?:string;
+
     /**
      * Constructor
      */
@@ -87,6 +93,10 @@ export default class Crazyrequest{
      */
     public fetch = (body:BodyInit|undefined = undefined):Promise<Response|any> => {
 
+        // Clean last response & last response type
+        this.lastResponse = undefined;
+        this.lastResponseContentType = undefined;
+
         // Prepare request options
         this.pushBodyInRequestOptions(body)
 
@@ -114,7 +124,36 @@ export default class Crazyrequest{
         }
 
         // Return fetch result
-        return fetch(request);
+        return fetch(request).then(
+            result => {
+
+                // Set last response
+                this.lastResponse = result;
+
+                // Check content type
+                if(result.headers.has("Content-Type")){
+
+                    // Set content type
+                    let contentType = result.headers.get("Content-Type");
+
+                    // Check if json
+                    if(contentType !== null && contentType.includes("application/json")){
+
+                            // This last response type
+                        this.lastResponseContentType = contentType;
+
+                        // Return json
+                        return result.json();
+
+                    }
+
+                }
+
+                // Return null
+                return null;
+
+            }
+        );
         
     }
 

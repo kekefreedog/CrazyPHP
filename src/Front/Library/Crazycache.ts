@@ -82,13 +82,20 @@ export default class Crazycache {
     public get = async (key:string):Promise<any> => {
 
         // Get value
-        let value = await this.instance?.getItem(key);
+        return this.instance?.getItem(key);
+        
+    }
 
-        // Return value
-        return value;
+    /**
+     * Get All
+     * 
+     * Get All items of cache instance
+     */
+    /* public getAll = async ():Promise<any> => {
+
         
 
-    }
+    } */
 
     /**
      * Set
@@ -100,21 +107,10 @@ export default class Crazycache {
      * @param callback?:CallableFunction
      * @return void
      */
-    public set = async (key:string, value:any, callback?:CallableFunction):Promise<void> => {
+    public set = async (key:string, value:any, callback?:CallableFunction):Promise<any> => {
 
         // Set value
-        let item = this.instance?.setItem(key, value, );
-
-        // Check callback
-        if(callback)
-
-            // execute it then
-            item?.then(value => {
-
-                // Pass value in callback
-                callback(value);
-
-            })
+        return this.instance?.setItem(key, value);
 
     }    
 
@@ -131,6 +127,9 @@ export default class Crazycache {
      */
     private setDefaultProperties = ():void => {
 
+        // New date
+        let date = new Date();
+
         // Check instance
         if(this.instance)
 
@@ -144,7 +143,7 @@ export default class Crazycache {
                     if(value === null || item == "dateLoaded")
 
                         // Set current date
-                        this.instance?.setItem(item, new Date())
+                        this.instance?.setItem(item, date);
 
 
                 // Catch error

@@ -46,6 +46,8 @@ class Context{
      */
     public static function get(string $key = ""):array|string|bool|int|null {
         
+        $bk = $key;
+
         # Set result
         $result = null;
 
@@ -55,7 +57,7 @@ class Context{
         $cursor = $GLOBALS[static::PREFIX] ?? [];
 
         # Change case
-        $cursor = array_change_key_case((array)$cursor);
+        $cursor = Arrays::changeKeyCaseRecursively((array)$cursor, CASE_LOWER);
 
         # Parse where
         $key = str_replace(self::SEPARATOR, "___", $key);
@@ -142,16 +144,24 @@ class Context{
 
             $i++;}
 
+        # Check if what is array 
+        if(is_array($what))
+
+            # Change case of what
+            $what = Arrays::changeKeyCaseRecursively($what, CASE_UPPER);
+
         # Check if what and cursor content are array
-        if(is_array($what) && is_array($cursor) && $mergeValues)
+        if(is_array($what) && is_array($cursor) && $mergeValues){
 
             # Merge arrays
-            $cursor = Arrays::mergeMultidimensionalArrays(true, $cursor, $what);
+            $cursor = Arrays::mergeMultidimensionalArrays($createIfNotExists, $cursor, $what);
 
-        else
+        }else{
 
             # Set value
             $cursor = $what;
+
+        }
 
         # Case
         $context = Arrays::changeKeyCaseRecursively($context, CASE_UPPER);

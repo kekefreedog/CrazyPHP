@@ -62,4 +62,14 @@ declare global {
         value:any;
     }
 
+    /**
+     * Crazy Page
+     */
+    interface Crazypage {
+
+        /** Name */
+        name:string;
+
+    }
+
 }

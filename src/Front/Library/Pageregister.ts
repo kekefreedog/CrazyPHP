@@ -12,6 +12,7 @@
  * Dependances
  */
 import Crazyrequest from './Crazyrequest';
+import Crazycache from './Crazycache';
 import Crazypage from './Crazypage';
 
 /**
@@ -29,8 +30,15 @@ import Crazypage from './Crazypage';
      ******************************************************
      */
 
-    /** @var routerCollection:Object */
-    private routerCollection:any = [];
+    /** @var cacheInstance:Crazycache|null */
+    private cacheInstance:Crazycache|null = null;
+
+
+    /** @var routerAction:Object */
+    private routerAction:Object = [];
+
+    /** @var customEvent:Event|null */
+    private customEvent:Event;
 
     /** Parameters
      ******************************************************
@@ -41,18 +49,57 @@ import Crazypage from './Crazypage';
      */
     public constructor(){
 
-        let request = new Crazyrequest("/api/v1/config/");
+        // Init cache
+        this.cacheInstance = new Crazycache("router");
 
-        let config = request.fetch().then(
-            result => {
+        this.cacheInstance
+            .get("dateUpdated")
+            .then(value => {
 
-                console.log(result);
+                // Decalre option
+                let option = {};
 
-            }
-        );
+                // Check value
+                if(value !== null){
 
-        // Register Router Collection
-        // this.registerRouterCollection(routerCollection);
+                    // Set date
+                    let date = new Date(value).toUTCString();
+
+                    // Prepare option
+                    option = {
+                        header: {"If-Modified-Since": date}
+                    }
+
+                }
+
+                // New Request
+                let request = new Crazyrequest("/api/v1/config/Router", option);
+
+                // Get date updated
+                request.fetch()
+                    // Check fetch result
+                    .then(value => {
+
+                        // Set app in cache
+                        return this.cacheInstance?.set('app', value.results.config.Router.app);
+            
+                    })
+                    // Dispatch event on ready
+                    .then(value => {
+
+                        // New event
+                        this.customEvent = new CustomEvent(
+                            "routerReady",
+                            {"detail": value}
+                        );
+
+                        // Dispatch custom event
+                        document.dispatchEvent(this.customEvent);
+
+                    })
+                ;
+                    
+            })
 
     }
 
@@ -70,49 +117,44 @@ import Crazypage from './Crazypage';
      */
     public register(page:Crazypage):void {
 
-        if(!("name" in page) || typeof page.name !== "string")
+        // Event listener on router ready
+        document.addEventListener(  
+            "routerReady",
+            value => {
+                
+                // Check detail in value
+                if(
+                    "detail" in value && 
+                    Array.isArray(value.detail) && 
+                    "name" in page && 
+                    typeof page.name === "string"
+                ){
 
-            // Return;
-            return;
-
-        // Check if page register already declared
-        let currentContextCollection = this.filterArrayByKeyValue(this.routerCollection.Router.app, "name", page.name);
+                    // Check if page in detail
+                    let currentContextCollection:Array<any> = this.filterArrayByKeyValue(value.detail, "name", page.name);
         
-        // Check current context
-        if(!currentContextCollection.length)
+                    // Check current context
+                    if(currentContextCollection.length){
 
-            // Return
-            return;
+                        // Push class in instance
+                        this.routerAction[page.name] = {
+                            instance: page,
+                            date: new Date()
+                        }
 
-        // Check if instance already existing
-        if(("instance" in this.routerCollection.Router.app[0]) || !this.routerCollection.Router.app[0]){
+                    }
 
-            // Push class in instance
-            this.routerCollection.Router.app[0].instance = page;
+                }
 
-            // Push date
-            this.routerCollection.Router.app[0].instanceDate = Date.now();
+            }
 
-        }
+        );
 
     }
 
     /** Methods | Private
      ******************************************************
      */
-
-    /**
-     * Register Router Collection
-     * 
-     * @param collection:Object
-     * @return void
-     */
-    private registerRouterCollection(collection:Object){
-
-        // Push object in routerCollection
-        this.routerCollection = collection;
-
-    }
 
     /**
      * Array Filter

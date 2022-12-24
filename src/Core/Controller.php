@@ -20,6 +20,7 @@ use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use Mezon\Router\Router as VendorRouter;
 use CrazyPHP\Exception\CrazyException;
 use Nyholm\Psr7\Factory\Psr17Factory;
+use CrazyPHP\Library\Time\DateTime;
 use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Model\Context;
@@ -93,6 +94,87 @@ class Controller {
 
     }
 
+    /** Public static methods | Header
+     ******************************************************
+     */
+
+    /**
+     * Get Request Headers
+     * 
+     * Get header given on request
+     * 
+     * @param string $name Name of the header
+     * @return string|int|array|bool|null
+     */
+    public static function getHeaderFromRequest(string $name = ""):string|int|array|bool|null {
+
+        # Set result
+        $result = null;
+
+        # check name
+        if(!$name)
+
+            # Return result
+            return $result;
+
+        # Get value from context
+        $result = Context::get("routes.current.headers.$name");
+
+        # Return value
+        return $result;
+
+    }
+
+    /**
+     * Get All Request Header
+     * 
+     * Get all request given on request
+     * 
+     * @return array|null
+     */
+    public static function getHeadersFromRequest():array|null {
+
+        # Set result
+        $result = null;
+
+        # Get header
+        $result = Context::get("routes.current.headers");
+
+        # return result
+        return $result;
+
+    }
+
+    /** Public static methods | Last Updated
+     ******************************************************
+     */
+
+    /**
+     * If client is not updated
+     * 
+     * Check if 
+     */
+    public static function clientIsNotUpToDate(DateTime|\DateTime|null $lastModified):bool {
+
+        # Set result
+        $result = true;
+
+        # Check input
+        if($lastModified === null || ($ifModifiedSince = Context::get("routes.current.headers.if-modified-since")) === null)
+
+            # return result
+            return $result;
+
+        # Convert header to datetime
+        $ifModifiedSinceDate = new DateTime((string) $ifModifiedSince);
+
+        # Comparaison
+        $result = $ifModifiedSinceDate <= $lastModified;
+
+        # return result
+        return $result;
+
+    }
 
     /** Public static methods | Config
      ******************************************************

@@ -166,6 +166,90 @@ class Header{
 
     }
 
+    /**
+     * Clean
+     * 
+     * Clean header from server request
+     * 
+     * @param array $headers
+     * @return array
+     */
+    public static function clean(array $headers = []):array {
+
+        # Set result
+        $result = $headers;
+
+        # Check headers
+        if(empty($headers))
+
+            # Return result
+            return $result;
+
+        # Iteration headers
+        foreach($headers as $header => $content){
+
+            # Prepare option
+            $option = null;
+
+            # Prepare option
+            if(array_key_exists($header, static::CLEAN_EXCEPTION))
+
+                $option = static::CLEAN_EXCEPTION[$header];
+
+            # Check not exeption
+            if((isset($option["continue"]) && $option["continue"]) || empty($content))
+
+                # Continue iteration
+                continue;
+
+            # Set key first
+            $keyfirst = array_key_first($content);
+
+            # Check separator
+            if(isset($option["separator"]) && $option["separator"]){
+
+                # Set content
+                $value = explode($option["separator"], $content[$keyfirst]);
+
+            }else{
+
+                # Set value
+                $value = $content[$keyfirst];
+
+            }
+
+            # Check value is array and if option has keySeparator
+            if(is_array($value) && isset($option["keySeparator"]) && $option["keySeparator"]){
+
+                # Declare temp value
+                $tempValue = [];
+
+                # Iteration of value
+                foreach($value as $v){
+
+                    # Exemple v with keySeparator
+                    $v = explode($option["keySeparator"], $v, 2);
+
+                    # Set temp value
+                    $tempValue[$v[0]] = $v[1] ?? null;
+
+                }
+
+                # Replace value
+                $value = $tempValue;
+
+            }
+
+            # Set content
+            $result[$header] = $value;
+
+        }
+
+        # Return result
+        return $result;
+
+    }
+
     /** Private static methods
      ******************************************************
      */
@@ -307,6 +391,32 @@ class Header{
         "c"     =>  "@dir/../../../resources/Hbs/Header/style_c.hbs",
         "shell" =>  "@dir/../../../resources/Hbs/Header/style_shell.hbs",
         "html"  =>  "@dir../../../resources/Hbs/Header/style_html.hbs",
+    ];
+
+    /** Public constant
+     ******************************************************
+     */
+
+    /**
+     * Clean exception
+     */
+    public const CLEAN_EXCEPTION = [
+        "Host"              => [
+            "keySeparator"      =>  ":"  
+        ],
+        "Cookie"            =>  [
+            "separator"         =>  "; ",
+            "keySeparator"      =>  "=" 
+        ],
+        "Accept-Encoding"   =>  [
+            "separator"         =>  ", "
+        ],
+        "Accept-Language"   =>  [
+            "separator"         =>  ";"
+        ],
+        "Accept"            =>  [
+            "separator"         =>  ","
+        ]
     ];
 
 }

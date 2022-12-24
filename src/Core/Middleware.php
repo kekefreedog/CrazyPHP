@@ -17,6 +17,7 @@ namespace  CrazyPHP\Core;
  */
 use Nyholm\Psr7Server\ServerRequestCreator;
 use Nyholm\Psr7\Factory\Psr17Factory;
+use CrazyPHP\Library\File\Header;
 use CrazyPHP\Model\Context;
 
 /**
@@ -69,8 +70,19 @@ class Middleware{
             $psr17Factory  // StreamFactory
         );
 
+        # Create server request
+        $serverRequest = $creator->fromGlobals();
+
+        # Fill headers given in context
+        Context::set(
+            Header::clean($serverRequest->getHeaders()),
+            "routes.current.headers",
+            true,
+            true
+        );
+
         # Return global
-        return $creator->fromGlobals();
+        return $serverRequest;
 
     }
 
