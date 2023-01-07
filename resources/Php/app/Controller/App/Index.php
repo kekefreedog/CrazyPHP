@@ -15,10 +15,10 @@ namespace App\Controller\App;
 /**
  * Dependances
  */
-use CrazyPHP\Library\Html\Structure;
 use CrazyPHP\Core\Controller;
 use CrazyPHP\Core\Response;
 
+use CrazyPHP\Library\Html\Structure;
 
  /**
  * App
@@ -29,10 +29,10 @@ use CrazyPHP\Core\Response;
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2022 Kévin Zarshenas
  */
-class Home extends Controller {
+class Index extends Controller {
 
     /** @const string TEMPLATE */
-    public const TEMPLATE = "@app_root/app/Environment/Page/Home/template.hbs";
+    public const TEMPLATE = "@app_root/app/Environment/Page/Index/template.hbs";
 
     /**
      * Get
@@ -44,8 +44,8 @@ class Home extends Controller {
             ->setDoctype()
             ->setLanguage()
             ->setHead()
-            ->setJsScripts()
             ->setBodyTemplate(self::TEMPLATE)
+            ->setJsScripts()
             ->prepare()
             ->render()
         ;

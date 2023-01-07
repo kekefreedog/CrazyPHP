@@ -11,9 +11,9 @@
 /**
  * Dependances
  */
-import Crazycomponent from "./../../../../vendor/kzarshenas/crazyphp/src/Front/Crazycomponent";
-const TemplateCompilated:CallableFunction = require("./template.hbs");
 const StyleCompilated:CrazyelementStyle = require("!!css-loader!sass-loader!./style.scss");
+const TemplateCompilated:CallableFunction = require("./template.hbs");
+import { Crazycomponent } from "crazyphp";
 
 /**
  * Loading Screen Button
@@ -27,29 +27,29 @@ const StyleCompilated:CrazyelementStyle = require("!!css-loader!sass-loader!./st
 export default class LoadingScreenBtn extends Crazycomponent {
 
     /** Parameters
- ******************************************************
+    ******************************************************
     */
-
+ 
     /** @var properties Propoerties of the current component */
     public properties:Object = {};
-
+ 
     /**
- * Constructor
- */
+    * Constructor
+    */
     constructor(){
-
-    // Call parent constructor
-    super();
-
-    // Set attributes by default
-    this.setDefaultProperties(this.properties);
-
-    // Set Content
-    this.setHtmlAndCss(
-        TemplateCompilated,
-        StyleCompilated
-    );
-
+ 
+       // Call parent constructor
+       super();
+ 
+       // Set attributes by default
+       this.setDefaultProperties(this.properties);
+ 
+       // Set Content
+       this.setHtmlAndCss(
+          TemplateCompilated,
+          StyleCompilated
+       );
+ 
     }
-
+ 
 }

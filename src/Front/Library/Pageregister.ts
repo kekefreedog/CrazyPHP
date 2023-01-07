@@ -80,8 +80,23 @@ import Crazypage from './Crazypage';
                     // Check fetch result
                     .then(value => {
 
-                        // Set app in cache
-                        return this.cacheInstance?.set('app', value.results.config.Router.app);
+                        // Check if data received
+                        if(request.lastResponse?.status === 200){
+
+                            // Set app in cache
+                            return this.cacheInstance?.set('app', value.results.config.Router.app);
+
+                        }else
+                        // Check if server approced internal cache
+                        if(request.lastResponse?.status === 304){
+
+                            // Set app in cache
+                            return this.cacheInstance?.get('app');
+
+                        }else
+
+                            // Error
+                            throw new Error("Error when loading config router : " + request.lastResponse?.statusText + "(" + request.lastResponse?.status + ")" )
             
                     })
                     // Dispatch event on ready
@@ -149,6 +164,42 @@ import Crazypage from './Crazypage';
             }
 
         );
+
+    }
+
+    /**
+     * Get current
+     * 
+     * Get current page
+     * 
+     * @return object
+     */
+    public getCurrent = ():Object => {
+
+        // Return object
+        return Object;
+
+    }
+
+    /**
+     * Get Set Current
+     * 
+     * Get current page 
+     *  - User give url
+     *  - Script send request to cache / server to know wich page match with the current url given
+     *  - Then script check if the script of the page is available / or if it has to be loaded from server 
+     * 
+     * @return object
+     */
+    public setCurrent = (name:string = ""):void => {
+
+        // Check name
+        if(!name)
+
+            // Stop function
+            return;
+
+        // 
 
     }
 

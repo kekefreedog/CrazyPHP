@@ -40,11 +40,12 @@ module.exports = {
     resolve: {
         extensions: ['.tsx', '.ts', '.js'],
         extensionAlias: {
-            '.ts': ['.js', '.ts'],
+            '.ts': ['.ts'],
             '.cts': ['.cjs', '.cts'],
             '.mts': ['.mjs', '.mts'],
             '.js': ['.js'],
         },
+        symlinks: true
     },
     module: {
         rules: [
@@ -107,5 +108,5 @@ module.exports = {
             title: 'TypeScript',
             excludeWarnings: false,
         })
-    ],
+    ]
 };

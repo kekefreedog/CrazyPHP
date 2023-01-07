@@ -22,7 +22,7 @@ const fs = require('fs');
  */
 const routers = require("./vendor/kzarshenas/crazyphp/resources/Webpack/routers/index.ts");
 const routersCollection = routers.load(yaml, fs);
- 
+
 /** 
  * Config
  */
@@ -39,72 +39,73 @@ module.exports = {
     resolve: {
         extensions: ['.tsx', '.ts', '.js'],
         extensionAlias: {
-            '.ts': ['.js', '.ts'],
+            '.ts': ['.ts'],
             '.cts': ['.cjs', '.cts'],
             '.mts': ['.mjs', '.mts'],
             '.js': ['.js'],
         },
+        symlinks: true
     },
     module: {
         rules: [
-        {
-            test: /\.s[ac]ss$/i,
-            use: [
-                "style-loader",
-                "css-loader",
-                "sass-loader",
-            ],
-        },
-        {
-            test: /.([cm]?ts|tsx)$/,
-            loader: 'ts-loader',
-        },
-        {
-            test: /\.ya?ml$/,
-            use: 'yaml-loader'
-        },
-        {
-            test: /\.(handlebars|hbs)$/,
-            loader: "handlebars-loader",
-            options: {
-                helperDirs: __dirname + "./vendor/kzarshenas/crazyphp/resources/Js/Handlebars",
-                knownHelpersOnly: false,
-            }
-                    
-        },
-        {
-            test: /\.(woff|woff2|eot|ttf)$/,
-            type: 'asset/resource',
-            generator: {
-                filename: 'fonts/[name][ext]',
-            }
-        },
-        {
-            test: /\.svg$/,
-            generator: {
-                filename: 'svg/[name].svg',
+            {
+                test: /\.s[ac]ss$/i,
+                use: [
+                    "style-loader",
+                    "css-loader",
+                    "sass-loader",
+                ],
             },
-        },
-    ],
-},
-optimization: {
-    moduleIds: 'deterministic',
-    runtimeChunk: 'single',
-    splitChunks: {
-        cacheGroups: {
-            vendor: {
-                test: /[\\/]node_modules[\\/]/,
-                name: 'vendors',
-                chunks: 'all',
+            {
+                test: /.([cm]?ts|tsx)$/,
+                loader: 'ts-loader',
+            },
+            {
+                test: /\.ya?ml$/,
+                use: 'yaml-loader'
+            },
+            {
+                test: /\.(handlebars|hbs)$/,
+                loader: "handlebars-loader",
+                options: {
+                    helperDirs: __dirname + "./vendor/kzarshenas/crazyphp/resources/Js/Handlebars",
+                    knownHelpersOnly: false,
+                }
+                        
+            },
+            {
+                test: /\.(woff|woff2|eot|ttf)$/,
+                type: 'asset/resource',
+                generator: {
+                    filename: 'fonts/[name][ext]',
+                }
+            },
+            {
+                test: /\.svg$/,
+                generator: {
+                    filename: 'svg/[name].svg',
+                },
+            },
+        ],
+    },
+    optimization: {
+        moduleIds: 'deterministic',
+        runtimeChunk: 'single',
+        splitChunks: {
+            cacheGroups: {
+                vendor: {
+                    test: /[\\/]node_modules[\\/]/,
+                    name: 'vendors',
+                    chunks: 'all',
+                },
             },
         },
     },
-},
-plugins: [
-    new ForkTsCheckerWebpackPlugin(),
-    new ForkTsCheckerNotifierWebpackPlugin({
-        title: 'TypeScript',
-        excludeWarnings: false,
-    })
-],
+    plugins: [
+        new ForkTsCheckerWebpackPlugin(),
+        new ForkTsCheckerNotifierWebpackPlugin({
+            title: 'TypeScript',
+            excludeWarnings: false,
+        })
+    ]
 };

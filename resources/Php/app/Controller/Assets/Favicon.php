@@ -18,7 +18,6 @@ namespace App\Controller\Assets;
 use CrazyPHP\Core\Media\Favicon as MediaFavion;
 use CrazyPHP\Core\Controller;
 use CrazyPHP\Core\Response;
-use CrazyPHP\Core\File;
 
  /**
  * App

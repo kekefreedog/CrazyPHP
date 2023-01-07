@@ -18,10 +18,10 @@ namespace App\Controller\Api\V1;
 use CrazyPHP\Library\File\Config as FileConfig;
 use CrazyPHP\Model\Config as ModelConfig;
 use Symfony\Component\Finder\Finder;
+use CrazyPHP\Library\Time\DateTime;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Core\ApiResponse;
 use CrazyPHP\Core\Controller;
-use CrazyPHP\Library\Time\DateTime;
 
  /**
  * App
@@ -45,11 +45,23 @@ class Config extends Controller {
         # Set parameters
         $paramters = self::getParametersUrl();
 
+        # Set
+        $statutCode = 200;
+
+        # Declare content
+        $content = null;
+
+        /** All config
+         ******************************************************
+         */
+
         # Check if parameters parameters
         if(empty($paramters)){
 
             # Declare name & last modified
             $names = [];
+            
+            /** @var DateTime|\DateTime|null */
             $lastModified = null;
 
             # New finder
@@ -77,31 +89,63 @@ class Config extends Controller {
 
             }
 
-            # Get all configs
-            $configs = FileConfig::get($names);
+            # Check if If-Modified-Since
+            if(self::clientIsNotUpToDate($lastModified)){
 
-            # Set content
-            $content["config"] = $configs;
+                # Get all configs
+                $configs = FileConfig::get($names);
+
+                # Set content
+                $content["config"] = $configs;
+
+            }else
+
+                # Set statut code
+                $statutCode = 304;
+            
+        /** Specific config
+        ******************************************************
+        */
 
         }else
         # Check if name
         if(isset($paramters["parameter"])){
 
-            # Get config value
-            $content[$paramters["name"]] = FileConfig::getValue($paramters["name"].".".$paramters["parameter"]);
-
             # Set last modified date
             $lastModified = FileConfig::getLastModified($paramters["name"]);
+
+            # Check if If-Modified-Since
+            if(self::clientIsNotUpToDate($lastModified)){
+
+                # Get config value
+                $content[$paramters["name"]] = FileConfig::getValue($paramters["name"].".".$paramters["parameter"]);
+
+            }else
+
+            # Set statut code
+            $statutCode = 304;
+            
+        /** Specific value of config
+        ******************************************************
+        */
 
         }else
         # Check name is set
         if(isset($paramters["name"])){
 
-            # check if config given exists
-            $content["config"] = FileConfig::get($paramters["name"]);
-
             # Set last modified date
             $lastModified = FileConfig::getLastModified($paramters["name"]);
+
+            # Check if If-Modified-Since
+            if(self::clientIsNotUpToDate($lastModified)){
+
+                # check if config given exists
+                $content["config"] = FileConfig::get($paramters["name"]);
+
+            }else
+
+                # Set statut code
+                $statutCode = 304;
 
         }
 
@@ -109,6 +153,7 @@ class Config extends Controller {
         # Set response
         (new ApiResponse())
             ->addLastModified($lastModified)
+            ->setStatusCode($statutCode)
             ->pushContent("results", $content)
             ->pushContext()
             ->send();

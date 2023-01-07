@@ -18,6 +18,7 @@ namespace  CrazyPHP\Core;
 use CrazyPHP\Library\Router\Router as LibraryRouter;
 use Mezon\Router\Router as VendorRouter;
 use CrazyPHP\Exception\CrazyException;
+use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\Cache\Cache;
 use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\File\File;
@@ -38,8 +39,11 @@ class Router extends VendorRouter {
      ******************************************************
      */
 
-    /* @var Cache|null $cache Cache instance */
+    /** @var Cache|null $cache Cache instance */
     public ?Cache $cache = null;
+
+    /** Various parameters */
+    public $staticRoutes, $paramRoutes, $routeNames, $cachedRegExps, $cachedParameters, $regExpsWereCompiled;
 
     /**
      * Constructor
@@ -116,8 +120,17 @@ class Router extends VendorRouter {
         # Set lastModifiedDate
         $lastModifiedDate = File::getLastModifiedDate($collectionPath ? File::path($collectionPath) : File::path("@app_root/config/Router.yml"));
 
+        # Get last modified date of api
+        $lastModifiedDateApi = File::getLastModifiedDate(File::path("@app_root/config/Api.yml"));
+
+        # Compare two dates
+        if($lastModifiedDateApi > $lastModifiedDate)
+
+            # Update last modified date
+            $lastModifiedDate = $lastModifiedDateApi;
+
         # Check cache is valid
-        if($this->cache->hasUpToDate($key, $lastModifiedDate)){
+        if(false && $this->cache->hasUpToDate($key, $lastModifiedDate)){
 
             # Load From Cache
             $this->loadFromCache($key);
@@ -154,7 +167,13 @@ class Router extends VendorRouter {
             );
 
         # Parse collection
-        $collectionParsed = LibraryRouter::parseCollection($collection);
+        $collectionParsed = Arrays::mergeMultidimensionalArrays(    
+            true,        
+            # Parse api specific router
+            LibraryRouter::parseApiCollection(),
+            # Parse collection
+            LibraryRouter::parseCollection($collection)
+        );
 
         # Check collection
         if(empty($collectionParsed))

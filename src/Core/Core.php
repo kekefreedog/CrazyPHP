@@ -44,7 +44,7 @@ class Core extends Kernel {
      * @var Instance $instance Instance of your app
      * ->router()
      */
-    public $instance = null;
+    public ?Instance $instance = null;
 
     /**
      * Constructor

@@ -27,6 +27,13 @@ namespace  CrazyPHP\Core;
  */
 class Instance {
 
+    /** Parameters
+     ******************************************************
+     */
+
+    /* Router */
+    public $router;
+
     /**
      * Constructor
      * 

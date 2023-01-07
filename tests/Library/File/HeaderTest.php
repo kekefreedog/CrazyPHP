@@ -102,7 +102,7 @@ class HeaderTest extends TestCase{
  * My crazy framework for creating ultra-fast webapps.
  *
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright   2022 kzarshenas/crazyphp
+ * @copyright   2023 kzarshenas/crazyphp
  */
 ";
 

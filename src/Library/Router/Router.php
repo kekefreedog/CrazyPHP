@@ -39,8 +39,11 @@ class Router {
      * Parse collection
      * 
      * Parse config router collection
+     * 
+     * @param array $collection Collection of router
+     * @return array
      */
-    public static function parseCollection($collection):array {
+    public static function parseCollection(array $collection = []):array {
 
         # Declare result
         $result = [];
@@ -107,6 +110,96 @@ class Router {
                     }
                 }
                 
+            }
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Parse Api Collection
+     * 
+     * Parse config router collection
+     * 
+     * @param array $collection Collection of api router
+     * @return array
+     */
+    public static function parseApiCollection():array {
+
+        # Declare result
+        $result = [];
+
+        # Open api config
+        $api = Config::get("Api");
+
+        /* get methods */
+
+            # Declare methods
+            $methods = [];
+
+            # Get methods allowed
+            $methodsAllowed = Config::getValue("Router.methods");
+
+            # Get api prefix
+            $apiPrefix = (string) Config::getValue("Router.prefix.api");
+
+            # Check
+            if(!empty($methodsAllowed)){
+
+                # Check methodsTemp is array
+                $methodsTemp = !is_array($methodsAllowed) ?
+                    [$methodsAllowed] :
+                        $methodsAllowed;
+
+                # Iteration of methods
+                foreach($methodsTemp as $method)
+
+                    # Check method is valid
+                    if(strtoupper($method) && in_array(strtoupper($method), self::METHODS))
+
+                        # Push method
+                        $methods[] = strtoupper($method);
+                
+            }else{
+
+                # Set methods
+                $methods = self::METHODS;
+
+            }
+
+        /* Get methods | end */
+
+        /* Prepare router */
+
+            # Check api 2
+            if(
+                $api && 
+                isset($api["Api"]["v2"]) && 
+                ($api["Api"]["v2"]["enable"] ?? false) && 
+                !empty($api["Api"]["v2"]["routers"] ?? [])
+            ){
+
+                # Get prefix
+                $currentPrefix = rtrim($apiPrefix, "/") . "/" . $api["Api"]["v2"]["prefix"] ?? "" ;
+
+                # Iteration of app
+                foreach($api["Api"]["v2"]["routers"] as $apiRouter){
+
+                    # Get parse router result
+                    $router = self::parseRouter($apiRouter, $currentPrefix, $methods);
+
+                    # Check router
+                    if(!empty($router))
+
+                        # Iteration des router
+                        foreach($router as $childRouter)
+
+                            # Push router in result
+                            $result["api"][] = $childRouter;
+
+                }
+            
             }
 
         # Return result

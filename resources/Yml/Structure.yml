@@ -40,6 +40,8 @@ Structure:
       config:
         files:
           App.yml: null
+          Api.yml:
+            source: "@crazyphp_root/resources/Yml/Api.yml"
           Database.yml:
             source: "@crazyphp_root/resources/Yml/Database.yml"
           Firewall.yml:
@@ -91,6 +93,8 @@ Structure:
                 files:
                   Home.php:
                     source: "@crazyphp_root/resources/Php/app/Controller/App/Home.php"
+                  Index.php:
+                    source: "@crazyphp_root/resources/Php/app/Controller/App/Index.php"
               Api:
                 folders:
                   v1:

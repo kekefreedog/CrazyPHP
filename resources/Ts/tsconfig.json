@@ -1,17 +1,19 @@
 {
     "compilerOptions": {
         "target": "es6",
-        "lib": ["es6", "dom"],
+        "lib": ["es6", "dom", "es2017"],
         "module": "esnext",
         "moduleResolution": "node",
-        "jsx": "react",
         "sourceMap": true,
         "strict": true,
         "importHelpers": true,
         "skipLibCheck": true,
         "noImplicitAny": false,
-        "typeRoots": ["./node_modules/@types", "./app/Front/types", "./vendor/kzarshenas/crazyphp/src/Front/types"],
+        "typeRoots": ["./node_modules/@types", "./app/Front/types"],
         "strictPropertyInitialization": false,
+        "paths": {
+            "tslib" : ["./node_modules/tslib/tslib.d.ts"]
+        }
     },
     "exclude": ["./vendor/kzarshenas/crazyphp/resources/"]
 }

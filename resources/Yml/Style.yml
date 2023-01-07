@@ -18,3 +18,4 @@ Style:
       branch: main
   components:
     - LoadingScreenBtn: loading-screen-btn
+    - RegularBtn: regular-btn

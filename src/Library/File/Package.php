@@ -117,18 +117,20 @@ class Package{
     /** @const array DEFAULT_DEPENDENCIES */
     public const DEFAULT_DEV_DEPENDENCIES = [
         # Front
-        "@fortawesome/fontawesome-free"             =>  "*",
+        "@fortawesome/fontawesome-free"             =>  "^6.2.1",
         "@materializecss/materialize"               =>  "1.1.0",
         "clipboard"                                 =>  "*",
         "handlebars"                                =>  "*",
-        "handlebars-helpers"                        =>  "*",
-        "handlebars-utils"                          =>  "*",
+        "handlebars-helpers"                        =>  "^0.9.8",
+        "handlebars-utils"                          =>  "^1.0.6",
         "sweetalert2"                               =>  "*",
         "tippy.js"                                  =>  "*",
         "material-symbols"                          =>  "*",
         "material-icons"                            =>  "*",
-        "@material-design-icons/font"               =>  "*",
-        "i18next"                                   =>  "*",
+        "@material-design-icons/font"               =>  "^0.14.2",
+        "i18next"                                   =>  "^22.0.8",
+        # Cache
+        "localforage"                               =>  "^1.10.0",
         # Back | Webpack            
         "webpack"                                   =>  "*",
         "webpack-cli"                               =>  "*",

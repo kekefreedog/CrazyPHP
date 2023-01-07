@@ -11,10 +11,10 @@
 /**
  * Dependances
  */
-import Crazycomponent from "./../../../../vendor/kzarshenas/crazyphp/src/Front/Crazycomponent";
 const TemplateCompilated:CallableFunction = require("./template.hbs");
 const StyleCompilated:CrazyelementStyle = require("!!css-loader!sass-loader!./style.scss");
 import tippy, {animateFill} from 'tippy.js';
+import { Crazycomponent } from "crazyphp";
 
 /**
  * Regular Button
