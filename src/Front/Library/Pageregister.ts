@@ -33,12 +33,17 @@ import Crazypage from './Crazypage';
     /** @var cacheInstance:Crazycache|null */
     private cacheInstance:Crazycache|null = null;
 
-
     /** @var routerAction:Object */
     private routerAction:Object = [];
 
     /** @var customEvent:Event|null */
     private customEvent:Event;
+
+    /** @var currentPage */
+    private currentPage:Crazypage|null = null;
+
+    /** @var history */
+    private history:Array<Crazypage> = [];
 
     /** Parameters
      ******************************************************
@@ -52,73 +57,86 @@ import Crazypage from './Crazypage';
         // Init cache
         this.cacheInstance = new Crazycache("router");
 
+        // Cache instance
         this.cacheInstance
             .get("dateUpdated")
-            .then(value => {
-
-                // Decalre option
-                let option = {};
-
-                // Check value
-                if(value !== null){
-
-                    // Set date
-                    let date = new Date(value).toUTCString();
-
-                    // Prepare option
-                    option = {
-                        header: {"If-Modified-Since": date}
-                    }
-
-                }
-
-                // New Request
-                let request = new Crazyrequest("/api/v1/config/Router", option);
-
-                // Get date updated
-                request.fetch()
-                    // Check fetch result
-                    .then(value => {
-
-                        // Check if data received
-                        if(request.lastResponse?.status === 200){
-
-                            // Set app in cache
-                            return this.cacheInstance?.set('app', value.results.config.Router.app);
-
-                        }else
-                        // Check if server approced internal cache
-                        if(request.lastResponse?.status === 304){
-
-                            // Set app in cache
-                            return this.cacheInstance?.get('app');
-
-                        }else
-
-                            // Error
-                            throw new Error("Error when loading config router : " + request.lastResponse?.statusText + "(" + request.lastResponse?.status + ")" )
-            
-                    })
-                    // Dispatch event on ready
-                    .then(value => {
-
-                        // New event
-                        this.customEvent = new CustomEvent(
-                            "routerReady",
-                            {"detail": value}
-                        );
-
-                        // Dispatch custom event
-                        document.dispatchEvent(this.customEvent);
-
-                    })
-                ;
-                    
-            })
+            .then(this.prepareCache)
+        ;
 
     }
 
-    /** Methods
+    /** Methods | private
+     ******************************************************
+     */
+
+    /**
+     * Prepare Cache
+     * 
+     * @param value:any
+     */
+    private prepareCache = (value:any) => {
+
+        // Decalre option
+        let option = {};
+
+        // Check value
+        if(value !== null){
+
+            // Set date
+            let date = new Date(value).toUTCString();
+
+            // Prepare option
+            option = {
+                header: {"If-Modified-Since": date}
+            }
+
+        }
+
+        // New Request
+        let request = new Crazyrequest("/api/v1/config/Router", option);
+
+        // Get date updated
+        request.fetch()
+            // Check fetch result
+            .then(value => {
+
+                // Check if data received
+                if(request.lastResponse?.status === 200){
+
+                    // Set app in cache
+                    return this.cacheInstance?.set('app', value.results.config.Router.app);
+
+                }else
+                // Check if server approced internal cache
+                if(request.lastResponse?.status === 304){
+
+                    // Set app in cache
+                    return this.cacheInstance?.get('app');
+
+                }else
+
+                    // Error
+                    throw new Error("Error when loading config router : " + request.lastResponse?.statusText + "(" + request.lastResponse?.status + ")" )
+    
+            })
+            // Dispatch event on ready
+            .then(value => {
+
+                // New event
+                this.customEvent = new CustomEvent(
+                    "routerReady",
+                    {"detail": value}
+                );
+
+                // Dispatch custom event
+                document.dispatchEvent(this.customEvent);
+
+            })
+        ;
+            
+    }
+
+    /** Methods | public
      ******************************************************
      */
 
@@ -130,7 +148,7 @@ import Crazypage from './Crazypage';
      * @param page:Crazypage
      * @return void
      */
-    public register(page:Crazypage):void {
+    public register(page:<Crazypage>):void {
 
         // Event listener on router ready
         document.addEventListener(  
@@ -159,11 +177,46 @@ import Crazypage from './Crazypage';
 
                     }
 
+                    // Check current page, if null it means it's the first page loaded
+                    if(this.currentPage === null){
+
+                        // Execute page
+                        let currentPage:any = new page();
+
+                        // Add it to current page
+                        this.currentPage = currentPage;
+
+                        // Add it to history
+                        this.history.push({
+                            instance: page,
+                            date: new Date()
+                        });
+
+                    }
+
                 }
 
             }
 
         );
+
+    }
+
+    /**
+     * Redirect
+     * 
+     * Redirect to another page
+     * 
+     * @return void
+     */
+    public redirect(name:string = ""):void {
+
+        // Read cache
+        this.cacheInstance && this.cacheInstance?.get("app").then(value => {
+        
+            console.log(value);
+
+        });
 
     }
 

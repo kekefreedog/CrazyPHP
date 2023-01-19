@@ -21,7 +21,7 @@
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2022 Kévin Zarshenas
  */
-export default class Crazypage {
+export default abstract class Crazypage {
 
     /**
      * Constructor
@@ -34,18 +34,22 @@ export default class Crazypage {
         this.setCurrentPage();
 
         /**
-         * Check if redirection
-         */
-        this.checkRedirection();
-
-        /**
          * Dispatch Events
          */
         this.dispatchEvents();
 
-
-
     }
+
+    /** Abstract methods
+     ******************************************************
+     */
+
+    /**
+     * On Ready
+     *
+     * @return void
+     */
+    public onReady:CallableFunction;
 
     /** Private methods
      ******************************************************
@@ -61,21 +65,6 @@ export default class Crazypage {
         
 
     }
-
-    /**
-     * Check redirection
-     * 
-     * @return void
-     */
-    private checkRedirection = ():void => {
-
-        
-
-    }
-
-    /** Public methods
-     ******************************************************
-     */
 
     /**
      * Dispatch Events
@@ -102,6 +91,24 @@ export default class Crazypage {
     private dispatchEvent = (event:string, callable:CallableFunction):void => {
 
 
+
+    }
+
+    /** Public methods
+     ******************************************************
+     */
+
+    /**
+     * Redirect To
+     * 
+     * Redirect to another page
+     * @param name:string Name of the page to redirect to
+     * @param reloadPage:boolean Force a real reload of the page
+     * @return void
+     */
+    public redirectTo = (name:string = "", reloadPage:boolean = false):void => {
+
+        console.log(name);
 
     }
 

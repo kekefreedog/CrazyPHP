@@ -130,7 +130,7 @@ class Router extends VendorRouter {
             $lastModifiedDate = $lastModifiedDateApi;
 
         # Check cache is valid
-        if(false && $this->cache->hasUpToDate($key, $lastModifiedDate)){
+        if($this->cache->hasUpToDate($key, $lastModifiedDate)){
 
             # Load From Cache
             $this->loadFromCache($key);

@@ -71,5 +71,11 @@ declare global {
         name:string;
 
     }
+    /**
+     * String Crazy Page
+     */
+    interface StringCrazyPage {
+        new():Crazypage;
+    }
 
 }
