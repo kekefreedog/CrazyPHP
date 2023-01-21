@@ -17,6 +17,7 @@ namespace  CrazyPHP\Core;
  */
 use Nyholm\Psr7Server\ServerRequestCreator;
 use Nyholm\Psr7\Factory\Psr17Factory;
+use CrazyPHP\Library\Cache\Cache;
 use CrazyPHP\Library\File\Header;
 use CrazyPHP\Model\Context;
 
@@ -47,6 +48,33 @@ class Middleware{
             "routes.current",
             true
         );
+
+    }
+    
+    /**
+     * Lucky Php Specials Parameters
+     * 
+     * Check Lucky Php Special Parameters :
+     * - LUCKYPHP___CLEAR_CACHE
+     */
+    public static function LuckyPhpSpecialsParameters(string $route, ...$parameters) {
+
+        # Check get values
+        if(empty($_GET))
+
+            # Stop function
+            return;
+
+        # Check LUCKYPHP___CLEAR_CACHE
+        if(isset($_GET["LUCKYPHP___CLEAR_CACHE"])){
+
+            # New cache
+            $cache = new Cache();
+
+            # Clear cache
+            $cache->clear();
+
+        }
 
     }
 

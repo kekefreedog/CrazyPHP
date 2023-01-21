@@ -94,6 +94,39 @@ export default abstract class Crazypage {
 
     }
 
+    /** Private methods | Utilities
+     ******************************************************
+     */
+
+    /**
+     * convertToUrl
+     * 
+     * @param path Path to the url
+     * @param base Base of the path
+     * @return URL
+     */
+    private convertToUrl = (path:string = "", base:string = window.location.href):URL {
+
+        // Declare variables
+        let result:URL;
+
+        // Check path start with /
+        if(path.startsWith("/"))
+
+            // New url with base
+            result = new URL(path, base);
+
+        else
+
+            // New url
+            result = new URL(path);
+
+        // Return result
+        return result;
+
+    }
+
+
     /** Public methods
      ******************************************************
      */
@@ -104,11 +137,29 @@ export default abstract class Crazypage {
      * Redirect to another page
      * @param path:string Name of the page to redirect to
      * @param reloadPage:boolean Force a real reload of the page
-     * @return void
+     * @return result
      */
-    public redirectTo = (path:string = "", reloadPage:boolean = false):void => {
+    public redirectTo = (path:string = "", reloadPage:boolean = false):boolean => {
+        
+        // Declare variables
+        let url:URL = this.convertToUrl(path);
 
-        console.log(path);
+        // Set result
+        let result:boolean = false;
+
+        // Check if reload page
+        if(reloadPage){
+
+            // Set new location
+            window.location.assign(url);
+
+            // Return result
+            return result;
+
+        }
+
+        // Return result
+        return result;
 
     }
 

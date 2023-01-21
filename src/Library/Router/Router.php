@@ -361,10 +361,12 @@ class Router {
         $lastModifiedDate = File::getLastModifiedDate(File::path("@app_root/config/Router.yml"));
 
         # Check if modified
-        if(!$cacheInstance->hasUpToDate($key, $lastModifiedDate))
+        if(!$cacheInstance->hasUpToDate($key, $lastModifiedDate)){
 
             # Dump on cache
             static::dumpOnCache();
+
+        }
 
         # Get collection from cache
         $routersCollection = self::loadFromCache();
@@ -404,6 +406,9 @@ class Router {
 
         # Get router collection from config
         $routerConfig = Config::get("Router");
+
+        # Get Api 2 config
+        $routerApi = Config::get("Api");
 
         # Data to cache
         $dataToCache = [];
@@ -447,6 +452,67 @@ class Router {
 
                     # Push in data to cache
                     $dataToCache[$router["name"]] = $router;
+
+                }
+
+                # Check if group is api
+                if(
+                    $group === "api" && 
+                    isset($routerApi["Api"]["v2"]["enable"]) &&
+                    $routerApi["Api"]["v2"]["enable"] === true &&
+                    isset($routerApi["Api"]["v2"]["routers"]) &&
+                    !empty($routerApi["Api"]["v2"]["routers"])
+                ){
+
+                    # Set api prefix
+                    $apiPrefix = 
+                        (
+                            $prefix ? 
+                                $prefix : 
+                                    ""
+                        ) . 
+                        (
+                            ($routerApi["Api"]["v2"]["prefix"] ?? false) ?
+                                (
+                                    ($prefix ? "/" : "") .
+                                    trim($routerApi["Api"]["v2"]["prefix"], "/")
+                                ):
+                                    ""
+                        )
+                    ;
+
+                    # Iteration des routers
+                    foreach($routerApi["Api"]["v2"]["routers"] as $router){
+
+                        # Check router name
+                        if(!isset($router["name"]) || empty($router))
+    
+                            # Check router
+                            continue;
+    
+                        # Check router name doesn't exists
+                        if(isset($dataToCache[$router["name"]]))
+    
+                            # New Exception
+                            throw new CrazyException(
+                                "Api router \"".$router["name"]."\" already exists in router config, make sure all router have unique name !",
+                                500,
+                                [
+                                    "custom_code"   =>  "router-005",
+                                ]
+                            );
+    
+                        # Fill router
+                        if($apiPrefix)
+                            $router["prefix"] = $apiPrefix;
+    
+                        # Fill group
+                        $router["group"] = $group;
+    
+                        # Push in data to cache
+                        $dataToCache[$router["name"]] = $router;
+
+                    }
 
                 }
 

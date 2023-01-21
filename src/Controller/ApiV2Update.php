@@ -16,6 +16,8 @@ namespace CrazyPHP\Controller;
  * Dependances
  */
 use CrazyPHP\Exception\CrazyException;
+use CrazyPHP\Core\ApiResponse;
+use CrazyPHP\Core\Controller;
 
 /**
  * Api V2 Update
@@ -26,14 +28,14 @@ use CrazyPHP\Exception\CrazyException;
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2022 Kévin Zarshenas
  */
-class ApiV2Update {
+class ApiV2Update extends Controller {
     
     /**
      * put
      * 
      * @return void
      */
-    public function put():void {
+    public static function put():void {
 
         
 

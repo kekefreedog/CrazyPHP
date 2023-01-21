@@ -16,6 +16,8 @@ namespace CrazyPHP\Controller;
  * Dependances
  */
 use CrazyPHP\Exception\CrazyException;
+use CrazyPHP\Core\ApiResponse;
+use CrazyPHP\Core\Controller;
 
 /**
  * Api V2 Delete
@@ -26,14 +28,14 @@ use CrazyPHP\Exception\CrazyException;
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2022 Kévin Zarshenas
  */
-class ApiV2Delete {
+class ApiV2Delete extends Controller {
     
     /**
      * delete
      * 
      * @return void
      */
-    public function delete():void {
+    public static function delete():void {
 
         
 

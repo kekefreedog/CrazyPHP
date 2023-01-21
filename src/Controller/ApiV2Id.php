@@ -16,6 +16,8 @@ namespace CrazyPHP\Controller;
  * Dependances
  */
 use CrazyPHP\Exception\CrazyException;
+use CrazyPHP\Core\ApiResponse;
+use CrazyPHP\Core\Controller;
 
 /**
  * Api V2 By Id
@@ -26,14 +28,14 @@ use CrazyPHP\Exception\CrazyException;
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2022 Kévin Zarshenas
  */
-class ApiV2Id {
+class ApiV2Id extends Controller {
     
     /**
      * get
      * 
      * @return void
      */
-    public function get():void {
+    public static function get():void {
 
         
 
