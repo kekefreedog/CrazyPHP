@@ -209,7 +209,7 @@ import Crazypage from './Crazypage';
      * 
      * @return void
      */
-    public redirect(name:string = ""):void {
+    public redirect(path:string = "/"):void {
 
         // Read cache
         this.cacheInstance && this.cacheInstance?.get("app").then(value => {

@@ -14,6 +14,8 @@
 export {default as Componentregister} from "./../Library/Componentregister";
 export {default as Crazycomponent} from "./../Library/Crazycomponent";
 export {default as Configregister} from "./../Library/Configregister";
+export {default as Crazynavigator} from "./../Library/Crazynavigator";
+export {default as Crazylanguage} from "./../Library/Crazylanguage";
 export {default as Crazyconsole} from "./../Library/Crazyconsole";
 export {default as Crazyrequest} from "./../Library/Crazyrequest";
 export {default as Crazyelement} from "./../Library/Crazyelement";

@@ -102,13 +102,13 @@ export default abstract class Crazypage {
      * Redirect To
      * 
      * Redirect to another page
-     * @param name:string Name of the page to redirect to
+     * @param path:string Name of the page to redirect to
      * @param reloadPage:boolean Force a real reload of the page
      * @return void
      */
-    public redirectTo = (name:string = "", reloadPage:boolean = false):void => {
+    public redirectTo = (path:string = "", reloadPage:boolean = false):void => {
 
-        console.log(name);
+        console.log(path);
 
     }
 
