@@ -18,6 +18,7 @@ namespace CrazyPHP\Controller;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Core\ApiResponse;
 use CrazyPHP\Core\Controller;
+use CrazyPHP\Core\Model;
 
 /**
  * Api V2 Filter
@@ -37,7 +38,18 @@ class ApiV2Filter extends Controller {
      */
     public static function get():void {
 
-        
+        # Check entity given by user
+        $entityModel = Model::checkEntityInContext();
+
+        # Set content
+        $content = [get_class($entityModel)];
+
+        # Set response
+        (new ApiResponse())
+            ->setStatusCode()
+            ->pushContent("results", $content)
+            ->pushContext()
+            ->send();
 
     }
 

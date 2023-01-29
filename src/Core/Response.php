@@ -17,13 +17,12 @@ namespace  CrazyPHP\Core;
  */
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use Nyholm\Psr7\Response as Psr17Response;
+use Psr\Http\Message\ResponseInterface;
 use CrazyPHP\Exception\CrazyException;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Http\Message\StreamInterface;
 use CrazyPHP\Library\Time\DateTime;
 use CrazyPHP\Library\File\File;
-use CrazyPHP\Model\Asset;
-use \resource;
 
 /**
  * Response
@@ -236,7 +235,6 @@ class Response {
      * Add Last Modified
      * 
      * Add Last Modified date in header
-     * @return void
      * @param DateTime|\DateTime|null $datetime Date time of the last modification on current content
      * @return self
      */
@@ -334,6 +332,18 @@ class Response {
             $this->content
         );
 
+    }
+
+    /**
+     * Just for hide errors in VSCODE
+     */
+    public function pushContent():self {
+        # Return self
+        return $this;
+    }
+    public function pushContext():self {
+        # Return self
+        return $this;
     }
 
     /**

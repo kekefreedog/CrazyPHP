@@ -35,13 +35,19 @@ class Model {
      ******************************************************
      */
 
+    /** @var string $name Name of the current entity called */
+    private string $name = ""; 
+
     /** @var array|null $current Current model */
     private array|null $current = null;
 
     /**
      * Constructor
      */
-    public function __construct() {
+    public function __construct(string $entity = "") {
+
+        # Set name
+        $this->name = $entity ? $entity : get_class();
 
         # Prepare config of current model
         $this->_prepareModelConfig();
@@ -66,10 +72,10 @@ class Model {
         $modelConfig = Config::get("Model");
 
         # Check current class model config exists
-        $modelMatching = Arrays::filterByKey($modelConfig["Model"], "name", get_class());
+        $modelMatching = Arrays::filterByKey($modelConfig["Model"], "name", $this->name);
 
         # Check model matching
-        if(empty($modelMatching))
+        if(empty($modelMatching)){
             
             # New error
             throw new CrazyException(
@@ -79,6 +85,8 @@ class Model {
                     "custom_code"   =>  "model-001",
                 ]
             );
+
+        }
 
         # Set current model
         $this->current = array_pop($modelMatching);
@@ -93,7 +101,7 @@ class Model {
     private function _prepareArguments():void {
 
         # Check current model.attributes
-        if(isset($this->current["attributes"]) && isset($this->current["attributes"]))
+        if(!isset($this->current["attributes"]) && empty($this->current["attributes"]))
                 
             # New error
             throw new CrazyException(
@@ -113,9 +121,13 @@ class Model {
     /**
      * Check Entity in Entity
      * 
-     * @return bool
+     * @return Model return controller of the current model found
      */
-    public static function checkEntityInContext():void {
+    public static function checkEntityInContext():Model {
+
+        # Declare result with model namespace
+
+        $result = get_called_class();
 
         # Get parameters in context
         $parameterEntity = Context::getParameters("entity");
@@ -141,8 +153,11 @@ class Model {
         # Change case of models
         $models = array_map('strtolower', $models);
 
+        # Get key of current model
+        $key = array_search(strtolower($parameterEntity), $models);
+
         # Check parameterEntity is in the models collection
-        if(!in_array(strtolower($parameterEntity), $models))
+        if($key === false)
                 
             # New error
             throw new CrazyException(
@@ -152,6 +167,29 @@ class Model {
                     "custom_code"   =>  "model-004",
                 ]
             );
+
+        # Check if script associate to the model
+        if(isset($modelConfig["Model"][$key]["script"]) && $modelConfig["Model"][$key]["script"])
+
+            # Check class
+            if(!class_exists($modelConfig["Model"][$key]["script"]))
+                
+                # New error
+                throw new CrazyException(
+                    "Script associated to \"$parameterEntity\" doesn't exists...", 
+                    500,
+                    [
+                        "custom_code"   =>  "model-004",
+                    ]
+                );
+
+            else
+
+                # Set result
+                $result = $modelConfig["Model"][$key]["script"];
+
+        # Return called result
+        return new $result($modelConfig["Model"][$key]["name"]);
 
     }
 
