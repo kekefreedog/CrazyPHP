@@ -149,7 +149,6 @@ class Config extends Controller {
 
         }
 
-
         # Set response
         (new ApiResponse())
             ->addLastModified($lastModified)

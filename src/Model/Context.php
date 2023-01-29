@@ -213,6 +213,50 @@ class Context{
 
     }
 
+    /** Public static methods | Parameters
+     ******************************************************
+     */
+
+    /**
+     * Get Parameters
+     * 
+     * @param string|array $name Name of the parameter you are looking for
+     * @return string|array|null
+     */
+    public static function getParameters(string|array $name = ""):string|array|null {
+
+        # Set result
+        $result = null;
+
+        # Check name
+        if(!$name || empty($name))
+
+            # Set result
+            $result = self::get("routes.current.parameters");
+
+        # Check is string
+        if(is_string($name))
+
+            # Set result
+            $result = self::get("routes.current.parameters.$name");
+
+        # If array
+        else
+
+            # Iteration of name
+            foreach($name as $v)
+
+                # Check v
+                if($v)
+
+                    # Set result
+                    $result[$v] = self::get("routes.current.parameters.$v");
+
+        # Return result
+        return $result;
+
+    }
+
     /** Public Constants
      ******************************************************
      */

@@ -303,4 +303,30 @@ class Arrays{
 		},array_change_key_case($array, $case));
 	}
 
+	/**
+	 * Remove Column
+	 * 
+	 * @param array $array Array to process
+	 * @param string $column_key Name of key of the column to delete
+	 * @return void
+	 */
+	public static function removeColumn(array &$array = [], string|array $column_key = "") {
+
+		# Check column key
+		if($column_key && !empty($column_key))
+
+			# Warlk into array
+			array_walk(
+				$array, 
+				function (&$v) use ($column_key) {
+					if(is_string($column_key))
+						unset($v[$column_key]);
+					else
+						foreach($column_key as $key)
+							unset($v[$key]);
+				}
+			);
+
+	}
+
 }

@@ -43,7 +43,7 @@ import Crazypage from './Crazypage';
     private currentPage:Crazypage|null = null;
 
     /** @var history */
-    private history:Array<Crazypage> = [];
+    private history:Array<Object> = [];
 
     /** Parameters
      ******************************************************
@@ -148,7 +148,7 @@ import Crazypage from './Crazypage';
      * @param page:Crazypage
      * @return void
      */
-    public register(page:<Crazypage>):void {
+    public register(page:any):void {
 
         // Event listener on router ready
         document.addEventListener(  
@@ -172,6 +172,7 @@ import Crazypage from './Crazypage';
                         // Push class in instance
                         this.routerAction[page.name] = {
                             instance: page,
+                            file: "",
                             date: new Date()
                         }
 
@@ -181,16 +182,19 @@ import Crazypage from './Crazypage';
                     if(this.currentPage === null){
 
                         // Execute page
-                        let currentPage:any = new page();
+                        let currentPage:any = new (page as any)();
 
                         // Add it to current page
                         this.currentPage = currentPage;
 
                         // Add it to history
-                        this.history.push({
+                        let newHistoryItem:object = {
                             instance: page,
                             date: new Date()
-                        });
+                        };
+
+                        // Push in history
+                        this.history.push(newHistoryItem);
 
                     }
 
@@ -213,8 +217,20 @@ import Crazypage from './Crazypage';
 
         // Read cache
         this.cacheInstance && this.cacheInstance?.get("app").then(value => {
+
+            let name = "Home";
         
-            console.log(value);
+            // Get router by name
+            let routersFiltered:Array<Object> = this.filterArrayByKeyValue(value, "name", name);
+
+            // Check filter
+            if(!routersFiltered.length)
+
+                throw new Error("Path given isn't valid");
+
+            console.log(routersFiltered.shift());
+
+            console.log(this.routerAction);
 
         });
 

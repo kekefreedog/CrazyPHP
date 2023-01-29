@@ -167,12 +167,12 @@ class Router extends VendorRouter {
             );
 
         # Parse collection
-        $collectionParsed = Arrays::mergeMultidimensionalArrays(    
-            true,        
-            # Parse api specific router
-            LibraryRouter::parseApiCollection(),
-            # Parse collection
-            LibraryRouter::parseCollection($collection)
+        $collectionParsed = LibraryRouter::parseCollection($collection);
+
+        # Push api routers
+        $collectionParsed["api"] = array_merge(
+            $collectionParsed["api"] ?? [],
+            LibraryRouter::parseApiCollection()["api"] ?? []
         );
 
         # Check collection
@@ -194,7 +194,7 @@ class Router extends VendorRouter {
             if(!empty($collectionParsed[$group]))
 
                 # Iteration of collection
-                foreach($collectionParsed[$group] as $item)
+                foreach($collectionParsed[$group] as $item){
 
                     # Check type
                     if($item["type"] == "router"){
@@ -208,6 +208,8 @@ class Router extends VendorRouter {
                         );
 
                     }
+
+                }
 
         # Dump On cache
         $this->dumpOnCache($key);

@@ -11,6 +11,7 @@
 /**
  * Dependances
  */
+import Pageregister from "./Pageregister";
 
 /**
  * Crazy Page
@@ -22,6 +23,12 @@
  * @copyright  2022-2022 Kévin Zarshenas
  */
 export default abstract class Crazypage {
+
+    /** Private Parameters
+     ******************************************************
+     */
+
+    private pageRegister:Pageregister|null = null;
 
     /**
      * Constructor
@@ -105,7 +112,7 @@ export default abstract class Crazypage {
      * @param base Base of the path
      * @return URL
      */
-    private convertToUrl = (path:string = "", base:string = window.location.href):URL {
+    private convertToUrl = (path:string = "", base:string = window.location.href):URL => {
 
         // Declare variables
         let result:URL;
@@ -157,6 +164,17 @@ export default abstract class Crazypage {
             return result;
 
         }
+
+        // Check page redirect
+        if(this.pageRegister === null)
+
+            // New page redirect
+            this.pageRegister = new Pageregister();
+
+        let name = "Home";
+
+        // New redirection
+        this.pageRegister.redirect(name);
 
         // Return result
         return result;
