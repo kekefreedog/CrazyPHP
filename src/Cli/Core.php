@@ -19,6 +19,7 @@ use CrazyPHP\Exception\MongodbException;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Form\Validate;
 use CrazyPHP\Library\File\Composer;
+use CrazyPHP\Library\File\Package;
 use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\File\Docker;
 use splitbrain\phpcli\Options;
@@ -27,7 +28,6 @@ use CrazyPHP\Model\App\Delete;
 use League\CLImate\CLImate;
 use splitbrain\phpcli\CLI;
 use CrazyPHP\Cli\Form;
-use CrazyPHP\Library\File\Package;
 
 /**
  * Core

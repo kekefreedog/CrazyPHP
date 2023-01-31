@@ -28,7 +28,7 @@ use CrazyPHP\Core\Controller;
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2022 Kévin Zarshenas
  */
-class ApiV2Id extends Controller {
+class ApiV2Id {
     
     /**
      * get

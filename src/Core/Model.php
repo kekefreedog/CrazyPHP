@@ -16,6 +16,8 @@ namespace  CrazyPHP\Core;
  * Dependances
  */
 use CrazyPHP\Exception\CrazyException;
+use CrazyPHP\Library\Form\Process;
+use CrazyPHP\Interface\CrazyModel;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\File\Config;
 use CrazyPHP\Model\Context;
@@ -29,7 +31,7 @@ use CrazyPHP\Model\Context;
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2022 Kévin Zarshenas
  */
-class Model {
+class Model implements CrazyModel {
 
     /** Private parameters
      ******************************************************
@@ -54,6 +56,244 @@ class Model {
 
         # Set arguments
         $this->_prepareArguments();
+
+    }
+
+    /** Public methods | Create
+     ******************************************************
+     */
+    
+    /**
+     * Create
+     * 
+     * @param array $data Data with attributes values to use for create item
+     * @param ?array $options Optionnal options
+     * @return array
+     */
+    public function create(array $data, ?array $options = null):array {
+
+        # Declare result
+        $result = [];
+
+        # Process data
+        $process = new Process($data);
+
+
+
+        # Return result
+        return $result;
+
+    }
+
+    /** Public methods | Id 
+     ******************************************************
+     */
+
+    /**
+     * Read By Id
+     * 
+     * @param string|int $id Id of the item you want read
+     * @param ?array $options Optionnal options
+     * @return array
+     */
+    public function readById(string|int $id, ?array $options = null):array {
+
+        # Declare result
+        $result = [];
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Update By Id
+     * 
+     * @param string|int $id Id of the item you want update
+     * @param array $data Data with attributes values to use for update
+     * @param ?array $options Optionnal options
+     * @return array
+     */
+    public function updateById(string|int $id, array $data, ?array $options = null):array {
+
+        # Declare result
+        $result = [];
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Delete By Id
+     * 
+     * @param string|int $id Id of the item you want delete
+     * @param ?array $options Optionnal options
+     * @return array
+     */
+    public function deleteById(string|int $id, ?array $options = null):array {
+
+        # Declare result
+        $result = [];
+
+        # Return result
+        return $result;
+
+    }
+
+
+    /** Public methods | Filters 
+     ******************************************************
+     */
+
+    /**
+     * Read With Filters
+     * 
+     * @param array $filters Filters to use for read items
+     * @param array $sort Options to use for sort items read
+     * @param array $sort Options to use for group items read
+     * @param ?array $options Optionnal options
+     * @return array
+     */
+    public function readWithFilters(array $filters, ?array $sort = null, ?array $group = null, ?array $options = null):array {
+
+        # Declare result
+        $result = [];
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Update With Filters
+     * 
+     * @param array $data Data with attributes values to use for update
+     * @param array $filters Filters to use for read items
+     * @param array $sort Options to use for sort items read
+     * @param array $sort Options to use for group items read
+     * @param ?array $options Optionnal options
+     * @return array
+     */
+    public function updateWithFilters(array $data, array $filters, ?array $sort = null, ?array $options = null):array {
+
+        # Declare result
+        $result = [];
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Delete With Filters
+     * 
+     * @param array $filters Filters to use for read items
+     * @param ?array $options Optionnal options
+     * @return array
+     */
+    public function deleteWithFilters(array $filters, ?array $options = null):array {
+
+        # Declare result
+        $result = [];
+
+        # Return result
+        return $result;
+
+    }
+
+
+    /** Public methods | Sql 
+     ******************************************************
+     */
+
+    /**
+     * Create With Sql
+     * 
+     * @param string $sql Sql query to use for create item
+     * @param ?array $options Optionnal options
+     * @return array
+     */
+    public function createWithSql(string $sql, array $data, ?array $options = null):array {
+
+        # Declare result
+        $result = [];
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Read With Sql
+     * 
+     * @param string $sql Sql query to use for read items
+     * @param ?array $options Optionnal options
+     * @return array
+     */
+    public function readWithSql(string $sql, ?array $options = null):array {
+
+        # Declare result
+        $result = [];
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Update With Sql
+     * 
+     * @param string $sql Sql query to use for update items
+     * @param array $data Data with attributes values to use for update
+     * @param ?array $options Optionnal options
+     * @return array
+     */
+    public function updateWithSql(string $sql, array $data, ?array $options = null):array {
+
+        # Declare result
+        $result = [];
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Delete With Sql
+     * 
+     * @param string $sql Sql query to use for delete items
+     * @param ?array $options Optionnal options
+     * @return array
+     */
+    public function deleteWithSql(string $sql, ?array $options = null):array {
+
+        # Declare result
+        $result = [];
+
+        # Return result
+        return $result;
+
+    }
+
+    /** Private Utilities
+     ******************************************************
+     */
+
+    /**
+     * Get Current
+     * 
+     * Get Current Model
+     * 
+     * @return array|null
+     */
+    public function getCurrent():array|null {
+
+        # Set result
+        $result = $this->current;
+
+        # Return result
+        return $result;
 
     }
 
@@ -113,6 +353,8 @@ class Model {
             );
 
     }
+
+
 
     /** Public static methods
      ******************************************************
