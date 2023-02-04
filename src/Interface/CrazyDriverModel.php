@@ -23,13 +23,25 @@ namespace  CrazyPHP\Interface;
  */
 interface CrazyDriverModel {
 
-    /** Public methods
+    /** Public methods | Parser
      ******************************************************
      */
 
+    /**
+     * Parse Id
+     * 
+     * @param string|int $id ID to parse
+     * @param ?array $options Optionnal options
+     * @return self
+     */
+    public function parseId(string|int $id, ?array $options = null):self;
+
+    /**
+     * 
+     */
     public function parseFilters();
 
-    public function setEntity();
+    public function parseEntity();
 
     public function parseData();
 
@@ -42,5 +54,19 @@ interface CrazyDriverModel {
     public function parsePage();
 
     public function parseSql();
+
+    /** Public methods | Run
+     ******************************************************
+     */
+
+    /**
+     * Run
+     * 
+     * Return data with given information
+     * 
+     * @param bool $clearOptionsAfter
+     * @return array
+     */
+    public function run(bool $clearOptionsAfter = true):array;
 
 }

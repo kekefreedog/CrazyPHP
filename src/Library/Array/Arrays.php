@@ -329,4 +329,61 @@ class Arrays{
 
 	}
 
+	/**
+	 * Get Key
+	 * 
+	 * Extract key in array
+	 * 
+	 * @param array $array Array to process
+	 * @param string $key Key of the item to extract "titi.toto"
+	 * @param string|array $separators Separator for key
+	 * @return any
+	 */
+	public static function getKey(array $array = [], string $key = "", string|array $separators = [".", "/"]) {
+
+		# Set result
+		$result = $array;
+
+		# Check array
+		if(empty($array) || empty($key))
+
+			# Return result
+			return $result;
+
+		# Replace separator
+		$key = str_replace($separators, "___", $key);
+
+		# Explode
+		$keyExploded = explode("___", $key);
+
+		# Set current array depth
+		$arrayDepth = &$array;
+
+		# Get value
+		$i=0;while(isset($keyExploded[$i]))
+
+			# Check
+			if(isset($arrayDepth[$keyExploded[$i]])){
+
+				# Set value
+				$arrayDepth = $arrayDepth[$keyExploded[$i]];
+
+			}else{
+
+				# Set result as null
+				$arrayDepth = null;
+
+				# Stop loop
+				break;
+
+			}
+
+		# Set result
+		$result = $arrayDepth;
+
+		# Return result
+		return $result;
+		
+	}
+
 }

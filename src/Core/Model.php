@@ -15,7 +15,9 @@ namespace  CrazyPHP\Core;
 /**
  * Dependances
  */
+use CrazyPHP\Interface\CrazyDriverModel;
 use CrazyPHP\Exception\CrazyException;
+use CrazyPHP\Library\Router\Schema;
 use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Interface\CrazyModel;
 use CrazyPHP\Library\Array\Arrays;
@@ -43,6 +45,9 @@ class Model implements CrazyModel {
     /** @var array|null $current Current model */
     private array|null $current = null;
 
+    /** @var CrazyDriverModel $driver */
+    private CrazyDriverModel $driver;
+
     /**
      * Constructor
      */
@@ -56,6 +61,9 @@ class Model implements CrazyModel {
 
         # Set arguments
         $this->_prepareArguments();
+
+        # Load driver
+        $this->_loadDriver();
 
     }
 
@@ -100,6 +108,12 @@ class Model implements CrazyModel {
 
         # Declare result
         $result = [];
+
+        # Set schema
+        $result = $this->driver
+            ->parseId($id)
+            ->run()
+        ;
 
         # Return result
         return $result;
@@ -354,7 +368,47 @@ class Model implements CrazyModel {
 
     }
 
+    /**
+     * Load driver
+     * 
+     * @return void
+     */
+    private function _loadDriver():void {
 
+        # Check driver name is set
+        if(
+            isset($this->current["driver"]["name"]) && 
+            $this->current["driver"]["name"]
+        ){
+
+            # Set className
+            $className = "CrazyPHP\\Driver\\Model\\".$this->current["driver"]["name"];
+
+            # Set appClassName
+            $appClassName = "App\\Driver\\Model\\".$this->current["driver"]["name"];
+
+            # Set arguments
+            $arguments = $this->current["driver"]["arguments"] ?? [];
+
+            # Push schema schema in arguments
+            $arguments["schema"] = new Schema($this->current["attributes"]);
+
+            # Check driver class exists in Driver Model
+            if(class_exists($className))
+
+                # Set driver
+                $this->driver = new $className(...$arguments);
+
+            else
+            # Check app driver class exists
+            if(class_exists($appClassName))
+
+                # Set driver
+                $this->driver = new $appClassName(...$arguments);
+
+        }
+
+    }
 
     /** Public static methods
      ******************************************************
