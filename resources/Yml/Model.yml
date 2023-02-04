@@ -1,6 +1,9 @@
 Model:
-  - name: Router
-    type: config
+  - name: Router 
+    driver: 
+      name: Config 
+      arguments: 
+        name: Router
     attributes: 
       - name: name
         label: Name

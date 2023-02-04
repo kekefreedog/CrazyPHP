@@ -107,8 +107,11 @@ class ModelTest extends TestCase{
      */
     public function testModelRouterCreate():void {
 
-        # Create router
-        /* $this->modelInstance->create(self::MODEL_TEST); */
+        # Prepare env
+        $this->prepareEnv();
+
+        # Load router model
+        $this->modelInstance = new Model("Router");
 
     }
     

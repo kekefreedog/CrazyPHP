@@ -17,7 +17,7 @@ namespace  CrazyPHP\Driver\Model;
  */
 use CrazyPHP\Interface\CrazyDriverModel;
 use CrazyPHP\Exception\CrazyException;
-use CrazyPHP\Library\Router\Schema;
+use CrazyPHP\Library\Model\Schema;
 
 /**
  * Config
@@ -28,7 +28,7 @@ use CrazyPHP\Library\Router\Schema;
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2022 Kévin Zarshenas
  */
-class Config /* implements CrazyDriverModel */ {
+class Config implements CrazyDriverModel {
 
     /** Private parameters
      ******************************************************
@@ -53,6 +53,9 @@ class Config /* implements CrazyDriverModel */ {
         # Check config name
         $this->checkNameGiven();
 
+        # Prepare Schema
+        $this->prepareSchema();
+
     }
 
     /** Public methods
@@ -70,6 +73,28 @@ class Config /* implements CrazyDriverModel */ {
 
         # Return self
         return $this;
+
+    }
+
+    /** Public methods | Run
+     ******************************************************
+     */
+
+    /**
+     * Run
+     * 
+     * Return data with given information
+     * 
+     * @param bool $clearOptionsAfter
+     * @return array
+     */
+    public function run(bool $clearOptionsAfter = true):array {
+
+        # Set result
+        $result = [];
+
+        # Return result
+        return $result;
 
     }
 
@@ -97,15 +122,6 @@ class Config /* implements CrazyDriverModel */ {
                 # Check name in arguments
                 if(array_key_exists($name, $this->arguments))
 
-                    # Check if schema
-                    if($name == "schema")
-
-                        # Set schema
-                        $this->schema = $value;
-
-                    # Regulat argument
-                    else
-
                         # Set value
                         $this->arguments[$name] = $value;
 
@@ -132,6 +148,33 @@ class Config /* implements CrazyDriverModel */ {
 
     }
 
+    /**
+     * Prepare Schema
+     * 
+     * @return void
+     */
+    private function prepareSchema():void {
+        
+        # Check attributes
+        if(
+            !isset($this->arguments["attributes"]) || 
+            empty($this->arguments["attributes"])
+        )
+                
+            # New error
+            throw new CrazyException(
+                "No attributes found in current \"".$this->arguments["name"]."\" modal schema", 
+                404,
+                [
+                    "custom_code"   =>  "driver-model-config-001",
+                ]
+            );
+
+        # New schema
+        $this->schema = new Schema($this->arguments["attributes"]);
+
+    }
+
     /** Public constants
      ******************************************************
      */
@@ -144,7 +187,7 @@ class Config /* implements CrazyDriverModel */ {
     /** @const array */
     public const ARGUMENTS = [
         "name"      =>  "",
-        "schema"    =>  null
+        "attributes"=>  []
     ];
 
 }

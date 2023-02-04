@@ -39,7 +39,7 @@ interface CrazyDriverModel {
     /**
      * 
      */
-    public function parseFilters();
+/*     public function parseFilters();
 
     public function parseEntity();
 
@@ -53,7 +53,7 @@ interface CrazyDriverModel {
 
     public function parsePage();
 
-    public function parseSql();
+    public function parseSql(); */
 
     /** Public methods | Run
      ******************************************************

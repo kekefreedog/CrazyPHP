@@ -17,7 +17,6 @@ namespace  CrazyPHP\Core;
  */
 use CrazyPHP\Interface\CrazyDriverModel;
 use CrazyPHP\Exception\CrazyException;
-use CrazyPHP\Library\Router\Schema;
 use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Interface\CrazyModel;
 use CrazyPHP\Library\Array\Arrays;
@@ -391,7 +390,7 @@ class Model implements CrazyModel {
             $arguments = $this->current["driver"]["arguments"] ?? [];
 
             # Push schema schema in arguments
-            $arguments["schema"] = new Schema($this->current["attributes"]);
+            $arguments["attributes"] = $this->current["attributes"];
 
             # Check driver class exists in Driver Model
             if(class_exists($className))
