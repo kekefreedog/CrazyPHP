@@ -88,13 +88,11 @@ interface CrazyModel {
      * Update With Filters
      * 
      * @param array $data Data with attributes values to use for update
-     * @param array $filters Filters to use for read items
-     * @param array $sort Options to use for sort items read
-     * @param array $sort Options to use for group items read
+     * @param array $filters Filters to use for read itemsd
      * @param ?array $options Optionnal options
      * @return array
      */
-    public function updateWithFilters(array $data, array $filters, ?array $sort = null, ?array $options = null):array;
+    public function updateWithFilters(array $data, ?array $filters = null, ?array $options = null):array;
 
     /**
      * Delete With Filters

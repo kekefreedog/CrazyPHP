@@ -17,7 +17,6 @@ namespace  CrazyPHP\Core;
  */
 use CrazyPHP\Interface\CrazyDriverModel;
 use CrazyPHP\Exception\CrazyException;
-use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Interface\CrazyModel;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\File\Config;
@@ -82,10 +81,11 @@ class Model implements CrazyModel {
         # Declare result
         $result = [];
 
-        # Process data
-        $process = new Process($data);
-
-
+        # Set schema
+        $result = $this->driver
+            ->ingestData($data, $options)
+            ->run()
+        ;
 
         # Return result
         return $result;
@@ -110,7 +110,7 @@ class Model implements CrazyModel {
 
         # Set schema
         $result = $this->driver
-            ->parseId($id)
+            ->parseId($id, $options)
             ->run()
         ;
 
@@ -132,6 +132,13 @@ class Model implements CrazyModel {
         # Declare result
         $result = [];
 
+        # Set schema
+        $result = $this->driver
+            ->parseId($id, $options)
+            ->ingestData($data, $options)
+            ->run()
+        ;
+
         # Return result
         return $result;
 
@@ -148,6 +155,13 @@ class Model implements CrazyModel {
 
         # Declare result
         $result = [];
+
+        # Set schema
+        $result = $this->driver
+            ->parseId($id, $options)
+            ->pushToTrash($options)
+            ->run()
+        ;
 
         # Return result
         return $result;
@@ -173,6 +187,15 @@ class Model implements CrazyModel {
         # Declare result
         $result = [];
 
+        # Set schema
+        $result = $this->driver
+            ->parseFilter($filters, $options)
+            ->parseSort($sort, $options)
+            ->parseGroup($group, $options)
+            ->pushToTrash($options)
+            ->run()
+        ;
+
         # Return result
         return $result;
 
@@ -182,16 +205,21 @@ class Model implements CrazyModel {
      * Update With Filters
      * 
      * @param array $data Data with attributes values to use for update
-     * @param array $filters Filters to use for read items
-     * @param array $sort Options to use for sort items read
-     * @param array $sort Options to use for group items read
+     * @param array $filters Filters to use for read itemsd
      * @param ?array $options Optionnal options
      * @return array
      */
-    public function updateWithFilters(array $data, array $filters, ?array $sort = null, ?array $options = null):array {
+    public function updateWithFilters(array $data, ?array $filters = null, ?array $options = null):array {
 
         # Declare result
         $result = [];
+
+        # Set schema
+        $result = $this->driver
+            ->parseFilter($filters, $options)
+            ->ingestData($data, $options)
+            ->run()
+        ;
 
         # Return result
         return $result;
@@ -209,6 +237,13 @@ class Model implements CrazyModel {
 
         # Declare result
         $result = [];
+
+        # Set schema
+        $result = $this->driver
+            ->parseFilter($filters, $options)
+            ->pushToTrash($options)
+            ->run()
+        ;
 
         # Return result
         return $result;
@@ -232,6 +267,13 @@ class Model implements CrazyModel {
         # Declare result
         $result = [];
 
+        # Set schema
+        $result = $this->driver
+            ->parseSql($sql, $options)
+            ->ingestData($data, $options)
+            ->run()
+        ;
+
         # Return result
         return $result;
 
@@ -248,6 +290,12 @@ class Model implements CrazyModel {
 
         # Declare result
         $result = [];
+
+        # Set schema
+        $result = $this->driver
+            ->parseSql($sql, $options)
+            ->run()
+        ;
 
         # Return result
         return $result;
@@ -267,6 +315,13 @@ class Model implements CrazyModel {
         # Declare result
         $result = [];
 
+        # Set schema
+        $result = $this->driver
+            ->parseSql($sql, $options)
+            ->ingestData($data, $options)
+            ->run()
+        ;
+
         # Return result
         return $result;
 
@@ -283,6 +338,12 @@ class Model implements CrazyModel {
 
         # Declare result
         $result = [];
+
+        $result = $this->driver
+            ->parseSql($sql, $options)
+            ->pushToTrash($options)
+            ->run()
+        ;
 
         # Return result
         return $result;

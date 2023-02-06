@@ -40,6 +40,9 @@ class Config implements CrazyDriverModel {
     /** @var Schema $schema */
     private Schema $schema;
 
+    /** @var array $arrayData */
+    private array $arrayData = [];
+
     /**
      * Constructor
      * 
@@ -70,10 +73,112 @@ class Config implements CrazyDriverModel {
      * @return self
      */
     public function parseId(string|int $id, ?array $options = null):self {
+                
+        # New error
+        throw new CrazyException(
+            "Get Id isn't supported for your request", 
+            500,
+            [
+                "custom_code"   =>  "model-003",
+            ]
+        );
 
         # Return self
         return $this;
 
+    }
+
+    /**
+     * Parse Filters
+     * 
+     * @param array $filters Filter to process
+     * @param ?array $options Optionnal options
+     * @return self
+     */
+    public function parseFilter(?array $filters, ?array $options = null):self {
+
+        # Return self
+        return $this;
+
+    } 
+
+    /**
+     * Parse Sort
+     * 
+     * @param array $sort Sort to process
+     * @param ?array $options Optionnal options
+     * @return self
+     */
+    public function parseSort(?array $sort, ?array $options = null):self {
+
+        # Return self
+        return $this;
+
+    }
+
+    /**
+     * Parse Group
+     * 
+     * @param array $group Group to process
+     * @param ?array $options Optionnal options
+     */
+    public function parseGroup(?array $group, ?array $options = null):self {
+
+        # Return self
+        return $this;
+
+    }
+
+    /**
+     * Parse Sql
+     * 
+     * @param string $sql Sql query
+     * @param ?array $options Optionnal options
+     * @return self
+     */
+    public function parseSql(string $sql, ?array $options = null):self {
+
+        # Return self
+        return $this;
+    
+    }
+
+    /** Public methods | Ingester
+     ******************************************************
+     */
+
+    /**
+     * Ingest Data
+     * 
+     * Import data in current driver
+     * 
+     * @param array $data
+     * @param ?array $options Optionnal options
+     * @return self
+     */
+    public function ingestData(array $data, ?array $options = null):self {
+
+        # Return self
+        return $this;
+
+    }
+
+    /** Public methods | Pusher
+     ******************************************************
+     */
+
+    /**
+     * Push to trash
+     * 
+     * Put to trash current value
+     * 
+     * @param ?array $options Optionnal options
+     * @param 
+     */
+    public function pushToTrash(?array $options = null):self {
+
+        # Return self
+        return $this;
     }
 
     /** Public methods | Run

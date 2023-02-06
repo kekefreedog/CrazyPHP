@@ -30,30 +30,75 @@ interface CrazyDriverModel {
     /**
      * Parse Id
      * 
-     * @param string|int $id ID to parse
+     * @param string|int $id Id to parse
      * @param ?array $options Optionnal options
      * @return self
      */
     public function parseId(string|int $id, ?array $options = null):self;
 
     /**
+     * Parse Filters
      * 
+     * @param array $filters Filter to process
+     * @param ?array $options Optionnal options
+     * @return self
      */
-/*     public function parseFilters();
+    public function parseFilter(?array $filters, ?array $options = null):self;
 
-    public function parseEntity();
+    /**
+     * Parse Sort
+     * 
+     * @param array $sort Sort to process
+     * @param ?array $options Optionnal options
+     * @return self
+     */
+    public function parseSort(?array $sort, ?array $options = null):self;
 
-    public function parseData();
+    /**
+     * Parse Group
+     * 
+     * @param array $group Group to process
+     * @param ?array $options Optionnal options
+     */
+    public function parseGroup(?array $group, ?array $options = null):self;
 
-    public function parseOptions();
+    /**
+     * Parse Sql
+     * 
+     * @param string $sql Sql query
+     * @param ?array $options Optionnal options
+     * @return self
+     */
+    public function parseSql(string $sql, ?array $options = null):self;
 
-    public function parseGroupBy();
+    /** Public methods | Ingester
+     ******************************************************
+     */
 
-    public function parseSortBy();
+    /**
+     * Ingest Data
+     * 
+     * Import data in current driver
+     * 
+     * @param array $data
+     * @param ?array $options Optionnal options
+     * @return self
+     */
+    public function ingestData(array $data, ?array $options = null):self;
 
-    public function parsePage();
+    /** Public methods | Pusher
+     ******************************************************
+     */
 
-    public function parseSql(); */
+    /**
+     * Push to trash
+     * 
+     * Put to trash current value
+     * 
+     * @param ?array $options Optionnal options
+     * @param 
+     */
+    public function pushToTrash(?array $options = null):self;
 
     /** Public methods | Run
      ******************************************************
