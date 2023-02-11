@@ -69,7 +69,6 @@ class ApiV2All extends Controller {
             ->addLastModified($lastModified)
             ->setStatusCode()
             ->pushContent("results", $content)
-            ->pushContext()
             ->send();
 
     }

@@ -23,6 +23,7 @@ use CrazyPHP\Library\Cache\Cache;
 use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Model\Context;
+use Mezon\Router\InvalidRouteErrorHandler;
 
 /**
  * Router
@@ -67,10 +68,13 @@ class Router extends VendorRouter {
      * Call Route and prepare context
      * 
      * @param string $request_uri Request uri from server
-     * @return 
+     * @return mixed
      */
-    public function callRouteExtended(string $request_uri = ""){
+    public function callRouteExtended(string $request_uri = ""):mixed {
         
+        # Set result
+        $result = null;
+
         # Check request uri
         if(!$request_uri)
 
@@ -90,7 +94,10 @@ class Router extends VendorRouter {
         Context::setCurrentRoute($className);
 
         # Call route
-        return $this->callRoute($url);
+        $result = $this->callRoute($url);
+
+        # Return result
+        return $result;
 
     }
 

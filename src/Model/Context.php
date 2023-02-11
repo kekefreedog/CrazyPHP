@@ -189,6 +189,70 @@ class Context{
      */
 
     /**
+     * Get Current Route
+     * 
+     * @param $attributes Optionnal specific attributes you want load
+     * @return
+     */
+    public static function getCurrentRoute(string|array|null $attributes = null) {
+
+        # Check current
+        if(!isset($GLOBALS[static::PREFIX]["ROUTES"]["CURRENT"]))
+                
+            # New error
+            throw new CrazyException(
+                "Current route hasn't been defined in context yet", 
+                500,
+                [
+                    "custom_code"   =>  "context-001",
+                ]
+            );
+
+        # Set result
+        $result = $GLOBALS[static::PREFIX]["ROUTES"]["CURRENT"];
+
+        # Check attributes
+        if($attributes === null || !$attributes || empty($attributes))
+
+            # Return result
+            return $result;
+
+        # Check attributes
+        if(is_string($attributes)){
+
+            # Check given attribute
+            if(isset($GLOBALS[static::PREFIX]["ROUTES"]["CURRENT"][$attributes]))
+
+                # Set result
+                $result = $GLOBALS[static::PREFIX]["ROUTES"]["CURRENT"][$attributes];
+
+            else
+
+                # Set null
+                $result = null;
+
+        }else{
+
+            # Clean $result
+            $result = [];
+
+            # Iteration attributes
+            foreach($attributes as $attribute)
+
+                # Set attribute
+                $result[str_replace([".", "/"], "___", $attribute)] = self::get("routes.current.$attribute");
+
+            # Expand result
+            $result = Arrays::stretch($result, "___");
+
+        }
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
      * Set Current Route
      * 
      * @param string $routeName Name of the current route

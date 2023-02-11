@@ -386,4 +386,53 @@ class Arrays{
 		
 	}
 
+	/**
+	 * String Replace Recursively
+	 * 
+	 * Replace all occurrences of the search string with the replacement string
+	 * 
+	 * @param string|array $search 
+	 * @param string $replace
+	 * @param array $subject
+	 * @return array
+	 */
+	public static function stringReplaceRecursively(string|array $search, string $replace, array &$subject):array {
+		
+		# Check search and subject
+		if(empty($search) && empty($subject))
+
+			# Return subject
+			return $subject;
+
+		else
+		# Check search is string
+		if(is_string($search)) 
+
+			# Convert to array
+			$search = [$search];
+
+		# Iteration subject
+		foreach($subject as &$value){
+
+			# Iteration search
+			foreach($search as $needle)
+
+				# Check current value is string and contain needle
+				if(is_string($value) && strpos($value, $needle) !== false)
+
+					# Update value
+					$value = str_replace($needle, $replace, $value);
+
+				else
+				# Check if value is array
+				if(is_array($value))
+
+					# Call itself
+					static::stringReplaceRecursively($search, $replace, $value);
+		}
+
+		# Return subject
+		return $subject;
+	}
+
 }

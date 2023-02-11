@@ -39,7 +39,7 @@ class Handlebars {
     private $options = [
         # Template available "crazy_preset" or "performance_preset"
         'template'  =>  self::CRAZY_PRESET,
-        'useCache'  =>  true,
+        'useCache'  =>  true, // Not working
     ];
 
     /**

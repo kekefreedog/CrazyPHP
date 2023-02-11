@@ -472,9 +472,11 @@ class Structure {
      * 
      * @param string|array|null $template Template to load
      * @param $preset Preset of the template
+     * @param ?array $data Data for template
+     * @param ?string customNameForTemplateCache
      * @return self
      */
-    public function setBodyTemplate(string|array|null $template = null, $preset = null):self {
+    public function setBodyTemplate(string|array|null $template = null, $preset = null, ?array $data = [], ?string $customNameForTemplateCache = null):self {
 
         # Check template
         if(!$template || empty($template))
@@ -506,10 +508,10 @@ class Structure {
         $templateInstance = new $instance($option);
 
         # Load template
-        $templateInstance->load($template, Context::get("routes.current.name"));
+        $templateInstance->load($template, $customNameForTemplateCache ? $customNameForTemplateCache : Context::get("routes.current.name"));
 
         # Rendered template
-        $renderedTemplate = $templateInstance->render();
+        $renderedTemplate = $templateInstance->render($data);
 
         # Set body with template render
         $this->setBodyContent($renderedTemplate);

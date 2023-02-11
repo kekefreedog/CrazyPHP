@@ -250,6 +250,52 @@ class Header{
 
     }
 
+    /**
+     * Get Header Accept
+     * 
+     * If empty return text/html
+     * 
+     * @param ?array $headerList Collection of headers
+     * @return string|null
+     */
+    public static function getHeaderAccept(?array $headerList = null):string {
+
+        # Check headerlist
+        if($headerList === null)
+
+            # Get current headers
+            $headerList = getallheaders();
+
+        # Get Accept
+        $accept = $headerList["Accept"] ?? "text/html";
+
+        # Check if accept has */*
+        if(strpos($accept, "*/*") !== false){
+
+            # Set accept
+            $firstAccept = "text/html";
+
+        }else{
+
+            # Explod accept
+            $accepts = explode(",", $accept);
+
+            # Get first
+            $firstAccept = $accepts[0];
+
+            # Split for avoid string after ;
+            $firstAccept = explode(";", $firstAccept)[0];
+
+        }
+
+        # Set result
+        $result = $firstAccept;
+
+        # Return result
+        return $result;
+
+    }
+
     /** Private static methods
      ******************************************************
      */

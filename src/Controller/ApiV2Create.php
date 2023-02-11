@@ -37,8 +37,6 @@ class ApiV2Create extends Controller {
      */
     public static function post():void {
 
-        
-
     }
 
 }

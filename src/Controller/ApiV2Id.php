@@ -18,6 +18,8 @@ namespace CrazyPHP\Controller;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Core\ApiResponse;
 use CrazyPHP\Core\Controller;
+use CrazyPHP\Core\Model;
+use CrazyPHP\Model\Context;
 
 /**
  * Api V2 By Id
@@ -28,7 +30,7 @@ use CrazyPHP\Core\Controller;
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2022 Kévin Zarshenas
  */
-class ApiV2Id {
+class ApiV2Id extends Controller {
     
     /**
      * get
@@ -37,7 +39,20 @@ class ApiV2Id {
      */
     public static function get():void {
 
-        
+        # Check entity given by user
+        Model::checkEntityInContext();
+
+        # New api model
+        //$model = new Model();
+
+        # Set content
+        $content = [Context::get()];
+
+        # Set response
+        (new ApiResponse())
+            ->setStatusCode()
+            ->pushContent("results", $content)
+            ->send();
 
     }
 

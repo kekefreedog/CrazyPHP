@@ -48,7 +48,6 @@ class ApiV2Filter extends Controller {
         (new ApiResponse())
             ->setStatusCode()
             ->pushContent("results", $content)
-            ->pushContext()
             ->send();
 
     }

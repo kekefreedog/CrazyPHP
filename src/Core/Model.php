@@ -393,7 +393,7 @@ class Model implements CrazyModel {
             
             # New error
             throw new CrazyException(
-                "No modal schema found for current ", 
+                "No modal schema found for \"".$this->name."\"", 
                 404,
                 [
                     "custom_code"   =>  "model-001",
