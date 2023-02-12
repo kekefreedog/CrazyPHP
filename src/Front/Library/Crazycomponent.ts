@@ -29,13 +29,24 @@ export default abstract class Crazycomponent extends HTMLElement {
     /** @var crazy Crazy methods for Web Component */
     private crazy:CrazycomponentAction;
 
+    /** @var options:CrazycomponentOptions Default options */
+    private options:CrazycomponentOptions;
+
+    /** @var ?observer:MutationObserver */
+    private observer:MutationObserver|null = null;
+
     /**
      * Constructor 
      */
-    constructor(){
+    constructor(options:CrazycomponentOptions = {
+        allowChildNodes: false
+    }){
 
         // Parent constructor
         super();
+
+        // Ingest Options
+        this.ingestOptions(options);
 
         // Set crazy root
         this.crazy = new CrazycomponentAction();
@@ -107,6 +118,39 @@ export default abstract class Crazycomponent extends HTMLElement {
 
             // Set style in result
             result += style.replace(/\s+/g, ' ').trim();
+
+        }
+
+        // Check child node
+        if(this.options.allowChildNodes){
+
+            // Declare id
+            var id:number;
+
+            // Convert string to dom
+            const resultDom = new DOMParser().parseFromString(result, 'text/html');
+
+            // Iteration of first elements
+            let els = resultDom.body.children;
+
+            // Check children
+            if(els.length){
+
+                // Iteration of els
+                for (var i = 0; i < els.length; i++) {
+
+                    // Get timestamp
+                    id = Date.now()
+
+                    // Add component-id
+                    els[i].setAttribute("component-id", id.toString());
+
+                }
+
+                // Convert dom to string
+                result = resultDom.body.innerHTML;
+
+            }
 
         }
 
@@ -223,7 +267,7 @@ export default abstract class Crazycomponent extends HTMLElement {
      */
     public setHtmlAndCss(html:Function|string, css:Function|string|CrazyelementStyle):void {
 
-        // Chech html
+        // Check html
         if(html)
 
             // Set content
@@ -234,6 +278,19 @@ export default abstract class Crazycomponent extends HTMLElement {
 
             // Set css
             this.crazy.setStyle(css);
+
+    }
+
+    /**
+     * Ingest Default Options
+     * 
+     * @param options:CrazycomponentOptions
+     * @return void
+     */
+    private ingestOptions(options:CrazycomponentOptions):void {
+
+        // Set options
+        this.options = options;
 
     }
 
@@ -271,6 +328,74 @@ export default abstract class Crazycomponent extends HTMLElement {
 
     }
 
+    /**
+     * Move Children
+     * 
+     * Move givent children <=> nodes that doesn't contain component-id
+     * 
+     * @return void
+     */
+    private moveChildren():void {
+        
+        // Observer
+        var observer = new MutationObserver((mutations) => {
+
+            // Iteration mutations
+            mutations.forEach((mutation:MutationRecord) => {
+
+                //Detect <img> insertion
+                if (mutation.addedNodes.length){   
+
+                    // Check child node
+                    if(this.options.allowChildNodes){     
+                        
+                        // Get children
+                        let childrenEls = this.querySelectorAll(":scope > :not([component-id])");
+                
+                        // Get slote
+                        let slotEl = this.querySelector("slot");
+                
+                        // Delete children
+                        if(childrenEls.length && slotEl === null){
+                
+                            // Iteration children
+                            for(var i = 0; i < childrenEls.length; i++) {
+                                
+                                // Remove children
+                                childrenEls[i].remove();
+                
+                            }
+                
+                        }else
+                        // Replace slote by children
+                        if(childrenEls.length && slotEl !== null){
+                
+                            // Iteration children
+                            for(var i = 0; i < childrenEls.length; i++) {
+                
+                                // Move children before slot
+                                slotEl.parentNode?.insertBefore(
+                                    childrenEls[i], 
+                                    slotEl.previousSibling
+                                );
+                
+                            }
+                
+                        }
+
+                    }
+
+                }
+
+            })
+
+        });
+    
+        // Lauch observer
+        observer.observe(this, { childList: true });
+
+    }
+
     /** Methods | Callbacks
      ******************************************************
      */
@@ -279,6 +404,9 @@ export default abstract class Crazycomponent extends HTMLElement {
      * Connected Callback
      */
     public connectedCallback() {
+
+        // Set Move Children
+        this.moveChildren();
 
         // Set attributes by default
         this.setProperties();

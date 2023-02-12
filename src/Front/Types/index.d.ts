@@ -80,4 +80,11 @@ declare global {
         new():Crazypage;
     }
 
+    /**
+     * Crazy Component Options
+     */
+    interface CrazycomponentOptions {
+        allowChildNodes:boolean;
+    }
+
 }
