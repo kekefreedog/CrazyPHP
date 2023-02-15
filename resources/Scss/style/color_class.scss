@@ -114,6 +114,11 @@ $color in $colors {
                     color: $color_value  !important;
                 }
 
+                /* Color border */
+                .light-mode-#{$color_name}-border {
+                    border-color: $color_value  !important;
+                }
+
             }
 
             /* Dark mode */
@@ -127,6 +132,11 @@ $color in $colors {
                 /* Color text */
                 .dark-mode-#{$color_name}-text {
                     color: $color_value  !important;
+                }
+
+                /* Color border */
+                .dark-mode-#{$color_name}-border {
+                    border-color: $color_value  !important;
                 }
 
             }
@@ -163,6 +173,11 @@ $color in $colors {
                     color: $color_value  !important;
                 }
 
+                /* Color shade border */
+                .light-mode-#{$color_name}-border.border-#{$color_type}-light-mode {
+                    border-color: $color_value  !important;
+                }
+
             }
 
             /* Dark mode */
@@ -176,6 +191,11 @@ $color in $colors {
                 /* Color shade */
                 .dark-mode-#{$color_name}-text.text-#{$color_type}-dark-mode {
                     color: $color_value  !important;
+                }
+
+                /* Color shade border */
+                .dark-mode-#{$color_name}-border.border-#{$color_type}-dark-mode {
+                    border-color: $color_value  !important;
                 }
 
             }
@@ -215,6 +235,11 @@ $color_value in $shades {
             color: $color_value  !important;
         }
 
+        /* Color text */
+        .light-mode-#{$color}-border {
+            border-color: $color_value  !important;
+        }
+
     }
 
     /* Dark mode */
@@ -228,6 +253,11 @@ $color_value in $shades {
         /* Color text */
         .dark-mode-#{$color}-text {
             color: $color_value  !important;
+        }
+
+        /* Color text */
+        .dark-mode-#{$color}-border {
+            border-color: $color_value  !important;
         }
 
     }
