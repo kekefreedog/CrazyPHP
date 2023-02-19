@@ -53,7 +53,7 @@ class CrazyException extends Exception implements InterfaceException{
      *      custom_code: "form-001"
      *      old_value: "...",
      *      icon: [
-     *          classe: "material-icons",
+     *          class: "material-icons",
      *          text: "error"
      *      ],
      *      color: [

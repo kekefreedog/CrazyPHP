@@ -15,12 +15,12 @@ namespace CrazyPHP\Library\Template;
 /** 
  * Dependances
  */
+use CrazyPHP\Library\Template\Handlebars\Helpers;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\Cache\Cache;
 use CrazyPHP\Library\File\File;
 use LightnCandy\LightnCandy;
-use DateTime;
 
 /**
  * Handlebars
@@ -39,6 +39,7 @@ class Handlebars {
     private $options = [
         # Template available "crazy_preset" or "performance_preset"
         'template'  =>  self::CRAZY_PRESET,
+        'helpers'   =>  true,
         'useCache'  =>  true, // Not working
     ];
 
@@ -157,6 +158,14 @@ class Handlebars {
 
             # Set default template
             $template = self::CRAZY_PRESET;
+
+        # Check helpers
+        if(isset($this->options["helpers"]) && $this->options["helpers"]){
+
+            # Set helpers
+            $template["helpers"] = Helpers::listArray();
+
+        }
 
         # Check cache is enable
         if($this->options["useCache"]){
@@ -363,7 +372,7 @@ class Handlebars {
      * Crazy Preset with the maximum of compatibility
      */
     public const CRAZY_PRESET = [
-        "flags" =>  LightnCandy::FLAG_HANDLEBARSJS/*  | LightnCandy::FLAG_ERROR_LOG */,
+        "flags"     =>  LightnCandy::FLAG_HANDLEBARSJS/*  | LightnCandy::FLAG_ERROR_LOG */,
     ];
 
     /**

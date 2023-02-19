@@ -15,7 +15,6 @@
  * 
  * @param a Value to compare
  * @param v Value to compare with
- * 
- * @return boolean
+ * @return string
  */
 module.exports = (a, suffix, options) => (a && suffix) ? (a.includes(" ") ? a.trim().replace(" ", `-${suffix} ${suffix}-`) : a + `-${suffix}`) : a;

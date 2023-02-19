@@ -436,11 +436,10 @@ export default abstract class Crazycomponent extends HTMLElement {
      */
     public attributeChangedCallback(name:string, oldValue:string, newValue:string):void {
 
-        console.log("toto");
         console.log(newValue + " >> " + oldValue);
 
         // Check new value isn't the old value
-        if(newValue != oldValue){
+        if(newValue != oldValue && this.isConnected){
 
             // Update attribute collection
             this.crazy.updateAttribute(name, newValue);

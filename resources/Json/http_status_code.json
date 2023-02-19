@@ -1,0 +1,646 @@
+{
+    "100": {
+      "title": "Continue",
+      "description": "The server has received the request headers, and the client should proceed to send the request body.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+    },
+    "101": {
+      "title": "Switching Protocols",
+      "description": "The server is switching protocols according to the client request."
+    },
+    "200": {
+      "title": "OK",
+      "description": "The request has succeeded.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+    },
+    "201": {
+      "title": "Created",
+      "description": "The request has been fulfilled, resulting in the creation of a new resource.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+    },
+    "202": {
+      "title": "Accepted",
+      "description": "The request has been accepted for processing, but the processing has not been completed.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+    },
+    "203": {
+      "title": "Non-Authoritative Information",
+      "description": "The server is a transforming proxy that received a 200 OK response from the origin server and is returning a modified version.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+    },
+    "204": {
+      "title": "No Content",
+      "description": "The server successfully processed the request and is not returning any content.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+    },
+    "205": {
+      "title": "Reset Content",
+      "description": "The server successfully processed the request, but is not returning any content. Unlike a 204 response, this response requires that the requester reset the document view.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+    },
+    "206": {
+      "title": "Partial Content",
+      "description": "The server is delivering only part of the resource due to a range header sent by the client.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+    },
+    "300": {
+      "title": "Multiple Choices",
+      "description": "The requested resource has different choices and cannot be resolved into one.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+    },
+    "301": {
+      "title": "Moved Permanently",
+      "description": "The requested resource has been assigned a new permanent URI and any future references to this resource should use one of the returned URIs.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+    },
+    "302": {
+      "title": "Found",
+      "description": "The requested resource resides temporarily under a different URI. The client should continue to use the original URI for future requests.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+    },
+    "303": {
+      "title": "See Other",
+      "description": "The response to the request can be found under a different URI and should be retrieved using a GET method on that resource.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+    },
+    "304": {
+      "title": "Not Modified",
+      "description": "The requested resource has not been modified since the last time the client accessed it.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+    },
+    "305": {
+      "title": "Use Proxy",
+      "description": "The requested resource must be accessed through the proxy given by the Location field.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+    },
+    "307": {
+      "title": "Temporary Redirect",
+      "description": "The requested resource resides temporarily under a different URI. The client should continue to use the original URI for future requests.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+    },
+    "400": {
+      "title": "Bad Request",
+      "description": "The request could not be understood or was missing required parameters.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+    },
+    "401": {
+      "title": "Unauthorized",
+      "description": "Authentication is required and has failed or has not been provided.",
+      "icon": {
+        "class": "material-icons",
+        "text": "block"
+      },
+      "color": {
+        "primary": "black",
+        "secondary": "red"
+      }
+    },
+    "402": {
+      "title": "Payment Required",
+      "description": "Reserved for future use.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+    },
+    "403": {
+      "title": "Forbidden",
+      "description": "The request was valid, but the server is refusing action.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+    },
+    "404": {
+        "title": "Not Found",
+        "description": "The requested resource could not be found but may be available in the future.",
+      "icon": {
+        "class": "material-icons",
+        "text": "power"
+      },
+      "color": {
+        "primary": "black",
+        "secondary": "orange"
+      }
+      },
+    "405": {
+        "title": "Method Not Allowed",
+        "description": "A request method is not supported for the requested resource.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+      },
+    "406": {
+        "title": "Not Acceptable",
+        "description": "The requested resource is capable of generating only content not acceptable according to the Accept headers sent in the request.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+      },
+    "407": {
+        "title": "Proxy Authentication Required",
+        "description": "The client must first authenticate itself with the proxy.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+      },
+    "408": {
+        "title": "Request Timeout",
+        "description": "The server timed out waiting for the request.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+      },
+    "409": {
+        "title": "Conflict",
+        "description": "Indicates that the request could not be processed because of conflict in the current state of the resource.",
+      "icon": {
+        "class": "material-icons",
+        "text": "sports_mma"
+      },
+      "color": {
+        "primary": "purple",
+        "secondary": "white"
+      }
+      },
+    "410": {
+        "title": "Gone",
+        "description": "Indicates that the resource requested is no longer available and will not be available again.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+      },
+    "411": {
+        "title": "Length Required",
+        "description": "The request did not specify the length of its content, which is required by the requested resource.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+      },
+    "412": {
+        "title": "Precondition Failed",
+        "description": "The server does not meet one of the preconditions that the requester put on the request.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+      },
+    "413": {
+        "title": "Payload Too Large",
+        "description": "The request is larger than the server is willing or able to process.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+      },
+    "414": {
+        "title": "URI Too Long",
+        "description": "The URI provided was too long for the server to process.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+      },
+    "415": {
+        "title": "Unsupported Media Type",
+        "description": "The request entity has a media type which the server or resource does not support.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+      },
+    "416": {
+        "title": "Range Not Satisfiable",
+        "description": "The client has asked for a portion of the file, but the server cannot supply that portion.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+      },
+    "417": {
+        "title": "Expectation Failed",
+        "description": "The server cannot meet the requirements of the Expect request-header field.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+      },
+    "418": {
+        "title": "I'm a teapot",
+        "description": "This code was defined in 1998 as one of the traditional IETF April Fools' jokes, in RFC 2324, Hyper Text Coffee Pot Control Protocol.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+      },
+    "421": {
+        "title": "Misdirected Request",
+        "description": "The request was directed at a server that is not able to produce a response.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+      },
+    "422": {
+        "title": "Unprocessable Entity",
+        "description": "The request was well-formed but was unable to be followed due to semantic errors.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+      },
+    "423": {
+        "title": "Locked",
+        "description": "The resource that is being accessed is locked.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+      },
+    "424": {
+        "title": "Failed Dependency",
+        "description": "The request failed due to a failure of a previous request.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+      },
+    "426": {
+        "title": "Upgrade Required",
+        "description": "The client should switch to a different protocol.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+      },
+    "428": {
+        "title": "Precondition Required",
+        "description": "The server requires the request to be conditional.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+      },
+    "429": {
+        "title": "Too Many Requests",
+        "description": "The user has sent too many requests in a given amount of time.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+      },
+    "431": {
+        "title": "Request Header Fields Too Large",
+        "description": "The server is unwilling to process the request because the header fields are too large.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+      },
+    "451": {
+        "title": "Unavailable For Legal Reasons",
+        "description": "The server is denying access to the resource as a consequence of a legal demand.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+      },
+    "500": {
+        "title": "Internal Server Error",
+        "description": "A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.",
+      "icon": {
+        "class": "material-icons",
+        "text": "error"
+      },
+      "color": {
+        "primary": "orange",
+        "secondary": "black"
+      }
+      },
+    "501": {
+        "title": "Not Implemented",
+        "description": "The server either does not recognize the request method, or it lacks the ability to fulfill the request.",
+      "icon": {
+        "class": "material-icons",
+        "text": "error"
+      },
+      "color": {
+        "primary": "white",
+        "secondary": "grey darken-1"
+      }
+      },
+    "502": {
+        "title": "Bad Gateway",
+        "description": "The server was acting as a gateway or proxy and received an invalid response from the upstream server.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+      },
+    "503": {
+        "title": "Service Unavailable",
+        "description": "The server is currently unavailable (overloaded or down).",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+      },
+    "504": {
+        "title": "Gateway Timeout",
+        "description": "The server was acting as a gateway or proxy and did not receive a timely response from the upstream server.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+      },
+    "505": {
+        "title": "HTTP Version Not Supported",
+        "description": "The server does not support the HTTP protocol version used in the request.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+      },
+    "506": {
+        "title": "Variant Also Negotiates",
+        "description": "Transparent content negotiation for the request results in a circular reference.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+      },
+    "507": {
+        "title": "Insufficient Storage",
+        "description": "The server is unable to store the representation needed to complete the request.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+      },
+    "508": {
+        "title": "Loop Detected",
+        "description": "The server detected an infinite loop while processing the request.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+      },
+    "510": {
+        "title": "Not Extended",
+        "description": "Further extensions to the request are required for the server to fulfill it.",
+      "icon": {
+        "class": null,
+        "text": null
+      },
+      "color": {
+        "primary": null,
+        "secondary": null
+      }
+      },
+    "511": {
+        "title": "Network Authentication Required",
+        "description": "The client needs to authenticate to gain network access."
+    }
+}
