@@ -15,7 +15,9 @@ namespace App\Core;
 /**
  * Dependances
  */
+use CrazyPHP\Library\Exception\ExceptionResponse;
 use CrazyPHP\Core\Core;
+use Exception;
 
  /**
  * App
@@ -35,30 +37,39 @@ class App extends Core {
      */
     public function __construct(){
 
-        /* Parent construct */
-        parent::__construct();
+        try{
 
-        /**
-         * - Set Env Variable of the app
-         */
-        $this->setEnv([
-            # Write your custom env here
-        ]);
+            /* Parent construct */
+            parent::__construct();
 
-        /**
-         * - Run Router Preparation
-         */
-        $this->runRoutersPreparation();
+            /**
+             * - Set Env Variable of the app
+             */
+            $this->setEnv([
+                # Write your custom env here
+            ]);
 
-        /**
-         * - Run Middlewares Preparation
-         */
-        $this->runMiddlewaresPreparation();
+            /**
+             * - Run Router Preparation
+             */
+            $this->runRoutersPreparation();
 
-        /**
-         * - Router redirection to controller
-         */
-        $this->runRouterRedirection();
+            /**
+             * - Run Middlewares Preparation
+             */
+            $this->runMiddlewaresPreparation();
+
+            /**
+             * - Router redirection to controller
+             */
+            $this->runRouterRedirection();
+        
+        }catch(Exception $e){
+
+            # New exception response
+            new ExceptionResponse($e);
+
+        }
 
     }
 

@@ -179,6 +179,15 @@ Structure:
                         source: "@crazyphp_root/resources/Environment/Component/RegularBtn/template.hbs"
               Page:
                 folders:
+                  # Error
+                  Error:
+                    files:
+                      index.ts:
+                        source: "@crazyphp_root/resources/Environment/Page/Home/index.ts"
+                      style.scss:
+                        source: "@crazyphp_root/resources/Environment/Page/Home/style.scss"
+                      template.hbs:
+                        source: "@crazyphp_root/resources/Environment/Page/Home/template.hbs"
                   # Home
                   Home:
                     files:

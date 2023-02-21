@@ -84,7 +84,10 @@ class Helpers {
      * 
      * @return
      */
-    public static function httpStatusCode($code, $what, $option) {
+    public static function httpStatusCode($error, $what, $option) {
+
+        # Set code
+        $code = $error["code"] ?? false;
 
         # Get http status code
         # $http_status_code = Json::open("@crazyphp_root/resources/Json/http_status_code.json");
@@ -114,7 +117,9 @@ class Helpers {
         $result = [
             "code"              => $code ? $code : 500,
             "title"             => $http_status_code[$code]["title"] ?? $collection500["title"],
-            "description"       => $http_status_code[$code]["description"] ?? $collection500["description"],
+            "description"       => (isset($error["detail"]) && $error["detail"]) ?
+                $error["detail"] :
+                    ($http_status_code[$code]["description"] ?? $collection500["description"]),
             "icon-class"        => $http_status_code[$code]["icon"]["class"] ?? $collection500["icon"]["class"],
             "icon-text"         => $http_status_code[$code]["icon"]["text"] ?? $collection500["icon"]["text"],
             "primary-color"     => $http_status_code[$code]["color"]["primary"] ?? $collection500["color"]["primary"],

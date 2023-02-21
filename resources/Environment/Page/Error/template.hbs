@@ -1,0 +1,44 @@
+{{!--
+  ! Page Error
+  !
+  ! Template of error plage
+  !
+  ! HANDLEBARS.JS version 4.7.7
+  !
+  ! @package    kzarshenas/crazyphp
+  ! @author     kekefreedog <kevin.zarshenas@gmail.com>
+  ! @copyright  2022-2022 Kévin Zarshenas
+  !--}}
+
+{{!-- Root --}}
+{{#httpStatusCode errors.0 "*"}}
+<div id="crazy-root" descriptive-id="" class="screen-fit-min-y screen-flex screen-center {{colorThemeSuffix primary-color "" "light"}} {{colorThemeSuffix secondary-color "" "dark"}} {{colorThemeSuffix primary-color "text" "light"}} {{colorThemeSuffix secondary-color "text" "dark"}}">
+{{/httpStatusCode}}
+
+    <div class="row">
+
+        {{#each errors as |error|}}
+        <div class="col l6 m6 s12 offset-m3 offset-l3">
+        
+            {{!-- Get heetp status code --}}
+            {{#httpStatusCode error "*"}}
+
+                <h1 class="mt-0 mb-0 font-weight-500 {{colorThemeSuffix primary-color "text" "dark"}} {{colorThemeSuffix secondary-color "text" "light"}}" style="font-size: 6rem;">Error {{code}}</h1>
+
+                <h3 class="mt-0 mb-0 font-weight-200">
+                    <a class="btn-floating z-depth-0 {{colorThemeSuffix primary-color "" "dark"}} {{colorThemeSuffix secondary-color "" "light"}}" style="vertical-align: -5px;">
+                        <i class="{{icon-class}} {{colorThemeSuffix primary-color "text" "light"}} {{colorThemeSuffix secondary-color "text" "dark"}}">{{icon-text}}</i>
+                    </a>
+                    <span class="{{colorThemeSuffix primary-color "text" "dark"}} {{colorThemeSuffix secondary-color "text" "light"}}">{{title}}</span>
+                </h3>
+
+                <blockquote class="{{colorThemeSuffix primary-color "border" "dark"}} {{colorThemeSuffix secondary-color "border" "light"}} {{colorThemeSuffix primary-color "text" "dark"}} {{colorThemeSuffix secondary-color "text" "light"}}">{{description}}</blockquote>
+            
+            {{/httpStatusCode}}
+
+        </div>
+        {{/each}}
+
+    </div>
+
+</div>

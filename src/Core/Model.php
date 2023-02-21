@@ -52,7 +52,7 @@ class Model implements CrazyModel {
     public function __construct(string $entity = "") {
 
         # Set name
-        $this->name = $entity ? $entity : get_class();
+        $this->name = $entity ? $entity : Context::getParameters('entity');
 
         # Prepare config of current model
         $this->_prepareModelConfig();
@@ -176,13 +176,13 @@ class Model implements CrazyModel {
     /**
      * Read With Filters
      * 
-     * @param array $filters Filters to use for read items
-     * @param array $sort Options to use for sort items read
-     * @param array $sort Options to use for group items read
+     * @param ?array $filters Filters to use for read items
+     * @param ?array $sort Options to use for sort items read
+     * @param ?array $sort Options to use for group items read
      * @param ?array $options Optionnal options
      * @return array
      */
-    public function readWithFilters(array $filters, ?array $sort = null, ?array $group = null, ?array $options = null):array {
+    public function readWithFilters(?array $filters = null, ?array $sort = null, ?array $group = null, ?array $options = null):array {
 
         # Declare result
         $result = [];
@@ -192,7 +192,6 @@ class Model implements CrazyModel {
             ->parseFilter($filters, $options)
             ->parseSort($sort, $options)
             ->parseGroup($group, $options)
-            ->pushToTrash($options)
             ->run()
         ;
 

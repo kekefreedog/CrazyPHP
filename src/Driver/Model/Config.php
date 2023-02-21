@@ -196,7 +196,7 @@ class Config implements CrazyDriverModel {
     public function run(bool $clearOptionsAfter = true):array {
 
         # Set result
-        $result = [];
+        $result = $this->schema->getResultSummary();
 
         # Return result
         return $result;

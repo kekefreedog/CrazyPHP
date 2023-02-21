@@ -43,26 +43,14 @@ class ApiV2All extends Controller {
         # Check entity given by user
         Model::checkEntityInContext();
 
+        # New model
+        $model = new Model();
+
         # Declare content
-        $content = [];
+        $content = $model->readWithFilters();
 
         # Get last modified date of model config
         $lastModified = FileConfig::getLastModified("Model");
-
-        # Get all model available
-        $modelConfig = FileConfig::get("Model");
-        
-        # Iteration of model
-        foreach($modelConfig["Model"] as $model){
-
-            # Check if current model is good
-            if(strtolower(Context::getParameters("entity")) == strtolower($model["name"]))
-
-                # Set content
-                $content = $model;
-
-
-        }
 
         # Set response
         (new ApiResponse())
