@@ -34,6 +34,10 @@ use CrazyPHP\Library\File\File;
  */
 class Schema {
 
+    /** Private parameters
+     ******************************************************
+     */
+
     /** @var array $options Options of the current schema */
     private array $options = [];
 
@@ -42,6 +46,9 @@ class Schema {
 
     /** @var array $collectionWithValues */
     private array $collectionWithValues = [];
+
+    /** @var bool $attributesAsValues Indicate if attributes is set as values in current schema */
+    private bool $attributesAsValues = false;
 
     /**
      * Constructor
@@ -69,7 +76,24 @@ class Schema {
 
     /** Public method
      ******************************************************
+     */    
+    
+     /**
+     * Set Attributes As Values
+     * 
+     * Switch attributes to values
+     * 
+     * @return self
      */
+    public function setAttributesAsValues():self {
+
+        # Enable attribute $attributesAsValues
+        $this->attributesAsValues = true;
+
+        # Return current instance
+        return $this;
+
+    }
 
     /**
      * Set Values
@@ -116,26 +140,87 @@ class Schema {
         $options = $this->ingestOptions($options, self::DEFAULT_VALUES_OPTIONS);
 
         # Check multiple
-        if(!$options["multiple"] ?? false)
+        if(isset($values["name"])){
 
             # Add depth in values
             $values = [$values];
+
+        }
 
         # Iteration values
         foreach($values as $value){
 
             # Prepare item
-            $item = $this->collection;
+            $items = $this->collection;
 
-            # Add value
-            $item["value"] = $value;
+            # Iteration of item
+            foreach($items as &$item){
+
+                # Set value of item
+                if(!isset($value[$item["name"]])){
+
+                    # Check if value is requierd
+                    if($item["required"] ?? false){
+            
+                        # New error
+                        throw new CrazyException(
+                            "\"".$item['name']."\" is required.",
+                            500,
+                            [
+                                "custom_code"   =>  "schema-001",
+                            ]
+                        );
+                        
+                    }else
+                    # Check default value is et                    
+                    if(isset($item["default"])){
+
+                        # Set value
+                        $item["value"] = $item["default"];
+
+                    }else{
+
+
+                        # Type varchar
+                        if(strtoupper(substr(trim($item['type']), 0, 7)) == "VARCHAR")
+            
+                            # Set value
+                            $item["value"] = "";
+            
+                        # Type array
+                        elseif(strtoupper(substr(trim($item['type']), 0, 5)) == "ARRAY")
+            
+                            # Set value
+                            $item["value"] = [];
+                            
+                        # Type Boolean
+                        elseif(strtoupper(substr(trim($item['type']), 0, 4)) == "BOOL")
+            
+                            # Set value
+                            $item["value"] = false;
+
+                    }
+
+                }else{
+
+                    # Set value
+                    $item["value"] = $value[$item["name"]];
+
+                }
+
+
+            }
 
             # Push value
-            $this->collectionWithValues[] = $item;
+            $this->collectionWithValues[] = $items;
 
         }
 
     }
+
+    /** Public method | Get
+     ******************************************************
+     */
 
     /**
      * Get Schema with value
@@ -148,13 +233,37 @@ class Schema {
     public function getResult():array {
 
         # Set result
-        $result = $this->collectionWithValues;
+        $result = [];
 
-        # Vrocess values
-        $result = (new Process($result))->getResult();
+        # Set result
+        $results = $this->collectionWithValues;
 
-        # Validate values
-        $result = (new Validate($result))->getResult();
+        # Check is attributes as values is not enable
+        if(!$this->attributesAsValues){
+
+            # Check result
+            if(!empty($results))
+
+                # Iteration result
+                foreach($results as &$currentResult){
+
+                    # Vrocess values
+                    $currentResult = (new Process($currentResult))->getResult();
+
+                    # Validate values
+                    $currentResult = (new Validate($currentResult))->getResult();
+
+                    # Summarize result
+                    $result[] = $currentResult;
+            
+                }
+
+        }
+        # If attributes
+        else
+
+            # Set result
+            $result = $this->collection;
 
         # Return result
         return $result;
@@ -171,16 +280,71 @@ class Schema {
     public function getResultSummary():array|null {
 
         # Set result
-        $result = $this->collectionWithValues;
+        $result = [];
 
-        # Vrocess values
-        $result = (new Process($result))->getResult();
+        # Check is attributes as values is not enable
+        if(!$this->attributesAsValues){
 
-        # Validate values
-        $result = (new Validate($result))->getResult();
+            # Set result
+            $results = $this->collectionWithValues;
 
-        # Summarize result
-        $result = Validate::getResultSummary($result);
+            # Check result
+            if(!empty($results))
+
+                # Iteration result
+                foreach($results as &$currentResult){
+
+                    # Vrocess values
+                    $currentResult = (new Process($currentResult))->getResult();
+
+                    # Validate values
+                    $currentResult = (new Validate($currentResult))->getResult();
+
+                    # Summarize result
+                    $result[] = Validate::getResultSummary($currentResult);
+            
+                }
+
+        }
+        # If attributes
+        else{
+
+            # Check collection
+            if(!empty($this->collection))
+
+                # Iteration collection
+                foreach($this->collection as $attribute)
+
+                    # Push value in result
+                    $result[$attribute["name"]] = $attribute["type"];
+
+        }
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Get Count
+     * 
+     * Get the number of item in current schema
+     * 
+     * @return int
+     */
+    public function getCount():int {
+
+        # Check is attributes as values is not enable
+        if(!$this->attributesAsValues)
+
+            # Set result
+            $result = count($this->collectionWithValues);
+
+        # If attributes
+        else
+
+            # Set result
+            $result = count($this->collection);
 
         # Return result
         return $result;
@@ -208,22 +372,24 @@ class Schema {
         if($collection !== null && !empty($collection)){
 
             # Set result
-            $result = false;
+            $result = true;
 
             # Iteration of collection
-            foreach($collection as $k => $v){
+            foreach($collection as $v){
 
                 # Get keys
                 $keys = array_keys($v);
 
                 # Check name && typein keys
                 if(
-                    !array_key_exists("name", $keys) ||
-                    !array_key_exists("type", $keys)
-                );
+                    !in_array("name", $keys) ||
+                    !in_array("type", $keys)
+                ){
 
                     # Set result
                     $result = false;
+
+                }
 
             }
 

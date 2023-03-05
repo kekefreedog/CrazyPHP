@@ -101,10 +101,10 @@ class ApiResponse extends Response {
      * Push Content on Api Response
      * 
      * @param string $where Where put content in content
-     * @param string|bool|array|null $content to push
+     * @param string|bool|array|int|null $content to push
      * @return self
      */
-    public function pushContent(string $where = "", string|bool|array|null $content = null):self {
+    public function pushContent(string $where = "", string|bool|array|int|null $content = null):self {
 
         # Check where
         if(!$where)
@@ -177,7 +177,6 @@ class ApiResponse extends Response {
 
         # Convert with engine the api content
         $dumpApiContent = $this->engineInstance::encode($this->apiContent);
-
 
         # Create stram from content
         parent::setContent($dumpApiContent);
@@ -258,7 +257,7 @@ class ApiResponse extends Response {
 
     /** @const array DEFAULT_CONTENT */
     public const DEFAULT_CONTENT = [
-        "errors"    =>  null,
+        # "errors"    =>  null,
         "results"   =>  null
     ];
 

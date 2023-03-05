@@ -15,9 +15,11 @@ namespace CrazyPHP\Controller;
 /**
  * Dependances
  */
+use CrazyPHP\Library\File\Config as FileConfig;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Core\ApiResponse;
 use CrazyPHP\Core\Controller;
+use CrazyPHP\Model\Context;
 use CrazyPHP\Core\Model;
 
 /**
@@ -41,11 +43,18 @@ class ApiV2Count extends Controller {
         # Check entity given by user
         Model::checkEntityInContext();
 
-        # Set content
-        $content = ["Count"];
+        # New model
+        $model = new Model();
+
+        # Declare content
+        $content = $model->countWithFilters();
+
+        # Get last modified date of model config
+        $lastModified = FileConfig::getLastModified("Model");
 
         # Set response
         (new ApiResponse())
+            ->addLastModified($lastModified)
             ->setStatusCode()
             ->pushContent("results", $content)
             ->send();

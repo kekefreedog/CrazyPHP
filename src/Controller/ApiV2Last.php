@@ -15,9 +15,12 @@ namespace CrazyPHP\Controller;
 /**
  * Dependances
  */
+use CrazyPHP\Library\File\Config as FileConfig;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Core\ApiResponse;
 use CrazyPHP\Core\Controller;
+use CrazyPHP\Model\Context;
+use CrazyPHP\Core\Model;
 
 /**
  * Api V2 Last
@@ -37,7 +40,35 @@ class ApiV2Last extends Controller {
      */
     public static function get():void {
 
-        
+        # Check entity given by user
+        Model::checkEntityInContext();
+
+        # New model
+        $model = new Model();
+
+        # Declare content
+        $content = $model
+            ->readWithFilters(
+                [],
+                [
+                    "DESC"
+                ],
+                null,
+                [
+                    "limit" =>  1
+                ]
+            )
+        ;
+
+        # Get last modified date of model config
+        $lastModified = FileConfig::getLastModified("Model");
+
+        # Set response
+        (new ApiResponse())
+            ->addLastModified($lastModified)
+            ->setStatusCode()
+            ->pushContent("results", $content)
+            ->send();
 
     }
 

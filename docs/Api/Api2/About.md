@@ -14,6 +14,12 @@ List all entities available
 
 Return all items of entity
 
+### List of parameters allowed
+
+|Parameter|Exemple|Description|
+|-|-|-|
+|summary|summary=true|Return a shorter result without details|
+
 ### Get By Id
 
 Return item of entity by id
@@ -37,6 +43,12 @@ Return new items of entity
 ### Get Fields
 
 Get all fields of entity
+
+### List of parameters allowed
+
+|Parameter|Exemple|Description|
+|-|-|-|
+|summary|summary=true|Return a shorter result without details|
 
 ### Post Create
 

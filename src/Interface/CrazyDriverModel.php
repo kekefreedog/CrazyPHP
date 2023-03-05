@@ -23,6 +23,26 @@ namespace  CrazyPHP\Interface;
  */
 interface CrazyDriverModel {
 
+    /** Private parameters
+     ******************************************************
+     */
+
+    /** @var bool $attributesAsValues Indicate if attributes is set as values in current schema */
+    # private bool $attributesAsValues = false;
+
+    /** Public mathods | Attributes
+     ******************************************************
+     */
+
+    /**
+     * Set Attributes As Values
+     * 
+     * Switch attributes to values
+     * 
+     * @return self
+     */
+    public function setAttributesAsValues():self;
+
     /** Public methods | Parser
      ******************************************************
      */
@@ -48,11 +68,11 @@ interface CrazyDriverModel {
     /**
      * Parse Sort
      * 
-     * @param array $sort Sort to process
+     * @param null|array|string $sort Sort to process
      * @param ?array $options Optionnal options
      * @return self
      */
-    public function parseSort(?array $sort, ?array $options = null):self;
+    public function parseSort(null|array|string $sort, ?array $options = null):self;
 
     /**
      * Parse Group
@@ -100,7 +120,7 @@ interface CrazyDriverModel {
      */
     public function pushToTrash(?array $options = null):self;
 
-    /** Public methods | Run
+    /** Public methods | Execute
      ******************************************************
      */
 
@@ -109,9 +129,17 @@ interface CrazyDriverModel {
      * 
      * Return data with given information
      * 
-     * @param bool $clearOptionsAfter
      * @return array
      */
-    public function run(bool $clearOptionsAfter = true):array;
+    public function run():array;
+
+    /**
+     * Count
+     * 
+     * Return counted data with given information
+     * 
+     * @return int
+     */
+    public function count():int;
 
 }

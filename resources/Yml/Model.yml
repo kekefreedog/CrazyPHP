@@ -4,6 +4,7 @@ Model:
       name: Config 
       arguments: 
         name: Router
+        root: Router.app
     attributes: 
       - name: name
         label: Name

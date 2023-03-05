@@ -77,12 +77,21 @@ interface CrazyModel {
      * Read With Filters
      * 
      * @param ?array $filters Filters to use for read items
-     * @param ?array $sort Options to use for sort items read
-     * @param ?array $sort Options to use for group items read
+     * @param null|array|string $sort Options to use for sort items read
+     * @param ?array $group Options to use for group items read
      * @param ?array $options Optionnal options
      * @return array
      */
-    public function readWithFilters(?array $filters, ?array $sort = null, ?array $group = null, ?array $options = null):array;
+    public function readWithFilters(?array $filters, null|array|string $sort = null, ?array $group = null, ?array $options = null):array;
+
+    /**
+     * Count With Filters
+     * 
+     * @param ?array $filters Filters to use for read items
+     * @param ?array $options Optionnal options
+     * @return int
+     */
+    public function countWithFilters(?array $filters = null, ?array $options = null):int;
 
     /**
      * Update With Filters

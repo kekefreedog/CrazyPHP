@@ -9,14 +9,22 @@
 /// /// /// 
 
 // Material Icons
-@import '/node_modules/material-icons/iconfont/material-icons.css';
-@import '/node_modules/material-symbols/index.css';
+@import '/node_modules/@material-design-icons/font/index.css';
+// @import '/node_modules/material-symbols/index.css';
 
 // Font Awesome
 @import '/node_modules/@fortawesome/fontawesome-free/css/all.css';
+
+// Tippy
+@import '/node_modules/tippy.js/dist/tippy.css';
+@import '/node_modules/tippy.js/dist/backdrop.css';
+@import '/node_modules/tippy.js/animations/shift-away.css';
 
 // Import color
 @import './color_collection.scss', './color_gradient_collection.scss', './color_class.scss';
 
 // Import dimensions
 @import './dimensions.scss';
+
+// Import global
+@import './global.scss';

@@ -15,9 +15,11 @@ namespace  CrazyPHP\Driver\Model;
 /**
  * Dependances
  */
+use CrazyPHP\Library\File\Config as FileConfig;
 use CrazyPHP\Interface\CrazyDriverModel;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Model\Schema;
+use CrazyPHP\Model\Context;
 
 /**
  * Config
@@ -58,6 +60,29 @@ class Config implements CrazyDriverModel {
 
         # Prepare Schema
         $this->prepareSchema();
+
+    }
+
+    /** Public mathods | Attributes
+     ******************************************************
+     */
+
+    /**
+     * Set Attributes As Values
+     * 
+     * Switch attributes to values
+     * 
+     * @param bool $summary Return summary of the attributes
+     * @return self
+     */
+    public function setAttributesAsValues(bool $summary = false):self {
+
+        # Spread action to schema
+        $this->schema->setAttributesAsValues();
+
+        # Return self
+        return $this;
+
 
     }
 
@@ -105,11 +130,11 @@ class Config implements CrazyDriverModel {
     /**
      * Parse Sort
      * 
-     * @param array $sort Sort to process
+     * @param null|array|string $sort Sort to process
      * @param ?array $options Optionnal options
      * @return self
      */
-    public function parseSort(?array $sort, ?array $options = null):self {
+    public function parseSort(null|array|string $sort, ?array $options = null):self {
 
         # Return self
         return $this;
@@ -181,7 +206,7 @@ class Config implements CrazyDriverModel {
         return $this;
     }
 
-    /** Public methods | Run
+    /** Public methods | Execute
      ******************************************************
      */
 
@@ -190,13 +215,37 @@ class Config implements CrazyDriverModel {
      * 
      * Return data with given information
      * 
-     * @param bool $clearOptionsAfter
      * @return array
      */
-    public function run(bool $clearOptionsAfter = true):array {
+    public function run():array {
+
+        # Check summary
+        if($this->arguments["summary"])
+
+            # Set result
+            $result = $this->schema->getResultSummary();
+
+        else
+
+            # Set result
+            $result = $this->schema->getResult();
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Count
+     * 
+     * Return counted data with given information
+     * 
+     * @return int
+     */
+    public function count():int {
 
         # Set result
-        $result = $this->schema->getResultSummary();
+        $result = $this->schema->getCount();
 
         # Return result
         return $result;
@@ -229,6 +278,12 @@ class Config implements CrazyDriverModel {
 
                         # Set value
                         $this->arguments[$name] = $value;
+
+        # Check summarize
+        if(in_array($_REQUEST["summary"] ?? [], [null, false, "false", 0]))
+
+            # Set options summary
+            $this->arguments["summary"] = false;
 
     }
 
@@ -278,6 +333,58 @@ class Config implements CrazyDriverModel {
         # New schema
         $this->schema = new Schema($this->arguments["attributes"]);
 
+        # Get values
+        $values = $this->getValues();
+
+        # Set value
+        $this->schema->setValues($values);
+
+    }
+
+    /**
+     * Get Values
+     * 
+     * Get values from root given in options (arguments)
+     * @return array
+     */
+    private function getValues():array {
+
+        # Set result
+        $result = [];
+
+        # Check arguments root
+        if(!$this->arguments["root"] ?? true)
+                
+            # New error
+            throw new CrazyException(
+                "Root parameter is missing in current model \"".$this->arguments["name"]."\"", 
+                500,
+                [
+                    "custom_code"   =>  "driver-model-config-002",
+                ]
+            );
+
+        # Get data
+        $data = FileConfig::getValue($this->arguments["root"]);
+
+        # Check data
+        if(!$data || empty($data) || $data === null)
+                
+            # New error
+            throw new CrazyException(
+                "Data obtain from root \"".$this->arguments["root"]."\" isn't valid for current model \"".$this->arguments["name"]."\"", 
+                500,
+                [
+                    "custom_code"   =>  "driver-model-config-002",
+                ]
+            );
+
+        # Set result
+        $result = $data;
+
+        # Return result
+        return $result;
+
     }
 
     /** Public constants
@@ -291,8 +398,10 @@ class Config implements CrazyDriverModel {
 
     /** @const array */
     public const ARGUMENTS = [
-        "name"      =>  "",
-        "attributes"=>  []
+        "name"          =>  "",
+        "root"          =>  "",
+        "attributes"    =>  [],
+        "summary"       =>  true
     ];
 
 }

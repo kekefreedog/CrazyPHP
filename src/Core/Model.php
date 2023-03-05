@@ -174,15 +174,32 @@ class Model implements CrazyModel {
      */
 
     /**
+     * Read Attributes
+     * 
+     * Set attributes as value of model
+     * 
+     * @return self
+     */
+    public function readAttributes():self {
+
+        # Set attributes as values
+        $this->driver->setAttributesAsValues();
+
+        # Return instance
+        return $this;
+
+    }
+
+    /**
      * Read With Filters
      * 
      * @param ?array $filters Filters to use for read items
-     * @param ?array $sort Options to use for sort items read
+     * @param null|array|string $sort Options to use for sort items read
      * @param ?array $sort Options to use for group items read
      * @param ?array $options Optionnal options
      * @return array
      */
-    public function readWithFilters(?array $filters = null, ?array $sort = null, ?array $group = null, ?array $options = null):array {
+    public function readWithFilters(?array $filters = null, null|array|string $sort = null, ?array $group = null, ?array $options = null):array {
 
         # Declare result
         $result = [];
@@ -193,6 +210,29 @@ class Model implements CrazyModel {
             ->parseSort($sort, $options)
             ->parseGroup($group, $options)
             ->run()
+        ;
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Count With Filters
+     * 
+     * @param ?array $filters Filters to use for read items
+     * @param ?array $options Optionnal options
+     * @return int
+     */
+    public function countWithFilters(?array $filters = null, ?array $options = null):int {
+
+        # Declare result
+        $result = [];
+
+        # Set schema
+        $result = $this->driver
+            ->parseFilter($filters, $options)
+            ->count()
         ;
 
         # Return result
@@ -453,17 +493,19 @@ class Model implements CrazyModel {
             $arguments["attributes"] = $this->current["attributes"];
 
             # Check driver class exists in Driver Model
-            if(class_exists($className))
+            if(class_exists($className)){
 
                 # Set driver
                 $this->driver = new $className(...$arguments);
 
-            else
+            }else
             # Check app driver class exists
-            if(class_exists($appClassName))
+            if(class_exists($appClassName)){
 
                 # Set driver
                 $this->driver = new $appClassName(...$arguments);
+
+            }
 
         }
 
