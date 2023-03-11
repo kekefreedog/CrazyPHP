@@ -219,6 +219,27 @@ class ModelDriverConfigTest extends TestCase{
 
 
     }
+
+    /**
+     * Test Count
+     * 
+     * @return void
+     */
+    public function testCount():void {
+
+        # Get model instance
+        $modelInstance = $this->prepareModelRouter();
+
+        # Get result
+        $result = $modelInstance->countWithFilters();
+
+        # Get all routers
+        $routers = count(FileConfig::getValue("Router.app"));
+
+        # Check
+        $this->assertEquals($routers, $result);
+
+    }
     
     /** Constants
      ******************************************************

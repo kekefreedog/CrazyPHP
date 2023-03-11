@@ -521,6 +521,50 @@ class Model implements CrazyModel {
      */
 
     /**
+     * Get List of all model
+     * 
+     * @return array
+     */
+    public static function getListAllModel():array {
+
+        # Set result
+        $result = [];
+
+        # Get all model available
+        $modelConfig = Config::getValue("Model");
+
+        # Check model config
+        if($modelConfig === null || empty($modelConfig))
+
+            # Set content
+            $result = [];
+
+        # If model config model valid
+        else{
+
+            # Clean columns of content
+            Arrays::removeColumn($modelConfig, []);
+
+            # Clean attributes
+            array_walk(
+                $modelConfig,
+                function(&$v){
+                    if(isset($v['attributes']) && !empty($v["attributes"]))
+                        $v["attributes"] = array_column($v["attributes"], "name");
+                }
+            );
+
+            # Set content
+            $result = $modelConfig;
+
+        }
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
      * Check Entity in Entity
      * 
      * @return Model return controller of the current model found

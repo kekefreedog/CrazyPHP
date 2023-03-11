@@ -20,3 +20,4 @@ Model:
         type: VARCHAR
         validate: [isValidUrl]
         required: false
+        

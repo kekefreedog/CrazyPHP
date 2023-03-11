@@ -20,6 +20,7 @@ use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Core\ApiResponse;
 use CrazyPHP\Core\Controller;
+use CrazyPHP\Core\Model;
 
 /**
  * Api V2 List
@@ -43,33 +44,7 @@ class ApiV2List extends Controller {
         $lastModified = FileConfig::getLastModified("Model");
 
         # Get all model available
-        $modelConfig = FileConfig::getValue("Model");
-
-        # Check model config
-        if($modelConfig === null || empty($modelConfig))
-
-            # Set content
-            $content = [];
-
-        # If model config model valid
-        else{
-
-            # Clean columns of content
-            Arrays::removeColumn($modelConfig, []);
-
-            # Clean attributes
-            array_walk(
-                $modelConfig,
-                function(&$v){
-                    if(isset($v['attributes']) && !empty($v["attributes"]))
-                        $v["attributes"] = array_column($v["attributes"], "name");
-                }
-            );
-
-            # Set content
-            $content = $modelConfig;
-
-        }
+        $content = Model::getListAllModel();
 
         # Set response
         (new ApiResponse())
