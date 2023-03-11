@@ -178,12 +178,16 @@ class Model implements CrazyModel {
      * 
      * Set attributes as value of model
      * 
+     * @param ?array $options Optionnal options
      * @return self
      */
-    public function readAttributes():self {
+    public function readAttributes(?array $options = null):self {
 
         # Set attributes as values
-        $this->driver->setAttributesAsValues();
+        $this->driver
+            ->setAttributesAsValues()
+            ->forceSummary($options["summary"] ?? null)
+        ;
 
         # Return instance
         return $this;
@@ -208,6 +212,7 @@ class Model implements CrazyModel {
         $result = $this->driver
             ->parseFilter($filters, $options)
             ->parseSort($sort, $options)
+            ->forceSummary($options["summary"] ?? null)
             ->parseGroup($group, $options)
             ->run()
         ;

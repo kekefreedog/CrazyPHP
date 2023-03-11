@@ -142,4 +142,18 @@ interface CrazyDriverModel {
      */
     public function count():int;
 
+    /** Public methods | tests
+     ******************************************************
+     */
+
+    /**
+     * Force Summary
+     * 
+     * Use for test for force summary argument value
+     * 
+     * @param ?bool $input Summary state
+     * @return self
+     */
+    public function forceSummary(?bool $input = true):self;
+
 }

@@ -18,11 +18,9 @@ namespace Tests\Core;
 use CrazyPHP\Library\File\Config as FileConfig;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\Cache\Cache;
-use CrazyPHP\Library\File\File;
 use PHPUnit\Framework\TestCase;
 use CrazyPHP\Core\Model;
 use CrazyPHP\Model\Env;
-use PSpell\Config;
 
 /**
  * Model Core test
@@ -33,7 +31,7 @@ use PSpell\Config;
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2022 Kévin Zarshenas
  */
-class ModelTest extends TestCase{
+class ModelDriverConfigTest extends TestCase{
     
     /** Parameters
      ******************************************************
@@ -103,15 +101,122 @@ class ModelTest extends TestCase{
     }
 
     /**
-     * Test Model Router Create
+     * Prepare Model Router Create
+     * 
+     * @return Model
      */
-    public function testModelRouterCreate():void {
+    public function prepareModelRouter():Model {
 
-        # Prepare env
-        $this->prepareEnv();
+        # Check model instance 
+        if($this->modelInstance === null){
 
-        # Load router model
-        $this->modelInstance = new Model("Router");
+            # Prepare env
+            $this->prepareEnv();
+
+            # Load router model
+            $result = new Model("Router");
+
+        # If already set
+        }else{
+
+            # Load router model
+            $result = $this->modelInstance;
+
+        }
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Test Last
+     * 
+     * @return void
+     */
+    public function testLast():void {
+
+        # Get model instance
+        $modelInstance = $this->prepareModelRouter();
+
+        # Set result
+        $result = $modelInstance
+            ->readWithFilters(
+                [],
+                "DESC",
+                null,
+                [
+                    "limit" =>  1
+                ]
+            )
+        ;
+
+        # Get all routers
+        $routers = FileConfig::getValue("Router.app");
+
+        # Get last item
+        $lastRouter = array_pop($routers);
+
+        # Check name
+        $this->assertEquals($lastRouter["name"], $result[0]["Name"]);
+
+    }
+
+    /**
+     * Test Fields
+     * 
+     * @return void
+     */
+    public function testFields():void {
+
+        # Get model instance
+        $modelInstance = $this->prepareModelRouter();
+
+        # Set result
+        $result = $modelInstance
+            ->readAttributes([
+                'summary'   =>  false
+            ])
+            ->readWithFilters()
+        ;
+
+        # Get all routers
+        $routers = FileConfig::getValue("Model");
+
+        # Get last item
+        $lastRouter = array_pop($routers);
+
+        # Check name
+        $this->assertEquals($lastRouter["attributes"], $result);
+
+    }
+
+    /**
+     * Test all
+     * 
+     * @return void
+     */
+    public function testAll():void {
+
+        # Get model instance
+        $modelInstance = $this->prepareModelRouter();
+
+        # Get result
+        $result = $modelInstance->readWithFilters();
+
+        # Get all routers
+        $routers = FileConfig::getValue("Router.app");
+
+        # Check result
+        if(!empty($result))
+
+            # Iteration result
+            foreach($result as $key => $item)
+
+                # Check
+                $this->assertEquals($routers[$key]["name"], $item["Name"]);
+        
+
 
     }
     

@@ -45,6 +45,16 @@ class Config implements CrazyDriverModel {
     /** @var array $arrayData */
     private array $arrayData = [];
 
+    /** @var array $actions */
+    private array $filterParser = [
+        # "ids"       =>  null,
+        "filterBy"  =>  null,
+        "order"     =>  null,
+        "limit"     =>  null,
+        "offset"    =>  null,
+        "group"     =>  null,
+    ];
+
     /**
      * Constructor
      * 
@@ -122,6 +132,33 @@ class Config implements CrazyDriverModel {
      */
     public function parseFilter(?array $filters, ?array $options = null):self {
 
+        /**
+         * Limit | start
+         */
+
+        # Check option.limit
+        if(isset($options["limit"])){
+
+            # Check is integer
+            if(!is_int($options["limit"]))
+            
+                # New error
+                throw new CrazyException(
+                    "Given limit \"".$options["limit"]."\" given must be a integer...", 
+                    500,
+                    [
+                        "custom_code"   =>  "driver-model-config-002",
+                    ]
+                );
+
+            # Set filterParser
+            $this->filterParser["limit"] = $options["limit"];
+
+        }
+        /**
+         * Limit | End
+         */
+
         # Return self
         return $this;
 
@@ -135,6 +172,19 @@ class Config implements CrazyDriverModel {
      * @return self
      */
     public function parseSort(null|array|string $sort, ?array $options = null):self {
+        # Check if null
+        if($sort === null)
+
+            # Stop method
+            return $this;
+
+        # Check sort is ASC or DESC
+        if(strtoupper($sort) == "ASC" || strtoupper($sort) == 'DESC'){
+
+            # Set sort
+            $this->filterParser["sort"] = strtolower($sort);
+
+        }
 
         # Return self
         return $this;
@@ -230,6 +280,27 @@ class Config implements CrazyDriverModel {
             # Set result
             $result = $this->schema->getResult();
 
+        # Check sort
+        if($this->filterParser["sort"] !== null){
+
+            # Check if desc
+            if($this->filterParser["sort"] == "desc"){
+
+                # Reverse result
+                $result = array_reverse($result);
+
+            }
+
+        }
+
+        # Check limit
+        if($this->filterParser["limit"] !== null && $this->filterParser["limit"] <= count($result)){
+
+            # Array slice result
+            $result = array_slice($result, 0, $this->filterParser["limit"]);
+
+        }
+
         # Return result
         return $result;
 
@@ -249,6 +320,34 @@ class Config implements CrazyDriverModel {
 
         # Return result
         return $result;
+
+    }
+
+    /** Public methods | tests
+     ******************************************************
+     */
+
+    /**
+     * Force Summary
+     * 
+     * Use for test for force summary argument value
+     * 
+     * @param ?bool $input Summary state
+     * @return self
+     */
+    public function forceSummary(?bool $input = null):self {
+
+        # Check input
+        if($input === null)
+
+            # Return self
+            return $this;
+
+        # Set summaary argument
+        $this->arguments["summary"] = $input;
+
+        # Return self
+        return $this;
 
     }
 
@@ -279,11 +378,8 @@ class Config implements CrazyDriverModel {
                         # Set value
                         $this->arguments[$name] = $value;
 
-        # Check summarize
-        if(in_array($_REQUEST["summary"] ?? [], [null, false, "false", 0]))
-
-            # Set options summary
-            $this->arguments["summary"] = false;
+        # Convert summary to book
+        $this->arguments["summary"] = boolval($_REQUEST["summary"] ?? self::ARGUMENTS["summary"]);
 
     }
 

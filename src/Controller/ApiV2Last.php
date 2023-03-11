@@ -50,12 +50,10 @@ class ApiV2Last extends Controller {
         $content = $model
             ->readWithFilters(
                 [],
-                [
-                    "DESC"
-                ],
+                "DESC",
                 null,
                 [
-                    "limit" =>  1
+                    "limit" =>  intval(Context::getParameters("count"))
                 ]
             )
         ;
