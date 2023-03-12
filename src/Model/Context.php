@@ -212,13 +212,21 @@ class Context{
         $result = $GLOBALS[static::PREFIX]["ROUTES"]["CURRENT"];
 
         # Check attributes
-        if($attributes === null || !$attributes || empty($attributes))
+        if($attributes === null || !$attributes || empty($attributes)){
+
+            # Change keys case
+            $result = Arrays::changeKeyCaseRecursively($result, CASE_LOWER);
 
             # Return result
             return $result;
 
+        }
+
         # Check attributes
         if(is_string($attributes)){
+
+            # Change case of attributes
+            $attributes = strtoupper($attributes);
 
             # Check given attribute
             if(isset($GLOBALS[static::PREFIX]["ROUTES"]["CURRENT"][$attributes]))
@@ -246,6 +254,12 @@ class Context{
             $result = Arrays::stretch($result, "___");
 
         }
+
+        # Check if result is array
+        if(is_array($result))
+
+            # Change keys case
+            $result = Arrays::changeKeyCaseRecursively($result, CASE_LOWER);
 
         # Return result
         return $result;

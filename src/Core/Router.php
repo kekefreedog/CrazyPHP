@@ -23,7 +23,6 @@ use CrazyPHP\Library\Cache\Cache;
 use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Model\Context;
-use Mezon\Router\InvalidRouteErrorHandler;
 
 /**
  * Router
@@ -244,19 +243,28 @@ class Router extends VendorRouter {
                     "custom_code"   =>  "router-003",
                 ]
             );
-        
-        # Prepare data
-        $data = [
-            0 => $this->staticRoutes ?? null,
-            1 => $this->paramRoutes ?? null,
-            2 => $this->routeNames ?? null,
-            3 => $this->cachedRegExps ?? null,
-            4 => $this->cachedParameters ?? null,
-            5 => $this->regExpsWereCompiled ?? null
-        ];
+
+        # Create temp file
+        $folderCachePath = File::path(self::CACHE_PATH);
+        $fileCachePath = File::path(self::CACHE_PATH.time());
+
+        # Check folder
+        if(!is_dir($folderCachePath))
+
+            # Create folder
+            mkdir($folderCachePath);
+
+        # Create file cache
+        $this->dumpOnDisk($fileCachePath);
+
+        # Get content of cache
+        $data = file_get_contents($fileCachePath);
         
         # Put on Cache
         $this->cache->set($key, $data);
+
+        # Remove cache
+        unlink($fileCachePath);
 
     }
 
@@ -297,9 +305,32 @@ class Router extends VendorRouter {
                 ]
             );
 
-        # Ingest data
-        list ($this->staticRoutes, $this->paramRoutes, $this->routeNames, $this->cachedRegExps, $this->cachedParameters, $this->regExpsWereCompiled) = $data;
+        # Create temp file
+        $folderCachePath = File::path(self::CACHE_PATH);
+        $fileCachePath = File::path(self::CACHE_PATH.time());
+
+        # Check folder
+        if(!is_dir($folderCachePath))
+
+            # Create folder
+            mkdir($folderCachePath);
+
+        # Get content of cache
+        $data = file_put_contents($fileCachePath, $data);
+
+        # Load cache
+        $this->loadFromDisk($fileCachePath);
+
+        # Remove cache
+        unlink($fileCachePath);
 
     }
+
+    /** Public constant
+     ******************************************************
+     */
+
+    /** @const CACHE_ROUTER */
+    public const CACHE_PATH = "@app_root/.cache/app/router/";
 
 }

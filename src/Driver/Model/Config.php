@@ -18,6 +18,7 @@ namespace  CrazyPHP\Driver\Model;
 use CrazyPHP\Library\File\Config as FileConfig;
 use CrazyPHP\Interface\CrazyDriverModel;
 use CrazyPHP\Exception\CrazyException;
+use CrazyPHP\Library\Router\Router;
 use CrazyPHP\Library\Model\Schema;
 use CrazyPHP\Model\Context;
 
@@ -281,7 +282,7 @@ class Config implements CrazyDriverModel {
             $result = $this->schema->getResult();
 
         # Check sort
-        if($this->filterParser["sort"] !== null){
+        if(($this->filterParser["sort"] ?? null) !== null){
 
             # Check if desc
             if($this->filterParser["sort"] == "desc"){
@@ -317,6 +318,50 @@ class Config implements CrazyDriverModel {
 
         # Set result
         $result = $this->schema->getCount();
+
+        # Return result
+        return $result;
+
+    }
+
+    /** Public methods | Default
+     ******************************************************
+     */
+
+    /**
+     * Get Router Path
+     * 
+     * @param array $options Option
+     * @return string
+     */
+    public static function getRouterPath(array $options = []):string {
+
+        # Set result
+        $result = "";
+
+        # Check name in options
+        if(isset($options["name"]) && $options["name"])
+
+            # Set route name
+            $routeName = $options["name"];
+
+        else
+
+            # Set route name
+            $routeName = Context::getCurrentRoute("name");
+
+        # Get reverse route
+        $result = Router::reverse((string)$routeName);
+
+        # Get host name
+        $hostname = $_SERVER["HTTP_HOST"];
+
+        # add hostame to result
+        $result = "$hostname".($result == "index" ? "" : "/$result");
+
+        echo "<pre>";
+        print_r($_COOKIE);
+        echo "</pre>";
 
         # Return result
         return $result;

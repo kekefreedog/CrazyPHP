@@ -176,7 +176,7 @@ class Schema {
                     if(isset($item["default"])){
 
                         # Set value
-                        $item["value"] = $item["default"];
+                        $item["value"] = Process::setDefault($item["default"], $value);
 
                     }else{
 

@@ -15,6 +15,7 @@ namespace  CrazyPHP\Library\Router;
 /**
  * Dependances
  */
+use CrazyPHP\Core\Router as CoreRouter;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Cache\Cache;
 use CrazyPHP\Library\File\Config;
@@ -543,6 +544,34 @@ class Router {
 
         # Get data from cache
         $result = $cacheInstance->get($key);
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Reverse
+     * 
+     * Reverse Route
+     * 
+     * @param string $name Name of the router
+     * @param ?array $arguments Arguments of the router
+     * @return string
+     */
+    public static function reverse(string $name, ?array $arguments = null):string {
+
+        # Set result
+        $result = "";
+
+        # New router instance
+        $routerInstance = new CoreRouter();
+
+        # Push collection
+        $routerInstance->pushCollection();
+
+        # Set result
+        $result = $routerInstance->reverse($name, $arguments ?: []);
 
         # Return result
         return $result;

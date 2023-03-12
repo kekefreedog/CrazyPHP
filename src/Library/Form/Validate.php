@@ -159,7 +159,7 @@ class Validate {
             if($input['default'] ?? false)
 
                 # Set default value
-                $input['value'] = $input['default'];
+                $input['value'] = Process::setDefault($input["default"]);
 
     }
 
@@ -189,7 +189,7 @@ class Validate {
             if($input['default'] ?? false)
 
                 # Set default value
-                $input['value'] = $input['default'];
+                $input['value'] = Process::setDefault($input["default"]);
 
     }
 
@@ -219,7 +219,7 @@ class Validate {
             if($input['default'] ?? false)
 
                 # Set default value
-                $input['value'] = $input['default'];
+                $input['value'] = Process::setDefault($input["default"]);
 
     }
 

@@ -191,6 +191,10 @@ class Process {
 
     }
 
+    /** Private Static Methods
+     ******************************************************
+     */
+
     /**
      * Recursive array exploration
      * 
@@ -616,7 +620,7 @@ class Process {
                         );
 
                     # Push value in result
-                    $result[$value['name']] = $value['value'] ?? $value['default'];
+                    $result[$value['name']] = $value['value'] ?? self::setDefault($value['default']);
 
                 }
 
@@ -796,6 +800,43 @@ class Process {
                     $result = str_replace("{{".$v."}}", $configValue, $result);
 
                 }
+        }
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Set Default
+     * 
+     * Set default and check if default is callable
+     * 
+     * @param ?string $valueRequired Default Value
+     * @param array $arguments Argument to pass in case the default value is callable
+     * @return ?string
+     */
+    public static function setDefault(?string $valueRequired = null, array $arguments = []):?string {
+
+        # Set result
+        $result = null;
+
+        # Check valueRequired
+        if($valueRequired === null)
+
+            # Return null
+            return $result;
+
+        # Check id the string is value
+        if(is_callable($valueRequired)){
+
+            $result = $valueRequired($arguments);
+
+        }else{
+
+            # Set result
+            $result = $valueRequired;
+
         }
 
         # Return result
