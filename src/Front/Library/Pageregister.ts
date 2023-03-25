@@ -150,58 +150,68 @@ import Crazypage from './Crazypage';
      */
     public register(page:any):void {
 
-        // Event listener on router ready
-        document.addEventListener(  
-            "routerReady",
-            value => {
-                
-                // Check detail in value
-                if(
-                    "detail" in value && 
-                    Array.isArray(value.detail) && 
-                    "name" in page && 
-                    typeof page.name === "string"
-                ){
+        let registerFunction = value => {
+            
+            // Check detail in value
+            if(
+                "detail" in value && 
+                Array.isArray(value.detail) && 
+                "name" in page && 
+                typeof page.name === "string"
+            ){
 
-                    // Check if page in detail
-                    let currentContextCollection:Array<any> = this.filterArrayByKeyValue(value.detail, "name", page.name);
-        
-                    // Check current context
-                    if(currentContextCollection.length){
+                // Check if page in detail
+                let currentContextCollection:Array<any> = this.filterArrayByKeyValue(value.detail, "name", page.name);
+    
+                // Check current context
+                if(currentContextCollection.length){
 
-                        // Push class in instance
-                        this.routerAction[page.name] = {
-                            instance: page,
-                            file: "",
-                            date: new Date()
-                        }
-
+                    // Push class in instance
+                    this.routerAction[page.name] = {
+                        instance: page,
+                        file: "",
+                        date: new Date()
                     }
 
-                    // Check current page, if null it means it's the first page loaded
-                    if(this.currentPage === null){
+                }
 
-                        // Execute page
-                        let currentPage:any = new (page as any)();
+                // Check current page, if null it means it's the first page loaded
+                if(this.currentPage === null){
 
-                        // Add it to current page
-                        this.currentPage = currentPage;
+                    // Execute page
+                    let currentPage:any = new (page as any)();
 
-                        // Add it to history
-                        let newHistoryItem:object = {
-                            instance: page,
-                            date: new Date()
-                        };
+                    // Add it to current page
+                    this.currentPage = currentPage;
 
-                        // Push in history
-                        this.history.push(newHistoryItem);
+                    // Add it to history
+                    let newHistoryItem:object = {
+                        instance: page,
+                        date: new Date()
+                    };
 
-                    }
+                    // Push in history
+                    this.history.push(newHistoryItem);
+
+                    // Remove event listener
+
 
                 }
 
             }
 
+            // Remove event listener
+            document.removeEventListener(
+                "routerReady",
+                registerFunction
+            );
+
+        }
+
+        // Event listener on router ready
+        document.addEventListener(  
+            "routerReady",
+            registerFunction
         );
 
     }
@@ -214,6 +224,34 @@ import Crazypage from './Crazypage';
      * @return void
      */
     public redirect(path:string = "/"):void {
+
+        // Option for request
+        let option = {};
+
+        // Body request
+        let body = {
+            filters: {
+                path: path 
+            },
+            fields: [
+                "name"
+            ]
+        };
+
+        console.log(path);
+
+        // New Request
+        let request = new Crazyrequest("/api/v1/config/Router", option);
+
+        return;
+
+        /* // Fetch request
+        request.fetch(body)
+            // Check fetch result
+            .then(value => {
+                
+            })
+        ;
 
         // Read cache
         this.cacheInstance && this.cacheInstance?.get("app").then(value => {
@@ -230,9 +268,11 @@ import Crazypage from './Crazypage';
 
             console.log(routersFiltered.shift());
 
+            console.log("toto");
+
             console.log(this.routerAction);
 
-        });
+        }); */
 
     }
 

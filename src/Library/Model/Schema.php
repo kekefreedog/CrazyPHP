@@ -96,6 +96,33 @@ class Schema {
     }
 
     /**
+     * Change Attributes Status With Filters
+     * 
+     * Change status of attributes with filters given
+     * 
+     * @param ?array $whiteListAttributes Attributes to enable
+     * @param ?array $blackListAttributes Attributes to disable
+     * @param bool $strict Be strict when attributes in filters doesn't exists
+     * @return array  
+     */
+    public function changeAttributesStatusWithFilters(?array $whiteListAttributes = null, ?array $blackListAttributes = null, bool $strict = false):array {
+
+        # Set result
+        $result = [];
+
+        # Check whitelist
+        if(!empty($whiteListAttributes) && $whiteListAttributes !== null)
+
+        # Iteration of 
+
+        ## To finish
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
      * Set Values
      * 
      * Set values in schema
@@ -115,6 +142,108 @@ class Schema {
 
         # Push new values
         $this->pushValues($values, $options);
+
+    }
+
+    /**
+     * Filter Values
+     * 
+     * Filters values from current schema
+     * 
+     * @param ?array $values Values to remove
+     * @param ?array $options Custom options
+     * @return void
+     */
+    public function filtersValues(?array $values = null, ?array $options = null):void {
+
+        # Check filters
+        if(!empty($values) && !empty($this->collectionWithValues))
+
+            # Iteration of collectionValues
+            foreach($this->collectionWithValues as $kcv => $collectionWithValue){
+
+                # Keep
+                $keep = true;
+
+                # Iteration of filters
+                foreach($values as $name => $value){
+
+                    # Iteration parameters in collection with value
+                    foreach($collectionWithValue as $kp => $parameter){
+
+                        # Set attributes exists
+                        $attributesExists = false;
+
+                        # Check if values is string
+                        if(is_string($name)){
+
+                            # Check if name equals
+                            if($parameter["name"] == $name){
+
+                                # Check value
+                                if($parameter["value"] != $value){
+
+                                    # Set keep
+                                    $keep = false;
+
+                                }
+
+                                # Set attributesExists
+                                $attributesExists = true;
+
+                            }
+
+                        }else{
+
+                            /* # New error
+                            throw new CrazyException(
+                                "\"".json_encode($value ?: [])."\" isn't supported yet",
+                                501,
+                                [
+                                    "custom_code"   =>  "schema-002",
+                                ]
+                            ); */
+
+                        }
+
+                        # Check attributes exists
+                        if(!$attributesExists && ($options["strict"] ?? true)){
+
+                            # New error
+                            /* throw new CrazyException(
+                                "Attribute \"".json_encode([$name => $value])."\" doesn't exists in current schema",
+                                500,
+                                [
+                                    "custom_code"   =>  "schema-003",
+                                ]
+                            ); */
+
+                        }
+
+                    }
+
+                }
+
+                # Check keep
+                if(!$keep)
+
+                    # Unset current collection value
+                    unset($this->collectionWithValues[$kcv]);
+
+            }
+
+    }
+
+    /**
+     * Remove Values
+     * 
+     * Remove values from current schema
+     * 
+     * @param ?array $values Values to remove
+     * @param ?array $options Custom options
+     * @return void
+     */
+    public function removeValues(?array $values = null, ?array $options = null):void {
 
     }
 

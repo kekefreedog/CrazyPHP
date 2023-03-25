@@ -263,8 +263,11 @@ class Router extends VendorRouter {
         # Put on Cache
         $this->cache->set($key, $data);
 
-        # Remove cache
-        unlink($fileCachePath);
+        # Check if file exists
+        if(file_exists($fileCachePath))
+
+            # Remove cache
+            unlink($fileCachePath);
 
     }
 
@@ -321,8 +324,11 @@ class Router extends VendorRouter {
         # Load cache
         $this->loadFromDisk($fileCachePath);
 
-        # Remove cache
-        unlink($fileCachePath);
+        # Check if file exists
+        if(file_exists($fileCachePath))
+
+            # Remove cache
+            unlink($fileCachePath);
 
     }
 

@@ -15,7 +15,9 @@ namespace CrazyPHP\Controller;
 /**
  * Dependances
  */
+use CrazyPHP\Library\File\Config as FileConfig;
 use CrazyPHP\Exception\CrazyException;
+use CrazyPHP\Library\Form\Query;
 use CrazyPHP\Core\ApiResponse;
 use CrazyPHP\Core\Controller;
 use CrazyPHP\Core\Model;
@@ -39,13 +41,23 @@ class ApiV2Filter extends Controller {
     public static function get():void {
 
         # Check entity given by user
-        $entityModel = Model::checkEntityInContext();
+        Model::checkEntityInContext();
 
-        # Set content
-        $content = [get_class($entityModel)];
+        # New model
+        $model = new Model();
+
+        # Filters parameters
+        $filtersParameters = Query::getForFilters();
+
+        # Declare content
+        $content = $model->readWithFilters(...$filtersParameters);
+
+        # Get last modified date of model config
+        $lastModified = FileConfig::getLastModified("Model");
 
         # Set response
         (new ApiResponse())
+            ->addLastModified($lastModified)
             ->setStatusCode()
             ->pushContent("results", $content)
             ->send();

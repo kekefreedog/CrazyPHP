@@ -91,7 +91,7 @@ export default class Crazyrequest{
      * @param body
      * @return Promise<Response>
      */
-    public fetch = (body:BodyInit|undefined = undefined):Promise<Response|any> => {
+    public fetch = (body:Array<any>|Object|string|BodyInit|undefined = undefined):Promise<Response|any> => {
 
         // Clean last response & last response type
         this.lastResponse = undefined;
@@ -276,7 +276,7 @@ export default class Crazyrequest{
      * @param body body:BodyInit|undefined
      * @return void
      */
-    private pushBodyInRequestOptions = (body:BodyInit|undefined):void => {
+    private pushBodyInRequestOptions = (body:Array<any>|Object|string|BodyInit|undefined):void => {
 
         // Check requestOptions
         if(this.requestOptions === undefined)
@@ -291,13 +291,32 @@ export default class Crazyrequest{
             delete this.requestOptions.body;
 
         // Check body
-        if(body !== undefined)
+        if(body !== undefined){
 
-            // Set body
-            this.requestOptions.body = body;
+            // Declare body content
+            let bodyContent:string|null = null; 
+
+            // Check body given is object or array
+            if(Array.isArray(body) || typeof body === "object")
+
+                // Convert body to json
+                bodyContent = JSON.stringify(body);
+
+            else
+            // Check if is string
+            if(typeof body === "string")
+
+                // Set body content
+                bodyContent = body;
+
+            // Check body content
+            if(bodyContent !== null)
+
+                // Set body
+                this.requestOptions.body = bodyContent;
+
+        }
 
     }
-
-
 
 }

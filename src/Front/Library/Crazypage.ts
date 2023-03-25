@@ -171,10 +171,8 @@ export default abstract class Crazypage {
             // New page redirect
             this.pageRegister = new Pageregister();
 
-        let name = "Home";
-
         // New redirection
-        this.pageRegister.redirect(name);
+        this.pageRegister.redirect(path);
 
         // Return result
         return result;

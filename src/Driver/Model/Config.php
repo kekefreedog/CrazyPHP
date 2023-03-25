@@ -134,6 +134,25 @@ class Config implements CrazyDriverModel {
     public function parseFilter(?array $filters, ?array $options = null):self {
 
         /**
+         * Filters | start
+         */
+
+        # Check filters
+        if(!empty($filters) && $filters !== null){
+
+            # Push filters by in schema
+            $filters = $this->schema->filtersValues($filters, $options);
+
+            # Set filters in filter parser
+            $filterParser["filterBy"] = $filters;
+
+        }
+
+        /**
+         * Filters | end
+         */
+
+        /**
          * Limit | start
          */
 
@@ -351,7 +370,10 @@ class Config implements CrazyDriverModel {
             $routeName = Context::getCurrentRoute("name");
 
         # Get reverse route
-        $result = Router::reverse((string)$routeName);
+        $result = Router::reverse((string)$routeName, [
+            "language"  =>  "fr",
+            "toto"  =>  'titi'
+        ]);
 
         # Get host name
         $hostname = $_SERVER["HTTP_HOST"];
@@ -359,12 +381,8 @@ class Config implements CrazyDriverModel {
         # add hostame to result
         $result = "$hostname".($result == "index" ? "" : "/$result");
 
-        echo "<pre>";
-        print_r($_COOKIE);
-        echo "</pre>";
-
         # Return result
-        return $result;
+        return rtrim($result, "/")."/";
 
     }
 
