@@ -241,7 +241,7 @@ import Crazypage from './Crazypage';
         console.log(path);
 
         // New Request
-        let request = new Crazyrequest("/api/v1/config/Router", option);
+        let request = new Crazyrequest("/api/v2/Router/filter", option);
 
         return;
 

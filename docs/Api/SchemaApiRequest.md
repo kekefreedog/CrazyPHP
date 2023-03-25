@@ -25,7 +25,7 @@ let body = {
         limit: 1 // Limit number of item by one,
         fields: name,
         arguments: {
-            language: "" 
+            language: "fr"
         }
     ]
 }

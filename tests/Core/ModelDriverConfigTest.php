@@ -158,7 +158,7 @@ class ModelDriverConfigTest extends TestCase{
         $lastRouter = array_pop($routers);
 
         # Check name
-        $this->assertEquals($lastRouter["name"], $result[0]["Name"]);
+        $this->assertEquals($lastRouter["name"], $result[0]["name"]);
 
     }
 
@@ -214,7 +214,7 @@ class ModelDriverConfigTest extends TestCase{
             foreach($result as $key => $item)
 
                 # Check
-                $this->assertEquals($routers[$key]["name"], $item["Name"]);
+                $this->assertEquals($routers[$key]["name"], $item["name"]);
         
 
 

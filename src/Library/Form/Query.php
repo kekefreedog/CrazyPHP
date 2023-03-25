@@ -15,6 +15,7 @@ namespace  CrazyPHP\Library\Form;
 /**
  * Dependances
  */
+use CrazyPHP\Exception\CrazyException;
 
 /**
  * Query
@@ -77,10 +78,28 @@ class Query {
      * 
      * @return array
      */
-    public function getArguments():array {
+    public static function getArguments():array {
 
         # Set result
         $result = [];
+
+        # Get options
+        $options = $_GET["option"] ?? $_GET["options"] ?? [];
+
+        # Get arguments
+        $result = $options["argument"] ?? $options["arguments"] ?? $result;
+
+        # Check result if array
+        if(!is_array($result))
+
+            # New error
+            throw new CrazyException(
+                "Given options.arguments must be an collection / array", 
+                500,
+                [
+                    "custom_code"   =>  "query-001",
+                ]
+            );
 
         # Return result
         return $result;

@@ -430,7 +430,7 @@ class Schema {
                     $currentResult = (new Validate($currentResult))->getResult();
 
                     # Summarize result
-                    $result[] = Validate::getResultSummary($currentResult);
+                    $result[] = Validate::getResultSummary($currentResult, false);
             
                 }
 

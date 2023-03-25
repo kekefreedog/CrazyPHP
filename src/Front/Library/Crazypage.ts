@@ -179,4 +179,20 @@ export default abstract class Crazypage {
 
     }
 
+    /**
+     * Redirect By Name
+     * 
+     * Redirect to page by name
+     * 
+     * @param name:string Name of the page -> script with ask to server the path
+     * @param options Option for define arguments / mimetype...
+     * @param reloadPage:boolean Force a real reload of the page
+     * @return
+     */
+    public redirectByName = (name:string, options, reloadPage:boolean = false):void => {
+
+        
+
+    }
+
 }

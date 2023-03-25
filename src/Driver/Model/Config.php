@@ -18,6 +18,7 @@ namespace  CrazyPHP\Driver\Model;
 use CrazyPHP\Library\File\Config as FileConfig;
 use CrazyPHP\Interface\CrazyDriverModel;
 use CrazyPHP\Exception\CrazyException;
+use CrazyPHP\Library\Form\Query;
 use CrazyPHP\Library\Router\Router;
 use CrazyPHP\Library\Model\Schema;
 use CrazyPHP\Model\Context;
@@ -370,10 +371,7 @@ class Config implements CrazyDriverModel {
             $routeName = Context::getCurrentRoute("name");
 
         # Get reverse route
-        $result = Router::reverse((string)$routeName, [
-            "language"  =>  "fr",
-            "toto"  =>  'titi'
-        ]);
+        $result = Router::reverse((string)$routeName, Query::getArguments());
 
         # Get host name
         $hostname = $_SERVER["HTTP_HOST"];
