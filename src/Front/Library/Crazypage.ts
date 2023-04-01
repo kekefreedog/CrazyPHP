@@ -228,11 +228,12 @@ export default abstract class Crazypage {
                 "path" in result.results[0]
             ){
 
-                console.log("oh yeah");
+                // Load new page
+                window["Crazyobject"]["pages"].loadInternalPage(result.results[0]);
                 
             }else{
 
-                console.log("noooo");
+                throw new Error(`No page corresponding to "${name}" in the router collection`)
 
             }
 

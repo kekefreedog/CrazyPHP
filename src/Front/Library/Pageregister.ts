@@ -312,6 +312,17 @@ import Crazypage from './Crazypage';
 
     }
 
+    /**
+     * Load Internal Page
+     * 
+     * 
+     */
+    public loadInternalPage = (input) => {
+
+        console.log(input);
+
+    }
+
     /** Methods | Private
      ******************************************************
      */
