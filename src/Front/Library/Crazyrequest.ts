@@ -54,19 +54,19 @@ export default class Crazyrequest{
     /** @var request */
     public request:Request;
 
-    /** @param lastResponse */
+    /** @var lastResponse */
     public lastResponse?:Response;
 
-    /** @param lastResponse */
+    /** @var lastResponse */
     public lastResponseContentType?:string;
+
+    /** @var getParameters */
+    public getParameters:string = "";
 
     /**
      * Constructor
      */
     public constructor(url:string, options:CrazyFetchOption = {}) {
-
-        // Prepare header
-        this.header = new Headers;
 
         // Set url
         this.url = url;
@@ -100,8 +100,11 @@ export default class Crazyrequest{
         // Prepare request options
         this.pushBodyInRequestOptions(body)
 
+        // Set url
+        let url = this.getUrl(true);
+
         // Prepare request
-        let request:Request = new Request(this.url, this.requestOptions);
+        let request:Request = new Request(url, this.requestOptions);
 
         // Get key of current request
         let key = this.options.cache ? this.getKey(request, body) : null;
@@ -124,36 +127,38 @@ export default class Crazyrequest{
         }
 
         // Return fetch result
-        return fetch(request).then(
-            result => {
+        return fetch(request)
+            .then(
+                result => {   
+                    
+                    // Set last response
+                    this.lastResponse = result;
 
-                // Set last response
-                this.lastResponse = result;
+                    // Check content type
+                    if(result.headers.has("Content-Type")){
 
-                // Check content type
-                if(result.headers.has("Content-Type")){
+                        // Set content type
+                        let contentType = result.headers.get("Content-Type");
 
-                    // Set content type
-                    let contentType = result.headers.get("Content-Type");
+                        // Check if json
+                        if(contentType !== null && contentType.includes("application/json")){
 
-                    // Check if json
-                    if(contentType !== null && contentType.includes("application/json")){
+                                // This last response type
+                            this.lastResponseContentType = contentType;
 
-                            // This last response type
-                        this.lastResponseContentType = contentType;
+                            // Return json
+                            return result.json();
 
-                        // Return json
-                        return result.json();
+                        }
 
                     }
 
+                    // Return null
+                    return null;
+
                 }
-
-                // Return null
-                return null;
-
-            }
-        );
+            )
+        ;
         
     }
 
@@ -188,6 +193,9 @@ export default class Crazyrequest{
             request: request,
             body:body
         };
+
+        // Prepare object to avoid type error inside object
+        object = JSON.parse(JSON.stringify(object));
 
         // Hash object
         result = hash(object);
@@ -288,35 +296,119 @@ export default class Crazyrequest{
         if(this.requestOptions.body !== undefined) 
 
             // Reset body
-            delete this.requestOptions.body;
+            this.requestOptions.body = "";
 
         // Check body
         if(body !== undefined){
 
-            // Declare body content
-            let bodyContent:string|null = null; 
+            // Check method get or head
+            if(this.requestOptions.method ?? "GET" in ["GET", "HEAD"]){
 
-            // Check body given is object or array
-            if(Array.isArray(body) || typeof body === "object")
+                // Check body is object
+                if(typeof body === "object"){
 
-                // Convert body to json
-                bodyContent = JSON.stringify(body);
+                    // Convert result to URLSearchParams
+                    var getParameters = Crazyrequest.toQueryString(body);
 
-            else
-            // Check if is string
-            if(typeof body === "string")
+                    // Check get parameters 
+                    if(this.getParameters)
 
-                // Set body content
-                bodyContent = body;
+                        // Append value
+                        this.getParameters += `&${getParameters}`;
 
-            // Check body content
-            if(bodyContent !== null)
+                    else
 
-                // Set body
-                this.requestOptions.body = bodyContent;
+                        // Set value
+                        this.getParameters = getParameters;
+
+                }
+
+            // For other method
+            }else{
+
+                // Declare body content
+                let bodyContent:string|null = null; 
+    
+                // Check body given is object or array
+                if(Array.isArray(body) || typeof body === "object")
+    
+                    // Convert body to json
+                    bodyContent = JSON.stringify(body);
+    
+                else
+                // Check if is string
+                if(typeof body === "string")
+    
+                    // Set body content
+                    bodyContent = body;
+    
+                // Check body content
+                if(bodyContent !== null)
+
+                    // Set body
+                    this.requestOptions.body = bodyContent;
+            }
 
         }
 
+    }
+
+    /**
+     * Get Url
+     * 
+     * Get Url of the current request
+     * 
+     * @param withQueryParameters:boolean Get Query Parameters with it
+     * @return string
+     */
+    private getUrl = (withQueryParameters:boolean = false):string => {
+
+        // Set result
+        var result:string;
+
+        result = (this.getParameters && withQueryParameters)
+            ? `${this.url}?${this.getParameters}`
+            : this.url
+        ;
+        
+        // Return result
+        return result;
+
+    }
+
+    /** Public static Methods
+     ******************************************************
+     */
+
+    /**
+     * To Query String
+     * 
+     * Convert object to query string
+     * 
+     * @source https://stackoverflow.com/questions/26084733/convert-multidimensional-object-to-query-string
+     * 
+     * @param obj 
+     * @param prefix 
+     * @returns 
+     */
+    public static toQueryString(obj:Object, prefix:string = "") {
+        var str:Array<any> = [], k:string, v:Object;
+        for(var p in obj) {
+            if (!obj.hasOwnProperty(p)) {continue;} // skip things from the prototype
+            if (~p.indexOf('[')) {
+                k = prefix ? prefix + "[" + p.substring(0, p.indexOf('[')) + "]" + p.substring(p.indexOf('[')) : p;
+    // only put whatever is before the bracket into new brackets; append the rest
+            } else {
+                k = prefix ? prefix + "[" + p + "]" : p;
+            }
+            v = obj[p];
+            var temp:string = typeof v == "object"
+                ? Crazyrequest.toQueryString(v, k) 
+                : encodeURIComponent(k) + "=" + encodeURIComponent(v)
+            ;
+            str.push(temp);
+        }
+        return str.join("&");
     }
 
 }

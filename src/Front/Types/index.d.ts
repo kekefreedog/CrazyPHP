@@ -87,4 +87,12 @@ declare global {
         allowChildNodes:boolean;
     }
 
+    /**
+     * Redirect By Name Options
+     */
+    interface RedirectByNameOptions {
+        arguments?: Object;
+        mimetype?: "json"
+    }
+
 }

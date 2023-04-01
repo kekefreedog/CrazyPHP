@@ -12,6 +12,7 @@
  * Dependances
  */
 import Pageregister from "./Pageregister";
+import Crazyrequest from "./Crazyrequest";
 
 /**
  * Crazy Page
@@ -185,13 +186,57 @@ export default abstract class Crazypage {
      * Redirect to page by name
      * 
      * @param name:string Name of the page -> script with ask to server the path
-     * @param options Option for define arguments / mimetype...
+     * @param options:RedirectByNameOptions Option for define arguments / mimetype...
      * @param reloadPage:boolean Force a real reload of the page
      * @return
      */
-    public redirectByName = (name:string, options, reloadPage:boolean = false):void => {
+    public redirectByName = (name:string, options:RedirectByNameOptions, reloadPage:boolean = false):void => {
 
-        
+        // Prepare query
+        let query:Object = {
+            filters: {
+                name: name
+            },
+            options: {}
+        };
+
+        // Check options arguments
+        if("arguments" in options && options.arguments !== null){
+
+            // Add options
+            query["options"].arguments = options.arguments;
+
+        }
+
+        // New request
+        new Crazyrequest(
+            "/api/v2/Router/filter",
+            {
+                method: "GET",
+                responseType: options.mimetype,
+                from: "internal"
+            }
+        ).fetch(query)
+        .then(result => {
+
+            // Check result
+            if(
+                "results" in result && 
+                Array.isArray(result.results) &&
+                result.results.length === 1 &&
+                "name" in result.results[0] &&
+                "path" in result.results[0]
+            ){
+
+                console.log("oh yeah");
+                
+            }else{
+
+                console.log("noooo");
+
+            }
+
+        });
 
     }
 

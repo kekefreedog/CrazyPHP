@@ -151,7 +151,7 @@ import Crazypage from './Crazypage';
     public register(page:any):void {
 
         let registerFunction = value => {
-            
+
             // Check detail in value
             if(
                 "detail" in value && 
