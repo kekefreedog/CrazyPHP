@@ -47,6 +47,9 @@ export default class Crazyobject {
     /** @var events Configs class */
     public events:Crazyevents|null = null;
 
+    /** @var hash Hash of the current build */
+    private hash:string = "";
+
     /**
      * Constructor
      */
@@ -67,6 +70,9 @@ export default class Crazyobject {
         // New Crazy Events
         this.events = new Crazyevents();
 
+        // Set hash
+        this.hash = "";
+
     }
 
     /** Methods | Component Register
@@ -80,6 +86,70 @@ export default class Crazyobject {
     /** Methods | Config Register
      ******************************************************
      */
+
+    /** Methods | Hash
+     ******************************************************
+     */
+
+    /**
+     * Set Hash
+     * 
+     * Set hash in crazy object
+     * 
+     * @param hash:string
+     * @return void
+     */
+    public setHash = (hash:string) => {
+
+        // Check hash given is and hash stored is empty
+        if(hash && !this.hash){
+
+            // Set hash
+            this.hash = hash;
+
+            // Info
+            console.info("Crazy hash set");
+
+        }else
+        // If hash already stored and given one is
+        if(hash && this.hash){
+
+            // Check if hash are the same
+            if(hash != this.hash){
+
+                // Set hash
+                this.hash = hash;
+
+                // Info
+                console.info("Crazy hash updated");
+
+            }
+
+        }else
+        // Given hash is empty
+        if(!hash)
+
+            // Hash given is exmpty...
+            console.warn("Hash given is exmpty...");
+
+    }
+
+    /**
+     * Get Hash
+     * 
+     * Get Hash of Crazy app
+     * 
+     * @return string
+     */
+    public getHash = ():string => {
+
+        // Set result
+        let result:string = this.hash;
+
+        // Return result
+        return result;
+
+    }
 
     /** Constants
      ******************************************************

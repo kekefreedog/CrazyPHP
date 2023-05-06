@@ -21,6 +21,8 @@ use Psr\Http\Message\ResponseInterface;
 use CrazyPHP\Exception\CrazyException;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Http\Message\StreamInterface;
+use CrazyPHP\Library\File\Composer;
+use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\Time\DateTime;
 use CrazyPHP\Library\File\File;
 
@@ -63,6 +65,9 @@ class Response {
 
         # New instance
         $this->instance = new Psr17Factory();
+
+        # Extra Infos In Header
+        $this->extraInfoInHeader();
         
     }
 
@@ -363,6 +368,27 @@ class Response {
 
         # Emit result
         (new SapiEmitter())->emit($this->response);
+
+    }
+
+    /** Private methods
+     ******************************************************
+     */
+
+    /**
+     * Extra Info In Header
+     * 
+     * Add extra info in headers like :
+     * - Crazy-Version
+     * - Crazy-Hash
+     */
+    private function extraInfoInHeader():void {
+
+        # Add crazy version
+        $this->header["Crazy-Version"] = Composer::get("version", "@crazyphp_root/composer.json");
+
+        # Add crazy hash
+        $this->header["Crazy-Hash"] = Config::getValue("Front.lastBuild.hash");
 
     }
 

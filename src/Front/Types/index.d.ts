@@ -71,7 +71,6 @@ declare global {
 
         /** Name */
         name:string;
-
     }
     /**
      * String Crazy Page
@@ -93,6 +92,14 @@ declare global {
     interface RedirectByNameOptions {
         arguments?: Object;
         mimetype?: "json"
+    }
+
+    /**
+     * Router Response Schema 
+     */
+    interface RouterResponseSchema {
+        name?:string,
+        path?:string
     }
 
 }

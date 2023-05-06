@@ -11,6 +11,7 @@
 /**
  * Dependances
  */
+import { Crazyobject } from "../Types";
 import Crazycache from "./Crazycache";
 import hash from "object-hash";
 
@@ -57,8 +58,11 @@ export default class Crazyrequest{
     /** @var lastResponse */
     public lastResponse?:Response;
 
-    /** @var lastResponse */
+    /** @var lastResponseContentType */
     public lastResponseContentType?:string;
+
+    /** @var lastResponseCrazyHash */
+    public lastResponseCrazyHash?:string;
 
     /** @var getParameters */
     public getParameters:string = "";
@@ -134,6 +138,28 @@ export default class Crazyrequest{
                     // Set last response
                     this.lastResponse = result;
 
+                    // Check Crazy Hash
+                    if(this.options.from === "internal" && result.headers.get("Crazy-Hash")){
+
+                        // Get crazy hash
+                        let crazyHash = result.headers.get("Crazy-Hash");
+
+                        // Check hash
+                        if(crazyHash){
+
+                            // Set response hash
+                            this.lastResponseCrazyHash = crazyHash;
+
+                            // Check global
+                            if("Crazyobject" in window && typeof window.Crazyobject == "object" && window.Crazyobject !== null)
+
+                                // set hash in global
+                                window.Crazyobject["setHash"](crazyHash);
+
+                        }
+
+                    }
+
                     // Check content type
                     if(result.headers.has("Content-Type")){
 
@@ -143,7 +169,7 @@ export default class Crazyrequest{
                         // Check if json
                         if(contentType !== null && contentType.includes("application/json")){
 
-                                // This last response type
+                            // This last response type
                             this.lastResponseContentType = contentType;
 
                             // Return json

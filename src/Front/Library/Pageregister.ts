@@ -122,6 +122,9 @@ import Crazypage from './Crazypage';
             // Dispatch event on ready
             .then(value => {
 
+                console.log("__value___");
+                console.log(value);
+
                 // New event
                 this.customEvent = new CustomEvent(
                     "routerReady",
@@ -148,7 +151,7 @@ import Crazypage from './Crazypage';
      * @param page:Crazypage
      * @return void
      */
-    public register(page:any):void {
+    public register(page:Crazypage):void {
 
         let registerFunction = value => {
 
@@ -156,18 +159,18 @@ import Crazypage from './Crazypage';
             if(
                 "detail" in value && 
                 Array.isArray(value.detail) && 
-                "name" in page && 
-                typeof page.name === "string"
+                "className" in page && 
+                typeof page.className === "string"
             ){
 
                 // Check if page in detail
-                let currentContextCollection:Array<any> = this.filterArrayByKeyValue(value.detail, "name", page.name);
+                let currentContextCollection:Array<any> = this.filterArrayByKeyValue(value.detail, "name", page.className);
     
                 // Check current context
                 if(currentContextCollection.length){
 
                     // Push class in instance
-                    this.routerAction[page.name] = {
+                    this.routerAction[page.className] = {
                         instance: page,
                         file: "",
                         date: new Date()
@@ -193,8 +196,72 @@ import Crazypage from './Crazypage';
                     // Push in history
                     this.history.push(newHistoryItem);
 
-                    // Remove event listener
 
+                }else{
+
+                    // Execute page
+                    let currentPage:any = new (page as any)();
+
+                    // Remove old css specific
+                    let stylePastPageEl = document.querySelector("[specific-to-page]");
+
+                    // Check if exists
+                    if(stylePastPageEl !== null)
+
+                        // Remove it
+                        stylePastPageEl.remove();
+
+                    // Load css
+                    if(page["css"] !== null && "default" in page["css"]){
+
+                        // Css string
+                        let cssString = page["css"].default.toString();
+
+                        // Create style element
+                        let styleEl = document.createElement("style");
+
+                        // Set content
+                        styleEl.innerText = cssString;
+
+                        // Set attribute
+                        styleEl.setAttribute("specific-to-page", page.className);
+
+                        // Add to document
+                        document.head.appendChild(styleEl);
+
+                    }
+
+                    // Load html
+                    if(typeof page["html"] === "function"){
+
+                        // Get html string
+                        let htmlString:string = page["html"]();
+
+                        // Convert to dom
+                        let htmlObject:Document = new DOMParser().parseFromString(htmlString, "text/xml");
+                    
+                        // Get crazy-root
+                        let crazyRootEl = document.getElementById("crazy-root");
+
+                        // Get new content
+                        let newContent = htmlObject.getElementById("crazy-root");
+
+                        // Check el
+                        if(crazyRootEl !== null && newContent !== null){
+
+                            // Replace with new content
+                            crazyRootEl.replaceWith(newContent);
+
+                        }else{
+
+
+
+                        }
+
+                    }
+
+                    // Add it to current page
+                    this.currentPage = currentPage;
 
                 }
 
@@ -315,11 +382,59 @@ import Crazypage from './Crazypage';
     /**
      * Load Internal Page
      * 
-     * 
+     * @param input:RouterResponseSchema
      */
-    public loadInternalPage = (input) => {
+    public loadInternalPage = (input:RouterResponseSchema) => {
 
-        console.log(input);
+        // Check if input given has a key in router action
+        if(input.name && input.name in this.routerAction){
+
+            // 
+            console.log("In the router action collection");
+
+        }else{
+
+            //
+            console.log("Router action has to be loaded");
+            
+            // Check input.name
+            if(input.name)
+
+                // Load action of page missing
+                Crazypage.loadAction(input.name)
+                    .then(
+                        
+                        // Get result of load
+                        value => {
+
+                            // Check status
+                            if(!value.status)
+
+                                // Error
+                                throw new Error("Failed to load action of page");
+
+                            // Load app in cache instance
+                            return this.cacheInstance?.get('app');
+
+                        }
+                    ).then(
+
+                        value => {
+
+                            // New event
+                            this.customEvent = new CustomEvent(
+                                "routerReady",
+                                {"detail": value}
+                            );
+
+                            // Dispatch custom event
+                            document.dispatchEvent(this.customEvent);
+
+                        }
+
+                    )
+
+        }
 
     }
 

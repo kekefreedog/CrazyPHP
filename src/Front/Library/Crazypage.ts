@@ -13,6 +13,7 @@
  */
 import Pageregister from "./Pageregister";
 import Crazyrequest from "./Crazyrequest";
+import { Crazyobject } from "../Types";
 
 /**
  * Crazy Page
@@ -29,7 +30,28 @@ export default abstract class Crazypage {
      ******************************************************
      */
 
+    /**
+     * Page register
+     */
     private pageRegister:Pageregister|null = null;
+
+    /** 
+     * @param className:string 
+     * Duplicate of the class name because build change name of class
+     */
+    public static readonly className:string;
+
+    /** 
+     * @param html:string 
+     * Duplicate of the class name because build change name of class
+     */
+    public static readonly html = null;
+
+    /** 
+     * @param css:string 
+     * Duplicate of the class name because build change name of class
+     */
+    public static readonly css = null;
 
     /**
      * Constructor
@@ -57,7 +79,19 @@ export default abstract class Crazypage {
      *
      * @return void
      */
-    public onReady:CallableFunction;
+    public abstract onReady:CallableFunction;
+
+    /**
+     * Get Class Name
+     * 
+     * @return string
+     */
+    public static getClassName = ():string => {
+
+        // Return name
+        return this.className;
+
+    }
 
     /** Private methods
      ******************************************************
@@ -107,6 +141,66 @@ export default abstract class Crazypage {
      */
 
     /**
+     * Load Script
+     * 
+     * Load JS Script after page loaded
+     * 
+     * @source https://www.educative.io/answers/how-to-dynamically-load-a-js-file-in-javascript
+     * 
+     * @param url:string Url to load
+     * @param async 
+     */
+    private static loadScript = (url:string, async:boolean = true, type:string = "text/javascript"):Promise<any> => {
+
+        // Return promise
+        return new Promise((resolve, reject) => {
+
+            // Try
+            try {
+
+                // Script
+                const scriptEle:HTMLScriptElement = document.createElement("script");
+
+                // Set type
+                scriptEle.type = type;
+
+                // Set async
+                scriptEle.async = async;
+
+                // Set url
+                scriptEle.src = url;
+    
+                // Event if loaded
+                scriptEle.addEventListener("load", (ev) => {
+                    resolve({ status: true });
+                });
+    
+                // Event if error
+                scriptEle.addEventListener("error", (ev) => {
+
+                    reject({
+                        status: false,
+                        message: `Failed to load the script ＄{FILE_URL}`
+                    });
+
+                });
+    
+                // Add element in body
+                document.body.appendChild(scriptEle);
+
+            // Error
+            } catch (error) {
+
+                // Reject
+                reject(error);
+
+            }
+
+        });
+
+    };
+
+    /**
      * convertToUrl
      * 
      * @param path Path to the url
@@ -133,7 +227,6 @@ export default abstract class Crazypage {
         return result;
 
     }
-
 
     /** Public methods
      ******************************************************
@@ -221,6 +314,7 @@ export default abstract class Crazypage {
 
             // Check result
             if(
+                result &&
                 "results" in result && 
                 Array.isArray(result.results) &&
                 result.results.length === 1 &&
@@ -238,6 +332,43 @@ export default abstract class Crazypage {
             }
 
         });
+
+    }
+
+    /** Public static methods
+     ******************************************************
+     */
+
+    /**
+     * Load Action
+     * 
+     * Load Action if js file
+     * 
+     * @return Promise
+     */
+    public static loadAction = (name:string, async:boolean = true):Promise<any> => {
+
+        // Get hash
+        let hash:string = "";
+
+        // Check global
+        if("Crazyobject" in window && typeof window.Crazyobject == "object" && window.Crazyobject !== null)
+
+            // Set hash
+            hash = window.Crazyobject["getHash"]();
+
+        else
+
+            // Error
+            new Error("Crazyobject isn't valid... Can't retrieve the hash");
+
+        // Set url
+        let url:string = `/dist/page/app/${name}.${hash}.js`;
+
+        console.log(`Url loaded : "${url}"`);
+
+        // Load script
+        return this.loadScript(url, async);
 
     }
 
