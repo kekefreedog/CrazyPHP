@@ -17,7 +17,9 @@ namespace  CrazyPHP\Core;
  */
 use Nyholm\Psr7Server\ServerRequestCreator;
 use Nyholm\Psr7\Factory\Psr17Factory;
+use CrazyPHP\Library\File\Webpack;
 use CrazyPHP\Library\Cache\Cache;
+use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\File\Header;
 use CrazyPHP\Model\Context;
 
@@ -75,6 +77,19 @@ class Middleware{
             $cache->clear();
 
         }
+
+    }
+
+    /**
+     * Update front config is in watch mode
+     */
+    public static function UpdateFrontConfigIfWatchMode(string $route, ...$parameters) {
+
+        # If watch mode, search the last hash and set it in the config front
+        if(Config::getValue("Front.lastBuild.watch"))
+
+            # Get hash
+            Webpack::getHash();
 
     }
 

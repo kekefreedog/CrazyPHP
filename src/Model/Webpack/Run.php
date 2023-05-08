@@ -57,6 +57,13 @@ class Run implements CrazyCommand {
 
     }
 
+    /** Public Parameters
+     ******************************************************
+     */
+
+    /** @var array $input Input data received */
+    public array $inputs;
+
     /** Private Parameters
      ******************************************************
      */

@@ -575,10 +575,13 @@ class Structure {
             # New finder
             $finder = new Finder();
 
+            # Set routesCurrentName
+            $routesCurrentName = Context::get("routes.current.name");
+
             # Search js generated
             $finder
                 ->files()
-                ->name(Context::get("routes.current.name").".*.js")
+                ->name("$routesCurrentName.*.js")
                 ->depth('== 0')
                 ->in(File::path("@app_root/public/dist/page/app"))
             ;
