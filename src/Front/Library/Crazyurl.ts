@@ -36,10 +36,19 @@ export default class Crazyurl{
      * @param newPathname:string New pathname : exemple /home/page/
      * @return void
      */
-    public static set = (newPathname:string = ""):void => {
+    public static set = (newPathname:string|URL = ""):void => {
+
+        // Convert path to url if is a string
+        if(typeof newPathname === "string"){
+
+            newPathname = new URL(newPathname);
+
+        }
+
+        console.log(newPathname);
 
         // Push new pathname
-        window.history.pushState(null, "", newPathname);
+        window.history.pushState({}, "", newPathname.toString());
 
     }
 

@@ -14,6 +14,7 @@
 import Crazyrequest from './Crazyrequest';
 import Crazycache from './Crazycache';
 import Crazypage from './Crazypage';
+import Crazyurl from './Crazyurl';
 
 /**
  * Page Register
@@ -238,7 +239,7 @@ import Crazypage from './Crazypage';
                         let htmlString:string = page["html"]();
 
                         // Convert to dom
-                        let htmlObject:Document = new DOMParser().parseFromString(htmlString, "text/xml");
+                        let htmlObject:Document = new DOMParser().parseFromString(htmlString, "text/html");
                     
                         // Get crazy-root
                         let crazyRootEl = document.getElementById("crazy-root");
@@ -257,6 +258,8 @@ import Crazypage from './Crazypage';
 
 
                         }
+
+                        console.log(value);
 
                     }
 
@@ -435,6 +438,9 @@ import Crazypage from './Crazypage';
                     )
 
         }
+
+        // Set new url
+        Crazyurl.set(input.path);
 
     }
 
