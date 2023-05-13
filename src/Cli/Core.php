@@ -1271,9 +1271,14 @@ class Core extends CLI {
             "new"   =>  [
                 # Command
                 "command"   =>  [
-                    ## Project
+                    # Project
                     "project"   =>  [
                         "class"     =>  "\CrazyPHP\Model\App\Create",
+                        "parameter" =>  "application",
+                    ],
+                    # Router
+                    "router"   =>  [
+                        "class"     =>  "\CrazyPHP\Model\Router\Create",
                         "parameter" =>  "application",
                     ],
                 ],
@@ -1285,6 +1290,11 @@ class Core extends CLI {
                     ## Project
                     "project"   =>  [
                         "class"     =>  "\CrazyPHP\Model\App\Delete",
+                    ],
+                    # Router
+                    "router"   =>  [
+                        "class"     =>  "\CrazyPHP\Model\Router\Delete",
+                        "parameter" =>  "application",
                     ],
                 ],
             ],

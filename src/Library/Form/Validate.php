@@ -201,11 +201,11 @@ class Validate {
     private function _actionBool(array &$input = []){
 
         # Check value is same type
-        if(!is_bool($input['value']))
+        if(!is_bool(filter_var($input['value'], FILTER_VALIDATE_BOOLEAN)))
 
             # New Exception
             throw new CrazyException(
-                "Value of \”".$input["name"]."\” isn't an boolean...",
+                "Value of \"".$input["name"]."\" isn't an boolean...",
                 500,
                 [
                     "custom_code"   =>  "validate-003",

@@ -20,6 +20,20 @@ Delete project :
 php vendor/kzarshenas/crazyphp/bin/CrazyCommand delete project
 ```
 
+## Router
+
+New router
+
+```sh
+php vendor/kzarshenas/crazyphp/bin/CrazyCommand new router
+```
+
+Delete router
+
+```sh
+php vendor/kzarshenas/crazyphp/bin/CrazyCommand delete router
+```
+
 ## Docker (optionnal)
 
 Create docker compose :
