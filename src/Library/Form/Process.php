@@ -528,6 +528,31 @@ class Process {
 	}
 
     /**
+     * Space Before Capital
+     * 
+     * Insert a space before each capital letter, like this :
+     * - HelloWorld <=> Hello World
+     * 
+     * @param string $input
+     * @return string
+     */
+    public static function spaceBeforeCapital(string $input):string {
+
+        # Set result
+        $result = $input;
+
+        # Check input
+        if($input)
+
+            # Process input
+            $result = preg_replace('/(?<!^)([A-Z])/', ' $1', $input);
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
      * Wash
      * 
      * Wash items by condtions

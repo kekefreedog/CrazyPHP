@@ -93,7 +93,7 @@ class Create implements CrazyCommand {
         ],
     ];
 
-    /** Variables
+    /** Parameters
      ******************************************************
      */
 
@@ -106,6 +106,9 @@ class Create implements CrazyCommand {
      * Logs
      */
     private $logs = true;
+
+    /** @var array $router */
+    private $router = [];
 
     /**
      * Constructor
@@ -154,6 +157,40 @@ class Create implements CrazyCommand {
      */
     public function run():self {
 
+        /**
+         * Run Prepare Router
+         * - Process input to router object
+         */
+        $this->runPrepareRouter();
+
+
+        /**
+         * Run Create Index File
+         * - Create the ts script file
+         */
+        $this->runCreateIndexFile();
+
+
+        /**
+         * Run Create Style File
+         * - Create the scss style file
+         */
+        $this->runCreateStyleFile();
+
+
+        /**
+         * Run Create Template
+         * - Create the hbs template
+         */
+        $this->runCreateTemplate();
+
+
+        /**
+         * Run Router In Config
+         * - Integrate Router into config
+         */
+        $this->runRouterIntoConfig();
+
         # Return this
         return $this;
 
@@ -194,6 +231,81 @@ class Create implements CrazyCommand {
 
         # Return result
         return $result;
+
+    }
+
+    /** Public methods | Run
+     ******************************************************
+     */
+
+    /**
+     * Run Prepare Router
+     * 
+     * Process input to router object
+     * 
+     * @return void
+     */
+    public function runPrepareRouter():void {
+
+        # Set router
+        $this->router = Process::getResultSummary($this->inputs);
+
+        print_r($this->router);
+
+    }
+
+
+    /**
+     * Run Create Index File
+     * 
+     * Create the ts script file
+     * 
+     * @return void
+     */
+    public function runCreateIndexFile():void {
+
+
+    }
+
+
+    /**
+     * Run Create Style File
+     * 
+     * Create the scss style file
+     * 
+     * @return void
+     */
+    public function runCreateStyleFile():void {
+
+
+
+    }
+
+
+    /**
+     * Run Create Template
+     * 
+     * Create the hbs template
+     * 
+     * @return void
+     */
+    public function runCreateTemplate():void {
+
+        
+
+    }
+
+
+    /**
+     * Run Router In Config
+     * 
+     * Integrate Router into config
+     * 
+     * @return void
+     */
+    public function runRouterIntoConfig():void {
+
+
 
     }
 

@@ -386,7 +386,7 @@ class Core extends CLI {
             # Message start
             $climate
                 ->br()
-                ->yellow("🟠 Run ".str_replace("run", "", strtolower($action)))
+                ->yellow("🟠 Run ".strtolower(Process::spaceBeforeCapital(str_replace("run", "", $action))))
             ;
 
             # Execute
@@ -394,7 +394,7 @@ class Core extends CLI {
 
             # Message end
             $climate
-                ->green("🟢 ".ucfirst(str_replace("run", "", strtolower($action)))." ran with success")
+                ->green("🟢 ".ucfirst(strtolower(Process::spaceBeforeCapital(str_replace("run", "", $action))))." ran with success")
             ;
 
         }
@@ -487,7 +487,7 @@ class Core extends CLI {
             # Message start
             $climate
                 ->br()
-                ->yellow("🟠 Run ".str_replace("run", "", strtolower($action)))
+                ->yellow("🟠 Run ".strtolower(Process::spaceBeforeCapital(str_replace("run", "", $action))))
             ;
 
             # Execute
@@ -495,7 +495,7 @@ class Core extends CLI {
 
             # Message end
             $climate
-                ->green("🟢 ".ucfirst(str_replace("run", "", strtolower($action)))." ran with success")
+                ->green("🟢 ".ucfirst(strtolower(Process::spaceBeforeCapital(str_replace("run", "", $action))))." ran with success")
             ;
 
         }
@@ -630,7 +630,7 @@ class Core extends CLI {
             # Message start
             $climate
                 ->br()
-                ->yellow("🟠 Run ".str_replace("run", "", strtolower($action)))
+                ->yellow("🟠 Run ".strtolower(Process::spaceBeforeCapital(str_replace("run", "", $action))))
             ;
 
             # Execute
@@ -638,7 +638,7 @@ class Core extends CLI {
 
             # Message end
             $climate
-                ->green("🟢 ".str_replace("run", "", strtolower($action))." ran with success")
+                ->green("🟢 ".ucfirst(strtolower(Process::spaceBeforeCapital(str_replace("run", "", $action))))." ran with success")
             ;
 
         }
@@ -740,7 +740,7 @@ class Core extends CLI {
             # Message start
             $climate
                 ->br()
-                ->yellow("🟠 Run ".str_replace("run", "", strtolower($action)))
+                ->yellow("🟠 Run ".strtolower(Process::spaceBeforeCapital(str_replace("run", "", $action))))
             ;
 
             # Try catch error
@@ -756,7 +756,7 @@ class Core extends CLI {
 
                     # Message end
                     $climate
-                        ->green("🟡 Relaunch ".str_replace("run", "", strtolower($action))."...")
+                        ->green("🟡 Relaunch ".strtolower(Process::spaceBeforeCapital(str_replace("run", "", $action)))."...")
                         ->br()
                     ;
 
@@ -778,7 +778,7 @@ class Core extends CLI {
 
             # Message end
             $climate
-                ->green("🟢 ".ucfirst(str_replace("run", "", strtolower($action)))." ran with success")
+                ->green("🟢 ".ucfirst(strtolower(Process::spaceBeforeCapital(str_replace("run", "", $action))))." ran with success")
                 ->br()
             ;
 
@@ -877,7 +877,7 @@ class Core extends CLI {
             # Message start
             $climate
                 ->br()
-                ->yellow("🟠 Run ".str_replace("run", "", strtolower($action)))
+                ->yellow("🟠 Run ".strtolower(Process::spaceBeforeCapital(str_replace("run", "", $action))))
             ;
 
             # Execute
@@ -885,7 +885,7 @@ class Core extends CLI {
 
             # Message end
             $climate
-                ->green("🟢 ".ucfirst(str_replace("run", "", strtolower($action)))." ran with success")
+                ->green("🟢 ".ucfirst(strtolower(Process::spaceBeforeCapital(str_replace("run", "", $action))))." ran with success")
             ;
 
         }
@@ -972,7 +972,7 @@ class Core extends CLI {
             # Message start
             $climate
                 ->br()
-                ->yellow("🟠 Run ".str_replace("run", "", strtolower($action)))
+                ->yellow("🟠 Run ".strtolower(Process::spaceBeforeCapital(str_replace("run", "", $action))))
             ;
 
             # Execute
@@ -980,7 +980,7 @@ class Core extends CLI {
 
             # Message end
             $climate
-                ->green("🟢 ".ucfirst(str_replace("run", "", strtolower($action)))." ran with success")
+                ->green("🟢 ".ucfirst(strtolower(Process::spaceBeforeCapital(str_replace("run", "", $action))))." ran with success")
             ;
 
         }
@@ -1179,7 +1179,7 @@ class Core extends CLI {
             # Message start
             $climate
                 ->br()
-                ->yellow("🟠 Run ".str_replace("run", "", strtolower($action)))
+                ->yellow("🟠 Run ".strtolower(Process::spaceBeforeCapital(str_replace("run", "", $action))))
             ;
 
             # Execute
@@ -1187,7 +1187,7 @@ class Core extends CLI {
 
             # Message end
             $climate
-                ->green("🟢 ".ucfirst(str_replace("run", "", strtolower($action)))." ran with success")
+                ->green("🟢 ".ucfirst(strtolower(Process::spaceBeforeCapital(str_replace("run", "", $action))))." ran with success")
             ;
 
         }
