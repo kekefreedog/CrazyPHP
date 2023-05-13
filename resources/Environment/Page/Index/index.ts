@@ -11,9 +11,9 @@
 /**
  * Dependances
  */
-import {Crazypage} from "crazyphp";
-require("./template.hbs");
-//require("./style.scss");
+import {Crazypage, Crazylanguage} from "crazyphp";
+const html = require("./template.hbs");
+// const css = require("./style.scss");
 
 /**
  * Crazy Object
@@ -26,6 +26,24 @@ require("./template.hbs");
  */
 export default class Index extends Crazypage {
 
+    /** 
+     * @param className:string 
+     * Duplicate of the class name because build change name of class
+     */
+    public static readonly className:string = "Index";
+
+    /** 
+     * @param html:string 
+     * Duplicate of the class name because build change name of class
+     */
+    public static readonly html = html;
+
+    /** 
+     * @param css:string 
+     * Duplicate of the class name because build change name of class
+     */
+    public static readonly css = null;
+
     /**
      * Constructor
      */
@@ -35,6 +53,31 @@ export default class Index extends Crazypage {
          * Parent constructor
          */
         super();
+
+        /**
+         * On Ready
+         */
+        this.onReady();
+
+    }
+
+    /**
+     * On Ready
+     *
+     * @return void
+     */
+    public onReady = ():void => {
+
+        // Detect language of navigator
+        let language = Crazylanguage.getNavigatorLanguage();
+
+        // Redirect to home page
+        this.redirectByName("Home", {
+            arguments: {
+                language: language
+            },
+            mimetype: "json"
+        });
 
     }
 

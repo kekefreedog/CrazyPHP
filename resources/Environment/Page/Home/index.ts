@@ -12,7 +12,8 @@
  * Dependances
  */
 import {Crazypage} from "crazyphp";
-require("./template.hbs");
+const css = require("!!css-loader!sass-loader!./style.scss");
+const html = require("./template.hbs");
 require("./style.scss");
 
 /**
@@ -26,7 +27,51 @@ require("./style.scss");
  */
 export default class Home extends Crazypage {
 
+    /** 
+     * @param className:string 
+     * Duplicate of the class name because build change name of class
+     */
+    public static readonly className:string = "Home";
 
+    /** 
+     * @param html:string 
+     * Duplicate of the class name because build change name of class
+     */
+    public static readonly html = html;
+
+    /** 
+     * @param css:string 
+     * Duplicate of the class name because build change name of class
+     */
+    public static readonly css = css;
+
+    /**
+     * Constructor
+     */
+    public constructor(){
+
+        /**
+         * Parent constructor
+         */
+        super();
+
+        /**
+         * On Ready
+         */
+        this.onReady();
+
+    }
+
+    /**
+     * On Ready
+     *
+     * @return void
+     */
+    public onReady = ():void => {
+
+        console.log("hello home");
+
+    }
 
 }
 

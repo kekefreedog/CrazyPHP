@@ -12,10 +12,8 @@
 
 {{!-- Root --}}
 {{#httpStatusCode errors.0 "*"}}
-<div id="crazy-root" descriptive-id="" class="screen-fit-min-y screen-flex screen-center {{colorThemeSuffix primary-color "" "light"}} {{colorThemeSuffix secondary-color "" "dark"}} {{colorThemeSuffix primary-color "text" "light"}} {{colorThemeSuffix secondary-color "text" "dark"}}">
+<div id="crazy-root" descriptive-id="" class="row screen-fit-min-y screen-flex screen-center {{colorThemeSuffix primary-color "" "light"}} {{colorThemeSuffix secondary-color "" "dark"}} {{colorThemeSuffix primary-color "text" "light"}} {{colorThemeSuffix secondary-color "text" "dark"}}">
 {{/httpStatusCode}}
-
-    <div class="row">
 
         {{#each errors as |error|}}
         <div class="col l6 m6 s12 offset-m3 offset-l3">
@@ -38,7 +36,5 @@
 
         </div>
         {{/each}}
-
-    </div>
 
 </div>

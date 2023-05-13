@@ -11,7 +11,7 @@
 /**
  * Dependances
  */
- import Crazyelement from "../../../../vendor/kzarshenas/crazyphp/src/Front/Crazyelement";
+import { Crazyelement } from "crazyphp";
  
  /**
   * 
@@ -31,28 +31,28 @@
    /** @var attributesCollection:Object|null */
    public attributesCollection: Object|null = null;
  
-     /**
-      * Constructor
-      */
-     constructor(){
- 
-        // Call parent constructor
-        super();
- 
-        // Shadow Mode
-        this.attachShadowMode();
- 
-        // New element
-        let el = document.createElement("div");
+    /**
+    * Constructor
+    */
+    constructor(){
 
-        // Append content
-        el.innerHTML = "<slot></slot>";
- 
-     }
- 
-     /** Constants
-      ******************************************************
-      */
+      // Call parent constructor
+      super();
+
+      // Shadow Mode
+      this.attachShadowMode();
+
+      // New element
+      let el = document.createElement("div");
+
+      // Append content
+      el.innerHTML = "<slot></slot>";
+
+    }
+
+    /** Constants
+    ******************************************************
+    */
      
      /** @const shadowMode:ShadowRootMode|null Define Shadow mode "Open", "Closed" or null */
      public shadowMode:ShadowRootMode|null = "open";

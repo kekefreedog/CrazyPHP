@@ -13,7 +13,7 @@
  */
 const ForkTsCheckerNotifierWebpackPlugin = require('fork-ts-checker-notifier-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
-var helpers = require('handlebars-helpers')(["comparison"]);
+var helpers = require('handlebars-helpers')(["comparison", "object"]);
 const yaml = require('js-yaml');
 const path = require('path');
 const fs = require('fs');

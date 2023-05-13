@@ -177,6 +177,15 @@ Structure:
                         source: "@crazyphp_root/resources/Environment/Component/RegularBtn/style.scss"
                       template.hbs:
                         source: "@crazyphp_root/resources/Environment/Component/RegularBtn/template.hbs"
+                  # Regulat Button
+                  RegularCard:
+                    files:
+                      index.ts:
+                        source: "@crazyphp_root/resources/Environment/Component/RegularCard/index.ts"
+                      style.scss:
+                        source: "@crazyphp_root/resources/Environment/Component/RegularCard/style.scss"
+                      template.hbs:
+                        source: "@crazyphp_root/resources/Environment/Component/RegularCard/template.hbs"
               Page:
                 folders:
                   # Error

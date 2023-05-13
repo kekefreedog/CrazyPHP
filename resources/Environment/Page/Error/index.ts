@@ -12,8 +12,8 @@
  * Dependances
  */
 import {Crazypage} from "crazyphp";
-require("./template.hbs");
-require("./style.scss");
+const html = require("./template.hbs");
+const css = require("./style.scss");
 
 /**
  * Crazy Object
@@ -26,7 +26,51 @@ require("./style.scss");
  */
 export default class Error extends Crazypage {
 
+    /** 
+     * @param className:string 
+     * Duplicate of the class name because build change name of class
+     */
+    public static readonly className:string = "Error";
 
+    /** 
+     * @param html:string 
+     * Duplicate of the class name because build change name of class
+     */
+    public static readonly html = html;
+
+    /** 
+     * @param css:string 
+     * Duplicate of the class name because build change name of class
+     */
+    public static readonly css = css;
+
+    /**
+     * Constructor
+     */
+    public constructor(){
+
+        /**
+         * Parent constructor
+         */
+        super();
+
+        /**
+         * On Ready
+         */
+        this.onReady();
+
+    }
+
+    /**
+     * On Ready
+     *
+     * @return void
+     */
+    public onReady = ():void => {
+
+        console.log("hello Error");
+
+    }
 
 }
 

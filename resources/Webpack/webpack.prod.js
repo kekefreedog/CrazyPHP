@@ -13,6 +13,7 @@
  */
 const ForkTsCheckerNotifierWebpackPlugin = require('fork-ts-checker-notifier-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+var helpers = require('handlebars-helpers')(["comparison", "object"]);
 const yaml = require('js-yaml');
 const path = require('path');
 const fs = require('fs');
@@ -68,8 +69,9 @@ module.exports = {
                 test: /\.(handlebars|hbs)$/,
                 loader: "handlebars-loader",
                 options: {
-                    helperDirs: __dirname + "./vendor/kzarshenas/crazyphp/resources/Js/Handlebars",
-                    knownHelpersOnly: false,
+                    helperDirs: [
+                        path.resolve(__dirname, "./vendor/kzarshenas/crazyphp/resources/Js/Handlebars"),
+                    ],
                 }
                         
             },

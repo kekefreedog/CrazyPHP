@@ -1,0 +1,69 @@
+{{!--
+  ! Regular Card
+  !
+  ! Template of regular card
+  !
+  ! HANDLEBARS.JS version 4.7.7
+  !
+  ! @package    kzarshenas/crazyphp
+  ! @author     kekefreedog <kevin.zarshenas@gmail.com>
+  ! @copyright  2022-2022 Kévin Zarshenas
+  !--}}
+<div 
+    class="
+        card 
+        {{!-- Preloader --}}
+        {{#if attributes.preloader}}
+            overflow-auto
+        {{/if}}
+        {{!-- Depth --}}
+        {{#is attributes.depth "flat"}}
+            z-depth-0
+        {{else}}
+            z-depth-{{attributes.depth}}
+        {{/is}}
+        {{!-- Type --}}
+        {{#is attributes.type "outline"}}
+            border-width-1
+            {{@root.attributes.color-secondary}}-border
+        {{/is}}
+        {{!-- Round --}}
+        {{#is attributes.shape "round"}}
+            border-radius-10
+        {{/is}}
+        {{!-- Waves --}}
+        {{#if attributes.wave}}
+            {{#isnt attributes.wave "false"}}
+                waves-effect 
+                {{#is @root.attributes.wave "light"}}
+                    waves-light
+                {{/is}}
+            {{/isnt}}
+        {{/if}}
+        {{!-- Primary color --}}
+        {{#if attributes.color-primary}}
+            {{attributes.color-primary}}
+        {{/if}}
+        {{!-- Primary color --}}
+        {{#if attributes.color-secondary}}
+            {{colorSuffix attributes.color-secondary "text"}}
+        {{/if}}
+    "
+>
+    {{#if attributes.preloader}}
+        {{#isnt attributes.preloader "false"}}
+            {{#is @root.attributes.preloader "true"}}
+            <div class="progress mt-0 mb-0 {{@root.attributes.color-primary}}">
+                <div class="indeterminate {{@root.attributes.color-secondary}}"></div>
+            </div>
+            {{else}}
+            <div class="progress mt-0 mb-0 {{@root.attributes.color-primary}}">
+                <div class="determinate {{@root.attributes.color-secondary}}" style="width: {{@root.attributes.preloader}}%"></div>
+            </div>
+            {{/is}}
+        {{else}}
+        <div class="height-4"></div>
+        {{/isnt}}
+    {{/if}}
+    <slot></slot>
+</div>
