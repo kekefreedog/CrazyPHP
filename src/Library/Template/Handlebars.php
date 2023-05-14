@@ -40,7 +40,13 @@ class Handlebars {
         # Template available "crazy_preset" or "performance_preset"
         'template'  =>  self::CRAZY_PRESET,
         'helpers'   =>  true,
-        'useCache'  =>  true, // Not working
+        # 'useCache'  =>  true, // Not working
+        /**
+         * If you don't want use cache, please set this env before to avoid mongo error
+         * Env::set([
+         *  "cache_driver"  =>  "Files"
+         * ]);
+         */
     ];
 
     /**
@@ -167,28 +173,23 @@ class Handlebars {
 
         }
 
-        # Check cache is enable
-        if($this->options["useCache"]){
+        # New cache instance
+        $cache = new Cache();
 
-            # New cache instance
-            $cache = new Cache();
+        # Set lastModifiedDate
+        $lastModifiedDate = File::getLastModifiedDate($inputs);
 
-            # Set lastModifiedDate
-            $lastModifiedDate = File::getLastModifiedDate($inputs);
+        # Check cache is valid
+        if(!$cache->hasUpToDate($this->key, $lastModifiedDate)){
 
-            # Check cache is valid
-            if(!$cache->hasUpToDate($this->key, $lastModifiedDate)){
+            # Read file
+            $file = File::read($inputs);
 
-                # Read file
-                $file = File::read($inputs);
+            # Compile
+            $compile = $this->compile($file, $template);
 
-                # Compile
-                $compile = $this->compile($file, $template);
-
-                # Set Cache
-                $cache->set($this->key, $compile);
-
-            }
+            # Set Cache
+            $cache->set($this->key, $compile);
 
         }
 

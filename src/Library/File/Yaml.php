@@ -206,6 +206,9 @@ class Yaml{
         # Open json
         $old_value = $result = self::open($path);
 
+        # Extract header
+        $header = static::extractHeader($path);
+
         # Get result
         $result = 
             $mergeValues ?
@@ -222,7 +225,7 @@ class Yaml{
             # Put new json content in file
             file_put_contents(
                 $path,
-                YamlS::dump($result, 10)
+                $header.YamlS::dump($result, 10)
             );
 
         # Return result
@@ -246,6 +249,9 @@ class Yaml{
         # Open yaml
         $old_value = $result = self::open($path);
 
+        # Extract header
+        $header = static::extractHeader($path);
+
         # Get result
         $result = Arrays::mergeMultidimensionalArrays($createIfNotExists, $result, $values);
 
@@ -255,7 +261,7 @@ class Yaml{
             # Put new yaml content in file
             file_put_contents(
                 $path,
-                YamlS::dump($result, 10, 4)
+                $header.PHP_EOL.YamlS::dump($result, 10, 4)
             );
 
         # Return result
@@ -354,5 +360,54 @@ class Yaml{
         return $result;
 
     }
+
+
+    /**
+     * Extract header
+     * 
+     * Extrat header as 
+     * ###
+     * #
+     * ###
+     * in yaml file
+     * 
+     * @param string $filename
+     * @return string
+     */
+    public static function extractHeader(string $filename = ""):string {
+
+        # Get content of file
+        $string = File::read($filename);
+
+        # Set result
+        $result = "";
+
+        # Check string
+        if($string){
+
+            # Explide string
+            $lines = explode("\n", $string);
+        
+            # Iteration of lines
+            foreach ($lines as $line)
+
+                # Check string start with #
+                if (strpos(trim($line), '#') === 0)
+
+                    # Push to result
+                    $result .= "$line\n";
+
+                # Stop iteration
+                else
+
+                    break;
+
+        }
+        
+        # Return result
+        return $result;
+
+    }
+    
 
 }

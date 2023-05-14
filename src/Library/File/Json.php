@@ -336,4 +336,27 @@ class Json{
 
     }
 
+
+    /**
+     * Extract header
+     * 
+     * Extrat header as 
+     * /*
+     *  *
+     *  *\/
+     * in yaml file
+     * 
+     * @param string $filename
+     * @return string
+     */
+    public static function extractHeader(string $filename = ""):string {
+
+        # Set result
+        $result = "";
+
+        # Return result
+        return $result;
+
+    }
+
 }

@@ -42,12 +42,12 @@ class Process {
     /** 
      * Input (form results)
      */
-    private $values = [];
+    private array $values = [];
 
     /**
      * Dispatch of action
      */
-    private $dispatch = [
+    private array $dispatch = [
         "VARCHAR"   =>  [
             "trim",
             "clean",
@@ -55,7 +55,10 @@ class Process {
             "bool",
             "email",
             "camelToSnake",
-            "snakeToCamel"
+            "snakeToCamel",
+            "spaceBeforeCapital",
+            "ucfirst",
+            "cleanPath"
         ],
         "ARRAY"     =>  [
         ], 
@@ -415,6 +418,36 @@ class Process {
     }
 
     /**
+     * Clean string
+     * 
+     * Alternative to clean function but keep "/"
+     * 
+     * @param string $input
+     * @return string
+     */
+    public static function cleanPath($input):string {
+
+        # Declare result
+        $result = "";
+
+        # Convert input to ASCII encoding
+        $result = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $input);
+        
+        # Remove all non-alphanumeric characters (except apostrophes, quotes, and backticks)
+        $string = preg_replace('/[^a-zA-Z0-9\/]/', '', $input);
+
+        
+        # Replace all spaces with underscores
+        $result = preg_replace('/\s+/', '_', $result);
+        
+        # Trim any leading or trailing underscores
+        $result = trim($result, '_');
+        
+        # Return result
+        return $result;
+    }
+
+    /**
      * Https
      * 
      * Add or replace http to https 
@@ -549,6 +582,19 @@ class Process {
 
         # Return result
         return $result;
+
+    }
+
+    /**
+     * Upper Case First
+     * 
+     * @param string
+     * @return string
+     */
+    public static function ucfirst(string $input):string {
+
+        # Return result
+        return ucfirst($input);
 
     }
 

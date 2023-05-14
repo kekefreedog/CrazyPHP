@@ -1279,7 +1279,7 @@ class Core extends CLI {
                     # Router
                     "router"   =>  [
                         "class"     =>  "\CrazyPHP\Model\Router\Create",
-                        "parameter" =>  "application",
+                        "parameter" =>  "router",
                     ],
                 ],
             ],
@@ -1294,7 +1294,6 @@ class Core extends CLI {
                     # Router
                     "router"   =>  [
                         "class"     =>  "\CrazyPHP\Model\Router\Delete",
-                        "parameter" =>  "application",
                     ],
                 ],
             ],

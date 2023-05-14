@@ -16,19 +16,15 @@ namespace CrazyPHP\Model\Router;
  * Dependances
  */
 use CrazyPHP\Library\File\Config as FileConfig;
-use CrazyPHP\Library\Database\Database;
+use CrazyPHP\Library\Template\Handlebars;
 use CrazyPHP\Exception\CrazyException;
+use CrazyPHP\Library\String\Strings;
 use CrazyPHP\Interface\CrazyCommand;
-use CrazyPHP\Library\File\Structure;
-use CrazyPHP\Library\File\Composer;
-use CrazyPHP\Library\File\Package;
-use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\Array\Arrays;
-use CrazyPHP\Library\Cli\Command;
-use CrazyPHP\Model\Webpack\Run;
+use CrazyPHP\Library\Form\Process;
+use CrazyPHP\Library\Cache\Cache;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Library\File\Json;
-use CrazyPHP\Model\Config;
 use CrazyPHP\Model\Env;
 
 /**
@@ -66,7 +62,7 @@ class Create implements CrazyCommand {
             "type"          =>  "VARCHAR",
             "default"       =>  "router",
             "required"      =>  true,
-            "process"       =>  ['trim']
+            "process"       =>  ['cleanPath', 'snakeToCamel', 'ucfirst', 'trim']
         ],
         # Methods
         [
@@ -74,6 +70,7 @@ class Create implements CrazyCommand {
             "description"   =>  "Methods allowed by your crazy router",
             "type"          =>  "ARRAY",
             "default"       =>  "get",
+            "required"      =>  true,
             "multiple"      =>  true,
             "select"        =>  [
                 "get"           =>  "Get",
@@ -184,6 +181,11 @@ class Create implements CrazyCommand {
          */
         $this->runCreateTemplate();
 
+        /**
+         * Run Create Controler File
+         * - Create the php controller file
+         */
+        $this->runCreateControllerFile();
 
         /**
          * Run Router In Config
@@ -247,10 +249,64 @@ class Create implements CrazyCommand {
      */
     public function runPrepareRouter():void {
 
-        # Set router
-        $this->router = Process::getResultSummary($this->inputs);
+        # Process inputs
+        $this->router = Process::getResultSummary($this->inputs["router"]);
+        
+        # Get Router collection
+        $routers = FileConfig::getValue("Router.".$this->router["Type"]);
 
-        print_r($this->router);
+        # Check if router name alreay exists
+        if(!empty(Arrays::filterByKey($routers, "name", $this->router["Name"])))
+            
+            # New error
+            throw new CrazyException(
+                "Given name \"".$this->router["Name"]."\" already exists in \"".$this->router["Type"]."\" routers collection",
+                500,
+                [
+                    "custom_code"   =>  "create-router-001",
+                ]
+            );
+
+        # Check if prefix is empty
+        if(!$this->router["Prefix"])
+
+            # Unset false
+            unset($this->router["Prefix"]);
+
+        # Decode method
+        $this->router["Methods"] = Json::check($this->router["Methods"]) ?
+            json_decode($this->router["Methods"]) : 
+                $this->router["Methods"]; 
+
+        # Check methods
+        if(is_string($this->router["Methods"]))
+
+            # Convert to string
+            $this->router["Methods"] = [$this->router["Methods"]];
+
+        # Set patterns
+        $this->router["patterns"] = ["/".Process::camelToSnake($this->router["Name"])];
+
+        # Check if type is app
+        if($this->router["Type"] == "app"){
+
+            # Check is dir in environnement
+            if(File::exists(self::ROUTER_APP_PATH.$this->router["Name"])){
+
+                # Delete the folder
+                File::removeAll(self::ROUTER_APP_PATH.$this->router["Name"]);
+
+            }
+
+            # Create clean folder
+            mkdir(File::path(self::ROUTER_APP_PATH.$this->router["Name"]));
+
+        }
+
+        # Set up env for cache driver
+        Env::set([
+            "cache_driver"  =>  "Files"
+        ]);
 
     }
 
@@ -264,9 +320,27 @@ class Create implements CrazyCommand {
      */
     public function runCreateIndexFile():void {
 
+        # Check if app
+        if($this->router["Type"] == "app"){
+
+            # Create template instance
+            $template = new Handlebars([
+                "template"  =>  Handlebars::PERFORMANCE_PRESET,
+                "helpers"   =>  false
+            ]);
+
+            # Load template
+            $template->load("@crazyphp_root/resources/Environment/Template/App/index.ts.hbs");
+
+            # Render template with current router value
+            $result = $template->render($this->router);
+
+            # Write content into file
+            file_put_contents(File::path(self::ROUTER_APP_PATH.$this->router["Name"]."/index.ts"), $result);
+
+        }
 
     }
-
 
     /**
      * Run Create Style File
@@ -277,10 +351,27 @@ class Create implements CrazyCommand {
      */
     public function runCreateStyleFile():void {
 
+        # Check if app
+        if($this->router["Type"] == "app"){
 
+            # Create template instance
+            $template = new Handlebars([
+                "template"  =>  Handlebars::PERFORMANCE_PRESET,
+                "helpers"   =>  false
+            ]);
+
+            # Load template
+            $template->load("@crazyphp_root/resources/Environment/Template/App/style.scss.hbs");
+
+            # Render template with current router value
+            $result = $template->render($this->router);
+
+            # Write content into file
+            file_put_contents(File::path(self::ROUTER_APP_PATH.$this->router["Name"]."/style.scss"), $result);
+
+        }
 
     }
-
 
     /**
      * Run Create Template
@@ -291,10 +382,55 @@ class Create implements CrazyCommand {
      */
     public function runCreateTemplate():void {
 
-        
+        # Check if app
+        if($this->router["Type"] == "app"){
+
+            # Copy template
+            File::copy("@crazyphp_root/resources/Environment/Template/App/template.hbs", self::ROUTER_APP_PATH.$this->router["Name"]."/template.hbs");
+
+        }
 
     }
 
+    /**
+     * Run Create Controler File
+     * 
+     * Create the php controller file
+     * 
+     * @return void
+     */
+    public function runCreateControllerFile():void {
+
+        # Set controller into router
+        $this->router["Controller"] = "App\\Controller\\App\\".str_replace("/", "\\", $this->router["Name"]);
+
+        # Set additionnal data
+        $additionnal = [
+            "Namespace"     =>  Strings::removeLastString($this->router["Controller"], "\\"),
+            "Class"         =>  Strings::getLastString($this->router["Controller"], "\\"),
+        ];
+
+        # Check if app
+        if($this->router["Type"] == "app"){
+
+            # Create template instance
+            $template = new Handlebars([
+                "template"  =>  Handlebars::PERFORMANCE_PRESET,
+                "helpers"   =>  false
+            ]);
+
+            # Load template
+            $template->load("@crazyphp_root/resources/Hbs/App/Controller/App/Template.php.hbs");
+
+            # Render template with current router value
+            $result = $template->render($this->router + $additionnal);
+
+            # Write content into file
+            file_put_contents(File::path(self::ROUTER_CONTROLLER_PATH.ucfirst($this->router["Type"])."/".$this->router["Name"].".php"), $result);
+
+        }
+
+    }
 
     /**
      * Run Router In Config
@@ -305,7 +441,23 @@ class Create implements CrazyCommand {
      */
     public function runRouterIntoConfig():void {
 
+        # Change key case
+        $router = Arrays::changeKeyCaseRecursively($this->router);
 
+        # Set type
+        $type = $router["type"];
+
+        # Remove type from router
+        unset($router["type"]);
+
+        # Get router collection count
+        $routers = FileConfig::getValue("Router.".$type);
+
+        # Count routers
+        $routersKey = count($routers ?: []);
+
+        # Set value in config
+        FileConfig::setValue("Router.$type.$routersKey", $router);
 
     }
 
@@ -329,5 +481,15 @@ class Create implements CrazyCommand {
         return $result;
 
     }
+
+    /** Public constants
+     ******************************************************
+     */
+
+    /** @const public ROUTER_APP_PATH */
+    public const ROUTER_APP_PATH = "@app_root/app/Environment/Page/";
+
+    /** @const public ROUTER_CONTROLLER_PATH */
+    public const ROUTER_CONTROLLER_PATH = "@app_root/app/Controller/";
 
 }
