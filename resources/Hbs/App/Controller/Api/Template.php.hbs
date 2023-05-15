@@ -1,0 +1,48 @@
+<?php declare(strict_types=1);
+/**
+ * Api
+ *
+ * Workflow of your api
+ *
+ * PHP version 8.1.2
+ *
+ * @package    kzarshenas/crazyphp
+ * @author     kekefreedog <kevin.zarshenas@gmail.com>
+ * @copyright  2022-2022 Kévin Zarshenas
+ */
+namespace {{Namespace}};
+
+/**
+ * Dependances
+ */
+use CrazyPHP\Core\ApiResponse;
+use CrazyPHP\Core\Controller;
+
+ /**
+ * {{Name}}
+ *
+ * Main methods of you crazy api
+ *
+ * @package    kzarshenas/crazyphp
+ * @author     kekefreedog <kevin.zarshenas@gmail.com>
+ * @copyright  2022-2022 Kévin Zarshenas
+ */
+class {{Class}} extends Controller {
+
+    /**
+     * Get
+     * 
+     * @param $request
+     * @return void
+     */
+    public static function get($request):void {
+
+        # Set response
+        (new ApiResponse())
+            ->setStatusCode()
+            ->pushContent("results", ["Hello"])
+            ->send();
+
+    }
+
+}

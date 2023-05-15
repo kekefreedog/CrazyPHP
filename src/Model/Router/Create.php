@@ -291,12 +291,10 @@ class Create implements CrazyCommand {
         if($this->router["Type"] == "app"){
 
             # Check is dir in environnement
-            if(File::exists(self::ROUTER_APP_PATH.$this->router["Name"])){
+            if(File::exists(self::ROUTER_APP_PATH.$this->router["Name"]))
 
                 # Delete the folder
                 File::removeAll(self::ROUTER_APP_PATH.$this->router["Name"]);
-
-            }
 
             # Create clean folder
             mkdir(File::path(self::ROUTER_APP_PATH.$this->router["Name"]));
@@ -309,7 +307,6 @@ class Create implements CrazyCommand {
         ]);
 
     }
-
 
     /**
      * Run Create Index File
@@ -401,17 +398,17 @@ class Create implements CrazyCommand {
      */
     public function runCreateControllerFile():void {
 
-        # Set controller into router
-        $this->router["Controller"] = "App\\Controller\\App\\".str_replace("/", "\\", $this->router["Name"]);
-
-        # Set additionnal data
-        $additionnal = [
-            "Namespace"     =>  Strings::removeLastString($this->router["Controller"], "\\"),
-            "Class"         =>  Strings::getLastString($this->router["Controller"], "\\"),
-        ];
-
         # Check if app
         if($this->router["Type"] == "app"){
+
+            # Set controller into router
+            $this->router["Controller"] = "App\\Controller\\App\\".str_replace("/", "\\", $this->router["Name"]);
+    
+            # Set additionnal data
+            $additionnal = [
+                "Namespace"     =>  Strings::removeLastString($this->router["Controller"], "\\"),
+                "Class"         =>  Strings::getLastString($this->router["Controller"], "\\"),
+            ];
 
             # Create template instance
             $template = new Handlebars([
@@ -421,6 +418,62 @@ class Create implements CrazyCommand {
 
             # Load template
             $template->load("@crazyphp_root/resources/Hbs/App/Controller/App/Template.php.hbs");
+
+            # Render template with current router value
+            $result = $template->render($this->router + $additionnal);
+
+            # Write content into file
+            file_put_contents(File::path(self::ROUTER_CONTROLLER_PATH.ucfirst($this->router["Type"])."/".$this->router["Name"].".php"), $result);
+
+        }else
+        # Check if api
+        if($this->router["Type"] == "api"){
+
+            # Set controller into router
+            $this->router["Controller"] = "App\\Controller\\Api\\V1\\".str_replace("/", "\\", $this->router["Name"]);
+    
+            # Set additionnal data
+            $additionnal = [
+                "Namespace"     =>  Strings::removeLastString($this->router["Controller"], "\\"),
+                "Class"         =>  Strings::getLastString($this->router["Controller"], "\\"),
+            ];
+
+            # Create template instance
+            $template = new Handlebars([
+                "template"  =>  Handlebars::PERFORMANCE_PRESET,
+                "helpers"   =>  false
+            ]);
+
+            # Load template
+            $template->load("@crazyphp_root/resources/Hbs/App/Controller/Api/Template.php.hbs");
+
+            # Render template with current router value
+            $result = $template->render($this->router + $additionnal);
+
+            # Write content into file
+            file_put_contents(File::path(self::ROUTER_CONTROLLER_PATH.ucfirst($this->router["Type"])."\/v1/".$this->router["Name"].".php"), $result);
+
+        }else
+        # Check if asset
+        if($this->router["Type"] == "asset"){
+
+            # Set controller into router
+            $this->router["Controller"] = "App\\Controller\\Assets\\".str_replace("/", "\\", $this->router["Name"]);
+    
+            # Set additionnal data
+            $additionnal = [
+                "Namespace"     =>  Strings::removeLastString($this->router["Controller"], "\\"),
+                "Class"         =>  Strings::getLastString($this->router["Controller"], "\\"),
+            ];
+
+            # Create template instance
+            $template = new Handlebars([
+                "template"  =>  Handlebars::PERFORMANCE_PRESET,
+                "helpers"   =>  false
+            ]);
+
+            # Load template
+            $template->load("@crazyphp_root/resources/Hbs/App/Controller/Asset/Template.php.hbs");
 
             # Render template with current router value
             $result = $template->render($this->router + $additionnal);
@@ -458,27 +511,6 @@ class Create implements CrazyCommand {
 
         # Set value in config
         FileConfig::setValue("Router.$type.$routersKey", $router);
-
-    }
-
-    /** Private methods
-     ******************************************************
-     */
-
-    /**
-     * Get data
-     * 
-     * Get all data needed for template engine
-     * 
-     * @return array
-     */
-    private function _getData():array {
-
-        # Set result
-        $result = [];
-
-        # Return result
-        return $result;
 
     }
 

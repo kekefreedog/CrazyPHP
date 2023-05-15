@@ -62,6 +62,12 @@ class Form {
             # Iteration of required values
             foreach($valueCollection as $value){
 
+                # Check select is callable
+                if(isset($value['select']) && is_callable($value['select']))
+
+                    # Set select
+                    $value['select'] = $value['select']();
+
                 # Check description
                 if($value['description'] ?? false)
 
@@ -71,7 +77,7 @@ class Form {
                 $question .= 
                     " {".$value['name']."} ?".
                     (
-                        $value['default'] ?
+                        ($value['default'] ?? false) ?
                             " <".$value['default'].">" :
                                 ""
                     )

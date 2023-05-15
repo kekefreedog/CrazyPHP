@@ -578,6 +578,47 @@ class Router {
 
     }
 
+    /**
+     * Get Summary
+     * 
+     * Get a summary of existing routers
+     * @return array
+     */
+    public static function getSummary():array {
+
+        # Set result
+        $result = [];
+
+        # Get config values
+        foreach(["app", "api", "asset"] as $type){
+
+            # Get routers
+            $routers = Config::getValue("Router.$type");
+
+            # Check routers
+            if(is_array($routers) && !empty($routers)){
+
+                # Iteration routers
+                foreach($routers as $router){
+
+                    # Check router name
+                    if(isset($router["name"]) && $router["name"]){
+
+                        $result["$type.".$router["name"]] = "(".ucfirst($type).") ".$router["name"];
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        # Return result
+        return $result;
+
+    }
+
     /** Public constants
      ******************************************************
      */

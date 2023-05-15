@@ -430,6 +430,9 @@ class Core extends CLI {
      */
     protected function actionCrazyCommandDelete(array $inputs = []):void {
 
+        # Declare result
+        $result = [];
+
         # New climate
         $climate = new CLImate();
 
@@ -450,6 +453,51 @@ class Core extends CLI {
 
         # Get class
         $class = $router["class"];
+
+        # Get required values
+        $requiredValues = $class::getRequiredValues();
+
+        # Check required values
+        if(!empty($requiredValues)){
+            
+            # Message
+            $climate
+                ->lightBlue()
+                ->bold()
+                ->out("👋 First we need informations about deletion of your ".$inputs['args'][0]." 👋");
+            ;
+        
+            # Display form
+            $form = new Form($requiredValues);
+
+            # Get form result
+            $formResult = $form->getResult();
+
+            # Process value
+            $formResult = (new Process($formResult))->getResult();
+
+            # Validate value
+            $formResult = (new Validate($formResult))->getResult();
+
+            # fill result
+            $result[$router['parameter']] = $formResult;
+
+            # Prepare display value
+            $summary[$router['parameter']] = Validate::getResultSummary($formResult);
+            
+            # Message
+            $climate
+                ->br()
+                ->lightBlue()
+                ->bold()
+                ->out("📝 Summary about the deletion of your ".$inputs['args'][0]." 📝")
+                ->br()
+            ;
+
+            # Summary
+            @$climate->table($summary);
+
+        }
 
         # Message
         $input = $climate
@@ -476,7 +524,7 @@ class Core extends CLI {
         }
 
         # New instance of class
-        $instance = new $class();
+        $instance = new $class($result);
 
         # Get story line
         $storyline = $instance->getStoryline();
@@ -1294,6 +1342,7 @@ class Core extends CLI {
                     # Router
                     "router"   =>  [
                         "class"     =>  "\CrazyPHP\Model\Router\Delete",
+                        "parameter" =>  "routers",
                     ],
                 ],
             ],
