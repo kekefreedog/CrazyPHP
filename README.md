@@ -34,6 +34,16 @@ Delete router
 php vendor/kzarshenas/crazyphp/bin/CrazyCommand delete router
 ```
 
+## Trash
+
+Clean trash
+
+> When you remove router... a backup of the files removed are copy into the trash.
+
+```sh
+php vendor/kzarshenas/crazyphp/bin/CrazyCommand delete trash
+```
+
 ## Docker (optionnal)
 
 Create docker compose :
