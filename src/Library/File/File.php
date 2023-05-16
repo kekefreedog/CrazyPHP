@@ -169,6 +169,9 @@ class File {
      */
     public static function remove(string $dir = ""):bool {
 
+        # Convert path
+        $dir = self::path($dir);
+
         # Check input
         if(!$dir || !file_exists($dir))
             return true;
@@ -469,13 +472,48 @@ class File {
         if(!is_dir($path_folder))
 
             # Create folder
-            mkdir(dirname($path_folder, 0777, true));
+            mkdir($path_folder, 0777, true);
 
         # Set result
         $result = copy($path_source, $path_target);
 
         # Return result
         return $result;
+
+    }
+
+    /**
+     * Create
+     * 
+     * Create only file
+     * 
+     * @param string $target Path of the file
+     * @param string|int|array|null $data Data to write on the file
+     * @param int $permission Permission of the file
+     * @return bool
+     */
+    public static function create(string $target = "", string|int|array|null $data = null, int $permission = 0777):bool {
+
+        # Declare result
+        $result = false;
+
+        # Path target
+        $path_target = self::path($target);
+
+        # Path target parent folder
+        $path_folder = dirname($path_target);
+
+        # Check folder target exists
+        if(!is_dir($path_folder))
+
+            # Create folder
+            mkdir($path_folder, $permission, true);
+
+        # Set result
+        $result = file_put_contents($path_target, $data ?: "");
+
+        # Return result
+        return $result ? true : false;
 
     }
 

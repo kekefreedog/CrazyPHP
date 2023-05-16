@@ -12,19 +12,20 @@
 Structure:
   "@app_root":
     folders:
-      .vscode:
-        files:
-          settings.json:
-            source: "@crazyphp_root/resources/Vscode/settings.json"
+      .trash: null
+      .cache:
+        folders:
+          app: null
       .database:
         folders:
           mongo: null
           mysql: null
           mariadb: null
           postgresql: null
-      .cache:
-        folders:
-          app: null
+      .vscode:
+        files:
+          settings.json:
+            source: "@crazyphp_root/resources/Vscode/settings.json"
       # Assets
       assets:
         folders:

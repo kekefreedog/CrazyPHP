@@ -767,10 +767,10 @@ class Config{
      * Set Value in Config file
      * 
      * @param string $key Parameter of config to set
-     * @param $data to push in key parameter
+     * @param string $path Path of the config
      * @return void
      */
-    public static function removeValue(string $key = "", $data = null, $path = self::FOLDER_PATH):void {
+    public static function removeValue(string $key = "", string $path = self::FOLDER_PATH):void {
 
         # Prepare config folder
         $path = File::path(self::FOLDER_PATH);

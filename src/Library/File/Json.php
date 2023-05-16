@@ -315,9 +315,11 @@ class Json{
      * 
      * Encode data to json
      * 
-     * @return string|bool|null|array
+     * @param string|bool|null|array $input Input to encode in Json
+     * @param bool $prettyPrint Give a pretty print result
+     * @return string
      */
-    public static function encode(string|bool|null|array $input = ""){
+    public static function encode(string|bool|null|array $input = "", bool $prettyPrint = false):string {
 
         # Set result
         $result = [];
@@ -329,7 +331,7 @@ class Json{
             $input = [$input];
 
         # Encode result
-        $result = json_encode($input);
+        $result = $prettyPrint ? json_encode($input, JSON_PRETTY_PRINT) : json_encode($input);
 
         # Return result
         return $result;

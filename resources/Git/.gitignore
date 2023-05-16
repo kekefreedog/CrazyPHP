@@ -1,6 +1,7 @@
 # Crazy App
-.database
 .cache
+.database
+.trash
 
 # Composer dependances (PHP)
 /vendor/
