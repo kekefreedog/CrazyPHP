@@ -1335,14 +1335,18 @@ class Core extends CLI {
             "delete"   =>  [
                 # Command
                 "command"   =>  [
-                    ## Project
+                    # Project
                     "project"   =>  [
                         "class"     =>  "\CrazyPHP\Model\App\Delete",
                     ],
                     # Router
-                    "router"   =>  [
+                    "router"    =>  [
                         "class"     =>  "\CrazyPHP\Model\Router\Delete",
                         "parameter" =>  "routers",
+                    ],
+                    # Trash
+                    "trash"     =>  [
+                        "class"     =>  "\CrazyPHP\Model\Trash\Delete",
                     ],
                 ],
             ],
