@@ -34,6 +34,15 @@ use CrazyPHP\Model\Config;
  */
 class Down implements CrazyCommand {
 
+    /** Private Parameters
+     ******************************************************
+     */
+
+    /**
+     * Inputs
+     */
+    private $inputs = [];
+
     /**
      * Constructor
      * 

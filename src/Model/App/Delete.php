@@ -17,6 +17,7 @@ namespace CrazyPHP\Model\App;
  */
 use Phpfastcache\Exceptions\PhpfastcacheDriverCheckException;
 use CrazyPHP\Model\Docker\Delete as DockerDelete;
+use CrazyPHP\Library\Model\CrazyModel;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\File\Structure;
 use CrazyPHP\Interface\CrazyCommand;
@@ -32,7 +33,7 @@ use CrazyPHP\Library\File\File;
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2022 Kévin Zarshenas
  */
-class Delete implements CrazyCommand {
+class Delete extends CrazyModel implements CrazyCommand {
 
     /**
      * Constructor
@@ -103,44 +104,6 @@ class Delete implements CrazyCommand {
 
         # Return this
         return $this;
-
-    }
-
-    /**
-     * Get story line
-     * 
-     * Used for execute each method one after another
-     * 
-     * @return array
-     */
-    public function getStoryline():array {
-
-        # Declare result
-        $result = [];
-
-        # New reflection
-        $reflection = new \ReflectionClass($this);
-
-        # Get methods
-        $methods = $reflection->getMethods();
-
-        # Check methods
-        if($methods)
-
-            # Iteration of methods
-            foreach($methods as $method)
-
-                # Check run children methods
-                if(
-                    substr($method->name, 0, 3) == "run" && 
-                    strlen($method->name) > 3
-                )
-
-                    # Push result in result
-                    $result[] = $method->name;
-
-        # Return result
-        return $result;
 
     }
 

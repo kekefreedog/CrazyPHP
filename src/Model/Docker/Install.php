@@ -36,6 +36,15 @@ use CrazyPHP\Model\Env;
  */
 class Install implements CrazyCommand {
 
+    /** Private Parameters
+     ******************************************************
+     */
+
+    /**
+     * Inputs
+     */
+    private $inputs = [];
+
     /**
      * Constructor
      * 

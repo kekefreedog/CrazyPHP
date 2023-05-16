@@ -41,6 +41,15 @@ use CrazyPHP\Model\Env;
  */
 class Up implements CrazyCommand {
 
+    /** Private Parameters
+     ******************************************************
+     */
+
+    /**
+     * Inputs
+     */
+    private $inputs = [];
+
     /**
      * Constructor
      * 

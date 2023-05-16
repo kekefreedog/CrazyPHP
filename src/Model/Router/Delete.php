@@ -15,9 +15,11 @@ namespace CrazyPHP\Model\Router;
 /**
  * Dependances
  */
+use CrazyPHP\Model\Trash\Delete as TrashDelete;
+use CrazyPHP\Library\Model\CrazyModel;
 use CrazyPHP\Exception\CrazyException;
-use CrazyPHP\Library\Time\DateTime;
 use CrazyPHP\Interface\CrazyCommand;
+use CrazyPHP\Library\Time\DateTime;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\File\Config;
 use CrazyPHP\Model\Router\Create;
@@ -33,7 +35,7 @@ use CrazyPHP\Library\File\Json;
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2022 Kévin Zarshenas
  */
-class Delete implements CrazyCommand {
+class Delete extends CrazyModel implements CrazyCommand {
 
     /** Public constants
      ******************************************************
@@ -151,44 +153,6 @@ class Delete implements CrazyCommand {
 
         # Return this
         return $this;
-
-    }
-
-    /**
-     * Get story line
-     * 
-     * Used for execute each method one after another
-     * 
-     * @return array
-     */
-    public function getStoryline():array {
-
-        # Declare result
-        $result = [];
-
-        # New reflection
-        $reflection = new \ReflectionClass($this);
-
-        # Get methods
-        $methods = $reflection->getMethods();
-
-        # Check methods
-        if($methods)
-
-            # Iteration of methods
-            foreach($methods as $method)
-
-                # Check run children methods
-                if(
-                    substr($method->name, 0, 3) == "run" && 
-                    strlen($method->name) > 3
-                )
-
-                    # Push result in result
-                    $result[] = $method->name;
-
-        # Return result
-        return $result;
 
     }
 
@@ -499,6 +463,6 @@ class Delete implements CrazyCommand {
     public const ROUTER_CONTROLLER_PATH = Create::ROUTER_CONTROLLER_PATH;
 
     /** @const public TRASH_PATH */
-    public const TRASH_PATH = "@app_root/.trash/";
+    public const TRASH_PATH = TrashDelete::TRASH_PATH;
 
 }

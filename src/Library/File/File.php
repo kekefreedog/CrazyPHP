@@ -518,6 +518,34 @@ class File {
     }
 
     /**
+     * Create Directory
+     * 
+     * Create a folder
+     * 
+     * @param string $target Path of the folder
+     * @return bool
+     * @param int $permission Permission of the file
+     */
+    public static function createDirectory(string $target = "", int $permission = 0777):bool {
+
+        # Set result
+        $result = true;
+
+        # Get path of target
+        $target = self::path($target);
+
+        # Check target exits
+        if(!self::exists($target))
+
+            # Create folder
+            $result = mkdir($target, $permission, true);
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
      * Is Empty
      * 
      * Check if folder is empty
