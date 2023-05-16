@@ -1,0 +1,102 @@
+<?php declare(strict_types=1);
+/**
+ * Test Php Unit
+ *
+ * Test Php Unit
+ *
+ * PHP version 8.1.2
+ *
+ * @package    kzarshenas/crazyphp
+ * @author     kekefreedog <kevin.zarshenas@gmail.com>
+ * @copyright  2022-2022 Kévin Zarshenas
+ */
+namespace Tests\Core;
+
+/**
+ * Dependances
+ */
+
+use CrazyPHP\Exception\CrazyException;
+use CrazyPHP\Model\Trash\Delete;
+use CrazyPHP\Library\File\File;
+use PHPUnit\Framework\TestCase;
+use CrazyPHP\Model\Env;
+
+/**
+ * Model test
+ *
+ * Methods for test interactions with model
+ *
+ * @package    kzarshenas/crazyphp
+ * @author     kekefreedog <kevin.zarshenas@gmail.com>
+ * @copyright  2022-2022 Kévin Zarshenas
+ */
+class TrashTest extends TestCase {
+
+    /** Public method
+     ******************************************************
+     */
+
+    /**
+     * Test Trash Delete
+     * 
+     * Test model trash delete
+     * 
+     * @return void
+     */
+    public function testTrashDelete():void {
+
+        # Setup env
+        Env::set([
+            # App root for composer class
+            "phpunit_test"      =>  true,
+        ]);
+
+        # Set content test
+        $contentText = "Hello World";
+
+        # Create file in trash
+        if(!File::create(self::TRASH_PATH."item.txt", $contentText))
+
+            # New error
+            throw new CrazyException(
+                "Test can't create folder \"/tests/.trash\"... Please check permission of the parent folder.",
+                500,
+                [
+                    "custom_code"   =>  "trash-test-001",
+                ]
+            );
+
+        # Check file content
+        $content = File::read(self::TRASH_PATH."item.txt") ? true : false;
+
+        # Check content
+        $this->assertEquals($content, $contentText);
+
+        # New delete instance
+        $delete = new Delete([
+            "trash_path"    =>  self::TRASH_PATH
+        ]);
+
+        # Execute delete scripts
+        $delete->run();
+
+        # Check folder is empty
+        $trashEmpty = File::isEmpty(self::TRASH_PATH);
+
+        # Check last operation is true
+        $this->assertEquals($trashEmpty, true);
+
+        # Remove trash folder
+        File::remove(self::TRASH_PATH);
+
+    }
+
+    /** Public constant
+     ******************************************************
+     */
+
+    /** @const public TRASH_PATH */
+    public const TRASH_PATH = "@crazyphp_root/tests/.trash/";
+
+}
