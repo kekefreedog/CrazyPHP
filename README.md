@@ -82,11 +82,16 @@ php vendor/phpunit/phpunit/phpunit
 
 > Env variables of the app are stored in `$GLOBALS["__CRAZY_APP"]`
 
-|Name|Tokken|Type|Description|
-|-|-|-|-|
-|CRAZY_ROOT|@crazyphp_root|\<string>|Root of crazyphp vendor folder|
-|APP_ROOT|@app_root|\<string>|Root of your crazy application|
-|PHPUNIT_TEST|@phpunit_test|\<bool>|Determine if we are in a test context|
+| Name                   | Tokken                  | Type      | Description                                              |
+| ---------------------- | ----------------------- | --------- | -------------------------------------------------------- |
+| CRAZY_ROOT             | @crazyphp_root          | \<string> | Root of crazyphp vendor folder                           |
+| APP_ROOT               | @app_root               | \<string> | Root of your crazy application                           |
+| PHPUNIT_TEST           | @phpunit_test           | \<bool>   | Determine if we are in a test context                    |
+| CONFIG_LOCATION        | @config_location        | \<string> | Determine the location of the configs files              |
+| ROUTER_APP_PATH        | @router_app_path        | \<string> | Determine the path of the front files of the routers     |
+| ROUTER_CONTROLLER_PATH | @router_controller_path | \<string> | Determine the path of the back end controller of routers |
+| TRASH_PATH             | @trash_path             | \<string> | Determine the path of the trash                          |
+| TRASH_DISABLE          | @trash_disable          | \<string> | Determine if the trash is disable                        |
 
 # Documentation
 
