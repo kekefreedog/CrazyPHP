@@ -21,9 +21,9 @@ use CrazyPHP\Library\Model\CrazyModel;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\String\Strings;
 use CrazyPHP\Interface\CrazyCommand;
+use CrazyPHP\Library\Router\Router;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\Form\Process;
-use CrazyPHP\Library\Cache\Cache;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Library\File\Json;
 use CrazyPHP\Model\Env;
@@ -254,13 +254,13 @@ class Create extends CrazyModel implements CrazyCommand {
         if($this->router["Type"] == "app"){
 
             # Check is dir in environnement
-            if(File::exists(self::ROUTER_APP_PATH.$this->router["Name"]))
+            if(File::exists(Router::getAppPath().$this->router["Name"]))
 
                 # Delete the folder
-                File::removeAll(self::ROUTER_APP_PATH.$this->router["Name"]);
+                File::removeAll(Router::getAppPath().$this->router["Name"]);
 
             # Create clean folder
-            mkdir(File::path(self::ROUTER_APP_PATH.$this->router["Name"]));
+            mkdir(File::path(Router::getAppPath().$this->router["Name"]));
 
         }
 
@@ -296,7 +296,7 @@ class Create extends CrazyModel implements CrazyCommand {
             $result = $template->render($this->router);
 
             # Write content into file
-            file_put_contents(File::path(self::ROUTER_APP_PATH.$this->router["Name"]."/index.ts"), $result);
+            file_put_contents(File::path(Router::getAppPath().$this->router["Name"]."/index.ts"), $result);
 
         }
 
@@ -327,7 +327,7 @@ class Create extends CrazyModel implements CrazyCommand {
             $result = $template->render($this->router);
 
             # Write content into file
-            file_put_contents(File::path(self::ROUTER_APP_PATH.$this->router["Name"]."/style.scss"), $result);
+            file_put_contents(File::path(Router::getAppPath().$this->router["Name"]."/style.scss"), $result);
 
         }
 
@@ -346,7 +346,7 @@ class Create extends CrazyModel implements CrazyCommand {
         if($this->router["Type"] == "app"){
 
             # Copy template
-            File::copy("@crazyphp_root/resources/Environment/Template/App/template.hbs", self::ROUTER_APP_PATH.$this->router["Name"]."/template.hbs");
+            File::copy("@crazyphp_root/resources/Environment/Template/App/template.hbs", Router::getAppPath().$this->router["Name"]."/template.hbs");
 
         }
 
@@ -386,7 +386,7 @@ class Create extends CrazyModel implements CrazyCommand {
             $result = $template->render($this->router + $additionnal);
 
             # Write content into file
-            file_put_contents(File::path(self::ROUTER_CONTROLLER_PATH.ucfirst($this->router["Type"])."/".$this->router["Name"].".php"), $result);
+            file_put_contents(File::path(Router::getControllerPath().ucfirst($this->router["Type"])."/".$this->router["Name"].".php"), $result);
 
         }else
         # Check if api
@@ -414,7 +414,7 @@ class Create extends CrazyModel implements CrazyCommand {
             $result = $template->render($this->router + $additionnal);
 
             # Write content into file
-            file_put_contents(File::path(self::ROUTER_CONTROLLER_PATH.ucfirst($this->router["Type"])."\/v1/".$this->router["Name"].".php"), $result);
+            file_put_contents(File::path(Router::getControllerPath().ucfirst($this->router["Type"])."\/v1/".$this->router["Name"].".php"), $result);
 
         }else
         # Check if asset
@@ -442,7 +442,7 @@ class Create extends CrazyModel implements CrazyCommand {
             $result = $template->render($this->router + $additionnal);
 
             # Write content into file
-            file_put_contents(File::path(self::ROUTER_CONTROLLER_PATH.ucfirst($this->router["Type"])."/".$this->router["Name"].".php"), $result);
+            file_put_contents(File::path(Router::getControllerPath().ucfirst($this->router["Type"])."/".$this->router["Name"].".php"), $result);
 
         }
 
@@ -476,15 +476,5 @@ class Create extends CrazyModel implements CrazyCommand {
         FileConfig::setValue("Router.$type.$routersKey", $router);
 
     }
-
-    /** Public constants
-     ******************************************************
-     */
-
-    /** @const public ROUTER_APP_PATH */
-    public const ROUTER_APP_PATH = "@app_root/app/Environment/Page/";
-
-    /** @const public ROUTER_CONTROLLER_PATH */
-    public const ROUTER_CONTROLLER_PATH = "@app_root/app/Controller/";
 
 }

@@ -20,6 +20,7 @@ use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Cache\Cache;
 use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\File\File;
+use CrazyPHP\Model\Env;
 
 /**
  * Router
@@ -32,7 +33,7 @@ use CrazyPHP\Library\File\File;
  */
 class Router {
 
-    /** Public static methods
+    /** Public static methods | Router redirection
      ******************************************************
      */
 
@@ -619,11 +620,51 @@ class Router {
 
     }
 
+    /** Public static methods | Routers file
+     ******************************************************
+     */
+
+    /**
+     * Get App Path
+     * 
+     * Get path of the page environnement : with index / style / template
+     * env : "router_app_path"
+     * 
+     * @return string
+     */
+    public static function getAppPath():string {
+
+        # Set result
+        $result = Env::get("router_app_path", true) ?: static::ROUTER_APP_PATH;
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Get Controller Path
+     * 
+     * Get path of the page environnement : with index / style / template
+     * env : "router_controller_path"
+     * 
+     * @return string
+     */
+    public static function getControllerPath():string {
+
+        # Set result
+        $result = Env::get("router_controller_path", true) ?: static::ROUTER_CONTROLLER_PATH;
+
+        # Return result
+        return $result;
+
+    }
+
     /** Public constants
      ******************************************************
      */
 
-    /* @const array METHODS Methods supported */
+    /** @const array METHODS Methods supported */
     public const METHODS = [
         'GET',
         'POST',
@@ -633,7 +674,13 @@ class Router {
         'PATCH'
     ];
 
-    /* @const array GROUPS Type of router */
+    /** @const array GROUPS Type of router */
     public const GROUPS = ["app", "api", "asset"];
+
+    /** @const string ROUTER_APP_PATH */
+    public const ROUTER_APP_PATH = "@app_root/app/Environment/Page/";
+
+    /** @const public ROUTER_CONTROLLER_PATH */
+    public const ROUTER_CONTROLLER_PATH = "@app_root/app/Controller/";
 
 }

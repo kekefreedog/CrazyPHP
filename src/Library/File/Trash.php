@@ -15,15 +15,10 @@ namespace CrazyPHP\Library\File;
 /** Dependances
  * 
  */
-use CrazyPHP\Exception\CrazyException;
-use Symfony\Component\Finder\Finder;
-use CrazyPHP\Library\Array\Arrays;
-use CrazyPHP\Library\String\Url;
-use CrazyPHP\Library\File\Json;
-use CrazyPHP\Library\File\Yaml;
-use CrazyPHP\Library\File\File;
-use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\Time\DateTime;
+use CrazyPHP\Library\Form\Process;
+use CrazyPHP\Library\File\Json;
+use CrazyPHP\Library\File\File;
 use CrazyPHP\Model\Env;
 
 /**

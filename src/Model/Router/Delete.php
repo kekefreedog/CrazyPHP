@@ -18,14 +18,12 @@ namespace CrazyPHP\Model\Router;
 use CrazyPHP\Library\Model\CrazyModel;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Interface\CrazyCommand;
-use CrazyPHP\Library\Time\DateTime;
+use CrazyPHP\Library\Router\Router;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\File\Config;
 use CrazyPHP\Model\Router\Create;
 use CrazyPHP\Library\File\Trash;
 use CrazyPHP\Library\File\File;
-use CrazyPHP\Library\File\Json;
-use CrazyPHP\Model\Env;
 
 /**
  * Delete Router
@@ -239,29 +237,6 @@ class Delete extends CrazyModel implements CrazyCommand {
                         "router/".$router["type"]."/".$router["name"]
                     );
 
-                    /***
-
-                    # Get current time
-                    $now = (new DateTime())->format('Y-m-d_H-i-s_v');
-
-                    # Check trash not disable
-                    if(!(Env::get("trash_disable") ?: false))
-
-                        # Copy the file in trash
-                        File::create(
-                            (Env::get("trash_path", true) ?: self::TRASH_PATH)."router/".$router["type"]."/".$router["name"]."/config.json_".$now, 
-                            Json::encode(
-                                [
-                                    "Router"    =>  [
-                                        $router["type"] =>  $search
-                                    ]
-                                ], 
-                                true
-                            )
-                        );
-
-                    ***/
-
                     # Remove this config from router config
                     Config::removeValue("Router.app.$setRouterKey");
 
@@ -292,7 +267,7 @@ class Delete extends CrazyModel implements CrazyCommand {
                 continue;
 
             # Set index path
-            $indexPath = self::ROUTER_APP_PATH."/".$router["name"]."/index.ts";
+            $indexPath = Router::getAppPath()."/".$router["name"]."/index.ts";
 
             # Check index exits
             if(!File::exists($indexPath))
@@ -305,22 +280,6 @@ class Delete extends CrazyModel implements CrazyCommand {
                 $indexPath, 
                 "router/".$router["type"]."/".$router["name"]
             );
-
-            /***
-
-            # Get current time
-            $now = (new DateTime())->format('Y-m-d_H-i-s_v');
-
-            # Check trash not disable
-            if(!(Env::get("trash_disable") ?: false))
-
-                # Copy the file in trash
-                File::copy($indexPath, (Env::get("trash_path", true) ?: self::TRASH_PATH)."router/".$router["type"]."/".$router["name"]."/index.ts_".$now);
-
-            # Delete index
-            File::remove($indexPath);
-
-            ***/
 
         }
 
@@ -345,7 +304,7 @@ class Delete extends CrazyModel implements CrazyCommand {
                 continue;
 
             # Set index path
-            $stylePath = self::ROUTER_APP_PATH."/".$router["name"]."/style.scss";
+            $stylePath = Router::getAppPath()."/".$router["name"]."/style.scss";
 
             # Check index exits
             if(!File::exists($stylePath))
@@ -358,22 +317,6 @@ class Delete extends CrazyModel implements CrazyCommand {
                 $stylePath, 
                 "router/".$router["type"]."/".$router["name"]
             );
-
-            /***
-            
-            # Get current time
-            $now = (new DateTime())->format('Y-m-d_H-i-s_v');
-
-            # Check trash not disable
-            if(!(Env::get("trash_disable") ?: false))
-
-                # Copy the file in trash
-                File::copy($stylePath, (Env::get("trash_path", true) ?: self::TRASH_PATH)."router/".$router["type"]."/".$router["name"]."/style.scss_".$now);
-
-            # Delete index
-            File::remove($stylePath);
-
-            **/
 
         }
 
@@ -398,7 +341,7 @@ class Delete extends CrazyModel implements CrazyCommand {
                 continue;
 
             # Set index path
-            $templatePath = self::ROUTER_APP_PATH."/".$router["name"]."/template.hbs";
+            $templatePath = Router::getAppPath()."/".$router["name"]."/template.hbs";
 
             # Check index exits
             if(!File::exists($templatePath))
@@ -411,22 +354,6 @@ class Delete extends CrazyModel implements CrazyCommand {
                 $templatePath, 
                 "router/".$router["type"]."/".$router["name"]
             );
-
-            /***
-
-            # Get current time
-            $now = (new DateTime())->format('Y-m-d_H-i-s_v');
-
-            # Check trash not disable
-            if(!(Env::get("trash_disable") ?: false))
-
-                # Copy the file in trash
-                File::copy($templatePath, (Env::get("trash_path", true) ?: self::TRASH_PATH)."router/".$router["type"]."/".$router["name"]."/template.hbs_".$now);
-
-            # Delete index
-            File::remove($templatePath);
-
-            **/
 
         }
 
@@ -446,7 +373,7 @@ class Delete extends CrazyModel implements CrazyCommand {
 
             # Set index path
             $controllerPath = 
-                self::ROUTER_CONTROLLER_PATH."/".
+                Router::getControllerPath()."/".
                 ucfirst($router["type"]).
                 (
                     $router["type"] == "api" ? 
@@ -466,22 +393,6 @@ class Delete extends CrazyModel implements CrazyCommand {
                 $controllerPath, 
                 "controller/".$router["type"]
             );
-
-            /***
-
-            # Get current time
-            $now = (new DateTime())->format('Y-m-d_H-i-s_v');
-
-            # Check trash not disable
-            if(!(Env::get("trash_disable") ?: false))
-
-                # Copy the file in trash
-                File::copy($controllerPath, (Env::get("trash_path", true) ?: self::TRASH_PATH)."controller/".$router["type"]."/".$router["name"].".php_".$now);
-
-            # Delete index
-            File::remove($controllerPath);
-
-            ***/
 
         }
 
@@ -507,7 +418,7 @@ class Delete extends CrazyModel implements CrazyCommand {
 
             # Folder to delete
             $folderToDelete = [
-                self::ROUTER_APP_PATH."/".$router["name"]
+                Router::getAppPath()."/".$router["name"]
             ];
 
             # Iteration folders to delete
@@ -522,15 +433,5 @@ class Delete extends CrazyModel implements CrazyCommand {
         }
 
     }
-
-    /** Public constants
-     ******************************************************
-     */
-
-    /** @const public ROUTER_APP_PATH */
-    public const ROUTER_APP_PATH = Create::ROUTER_APP_PATH;
-
-    /** @const public ROUTER_CONTROLLER_PATH */
-    public const ROUTER_CONTROLLER_PATH = Create::ROUTER_CONTROLLER_PATH;
 
 }
