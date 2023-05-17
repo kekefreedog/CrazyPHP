@@ -18,7 +18,7 @@ namespace CrazyPHP\Model\Trash;
 use CrazyPHP\Library\Model\CrazyModel;
 use CrazyPHP\Interface\CrazyCommand;
 use CrazyPHP\Model\Router\Create;
-use CrazyPHP\Library\File\File;
+use CrazyPHP\Library\File\Trash;
 
 /**
  * Delete Trash
@@ -36,9 +36,7 @@ class Delete extends CrazyModel implements CrazyCommand {
      */
 
     /** @var array $inputs */
-    private array $inputs = [
-        "trash_path"    =>  self::TRASH_PATH
-    ];
+    private array $inputs = [];
 
     /**
      * Constructor
@@ -50,7 +48,7 @@ class Delete extends CrazyModel implements CrazyCommand {
     public function __construct(array $inputs = []){
 
         # Set inputs
-        $this->inputs = array_merge($this->inputs, $inputs);
+        $this->inputs = $inputs;
 
     }
 
@@ -111,27 +109,9 @@ class Delete extends CrazyModel implements CrazyCommand {
      */
     public function runCleanTrashFolder():void {
 
-        # Set trash path
-        $trashPath = $this->inputs["trash_path"] ?? self::TRASH_PATH;
-
-        # Check if trash folder is not empty
-        if(!File::isEmpty($trashPath)){
-
-            # Remove of file
-            File::removeAll($trashPath);
-
-            # Recreate the path
-            File::createDirectory($trashPath);
-
-        }
+        # Clear trash
+        Trash::clear();
 
     }
-
-    /** Public constants
-     ******************************************************
-     */
-
-    /** @const public TRASH_PATH */
-    public const TRASH_PATH = "@app_root/.trash/";
 
 }

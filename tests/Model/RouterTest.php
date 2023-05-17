@@ -16,13 +16,14 @@ namespace Tests\Core;
  * Dependances
  */
 
-use CrazyPHP\Library\File\Config as FileConfig;
+use CrazyPHP\Exception\CrazyException;
+use CrazyPHP\Model\Router\Create;
+use CrazyPHP\Library\File\File;
 use PHPUnit\Framework\TestCase;
-use CrazyPHP\Core\Model;
 use CrazyPHP\Model\Env;
 
 /**
- * Model test
+ * Router test
  *
  * Methods for test interactions with model
  *
@@ -30,7 +31,7 @@ use CrazyPHP\Model\Env;
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2022 Kévin Zarshenas
  */
-class ModelTest extends TestCase {
+class RouterTest extends TestCase {
 
     /** Public method
      ******************************************************
@@ -50,35 +51,61 @@ class ModelTest extends TestCase {
             "crazyphp_root"     =>  getcwd(),
             "app_root"          =>  getcwd(),
             "config_location"   =>  "@crazyphp_root/resources/Yml",
+            "trash_disable"     =>  true,
         ]);
 
     }
 
     /**
-     * Test List of All Model
+     * Test Create router simple
+     * 
+     * Create a simple router and check result
      * 
      * @return void
      */
-    public function testListOfAllModel():void {
+    public function testCreateRouterSimple():void {
 
-        # Prepare env
-        $this->prepareEnv();
 
-        # Get list
-        $result = Model::getListAllModel();
 
-        # Get models
-        $models = FileConfig::get("Model");
+    }
+    
+    /**
+     * Test Create simple router
+     * 
+     * Create a simple router and check result
+     * 
+     * @return void
+     */
+    public function testCreateRouterComplex():void {
 
-        # Check result
-        if(!empty($result))
+        
+    }
 
-            # Iteration of result
-            foreach($result as $key => $model)
+    /**
+     * Test Create router simple
+     * 
+     * Create a simple router and check result
+     * 
+     * @depends testCreateRouterSimple
+     * @return void
+     */
+    public function testDeleteRouterSimple():void {
 
-                # Check name
-                $this->assertEquals($model["name"], $models["Model"][$key]['name']);
 
+
+    }
+
+    /**
+     * Test Create simple router
+     * 
+     * Create a simple router and check result
+     * 
+     * @depends testCreateRouterComplex
+     * @return void
+     */
+    public function testDeleteRouterComplex():void {
+
+        
     }
 
 }

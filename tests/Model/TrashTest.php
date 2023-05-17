@@ -50,13 +50,14 @@ class TrashTest extends TestCase {
         Env::set([
             # App root for composer class
             "phpunit_test"      =>  true,
+            "trash_path"        =>  self::TRASH_PATH,
         ]);
 
         # Set content test
         $contentText = "Hello World";
 
         # Create file in trash
-        if(!File::create(self::TRASH_PATH."item.txt", $contentText))
+        if(!File::create(self::TRASH_PATH."/folder/item.txt", $contentText))
 
             # New error
             throw new CrazyException(
@@ -68,15 +69,13 @@ class TrashTest extends TestCase {
             );
 
         # Check file content
-        $content = File::read(self::TRASH_PATH."item.txt") ? true : false;
+        $content = File::read(self::TRASH_PATH."/folder/item.txt") ? true : false;
 
         # Check content
         $this->assertEquals($content, $contentText);
 
         # New delete instance
-        $delete = new Delete([
-            "trash_path"    =>  self::TRASH_PATH
-        ]);
+        $delete = new Delete();
 
         # Execute delete scripts
         $delete->run();

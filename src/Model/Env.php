@@ -83,10 +83,11 @@ class Env{
      * Get
      * 
      * @param string $input Input to process
+     * @param bool $nullIfNotExists Return null is not exists
      * 
      * @return
      */
-    public static function get(string $input = "") {
+    public static function get(string $input = "", bool $nullIfNotExists = false) {
 
         # Declare result
         $result = "";
@@ -95,7 +96,7 @@ class Env{
         $input = strtoupper($input);
 
         # Check input
-        if(!static::has($input))
+        if(!static::has($input) && !$nullIfNotExists)
                 
             # New error
             throw new CrazyException(
@@ -107,7 +108,7 @@ class Env{
             );
 
         # Get globals
-        $result = $GLOBALS[static::PREFIX][$input];
+        $result = $GLOBALS[static::PREFIX][$input] ?? null;
 
         # Return
         return $result;

@@ -15,7 +15,6 @@ namespace CrazyPHP\Model\Router;
 /**
  * Dependances
  */
-use CrazyPHP\Model\Trash\Delete as TrashDelete;
 use CrazyPHP\Library\Model\CrazyModel;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Interface\CrazyCommand;
@@ -23,8 +22,10 @@ use CrazyPHP\Library\Time\DateTime;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\File\Config;
 use CrazyPHP\Model\Router\Create;
+use CrazyPHP\Library\File\Trash;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Library\File\Json;
+use CrazyPHP\Model\Env;
 
 /**
  * Delete Router
@@ -227,21 +228,39 @@ class Delete extends CrazyModel implements CrazyCommand {
                     # Set Router key
                     $setRouterKey = array_key_first($search);
 
+                    # Send to trash
+                    Trash::sendAnObject(
+                        [
+                            "Router"    =>  [
+                                $router["type"] =>  $search
+                            ]
+                        ],
+                        "config",
+                        "router/".$router["type"]."/".$router["name"]
+                    );
+
+                    /***
+
                     # Get current time
                     $now = (new DateTime())->format('Y-m-d_H-i-s_v');
 
-                    # Copy the file in trash
-                    File::create(
-                        self::TRASH_PATH."router/".$router["type"]."/".$router["name"]."/config.json_".$now, 
-                        Json::encode(
-                            [
-                                "Router"    =>  [
-                                    $router["type"] =>  $search
-                                ]
-                            ], 
-                            true
-                        )
-                    );
+                    # Check trash not disable
+                    if(!(Env::get("trash_disable") ?: false))
+
+                        # Copy the file in trash
+                        File::create(
+                            (Env::get("trash_path", true) ?: self::TRASH_PATH)."router/".$router["type"]."/".$router["name"]."/config.json_".$now, 
+                            Json::encode(
+                                [
+                                    "Router"    =>  [
+                                        $router["type"] =>  $search
+                                    ]
+                                ], 
+                                true
+                            )
+                        );
+
+                    ***/
 
                     # Remove this config from router config
                     Config::removeValue("Router.app.$setRouterKey");
@@ -281,14 +300,27 @@ class Delete extends CrazyModel implements CrazyCommand {
                 # Continue iteration
                 continue;
 
+            # Send file to trash
+            Trash::send(
+                $indexPath, 
+                "router/".$router["type"]."/".$router["name"]
+            );
+
+            /***
+
             # Get current time
             $now = (new DateTime())->format('Y-m-d_H-i-s_v');
 
-            # Copy the file in trash
-            File::copy($indexPath, self::TRASH_PATH."router/".$router["type"]."/".$router["name"]."/index.ts_".$now);
+            # Check trash not disable
+            if(!(Env::get("trash_disable") ?: false))
+
+                # Copy the file in trash
+                File::copy($indexPath, (Env::get("trash_path", true) ?: self::TRASH_PATH)."router/".$router["type"]."/".$router["name"]."/index.ts_".$now);
 
             # Delete index
             File::remove($indexPath);
+
+            ***/
 
         }
 
@@ -321,14 +353,27 @@ class Delete extends CrazyModel implements CrazyCommand {
                 # Continue iteration
                 continue;
 
+            # Send file to trash
+            Trash::send(
+                $stylePath, 
+                "router/".$router["type"]."/".$router["name"]
+            );
+
+            /***
+            
             # Get current time
             $now = (new DateTime())->format('Y-m-d_H-i-s_v');
 
-            # Copy the file in trash
-            File::copy($stylePath, self::TRASH_PATH."router/".$router["type"]."/".$router["name"]."/style.scss_".$now);
+            # Check trash not disable
+            if(!(Env::get("trash_disable") ?: false))
+
+                # Copy the file in trash
+                File::copy($stylePath, (Env::get("trash_path", true) ?: self::TRASH_PATH)."router/".$router["type"]."/".$router["name"]."/style.scss_".$now);
 
             # Delete index
             File::remove($stylePath);
+
+            **/
 
         }
 
@@ -361,14 +406,27 @@ class Delete extends CrazyModel implements CrazyCommand {
                 # Continue iteration
                 continue;
 
+            # Send file to trash
+            Trash::send(
+                $templatePath, 
+                "router/".$router["type"]."/".$router["name"]
+            );
+
+            /***
+
             # Get current time
             $now = (new DateTime())->format('Y-m-d_H-i-s_v');
 
-            # Copy the file in trash
-            File::copy($templatePath, self::TRASH_PATH."router/".$router["type"]."/".$router["name"]."/template.hbs_".$now);
+            # Check trash not disable
+            if(!(Env::get("trash_disable") ?: false))
+
+                # Copy the file in trash
+                File::copy($templatePath, (Env::get("trash_path", true) ?: self::TRASH_PATH)."router/".$router["type"]."/".$router["name"]."/template.hbs_".$now);
 
             # Delete index
             File::remove($templatePath);
+
+            **/
 
         }
 
@@ -403,14 +461,27 @@ class Delete extends CrazyModel implements CrazyCommand {
                 # Continue iteration
                 continue;
 
+            # Send file to trash
+            Trash::send(
+                $controllerPath, 
+                "controller/".$router["type"]
+            );
+
+            /***
+
             # Get current time
             $now = (new DateTime())->format('Y-m-d_H-i-s_v');
 
-            # Copy the file in trash
-            File::copy($controllerPath, self::TRASH_PATH."controller/".$router["type"]."/".$router["name"].".php_".$now);
+            # Check trash not disable
+            if(!(Env::get("trash_disable") ?: false))
+
+                # Copy the file in trash
+                File::copy($controllerPath, (Env::get("trash_path", true) ?: self::TRASH_PATH)."controller/".$router["type"]."/".$router["name"].".php_".$now);
 
             # Delete index
             File::remove($controllerPath);
+
+            ***/
 
         }
 
@@ -461,8 +532,5 @@ class Delete extends CrazyModel implements CrazyCommand {
 
     /** @const public ROUTER_CONTROLLER_PATH */
     public const ROUTER_CONTROLLER_PATH = Create::ROUTER_CONTROLLER_PATH;
-
-    /** @const public TRASH_PATH */
-    public const TRASH_PATH = TrashDelete::TRASH_PATH;
 
 }

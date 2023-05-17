@@ -479,7 +479,7 @@ class Process {
      * Process value to bool 
      * 
      * @param $input
-     * @return string
+     * @return bool
      */
     public static function bool($input = ""):bool {
 
