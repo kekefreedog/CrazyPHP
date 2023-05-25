@@ -90,9 +90,9 @@ class RouterTest extends TestCase {
      */
     public static function tearDownAfterClass():void {
         
-        /* File::removeAll("@app_root");
+        File::removeAll("@app_root");
 
-        File::remove("@app_root"); */
+        File::remove("@app_root");
 
         Env::reset();
 

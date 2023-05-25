@@ -260,7 +260,7 @@ class Create extends CrazyModel implements CrazyCommand {
                 File::removeAll(Router::getAppPath().$this->router["Name"]);
 
             # Create clean folder
-            mkdir(File::path(Router::getAppPath().$this->router["Name"]));
+            File::createDirectory(Router::getAppPath().$this->router["Name"]);
 
         }
 
@@ -296,7 +296,7 @@ class Create extends CrazyModel implements CrazyCommand {
             $result = $template->render($this->router);
 
             # Set file path
-            $filePath = File::path(Router::getAppPath().$this->router["Name"]."/index.ts");
+            $filePath = Router::getAppPath().$this->router["Name"]."/index.ts";
 
             # Create file
             File::create($filePath, $result);
@@ -330,7 +330,7 @@ class Create extends CrazyModel implements CrazyCommand {
             $result = $template->render($this->router);
 
             # Set file path
-            $filePath = File::path(Router::getAppPath().$this->router["Name"]."/style.scss");
+            $filePath = Router::getAppPath().$this->router["Name"]."/style.scss";
 
             # Create file
             File::create($filePath, $result);
@@ -392,7 +392,7 @@ class Create extends CrazyModel implements CrazyCommand {
             $result = $template->render($this->router + $additionnal);
 
             # File path
-            $filePath = File::path(Router::getControllerPath().ucfirst($this->router["Type"])."/".$this->router["Name"].".php");
+            $filePath = Router::getControllerPath().ucfirst($this->router["Type"])."/".$this->router["Name"].".php";
 
             # Create file
             File::create($filePath, $result);
@@ -423,7 +423,7 @@ class Create extends CrazyModel implements CrazyCommand {
             $result = $template->render($this->router + $additionnal);
 
             # Set file path
-            $filePath = File::path(Router::getControllerPath().ucfirst($this->router["Type"])."\/v1/".$this->router["Name"].".php");
+            $filePath = Router::getControllerPath().ucfirst($this->router["Type"])."\/v1/".$this->router["Name"].".php";
 
             # Create file
             File::create($filePath, $result);
@@ -454,7 +454,7 @@ class Create extends CrazyModel implements CrazyCommand {
             $result = $template->render($this->router + $additionnal);
 
             # Set file path
-            $filePath = File::path(Router::getControllerPath().ucfirst($this->router["Type"])."/".$this->router["Name"].".php");
+            $filePath = Router::getControllerPath().ucfirst($this->router["Type"])."/".$this->router["Name"].".php";
 
             # Create file
             File::create($filePath, $result);

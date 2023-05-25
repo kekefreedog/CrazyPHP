@@ -53,8 +53,46 @@ class ProcessTest extends TestCase{
             "toto"  =>  "process_result"
         ]
     ];
-    
-    /** Public methods
+
+    /** Public method | Preparation
+     ******************************************************
+     */
+
+    /**
+     * Set Up Before Class
+     * 
+     * This method is called before the first test of this test class is run.
+     * 
+     * @return void
+     */
+    public static function setUpBeforeClass():void {
+
+        # Setup env
+        Env::set([
+            # App root for composer class
+            "crazyphp_root"     =>  getcwd(),
+            "phpunit_test"      =>  true,
+            "env_value"         =>  "env_result",
+            "config_location"   =>  "@crazyphp_root/resources/Yml"
+        ]);
+
+    }
+
+
+    /**
+     * Tear Down After Class
+     * 
+     * This method is called after the last test of this test class is run.
+     * 
+     * @return void
+     */
+    public static function tearDownAfterClass():void {
+
+        Env::reset();
+
+    }
+
+    /** Public method | Tests
      ******************************************************
      */
 
@@ -66,15 +104,6 @@ class ProcessTest extends TestCase{
      * @return void
      */
     public function testEnvAndConfigValues():void {
-
-        # Setup env
-        Env::set([
-            # App root for composer class
-            "crazyphp_root"     =>  getcwd(),
-            "phpunit_test"      =>  true,
-            "env_value"         =>  "env_result",
-            "config_location"   =>  "@crazyphp_root/resources/Yml"
-        ]);
 
         # Set input
         $result = Process::envAndConfigValues(self::INPUT);
