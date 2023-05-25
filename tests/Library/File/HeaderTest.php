@@ -90,6 +90,9 @@ class HeaderTest extends TestCase{
         # Remove folder
         File::remove(self::TEST_PATH);
 
+        # Clean cache
+        (new Cache("Files"))->clear();
+
         # Reset env
         Env::reset();
 

@@ -68,22 +68,27 @@ class Trash {
      */
     public static function send(string $target = "", string $hierarchy = "", bool $moveToTrash = true):void {
 
-        # Check is trash is not disable and check if file exists
-        if(!static::isDisable() && File::exists($target)){
+        # Check if file exists
+        if(File::exists($target)){
 
             # Process target
             $target = File::path($target);
 
-            # Get trash path
-            $trashPath = static::getPath();
+            # Check if trash is disable
+            if(!static::isDisable()){
 
-            # Copy file
-            File::copy(
-                $target, 
-                rtrim($trashPath, "/")."/".
-                ($hierarchy ? trim($hierarchy, "/")."/" : "").
-                pathinfo($target, PATHINFO_BASENAME)."_".static::_getCurrentDate()
-            );
+                # Get trash path
+                $trashPath = static::getPath();
+
+                # Copy file
+                File::copy(
+                    $target, 
+                    rtrim($trashPath, "/")."/".
+                    ($hierarchy ? trim($hierarchy, "/")."/" : "").
+                    pathinfo($target, PATHINFO_BASENAME)."_".static::_getCurrentDate()
+                );
+
+            }
 
             # Check move to trash
             if($moveToTrash)

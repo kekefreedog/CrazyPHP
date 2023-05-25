@@ -15,14 +15,13 @@ namespace Tests\Core;
 /**
  * Dependances
  */
-
-use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Array\Arrays;
+use CrazyPHP\Library\Form\Process;
+use CrazyPHP\Model\Router\Delete;
 use CrazyPHP\Library\File\Config;
 use CrazyPHP\Model\Router\Create;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Library\File\Json;
-use CrazyPHP\Library\Form\Process;
 use PHPUnit\Framework\TestCase;
 use CrazyPHP\Model\Env;
 
@@ -44,6 +43,10 @@ class RouterTest extends TestCase {
     /** @var Create $create */
     public Create $createSimple;
     public Create $createAdvance;
+
+    /** @var Delete $delete */
+    public Delete $deleteSimple;
+    public Delete $deleteAdvance;
 
     /** Public method | Preparation
      ******************************************************
@@ -90,10 +93,13 @@ class RouterTest extends TestCase {
      */
     public static function tearDownAfterClass():void {
         
+        # Remove all file in app root
         File::removeAll("@app_root");
 
+        # Remove file of app root
         File::remove("@app_root");
 
+        # Reset env variables
         Env::reset();
 
     }
@@ -227,10 +233,57 @@ class RouterTest extends TestCase {
      * 
      * @depends testCreateRouterSimple
      * @return void
-     *//*
+     */
     public function testDeleteRouterSimple():void {
 
-    }*/
+        # Set input
+        $input = [
+            "routers"   =>  [
+                [
+                    "name"          =>  "routers",
+                    "description"   =>  "Routers to delete",
+                    "type"          =>  "ARRAY",
+                    "required"      =>  1,
+                    "multiple"      =>  1,
+                    "select"        =>  [
+                        "app.Index"     =>  "(App) Index",
+                        "app.Home"      =>  "(App) Home",
+                        "app.Router"    =>  "(App) Router",
+                        "api.Config"    =>  "(Api) Config",
+                        "asset.Favicon" =>  "(Asset) Favicon",
+                        "asset.Manifest"=>  "(Asset) Manifest"
+                    ],
+                    "value"         =>  [
+                        "app.Router"
+                    ]
+                ]
+            ]
+        ];
+
+        # Prepare delete
+        $this->deleteSimple = new Delete($input);
+        
+        # Run delete
+        $this->deleteSimple->run();
+
+        ## Asserts
+
+        # Check router config
+        $this->assertTrue($this->checkRouterConfigIsMissing($input));
+
+        # Check index ts
+        $this->assertFileDoesNotExist(File::path("@app_root/app/Environment/Page/Router/index.ts"));
+
+        # Check style
+        $this->assertFileDoesNotExist(File::path("@app_root/app/Environment/Page/Router/style.scss"));
+        
+        # Check template
+        $this->assertFileDoesNotExist(File::path("@app_root/app/Environment/Page/Router/template.hbs"));
+        
+        # Check controller
+        $this->assertFileDoesNotExist(File::path("@app_root/app/Controller/App/Router.php"));
+
+    }
 
     /**
      * Test Create simple router
@@ -254,6 +307,8 @@ class RouterTest extends TestCase {
      * Check router config
      * 
      * Extract config of the new router and compare it to the expected
+     * 
+     * > Method to use for test Create Router Methods
      * 
      * @param array $input Input of the create class
      * @return bool
@@ -326,6 +381,58 @@ class RouterTest extends TestCase {
 
             # Set result
             $result = true;
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Check router config is missing
+     * 
+     * Extract config of the new router and compare it to the expected
+     * 
+     * > Method to use for test Delete Router Methods
+     * 
+     * @param array $input Input of the create class
+     * @return bool
+     */
+    private function checkRouterConfigIsMissing(array $input):bool {
+
+        # Set result
+        $result = true;
+
+        # Check input
+        if(!isset($input["routers"][0]["value"]) || empty($input["routers"][0]["value"]))
+
+            # Return result
+            return $result;
+
+        # Iteration of value
+        foreach($input["routers"][0]["value"] as $value){
+
+            # Explode value
+            $valueExploded = explode(".", $value);
+
+            # Set router type
+            $routerType = $valueExploded[0];
+
+            # Set router name
+            $routerName = $valueExploded[1];
+
+            # Open config
+            $routerConfig = Config::getValue("Router.$routerType");
+    
+            # Filter Router Config
+            $routerConfigFiltered = Arrays::filterByKey($routerConfig, "name", $routerName);
+    
+            # Check if empty
+            if(!empty($routerConfigFiltered))
+
+                # Set result
+                $result = false;
+
+        }
 
         # Return result
         return $result;

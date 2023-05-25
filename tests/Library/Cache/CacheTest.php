@@ -39,7 +39,7 @@ class CacheTest extends TestCase {
     /**
      * Instance of the cache
      */
-    public $cache = null;    
+    public Cache|null $cache = null;    
     
     /** Public method | Preparation
      ******************************************************
@@ -92,6 +92,9 @@ class CacheTest extends TestCase {
 
         # Remove folder
         File::remove(self::TEST_PATH);
+
+        # Clean cache
+        (new Cache("Files", null))->clear();
 
         # Reset env
         Env::reset();

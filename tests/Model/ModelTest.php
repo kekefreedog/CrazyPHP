@@ -65,6 +65,7 @@ class ModelTest extends TestCase {
      */
     public static function tearDownAfterClass():void {
 
+        # Reset env variables
         Env::reset();
 
     }

@@ -87,14 +87,15 @@ class StructureTest extends TestCase{
      * @return void
      */
     public static function tearDownAfterClass():void {
-
-        Env::reset();
             
         # Remove cache folders
         File::removeAll(self::RELATIVE_ROOT_PATH);
 
         # Remove folder
         File::remove(self::RELATIVE_ROOT_PATH);
+        
+        # Reset env variables
+        Env::reset();
 
     }
 
