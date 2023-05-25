@@ -32,16 +32,18 @@ use CrazyPHP\Model\Env;
  */
 class ModelTest extends TestCase {
 
-    /** Public method
+    /** Public method | Preparation
      ******************************************************
      */
 
     /**
-     * Prepare cache
+     * Set Up Before Class
+     * 
+     * This method is called before the first test of this test class is run.
      * 
      * @return void
      */
-    public function prepareEnv(){
+    public static function setUpBeforeClass():void {
 
         # Setup env
         Env::set([
@@ -55,14 +57,28 @@ class ModelTest extends TestCase {
     }
 
     /**
+     * Tear Down After Class
+     * 
+     * This method is called after the last test of this test class is run.
+     * 
+     * @return void
+     */
+    public static function tearDownAfterClass():void {
+
+        Env::reset();
+
+    }
+
+    /** Public method | Tests
+     ******************************************************
+     */
+
+    /**
      * Test List of All Model
      * 
      * @return void
      */
     public function testListOfAllModel():void {
-
-        # Prepare env
-        $this->prepareEnv();
 
         # Get list
         $result = Model::getListAllModel();

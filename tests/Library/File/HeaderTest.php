@@ -39,23 +39,70 @@ class HeaderTest extends TestCase{
     /* @var null|Cache Cache */
     public $cache = null;
 
+    /** Public method | Preparation
+     ******************************************************
+     */
+
+    /**
+     * Set Up Before Class
+     * 
+     * This method is called before the first test of this test class is run.
+     * 
+     * @return void
+     */
+    public static function setUpBeforeClass():void {
+
+        # Setup env
+        Env::set([
+            "phpunit_test"      =>  true,
+            "crazyphp_root"     =>  getcwd(),
+            "app_root"          =>  getcwd(),
+        ]);
+
+        # Check folder exists
+        if(File::exists(self::TEST_PATH)){
+            
+            # Remove cache folder
+            File::removeAll(self::TEST_PATH);
+
+        }else{
+
+            # Create dir
+            File::createDirectory(self::TEST_PATH);
+
+        }
+
+    }
+
+
+    /**
+     * Tear Down After Class
+     * 
+     * This method is called after the last test of this test class is run.
+     * 
+     * @return void
+     */
+    public static function tearDownAfterClass():void {
+           
+        # Remove cache folder
+        File::removeAll(self::TEST_PATH);
+
+        # Remove folder
+        File::remove(self::TEST_PATH);
+
+        # Reset env
+        Env::reset();
+
+    }
+
+    /** Public method | Tests
+     ******************************************************
+     */
+
     /**
      * Prepare Cache
      */
     public function prepareCache():void {
-
-        # Setup env
-        Env::set([
-            # App root for composer class
-            "app_root"      =>  getcwd(),
-            "phpunit_test"  =>  true,
-        ]);
-
-        # Check folder exists
-        if(is_dir(self::TEST_PATH))
-            
-            # Remove cache folder
-            File::remove(self::TEST_PATH);
 
         # New cache
         $this->cache = new Cache("Files");
@@ -92,7 +139,7 @@ class HeaderTest extends TestCase{
      */
 
     /* Path */
-    const TEST_PATH = __DIR__."../../../.cache/cache/";
+    const TEST_PATH = __DIR__."/../../../.cache/cache/";
 
     /* Result */
     const RESULT =

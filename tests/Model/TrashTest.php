@@ -33,7 +33,44 @@ use CrazyPHP\Model\Env;
  */
 class TrashTest extends TestCase {
 
-    /** Public method
+    /** Public method | Preparation
+     ******************************************************
+     */
+
+    /**
+     * Set Up Before Class
+     * 
+     * This method is called before the first test of this test class is run.
+     * 
+     * @return void
+     */
+    public static function setUpBeforeClass():void {
+
+        # Setup env
+        Env::set([
+            "phpunit_test"      =>  true,
+            "crazyphp_root"     =>  getcwd(),
+            "app_root"          =>  getcwd(),
+            "trash_path"        =>  self::TRASH_PATH,
+        ]);
+
+    }
+
+
+    /**
+     * Tear Down After Class
+     * 
+     * This method is called after the last test of this test class is run.
+     * 
+     * @return void
+     */
+    public static function tearDownAfterClass():void {
+
+        Env::reset();
+
+    }
+
+    /** Public method | Tests
      ******************************************************
      */
 
@@ -45,13 +82,6 @@ class TrashTest extends TestCase {
      * @return void
      */
     public function testTrashDelete():void {
-
-        # Setup env
-        Env::set([
-            # App root for composer class
-            "phpunit_test"      =>  true,
-            "trash_path"        =>  self::TRASH_PATH,
-        ]);
 
         # Set content test
         $contentText = "Hello World";

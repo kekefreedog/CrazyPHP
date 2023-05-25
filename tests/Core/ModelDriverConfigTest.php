@@ -31,7 +31,7 @@ use CrazyPHP\Model\Env;
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2022 Kévin Zarshenas
  */
-class ModelDriverConfigTest extends TestCase{
+class ModelDriverConfigTest extends TestCase {
     
     /** Parameters
      ******************************************************
@@ -52,20 +52,21 @@ class ModelDriverConfigTest extends TestCase{
      */
     public ?array $currentModel = null;
 
-    /** Public method
+    /** Public method | Preparation
      ******************************************************
      */
 
     /**
-     * Prepare cache
+     * Set Up Before Class
+     * 
+     * This method is called before the first test of this test class is run.
      * 
      * @return void
      */
-    public function prepareEnv(){
+    public static function setUpBeforeClass():void {
 
         # Setup env
         Env::set([
-            # App root for composer class
             "phpunit_test"      =>  true,
             "crazyphp_root"     =>  getcwd(),
             "app_root"          =>  getcwd(),
@@ -74,15 +75,30 @@ class ModelDriverConfigTest extends TestCase{
 
     }
 
+
+    /**
+     * Tear Down After Class
+     * 
+     * This method is called after the last test of this test class is run.
+     * 
+     * @return void
+     */
+    public static function tearDownAfterClass():void {
+
+        Env::reset();
+
+    }
+
+    /** Public method | Tests
+     ******************************************************
+     */
+
     /**
      * Test Model Router Current
      * 
      * @return void
      */
     public function testModelRouterCurrent():void {
-
-        # Prepare env
-        $this->prepareEnv();
 
         # Load router model
         $this->modelInstance = new Model("Router");
@@ -109,9 +125,6 @@ class ModelDriverConfigTest extends TestCase{
 
         # Check model instance 
         if($this->modelInstance === null){
-
-            # Prepare env
-            $this->prepareEnv();
 
             # Load router model
             $result = new Model("Router");

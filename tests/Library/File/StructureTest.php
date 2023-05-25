@@ -46,24 +46,61 @@ class StructureTest extends TestCase{
      */
     public const RELATIVE_TEMPLATE_PATH = __DIR__."/../../../resources/Yml/Structure.yml";
 
-    /** Public method
+    /** Public method | Preparation
      ******************************************************
      */
 
     /**
-     * Prepare Cache
+     * Set Up Before Class
+     * 
+     * This method is called before the first test of this test class is run.
+     * 
+     * @return void
      */
-    public function prepareEnv():void {
+    public static function setUpBeforeClass():void {
 
         # Setup env
         Env::set([
-            # App root for composer class
             "app_root"      =>  self::RELATIVE_ROOT_PATH,
             "crazyphp_root" =>  getcwd(),
             "phpunit_test"  =>  true,
         ]);
+            
+        if(File::exists(self::RELATIVE_ROOT_PATH))
+
+            # Remove cache folders
+            File::removeAll(self::RELATIVE_ROOT_PATH);
+
+        else
+
+            # Create folder
+            File::createDirectory(self::RELATIVE_ROOT_PATH);
 
     }
+
+
+    /**
+     * Tear Down After Class
+     * 
+     * This method is called after the last test of this test class is run.
+     * 
+     * @return void
+     */
+    public static function tearDownAfterClass():void {
+
+        Env::reset();
+            
+        # Remove cache folders
+        File::removeAll(self::RELATIVE_ROOT_PATH);
+
+        # Remove folder
+        File::remove(self::RELATIVE_ROOT_PATH);
+
+    }
+
+    /** Public method | Tests
+     ******************************************************
+     */
 
     /**
      * Test Tree Folder Generator
@@ -144,9 +181,6 @@ class StructureTest extends TestCase{
      * @return void
      */
     public function testStructureCreate():void {
-
-        # Prepare env
-        $this->prepareEnv();
 
         # File path of structure yaml
         $filePath = File::path("@crazyphp_root/resources/Docker/Structure.yml");

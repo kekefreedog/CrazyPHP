@@ -150,6 +150,42 @@ class Env{
 
     }
 
+    /**
+     * Reset
+     * 
+     * Reset all values stored in env
+     * @param bool $keepRoots Keep all values finishing with "_root"
+     * @return void
+     */
+    public static function reset(bool $keepRoots = false):void {
+
+        # Check keep roots
+        if(!$keepRoots)
+
+            # Clean global var
+            $GLOBALS[static::PREFIX] = [];
+
+        else{
+
+            # String to keep
+            $strToKeep = "_root";
+
+            # Check global values
+            if(isset($GLOBALS[static::PREFIX]) && !empty($GLOBALS[static::PREFIX]))
+
+                # Iteration of values
+                foreach($GLOBALS[static::PREFIX] as $key => $values)
+
+                    # Check if has a _root at the end of string
+                    if(substr($key, -(strlen($strToKeep)), strlen($strToKeep)) != $strToKeep)
+
+                        # Remove value
+                        unset($GLOBALS[static::PREFIX][$key]);
+
+        }
+
+    }
+
     /** Public constants
      ******************************************************
      */

@@ -338,6 +338,31 @@ class Json{
 
     }
 
+    /**
+     * Decode
+     * 
+     * Decode json
+     * 
+     * @param string $jsonString
+     * @param bool $decodeAsObject Decode as object, else as array
+     * @return mixed
+     */
+    public static function decode(string $jsonString, bool $decodeAsObject = false):mixed {
+
+        # Set result
+        $result = "";
+
+        # Check string
+        if(Json::check($jsonString))
+
+            # Decode result
+            $result = json_decode($jsonString, ($decodeAsObject ? null : true));
+
+        # Return result
+        return $result;
+
+    }
+
 
     /**
      * Extract header

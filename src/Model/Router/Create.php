@@ -295,8 +295,11 @@ class Create extends CrazyModel implements CrazyCommand {
             # Render template with current router value
             $result = $template->render($this->router);
 
-            # Write content into file
-            file_put_contents(File::path(Router::getAppPath().$this->router["Name"]."/index.ts"), $result);
+            # Set file path
+            $filePath = File::path(Router::getAppPath().$this->router["Name"]."/index.ts");
+
+            # Create file
+            File::create($filePath, $result);
 
         }
 
@@ -326,8 +329,11 @@ class Create extends CrazyModel implements CrazyCommand {
             # Render template with current router value
             $result = $template->render($this->router);
 
-            # Write content into file
-            file_put_contents(File::path(Router::getAppPath().$this->router["Name"]."/style.scss"), $result);
+            # Set file path
+            $filePath = File::path(Router::getAppPath().$this->router["Name"]."/style.scss");
+
+            # Create file
+            File::create($filePath, $result);
 
         }
 
@@ -385,8 +391,11 @@ class Create extends CrazyModel implements CrazyCommand {
             # Render template with current router value
             $result = $template->render($this->router + $additionnal);
 
-            # Write content into file
-            file_put_contents(File::path(Router::getControllerPath().ucfirst($this->router["Type"])."/".$this->router["Name"].".php"), $result);
+            # File path
+            $filePath = File::path(Router::getControllerPath().ucfirst($this->router["Type"])."/".$this->router["Name"].".php");
+
+            # Create file
+            File::create($filePath, $result);
 
         }else
         # Check if api
@@ -413,8 +422,11 @@ class Create extends CrazyModel implements CrazyCommand {
             # Render template with current router value
             $result = $template->render($this->router + $additionnal);
 
-            # Write content into file
-            file_put_contents(File::path(Router::getControllerPath().ucfirst($this->router["Type"])."\/v1/".$this->router["Name"].".php"), $result);
+            # Set file path
+            $filePath = File::path(Router::getControllerPath().ucfirst($this->router["Type"])."\/v1/".$this->router["Name"].".php");
+
+            # Create file
+            File::create($filePath, $result);
 
         }else
         # Check if asset
@@ -441,8 +453,11 @@ class Create extends CrazyModel implements CrazyCommand {
             # Render template with current router value
             $result = $template->render($this->router + $additionnal);
 
-            # Write content into file
-            file_put_contents(File::path(Router::getControllerPath().ucfirst($this->router["Type"])."/".$this->router["Name"].".php"), $result);
+            # Set file path
+            $filePath = File::path(Router::getControllerPath().ucfirst($this->router["Type"])."/".$this->router["Name"].".php");
+
+            # Create file
+            File::create($filePath, $result);
 
         }
 
