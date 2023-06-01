@@ -30,9 +30,9 @@ use CrazyPHP\Core\Response;
  */
 class {{Class}} extends Controller {
 
-    /** @const string TEMPLATE */
-    public const TEMPLATE = "@app_root/app/Environment/Page/{{Name}}/template.hbs";
-
+    {{!-- TEMPLATE path --}}/** @const string TEMPLATE */
+    public const TEMPLATE = "@app_root/app/Environment/Page/{{Name}}/template.hbs";{{!-- GET methods --}}{{#each Methods}}{{#is this "get"}}
+    
     /**
      * Get
      */
@@ -54,6 +54,41 @@ class {{Class}} extends Controller {
             ->setContent($structure)
             ->send();
 
-    }
+    }{{!-- POST methods --}}{{/is}}{{#is this "post"}}
+    
+    /**
+     * Post
+     */
+    public static function post($request){
+
+    }{{!-- PUT methods --}}{{/is}}{{#is this "put"}}
+    
+    /**
+     * Post
+     */
+    public static function put($request){
+
+    }{{!-- DELETE methods --}}{{/is}}{{#is this "delete"}}
+    
+    /**
+     * Post
+     */
+    public static function delete($request){
+
+    }{{!-- OPTION methods --}}{{/is}}{{#is this "option"}}
+    
+    /**
+     * Post
+     */
+    public static function option($request){
+
+    }{{!-- PATCH methods --}}{{/is}}{{#is this "patch"}}
+    
+    /**
+     * Post
+     */
+    public static function patch($request){
+
+    }{{/is}}{{/each}}
 
 }

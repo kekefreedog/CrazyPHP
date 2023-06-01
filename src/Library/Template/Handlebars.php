@@ -39,6 +39,7 @@ class Handlebars {
     private $options = [
         # Template available "crazy_preset" or "performance_preset"
         'template'  =>  self::CRAZY_PRESET,
+        # Enable helpers stored in "CrazyPHP\Library\Template\Handlebars\Helpers"
         'helpers'   =>  true,
         # 'useCache'  =>  true, // Not working
         /**

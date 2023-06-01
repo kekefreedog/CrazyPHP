@@ -33,14 +33,18 @@ use Exception;
  */
 class Helpers {
 
-    /** Public methods
+    /** Public methods | Get Helpers
      ******************************************************
      */
 
     /**
      * Get all helpers
+     * 
+     * Return the list of all helpers
+     * 
+     * @return array
      */
-    public static function listArray() {
+    public static function listArray():array {
 
         # Set result
         $result = [];

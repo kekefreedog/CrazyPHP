@@ -385,10 +385,7 @@ class Create extends CrazyModel implements CrazyCommand {
             ];
 
             # Create template instance
-            $template = new Handlebars([
-                "template"  =>  Handlebars::PERFORMANCE_PRESET,
-                "helpers"   =>  false
-            ]);
+            $template = new Handlebars();
 
             # Load template
             $template->load("@crazyphp_root/resources/Hbs/App/Controller/App/Template.php.hbs");
