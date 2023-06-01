@@ -535,6 +535,42 @@ class Process {
 
 	}
 
+    /**
+     * Camel To Path
+     * 
+     * Convert Camel case to path
+     * Exemple : HelloWorldTest -> Hello/World/Test
+     * 
+     * @param string $input Input
+     * @param bool $lowerCase Output in lowercase
+     * @param string $separator Bu default "/"
+     * @return string
+     */
+    public static function camelToPath(string $input = "", bool $lowerCase = false, string $separator = "/"):string {
+
+        # Set result
+        $result = "";
+
+        # Check input
+        if(!$input)
+
+            # Return result
+            return $result;
+
+        # Convert string
+        $result = preg_replace('/([a-z])([A-Z])/', "$1$separator$2", $input);
+
+        # Check lower case
+        if($lowerCase)
+
+            # Lower case result
+            $result = strtolower($result);
+
+        # Return result
+        return $result;
+
+    }
+
 	/**
      * Snake to Camel
      * 

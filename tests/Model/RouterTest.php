@@ -207,24 +207,91 @@ class RouterTest extends TestCase {
      * 
      * @depends testCreateRouterSimple
      * @return void
-     *//*
+     */
     public function testCreateRouterComplex():void {
 
         # Set input
         $input = [
-
+            "router" => [
+                [
+                    "name" => "type",
+                    "description" => "Type of your crazy router",
+                    "type" => "VARCHAR",
+                    "default" => "app",
+                    "select" => [
+                        "app" => "App",
+                        "api" => "Api",
+                        "asset" => "Asset"
+                    ],
+                    "value" => "app"
+                ],
+                [
+                    "name" => "name",
+                    "description" => "Name of your crazy router",
+                    "type" => "VARCHAR",
+                    "default" => "router",
+                    "required" => true,
+                    "process" => [
+                        "cleanPath",
+                        "snakeToCamel",
+                        "ucfirst",
+                        "trim"
+                    ],
+                    "value" => "Very.Complex.Page"
+                ],
+                [
+                    "name" => "methods",
+                    "description" => "Methods allowed by your crazy router",
+                    "type" => "ARRAY",
+                    "default" => "get",
+                    "required" => true,
+                    "multiple" => true,
+                    "select" => [
+                        "get" => "Get",
+                        "post" => "Post",
+                        "put" => "Put",
+                        "delete" => "Delete",
+                        "option" => "Option",
+                        "patch" => "Patch"
+                    ],
+                    "value" => [
+                        "get"
+                    ]
+                ],
+                [
+                    "name" => "prefix",
+                    "description" => "Prefix of your crazy router",
+                    "type" => "STRING",
+                    "default" => false,
+                    "value" => ""
+                ]
+            ]
         ];
 
         # Prepare create
-        $this->createAdvance = new Create($input);
-
-        return;
-
+        $this->createSimple = new Create($input);
+        
         # Run create
         $this->createSimple->run();
 
+        ## Asserts
+
+        # Check router config
+        $this->assertTrue($this->checkRouterConfig($input));
+
+        # Check index ts
+        $this->assertFileIsReadable(File::path("@app_root/app/Environment/Page/VeryComplexPage/index.ts"));
+
+        # Check style
+        $this->assertFileIsReadable(File::path("@app_root/app/Environment/Page/VeryComplexPage/style.scss"));
+        
+        # Check template
+        $this->assertFileIsReadable(File::path("@app_root/app/Environment/Page/VeryComplexPage/template.hbs"));
+        
+        # Check controller
+        $this->assertFileIsReadable(File::path("@app_root/app/Controller/App/VeryComplexPage.php"));
+
     }
-    */
 
     /**
      * Test Create router simple
@@ -292,12 +359,57 @@ class RouterTest extends TestCase {
      * 
      * @depends testCreateRouterComplex
      * @return void
-     *//*
+     */
     public function testDeleteRouterComplex():void {
 
+        # Set input
+        $input = [
+            "routers"   =>  [
+                [
+                    "name"          =>  "routers",
+                    "description"   =>  "Routers to delete",
+                    "type"          =>  "ARRAY",
+                    "required"      =>  1,
+                    "multiple"      =>  1,
+                    "select"        =>  [
+                        "app.Index"     =>  "(App) Index",
+                        "app.Home"      =>  "(App) Home",
+                        "app.Router"    =>  "(App) Router",
+                        "api.Config"    =>  "(Api) Config",
+                        "asset.Favicon" =>  "(Asset) Favicon",
+                        "asset.Manifest"=>  "(Asset) Manifest"
+                    ],
+                    "value"         =>  [
+                        "app.VeryComplexPage"
+                    ]
+                ]
+            ]
+        ];
+
+        # Prepare delete
+        $this->deleteSimple = new Delete($input);
+        
+        # Run delete
+        $this->deleteSimple->run();
+
+        ## Asserts
+
+        # Check router config
+        $this->assertTrue($this->checkRouterConfigIsMissing($input));
+
+        # Check index ts
+        $this->assertFileDoesNotExist(File::path("@app_root/app/Environment/Page/VeryComplexPage/index.ts"));
+
+        # Check style
+        $this->assertFileDoesNotExist(File::path("@app_root/app/Environment/Page/VeryComplexPage/style.scss"));
+        
+        # Check template
+        $this->assertFileDoesNotExist(File::path("@app_root/app/Environment/Page/VeryComplexPage/template.hbs"));
+        
+        # Check controller
+        $this->assertFileDoesNotExist(File::path("@app_root/app/Controller/App/VeryComplexPage.php"));
         
     }
-    */
 
     /** Private method
      ******************************************************
@@ -331,6 +443,9 @@ class RouterTest extends TestCase {
 
             # Get router name from input
             $routerName = $inputFiltered[array_key_first($inputFiltered)]["value"];
+
+            # Clean Complex Router
+            $routerName = Process::snakeToCamel(str_replace(".", "_", $routerName), true);
 
         ## Get name | end
 
@@ -370,10 +485,10 @@ class RouterTest extends TestCase {
 
         # Clean summary
         $inputSummaryCleaned = [
-            "name"          =>  $inputSummary['name'],
+            "name"          =>  $routerName,
             "methods"       =>  Json::decode($inputSummary['methods']),
-            "patterns"      =>  ["/".strtolower($inputSummary['name'])],
-            "controller"    =>  "App\Controller\\".ucfirst($routerType)."\\".$inputSummary['name']
+            "patterns"      =>  ["/".strtolower(Process::camelToPath($routerName))],
+            "controller"    =>  "App\Controller\\".ucfirst($routerType)."\\".$routerName
         ];
 
         # Check awaited reseult and test generated is the same

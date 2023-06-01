@@ -218,12 +218,15 @@ class Create extends CrazyModel implements CrazyCommand {
         # Get Router collection
         $routers = FileConfig::getValue("Router.".$this->router["Type"]);
 
+        # Clean router name
+        $routerName = $this->router["Name"] = Process::snakeToCamel(str_replace(["/", "."], "_", $this->router["Name"]), true);
+
         # Check if router name alreay exists
-        if(!empty(Arrays::filterByKey($routers, "name", $this->router["Name"])))
+        if(!empty(Arrays::filterByKey($routers, "name", $routerName)))
             
             # New error
             throw new CrazyException(
-                "Given name \"".$this->router["Name"]."\" already exists in \"".$this->router["Type"]."\" routers collection",
+                "Given name \"$routerName\" already exists in \"".$this->router["Type"]."\" routers collection",
                 500,
                 [
                     "custom_code"   =>  "create-router-001",
@@ -248,7 +251,9 @@ class Create extends CrazyModel implements CrazyCommand {
             $this->router["Methods"] = [$this->router["Methods"]];
 
         # Set patterns
-        $this->router["patterns"] = ["/".Process::camelToSnake($this->router["Name"])];
+        $this->router["patterns"] = [
+            "/".str_replace("_", "/", Process::camelToSnake($this->router["Name"]))
+        ];
 
         # Check if type is app
         if($this->router["Type"] == "app"){
