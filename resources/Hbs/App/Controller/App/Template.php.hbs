@@ -16,6 +16,7 @@ namespace {{Namespace}};
  * Dependances
  */
 use CrazyPHP\Library\Html\Structure;
+use CrazyPHP\Core\ApiResponse;
 use CrazyPHP\Core\Controller;
 use CrazyPHP\Core\Response;
 
@@ -61,33 +62,69 @@ class {{Class}} extends Controller {
      */
     public static function post($request){
 
+        # Set status code
+        $statutCode = 200;
+
+        # Set content
+        $content = [];
+
+        # Set response
+        (new ApiResponse())
+            ->setStatusCode($statutCode)
+            ->pushContent("results", $content)
+            ->send();
+
     }{{!-- PUT methods --}}{{/is}}{{#is this "put"}}
     
     /**
-     * Post
+     * Put
      */
     public static function put($request){
+
+        # Set status code
+        $statutCode = 200;
+
+        # Set content
+        $content = [];
+
+        # Set response
+        (new ApiResponse())
+            ->setStatusCode($statutCode)
+            ->pushContent("results", $content)
+            ->send();
 
     }{{!-- DELETE methods --}}{{/is}}{{#is this "delete"}}
     
     /**
-     * Post
+     * Delete
      */
     public static function delete($request){
 
     }{{!-- OPTION methods --}}{{/is}}{{#is this "option"}}
     
     /**
-     * Post
+     * Option
      */
     public static function option($request){
 
     }{{!-- PATCH methods --}}{{/is}}{{#is this "patch"}}
     
     /**
-     * Post
+     * Patch
      */
     public static function patch($request){
+
+        # Set status code
+        $statutCode = 200;
+
+        # Set content
+        $content = [];
+
+        # Set response
+        (new ApiResponse())
+            ->setStatusCode($statutCode)
+            ->pushContent("results", $content)
+            ->send();
 
     }{{/is}}{{/each}}
 
