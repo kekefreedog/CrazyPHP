@@ -54,7 +54,7 @@ class Run extends CrazyModel implements CrazyCommand {
         $this->script = $this->inputs["args"][0] ?? null;
 
         ## Set flag
-        $this->setFlags($this->inputs["args"]);
+        $this->setFlags($this->inputs["args"] ?? []);
 
     }
 

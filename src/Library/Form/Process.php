@@ -919,11 +919,11 @@ class Process {
      * 
      * Set default and check if default is callable
      * 
-     * @param ?string $valueRequired Default Value
+     * @param mixed $valueRequired Default Value
      * @param array $arguments Argument to pass in case the default value is callable
-     * @return ?string
+     * @return mixed
      */
-    public static function setDefault(?string $valueRequired = null, array $arguments = []):?string {
+    public static function setDefault(mixed $valueRequired = null, array $arguments = []):mixed {
 
         # Set result
         $result = null;

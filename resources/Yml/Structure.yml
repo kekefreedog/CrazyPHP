@@ -138,6 +138,8 @@ Structure:
                         source: "@crazyphp_root/resources/Scss/style/dimensions.scss"
                       index.scss:
                         source: "@crazyphp_root/resources/Scss/style/index.scss"
+                      global.scss:
+                        source: "@crazyphp_root/resources/Scss/style/global.scss"
               library:
                 files:
                   index.ts:

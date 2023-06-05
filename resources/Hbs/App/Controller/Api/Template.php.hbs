@@ -27,7 +27,7 @@ use CrazyPHP\Core\Controller;
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2022 Kévin Zarshenas
  */
-class {{Class}} extends Controller {
+class {{Class}} extends Controller { {{!-- GET methods --}}{{#each Methods}}{{#is this "get"}}
 
     /**
      * Get
@@ -37,12 +37,89 @@ class {{Class}} extends Controller {
      */
     public static function get($request):void {
 
+        # Set status code
+        $statutCode = 200;
+
+        # Set content
+        $content = [];
+
         # Set response
         (new ApiResponse())
-            ->setStatusCode()
-            ->pushContent("results", ["Hello"])
+            ->setStatusCode($statutCode)
+            ->pushContent("results", $content)
             ->send();
 
-    }
+    }{{!-- POST methods --}}{{/is}}{{#is this "post"}}
+    
+    /**
+     * Post
+     */
+    public static function post($request){
+
+        # Set status code
+        $statutCode = 200;
+
+        # Set content
+        $content = [];
+
+        # Set response
+        (new ApiResponse())
+            ->setStatusCode($statutCode)
+            ->pushContent("results", $content)
+            ->send();
+
+    }{{!-- PUT methods --}}{{/is}}{{#is this "put"}}
+    
+    /**
+     * Put
+     */
+    public static function put($request){
+
+        # Set status code
+        $statutCode = 200;
+
+        # Set content
+        $content = [];
+
+        # Set response
+        (new ApiResponse())
+            ->setStatusCode($statutCode)
+            ->pushContent("results", $content)
+            ->send();
+
+    }{{!-- DELETE methods --}}{{/is}}{{#is this "delete"}}
+    
+    /**
+     * Delete
+     */
+    public static function delete($request){
+
+    }{{!-- OPTION methods --}}{{/is}}{{#is this "option"}}
+    
+    /**
+     * Option
+     */
+    public static function option($request){
+
+    }{{!-- PATCH methods --}}{{/is}}{{#is this "patch"}}
+    
+    /**
+     * Patch
+     */
+    public static function patch($request){
+
+        # Set status code
+        $statutCode = 200;
+
+        # Set content
+        $content = [];
+
+        # Set response
+        (new ApiResponse())
+            ->setStatusCode($statutCode)
+            ->pushContent("results", $content)
+            ->send();
+
+    }{{/is}}{{/each}}
 
 }

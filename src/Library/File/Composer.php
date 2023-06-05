@@ -17,7 +17,6 @@ namespace CrazyPHP\Library\File;
  */
 use CrazyPHP\Library\File\Config as FileConfig;
 use CrazyPHP\Exception\CrazyException;
-use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\Cli\Command;
 use CrazyPHP\Library\File\Json;
@@ -228,6 +227,97 @@ class Composer{
 
         # Return result
         return $result;
+
+    }
+
+    /**
+     * Set Value
+     * 
+     * Set value in composer.json
+     * 
+     * @param string $key Parameter of config to set
+     * @param mixed $data Content to set
+     * @param bool $createIfNotExists Create parameter if not exists
+     * @param string $path Path of the package.json
+     * @return void
+     */
+    public static function setValue(string $key = "", mixed $data = [], bool $createIfNotExists = true, string $path = self::PATH["composer.json"]):void {
+
+        # Parse key
+        $key = str_replace(FileConfig::SEPARATOR, "___", $key);
+
+        # Explode keys 
+        $keys = explode("___", $key);
+
+        # Check config file
+        if(!$path || empty($keys))
+
+            # Stop script
+            return;
+
+        # Check not multiple file
+        if(!File::exists($path))
+
+            # New Exception
+            throw new CrazyException(
+                "No config file found for \"".$keys[0]."\".", 
+                500,
+                [
+                    "custom_code"   =>  "package-001",
+                ]
+            );
+
+        # Open File
+        $fileData = Json::open($path);
+
+        # Check if is array
+        if(!is_array($fileData))
+
+            # New Exception
+            throw new CrazyException(
+                "package.json isn't valid... Array awaited !", 
+                500,
+                [
+                    "custom_code"   =>  "package-011",
+                ]
+            );
+
+        
+
+        # Declare cursor
+        $cursor = &$fileData;
+
+        # Iteration filedata
+        $i=0;while(isset($keys[$i])){
+
+            # Check cursor.key isset
+            if(!isset($cursor[$keys[$i]]))
+
+                # Check if key should be create
+                if($createIfNotExists)
+
+                    # Create key
+                    $cursor[$keys[$i]] = [];
+
+                # Else
+                else
+
+                    # Exit
+                    return;
+
+            # Update the cursor
+            $cursor = &$cursor[$keys[$i]];
+
+        $i++;}
+
+        # Set value in cursor
+        $cursor = $data;
+
+        # Set last resultCursor
+        $result = $fileData;
+
+        # Set value
+        Json::set($path, $result, true);
 
     }
 

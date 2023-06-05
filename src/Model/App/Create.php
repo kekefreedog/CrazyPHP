@@ -441,6 +441,9 @@ class Create extends CrazyModel implements CrazyCommand {
         # - Reqire script to be executed from the project folder 
         Package::set($inputs, $composer);
 
+        # Set crazyphp package
+        Package::setCrazyphpPackage();
+
         # Set default scripts
         Package::setDefaultScripts();
 

@@ -186,10 +186,13 @@ class Json{
      * @param bool $mergeValues Merge value allowed with old data
      * @return array
      */
-    public static function set(string $path = "", array $values = [], $invertMerge = false, bool $mergeValues = true):array{
+    public static function set(string $path = "", array $values = [], bool $invertMerge = false, bool $mergeValues = true):array{
 
         # Set result
         $result = [];
+
+        # Get path
+        $path = File::path($path);
 
         # Open json
         $old_value = $result = self::open($path);

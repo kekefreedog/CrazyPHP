@@ -47,6 +47,9 @@ class Package{
         "package-lock.json" =>  "@app_root/package-lock.json",
     ];
 
+    # Crazy PHP package value default
+    public const CRAZYPHP_PACKAGE_VALUE_DEFAULT = "file:./vendor/kzarshenas/crazyphp";
+
     # Default properties of composer
     public const DEFAULT_PROPERTIES = [
         # Name
@@ -281,6 +284,98 @@ class Package{
         return $result;
 
     }
+
+    /**
+     * Set Value
+     * 
+     * Set value in package.json
+     * 
+     * @param string $key Parameter of config to set
+     * @param mixed $data Content to set
+     * @param bool $createIfNotExists Create parameter if not exists
+     * @param string $path Path of the package.json
+     * @return void
+     */
+    public static function setValue(string $key = "", mixed $data = [], bool $createIfNotExists = true, string $path = self::PATH["package.json"]):void {
+
+        # Parse key
+        $key = str_replace(FileConfig::SEPARATOR, "___", $key);
+
+        # Explode keys 
+        $keys = explode("___", $key);
+
+        # Check config file
+        if(!$path || empty($keys))
+
+            # Stop script
+            return;
+
+        # Check not multiple file
+        if(!File::exists($path))
+
+            # New Exception
+            throw new CrazyException(
+                "No config file found for \"".$keys[0]."\".", 
+                500,
+                [
+                    "custom_code"   =>  "package-001",
+                ]
+            );
+
+        # Open File
+        $fileData = Json::open($path);
+
+        # Check if is array
+        if(!is_array($fileData))
+
+            # New Exception
+            throw new CrazyException(
+                "package.json isn't valid... Array awaited !", 
+                500,
+                [
+                    "custom_code"   =>  "package-011",
+                ]
+            );
+
+        
+
+        # Declare cursor
+        $cursor = &$fileData;
+
+        # Iteration filedata
+        $i=0;while(isset($keys[$i])){
+
+            # Check cursor.key isset
+            if(!isset($cursor[$keys[$i]]))
+
+                # Check if key should be create
+                if($createIfNotExists)
+
+                    # Create key
+                    $cursor[$keys[$i]] = [];
+
+                # Else
+                else
+
+                    # Exit
+                    return;
+
+            # Update the cursor
+            $cursor = &$cursor[$keys[$i]];
+
+        $i++;}
+
+        # Set value in cursor
+        $cursor = $data;
+
+        # Set last resultCursor
+        $result = $fileData;
+
+        # Set value
+        Json::set($path, $result, true);
+
+    }
+
     
     /**
      * Read value in package.json
@@ -480,9 +575,10 @@ class Package{
      * 
      * @param string $name Name of the package
      * @param string $version Version of the package (optionnal)
+     * @param bool $devDependency Set package as dev dependency
      * @return void
      */
-    public static function addDependency(string $name = "", string $version = "latest"):void {
+    public static function addDependency(string $name = "", string $version = "latest", bool $devDependency = false):void {
 
         # Check name
         if(!$name)
@@ -500,7 +596,7 @@ class Package{
             $command .= "@$version";
 
         # Prepare command
-        $result = self::exec("install", $command);
+        $result = self::exec("install", $command.($devDependency ? " --save-dev" : ""));
 
     }
 
@@ -641,6 +737,44 @@ class Package{
 
         # Update front config
         FileConfig::setValue("Front.scripts", array_keys(self::DEFAULT_SCRIPTS));
+
+    }
+
+    /**
+     * Set CrazyPHP Package
+     * 
+     * Set crazy php (js) on package.json
+     * 
+     * @param string $value Value to set to crazyphp package
+     * @param bool $devDependency Set package as a dev dependency rather than a dependency
+     * @return void
+     */
+    public static function setCrazyphpPackage(string $value = self::CRAZYPHP_PACKAGE_VALUE_DEFAULT, bool $devDependency = true):void {
+
+        # Check value
+        if(!$value)
+
+            # Set default value
+            $value = static::CRAZYPHP_PACKAGE_VALUE_DEFAULT;
+
+        # Set key
+        $key = "crazyphp";
+
+        # Set parent
+        $parent = $devDependency
+            ? "devDependencies"
+            : "dependencies"
+        ;
+
+        # Set package in package.json
+        static::update([
+            "devDependencies"   =>  [
+
+            ]
+        ]);
+
+        # Set value in package.json
+        static::setValue("$parent.$key", $value);
 
     }
 

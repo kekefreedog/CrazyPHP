@@ -679,7 +679,7 @@ class Config{
 
             # New Exception
             throw new CrazyException(
-                "Config \"".$keys[0]."\" isn't valid... Array waited !", 
+                "Config \"".$keys[0]."\" isn't valid... Array awaited !", 
                 500,
                 [
                     "custom_code"   =>  "config-011",
