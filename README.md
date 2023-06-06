@@ -95,17 +95,32 @@ php vendor/phpunit/phpunit/phpunit
 
 # Documentation
 
+- [New Project](docs/NewProject.md) : How to create a new crazy project
 - Api
-    - [Schema of Api Response](docs/Api/SchemaApiResponse.md) : Schema of a json request from backend.
+  - Api v2
+    - [About Api V2](docs/Api/Api2/About.md) : All you need to know about Api v2
+  - [Schema of Api Response](docs/Api/SchemaApiRequest.md) : Schema of a api request.
+  - [Schema of Api Response](docs/Api/SchemaApiResponse.md) : Schema of a json request from backend.
+  - [Special Get Parameters](docs/Api/SpecialsGetParameters.md) : Special get parameters
+- CLI
+  - [Crazy Asset](docs/Cli/CrazyAsset.md) : Register a Crazy Asset
+  - [Crazy Router](docs/Cli/CrazyRouter.md) : Register a Crazy Router
+- Core
+  - [Context](docs/Core/Context.md) : Data defined in context
 - Docker
-    - [Mariadb](docs/Docker/Mariadb.md) : Docker command for manipulate Mariadb
-    - [Mongo](docs/Docker/Mongo.md) : Docker command for manipulate Mongo DB
-    - [Mysql](docs/Docker/Mysql.md) : Docker command for manipulate Mysql
-    - [Node](docs/Docker/Node.md) : Docker command for manipulate NodeJS
-    - [Php](docs/Docker/Php.md) : Docker command for manipulate PHP
-    - [Postgresql](docs/Docker/Postgresql.md) : Docker command for manipulate Postgresql
+  - [Install Docker](docs/Docker/InstallDocker.md) : Setup docker of your app
+  - [Mariadb](docs/Docker/Mariadb.md) : Docker command for manipulate Mariadb
+  - [Mongo](docs/Docker/Mongo.md) : Docker command for manipulate Mongo DB
+  - [Mysql](docs/Docker/Mysql.md) : Docker command for manipulate Mysql
+  - [Node](docs/Docker/Node.md) : Docker command for manipulate NodeJS
+  - [Php](docs/Docker/Php.md) : Docker command for manipulate PHP
+  - [Postgresql](docs/Docker/Postgresql.md) : Docker command for manipulate Postgresql
+- Model
+  - [About Model](docs/Model/About%20Model.md) : How to define a model with Api v2
 - Script
-    - [Comment Headers](docs/Src/CommentHeaders.md) : Rules for the comment header of files like PHP, JS, JSON, YAML...
-    - [Condig Router](docs/Src/ConfigRouter.md) : Rules for config router
+  - [Comment Headers](docs/Src/CommentHeaders.md) : Rules for the comment header of files like PHP, JS, JSON, YAML...
+  - [Condig Router](docs/Src/ConfigRouter.md) : Rules for config router
+  - [Context](docs/Src/Context.md) : Schema of the context
+  - [Favicon](docs/Src/Favicon.md) : Schema of favicons
 - Structure
     - [Create Folder Structure](docs/Structure/CreateFolderStructure.md) : Tutoriel to learn how to create folder schema
