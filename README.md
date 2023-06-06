@@ -122,5 +122,6 @@ php vendor/phpunit/phpunit/phpunit
   - [Condig Router](docs/Src/ConfigRouter.md) : Rules for config router
   - [Context](docs/Src/Context.md) : Schema of the context
   - [Favicon](docs/Src/Favicon.md) : Schema of favicons
+  - [Test](docs/Src/Test.md) : Test of the code
 - Structure
-    - [Create Folder Structure](docs/Structure/CreateFolderStructure.md) : Tutoriel to learn how to create folder schema
+  - [Create Folder Structure](docs/Structure/CreateFolderStructure.md) : Tutoriel to learn how to create folder schema

@@ -33,12 +33,8 @@
         "phpunit/phpunit": "^10.0"
     },
     "scripts": {
-        "phpunit": [
-            "./vendor/phpunit/phpunit/phpunit"
-        ],
         "test": [
-            "php -v",
-            "composer -V"
+            "./vendor/phpunit/phpunit/phpunit"
         ]
     }
 }
