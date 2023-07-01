@@ -134,6 +134,7 @@ class Package{
         "i18next"                                   =>  "^22.0.8",
         # Cache
         "localforage"                               =>  "^1.10.0",
+        "object-hash"                               =>  "^3.0.0",
         # Back | Webpack            
         "webpack"                                   =>  "*",
         "webpack-cli"                               =>  "*",

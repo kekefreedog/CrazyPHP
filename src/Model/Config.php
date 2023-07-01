@@ -344,15 +344,29 @@ class Config{
                 ]
             );
 
+        # Set framework content
+        if(
+            isset($composerContent["repositories"][0]["url"]) && 
+            !empty($composerContent["repositories"][0]["url"])
+        )
+
+            # Set framework content
+            $frameworkContent = [
+                "path"      =>  realpath(File::path("@crazyphp_root"))
+            ];
+
+        else
+
+            # Set framework content
+            $frameworkContent = false;
+
         $composerContent = Arrays::mergeMultidimensionalArrays(
             true,
             $composerContent,
             [
                 "root"      =>  Env::get("app_root"),
                 # To delete for production
-                "framework" =>  [
-                    "path"      =>  "/Users/kzarshenas/Sites/CrazyPHP"
-                ],
+                "framework" =>  $frameworkContent,
                 "public"    =>  "public"
             ]
         );

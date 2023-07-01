@@ -21,6 +21,7 @@ use CrazyPHP\Library\Model\CrazyModel;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Interface\CrazyCommand;
 use CrazyPHP\Library\File\Structure;
+use CrazyPHP\Library\String\Strings;
 use CrazyPHP\Library\File\Composer;
 use CrazyPHP\Library\File\Package;
 use CrazyPHP\Library\Form\Process;
@@ -52,7 +53,7 @@ class Create extends CrazyModel implements CrazyCommand {
             "name"          =>  "name",
             "description"   =>  "Name of your crazy project",
             "type"          =>  "VARCHAR",
-            "default"       =>  "Crazy Project",
+            "default"       =>  "CrazyPHP\Model\App\Create::defaultAppName",
             "required"      =>  true,
             "process"       =>  ['trim']
         ],
@@ -708,6 +709,52 @@ class Create extends CrazyModel implements CrazyCommand {
 
         # Set result
         $result = [];
+
+        # Return result
+        return $result;
+
+    }
+
+    /** Public static methods | Default
+     ******************************************************
+     */
+
+    /**
+     * Default App Name
+     * 
+     * Try to return the best default app name
+     * 
+     * @return string
+     */
+    public static function defaultAppName():string {
+
+        # Set result
+        $result = "Crazy Project";
+
+        # Get current app path
+        $appPath = File::path("@app_root");
+
+        # Check app path
+        if($appPath){
+
+            # Set composer path
+            $conposerAppPath = "$appPath/composer.json";
+
+            # Check composer name
+            if(File::exists($conposerAppPath) && ($composerName = Composer::get("name", $conposerAppPath)) !== null)
+
+                # Set result
+                $result = $composerName;
+
+            else
+
+                # Extract name from app path
+                $result = Strings::getLastString(trim($appPath, "/"), "/");
+
+        }
+
+        # Then add space before capital letters
+        $result = Process::spaceBeforeCapital($result);
 
         # Return result
         return $result;

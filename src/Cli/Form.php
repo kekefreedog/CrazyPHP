@@ -68,12 +68,19 @@ class Form {
                     # Set select
                     $value['select'] = $value['select']();
 
+                # Check select is callable
+                if(isset($value['default']) && is_callable($value['default']))
+
+                    # Set select
+                    $value['default'] = $value['default']();
+
                 # Check description
                 if($value['description'] ?? false)
 
                     # Prepare question
                     $question = $key.". ".$value['description'];
 
+                # Prepare question
                 $question .= 
                     " {".$value['name']."} ?".
                     (

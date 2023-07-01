@@ -50,6 +50,9 @@ class Up implements CrazyCommand {
      */
     private $inputs = [];
 
+    /** @var bool $isDatabaseEnable Check if at least one database in enable on the current app */
+    private $isDatabaseEnable = false;
+
     /**
      * Constructor
      * 
@@ -355,10 +358,15 @@ class Up implements CrazyCommand {
             foreach($databaseConfig as $database => $config){
 
                 # Check config
-                if(empty($config))
+                if(empty($config) || !$config){
 
                     # Continue
                     continue;
+
+                }else
+
+                    # Set isDatabaseEnable
+                    $this->isDatabaseEnable = true;
 
                 # Get service name
                 $dockerServiceName = $config["docker"]["service"]["name"] ?? false;
@@ -458,6 +466,12 @@ class Up implements CrazyCommand {
                     "custom_code"   =>  "up-009",
                 ]
             );
+
+        # Check if at least one database is enable
+        if(!$this->isDatabaseEnable)
+
+            # Stop method
+            return $this;
 
         # Prepare docker
         $command = "docker exec -it $dockerServiceName php docker/bin/SetupDatabase";
