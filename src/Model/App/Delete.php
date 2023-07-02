@@ -20,6 +20,7 @@ use CrazyPHP\Model\Docker\Delete as DockerDelete;
 use CrazyPHP\Library\Model\CrazyModel;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\File\Structure;
+use Symfony\Component\Finder\Finder;
 use CrazyPHP\Interface\CrazyCommand;
 use CrazyPHP\Library\Cache\Cache;
 use CrazyPHP\Library\File\File;
@@ -85,6 +86,12 @@ class Delete extends CrazyModel implements CrazyCommand {
         $this->runCacheCleaner();
 
         /**
+         * Run Retrieve Original Composer
+         * 1. Get the last new composer backup and copy it on the root od the app
+         */
+        $this->runRetrieveOriginalComposer();
+
+        /**
          * Run Structure Folder
          * 1. Delete structure folder
          */
@@ -142,6 +149,61 @@ class Delete extends CrazyModel implements CrazyCommand {
     }
 
     /**
+     * Run Retrieve Original Composer
+     * 
+     * Steps
+     * 1. Get the last new composer backup and copy it on the root od the app
+     * 
+     * @return self
+     */
+    public function runRetrieveOriginalComposer():self {
+
+        # New finder
+        $finder = New Finder();
+
+        # Prepare finder
+        $finder
+            ->files()
+            ->name('/^\d+-new-composer\.json$/')
+            ->in(File::path("@app_root/assets/Json/backup/composer/"))
+        ;
+
+        # Check finder has result
+        if(!$finder->hasResults()){
+
+            # Echo that not backup has been found
+            echo "Not composer backup has been found ⚠️";
+
+            # Return instance
+            return $this;
+
+        }
+
+        # Prepare sorted files
+        $sortedFiles = iterator_to_array($finder);
+
+        # Sort the matching files by timestamp (DESC)
+        usort($sortedFiles, function ($a, $b) {
+            preg_match('/^(\d+)-/', $a->getFilename(), $aMatches);
+            preg_match('/^(\d+)-/', $b->getFilename(), $bMatches);
+            $aTimestamp = intval($aMatches[1]);
+            $bTimestamp = intval($bMatches[1]);
+            # return $aTimestamp - $bTimestamp; # ASC
+            return $bTimestamp - $aTimestamp; # DESC
+        });
+
+        # Get filepath of the file to copy
+        $composerFilepath = $sortedFiles[0];
+
+        # Replace composer at the root of the app
+        File::copy($composerFilepath->getRealPath(), "@app_root/composer.json");
+
+        # Return instance
+        return $this;
+
+    }
+
+    /**
      * Run Structure Folder
      * 
      * Steps : 
@@ -163,6 +225,9 @@ class Delete extends CrazyModel implements CrazyCommand {
 
         # Remove .database folder
         File::removeAll("@app_root/.database");
+
+        # Remove asset folder
+        File::removeAll("@app_root/assets");
 
         # Return instance
         return $this;

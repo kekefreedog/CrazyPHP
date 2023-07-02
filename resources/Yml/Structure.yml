@@ -37,6 +37,11 @@ Structure:
           Scss: null
           Yaml: null
           Favicon: null
+          Json: 
+            folders:
+              backup:
+                folders:
+                  composer: null
       # Config
       config:
         files:

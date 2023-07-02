@@ -187,6 +187,12 @@ class Create extends CrazyModel implements CrazyCommand {
     public function run():self {
 
         /**
+         * Backup Composer
+         * 1. Copy initial composer config in backup folder
+         */
+        $this->runBackupComposer();
+
+        /**
          * Run Composer
          * 1. Fill composer.json
          * 2. Run composer install
@@ -277,6 +283,42 @@ class Create extends CrazyModel implements CrazyCommand {
     }
 
     /**
+     * Backup Composer
+     * 
+     * Steps :
+     * 1. Copy initial composer config in backup folder
+     * 
+     * @return Create
+     */
+    public function runBackupComposer():Create {
+        
+        # Composer path
+        $composerPath = "@app_root/composer.json";
+
+        # Check file exists
+        if(!File::exists($composerPath))
+            
+            # New error
+            throw new CrazyException(
+                "How did you execute this code if your composer.json doesn't exist in your app folder ??", 
+                500,
+                [
+                    "custom_code"   =>  "create-001",
+                ]
+            );
+
+        # Get timestamp of now
+        $currentTimestamp = time();
+
+        # Copy the file in backup folder
+        File::copy($composerPath, "@app_root/assets/Json/backup/composer/$currentTimestamp-new-composer.json");
+
+        # Return instance
+        return $this;
+
+    }
+
+    /**
      * Run Composer
      * 
      * Steps : 
@@ -319,7 +361,7 @@ class Create extends CrazyModel implements CrazyCommand {
         $inputs = Arrays::stretch($inputs);
 
         # Get path of composer
-        $composer = getcwd()."/composer.json";
+        $composer = File::path("@app_root/composer.json");
 
         # Check json file exists
         if(!Json::check($composer))
