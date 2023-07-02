@@ -19,5 +19,6 @@ Model:
         description: Path of the front controller
         type: VARCHAR
         validate: [isValidUrl]
+        default: CrazyPHP\Driver\Model\Config::getRouterPath
         required: false
-        
+

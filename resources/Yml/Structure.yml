@@ -60,6 +60,8 @@ Structure:
             source: "@crazyphp_root/resources/Yml/Router.yml"
           Middleware.yml:
             source: "@crazyphp_root/resources/Yml/Middleware.yml"
+          Model.yml:
+            source: "@crazyphp_root/resources/Yml/Model.yml"
           Style.yml:
             source: "@crazyphp_root/resources/Yml/Style.yml"
           Template.yml:

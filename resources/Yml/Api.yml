@@ -5,7 +5,7 @@ Api:
     enitites:
       - 
     routers:
-      - name: ApiV2List
+      - name: ApiV2List # Tested
         controller: CrazyPHP\Controller\ApiV2List
         patterns:
           - list
@@ -19,13 +19,13 @@ Api:
         methods:
           - post
         middleware : {}
-      - name: ApiV2All
+      - name: ApiV2All # Tested
         controller: CrazyPHP\Controller\ApiV2All
         patterns:
           - /[s:entity]/all
         methods:
           - get
-        middleware : {}
+        middleware : {} # Tested
       - name: ApiV2Fields
         controller: CrazyPHP\Controller\ApiV2Fields
         patterns:
@@ -47,7 +47,7 @@ Api:
         methods:
           - get
         middleware : {}
-      - name: ApiV2Count
+      - name: ApiV2Count # Tested
         controller: CrazyPHP\Controller\ApiV2Count
         patterns:
           - /[s:entity]/count
@@ -55,30 +55,30 @@ Api:
           - get
         middleware : {}
       - name: ApiV2Id
-        controller: CrazyPHP\Controller\ApiV2Count
+        controller: CrazyPHP\Controller\ApiV2Id
         patterns:
-          - /[s:entity]/[s:id]
+          - /[s:entity]/[a:id]
         methods:
           - get
         middleware : {}
       - name: ApiV2Delete
         controller: CrazyPHP\Controller\ApiV2Delete
         patterns:
-          - /[s:entity]/delete/[s:id]
+          - /[s:entity]/delete/[a:id]
         methods:
           - delete
         middleware : {}
       - name: ApiV2Update
         controller: CrazyPHP\Controller\ApiV2Update
         patterns:
-          - /[s:entity]/update/[s:id]
+          - /[s:entity]/update/[a:id]
         methods:
           - put
         middleware : {}
-      - name: ApiV2Last
+      - name: ApiV2Last # Tested
         controller: CrazyPHP\Controller\ApiV2Last
         patterns:
-          - /[s:entity]/last/[s:count]
+          - /[s:entity]/last/[i:count]
         methods:
           - get
         middleware : {}
