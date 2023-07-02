@@ -66,6 +66,9 @@ Structure:
         folders:
           app: null
           api: null
+        files:
+          crazyphp:
+            link: "@crazyphp_root/docs"
       # Logs
       logs: null
       # Public folder

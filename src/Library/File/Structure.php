@@ -22,7 +22,6 @@ use CrazyPHP\Library\String\Url;
 use CrazyPHP\Library\File\Json;
 use CrazyPHP\Library\File\Yaml;
 use CrazyPHP\Library\File\File;
-use CrazyPHP\Model\Env;
 
 /**
  * Structure
@@ -834,6 +833,19 @@ class Structure{
     
                     # Changer permission
                     chmod($path, $file['permission']);
+
+            }
+
+            # Check if source
+            if($file['link'] ?? false){
+
+                # Check link is valid and exists
+                if($file['link'] && File::exists($file['link'])){
+
+                    # Create symlink
+                    symlink(realpath(File::path($file['link'])), $path);
+
+                }
 
             }
 
