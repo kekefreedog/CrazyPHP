@@ -249,10 +249,10 @@ class Router extends VendorRouter {
         $fileCachePath = File::path(self::CACHE_PATH.time());
 
         # Check folder
-        if(!is_dir($folderCachePath))
+        if(!File::exists($folderCachePath))
 
             # Create folder
-            mkdir($folderCachePath);
+            File::createDirectory($folderCachePath);
 
         # Create file cache
         $this->dumpOnDisk($fileCachePath);
