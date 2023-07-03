@@ -95,7 +95,7 @@ export default class Crazyrequest{
      * @param body
      * @return Promise<Response>
      */
-    public fetch = (body:Array<any>|Object|string|BodyInit|undefined = undefined):Promise<Response|any> => {
+    public fetch = (body:Array<any>|Object|string|BodyInit|undefined|FormData = undefined):Promise<Response|any> => {
 
         // Clean last response & last response type
         this.lastResponse = undefined;
@@ -328,7 +328,8 @@ export default class Crazyrequest{
         if(body !== undefined){
 
             // Check method get or head
-            if(this.requestOptions.method ?? "GET" in ["GET", "HEAD"]){
+            // if((this.requestOptions.method ?? "GET") in ["GET", "HEAD", "get", "head"]){
+            if(["GET", "HEAD", "get", "head"].includes(this.requestOptions.method ?? "get")){
 
                 // Check body is object
                 if(typeof body === "object"){
@@ -348,6 +349,36 @@ export default class Crazyrequest{
                         this.getParameters = getParameters;
 
                 }
+
+            }else 
+            // For post
+            if(["POST", "post"].includes(this.requestOptions.method ?? "")){
+
+                // Declare body content
+                let bodyContent:FormData|null = null;
+
+                // Check if formdata
+                if(body instanceof FormData){
+
+                    // Fill body content
+                    bodyContent = body;
+
+                    // Check header 
+                    if(!(this.requestOptions.headers instanceof Headers))
+
+                        // Create headers
+                        this.requestOptions.headers = new Headers();
+
+                    // Fill headers
+                    this.requestOptions.headers.append('Content-Type', 'multipart/form-data');
+
+                }
+    
+                // Check body content
+                if(bodyContent !== null)
+
+                    // Set body
+                    this.requestOptions.body = bodyContent;
 
             // For other method
             }else{

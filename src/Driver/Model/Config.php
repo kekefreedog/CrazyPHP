@@ -374,7 +374,9 @@ class Config implements CrazyDriverModel {
         $result = Router::reverse((string)$routeName, Query::getArguments());
 
         # Get host name
-        $hostname = $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'];
+        $hostname = isset($_SERVER['REQUEST_SCHEME']) && isset($_SERVER['HTTP_HOST']) 
+            ? $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'] 
+            : "";
 
         # add hostame to result
         $result = "$hostname".($result == "index" ? "" : "/$result");
