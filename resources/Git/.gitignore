@@ -20,3 +20,10 @@ package-lock.json
 
 # PHPUnit (PHP)
 .phpunit.result.cache
+
+# Vscode
+.vscode 
+
+# Docker
+docker
+docker-compose.yml
