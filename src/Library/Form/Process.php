@@ -48,6 +48,8 @@ class Process {
      * Dispatch of action
      */
     private array $dispatch = [
+        "INT"       =>  [
+        ],
         "VARCHAR"   =>  [
             "trim",
             "clean",
@@ -64,6 +66,8 @@ class Process {
         ], 
         "BOOL"      =>  [
             "bool",
+        ],
+        "FILE"      =>  [
         ]
     ];
 
@@ -83,6 +87,12 @@ class Process {
         # Iteration inputs
         foreach($this->values as $key => &$input):
 
+            # Type integer
+            if(strtoupper(substr(trim($input['type']), 0, 3)) == "INT")
+
+                # Action for varchar
+                $this->_actionInt($input);
+
             # Type varchar
             if(strtoupper(substr(trim($input['type']), 0, 7)) == "VARCHAR")
 
@@ -100,6 +110,12 @@ class Process {
 
                 # Action for bool
                 $this->_actionBool($input);
+                
+            # Type Boolean
+            elseif(strtoupper(substr(trim($input['type']), 0, 4)) == "FILE")
+
+                # Action for bool
+                $this->_actionFile($input);
 
         endforeach;
 
@@ -108,6 +124,39 @@ class Process {
     /** Private Methods
      ******************************************************
      */
+
+    /**
+     * Action for int
+     * 
+     * @return void
+     */
+    private function _actionInt(array &$input = []):void {
+
+        # Check value is same type
+        if(!is_int($input['value']) && !ctype_digit($input['value']))
+
+            # Stop function
+            return;
+
+        # Parse the value
+        $input['value'] = intval($input['value']);
+
+        # Check process
+        if(!empty($input['process'] ?? null))
+
+            # Iteration process
+            foreach($input['process'] as $process)
+
+                # Check methods exists
+                if(
+                    in_array($process, $this->dispatch["INT"]) &&
+                    method_exists($this, $process)
+                )
+
+                    # Process value
+                    $input['value'] = $this->{$process}($input['value']);
+
+    }
 
     /**
      * Action for varchar
@@ -185,6 +234,31 @@ class Process {
                 # Check methods exists
                 if(
                     in_array($process, $this->dispatch["BOOL"]) &&
+                    method_exists($this, $process)
+                )
+
+                    # Process value
+                    $input['value'] = $this->{$process}($input['value']);
+
+
+    }
+
+    /**
+     * Action for file
+     * 
+     * @return array
+     */
+    private function _actionFile(array &$input = []){
+
+        # Check process
+        if(!empty($input['process'] ?? null))
+
+            # Iteration process
+            foreach($input['process'] as $process)
+
+                # Check methods exists
+                if(
+                    in_array($process, $this->dispatch["FILE"]) &&
                     method_exists($this, $process)
                 )
 
@@ -345,7 +419,7 @@ class Process {
                         "missing in processed inputs...",
                 500,
                 [
-                    "custom_code"   =>  "process-001",
+                    "custom_code"   =>  "process-010",
                 ]
             );
 
@@ -722,7 +796,7 @@ class Process {
                             "The default value is missing for the requierd field \"".$value['name']."\"",
                             500,
                             [
-                                "custom_code"   =>  "process-002",
+                                "custom_code"   =>  "process-020",
                             ]
                         );
 

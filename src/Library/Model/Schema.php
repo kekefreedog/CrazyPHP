@@ -269,7 +269,7 @@ class Schema {
         $options = $this->ingestOptions($options, self::DEFAULT_VALUES_OPTIONS);
 
         # Check multiple
-        if(isset($values["name"])){
+        if(isset($values["name"]) || !is_int(array_key_first($values))){
 
             # Add depth in values
             $values = [$values];

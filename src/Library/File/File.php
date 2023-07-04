@@ -633,7 +633,9 @@ class File {
         # Json
         "json"  =>  "application/json",
         # Php
-        "php"   =>  "text/php"
+        "php"   =>  "text/php",
+        # Csv
+        "csv"   =>  "text/csv",
         # TBC ...
     ];
 

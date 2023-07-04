@@ -18,6 +18,9 @@ namespace  CrazyPHP\Library\Form;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\Array\Arrays;
+use CrazyPHP\Library\File\File;
+use Exception;
+use finfo;
 
 /**
  * Validate form values
@@ -48,12 +51,17 @@ class Validate {
      * Dispatch of action
      */
     private $dispatch = [
+        "INT"       =>  [
+        ],
         "VARCHAR"   =>  [
             "email"
         ],
         "ARRAY"     =>  [
         ], 
         "BOOL"      =>  [
+        ],
+        "FILE"      =>  [
+
         ]
     ];
 
@@ -89,6 +97,12 @@ class Validate {
         # Iteration inputs
         foreach($this->values as &$input)
 
+            # Type int
+            if(strtoupper(substr(trim($input['type']), 0, 3)) == "INT")
+
+                # Action for varchar
+                $this->_actionInt($input);
+
             # Type varchar
             if(strtoupper(substr(trim($input['type']), 0, 7)) == "VARCHAR")
 
@@ -106,12 +120,39 @@ class Validate {
 
                 # Action for bool
                 $this->_actionBool($input);
+                
+            # Type Fil
+            elseif(strtoupper(substr(trim($input['type']), 0, 4)) == "FILE")
+
+                # Action for file
+                $this->_actionFile($input);
 
     }
 
     /** Private Methods
      ******************************************************
      */
+
+    /**
+     * Action for int
+     * 
+     * @return void
+     */
+    private function _actionInt(array &$input = []):void {
+
+        # Check value is same type
+        if(!is_int($input['value']) && !ctype_digit($input['value']))
+
+            # New Exception
+            throw new CrazyException(
+                "Value of \”".$input["name"]."\” isn't a integer...",
+                500,
+                [
+                    "custom_code"   =>  "validate-010",
+                ]
+            );
+
+    }
 
     /**
      * Action for varchar
@@ -128,7 +169,7 @@ class Validate {
                 "Value of \”".$input["name"]."\” isn't a string of characters...",
                 500,
                 [
-                    "custom_code"   =>  "validate-001",
+                    "custom_code"   =>  "validate-020",
                 ]
             );
 
@@ -178,7 +219,7 @@ class Validate {
                 "Value of \”".$input["name"]."\” isn't an array...",
                 500,
                 [
-                    "custom_code"   =>  "validate-002",
+                    "custom_code"   =>  "validate-030",
                 ]
             );
 
@@ -208,7 +249,7 @@ class Validate {
                 "Value of \"".$input["name"]."\" isn't an boolean...",
                 500,
                 [
-                    "custom_code"   =>  "validate-003",
+                    "custom_code"   =>  "validate-040",
                 ]
             );
 
@@ -220,6 +261,116 @@ class Validate {
 
                 # Set default value
                 $input['value'] = Process::setDefault($input["default"]);
+
+    }
+
+    /**
+     * Action for File
+     * 
+     * @return array
+     */
+    private function _actionFile(array &$input = []){
+
+        # Check input value
+        if(!$input["value"] || empty($input["value"])){
+
+            # If default value
+            if($input['default'] ?? false)
+
+                # Set default value
+                $input['value'] = Process::setDefault($input["default"]);
+
+        }
+
+        # Check if required
+        if(($input["required"] ?? false ) && !$input['value'] && !empty($input['value']))
+
+            # If default value
+            if($input['default'] ?? false)
+
+                # Set default value
+                $input['value'] = Process::setDefault($input["default"]);
+
+        # Check file is valid
+        self::isValidFile($input["value"], true);
+
+        # Set ext first time
+        $ext = null;
+
+        # Check if extension allowed
+        if(isset($input["extAllow"]) && !empty($input["extAllow"]) && $input["extAllow"]){
+
+            # set ext allow
+            $extAllow = $input["extAllow"];
+
+            # Check extAllow is array
+            if(!is_array($extAllow))
+
+                # Convert to array
+                $extAllow = [$extAllow];
+
+            # Guess the mime type of the file
+            $mimeType = File::guessMime($input["value"]["tmp_name"]);
+
+            # Set ext
+            $ext = array_search($extAllow, File::EXTENSION_TO_MIMETYPE) 
+                ? array_search($extAllow, File::EXTENSION_TO_MIMETYPE)
+                : @end(explode("/", $mimeType))
+            ;
+            
+            # Check mime type is in the extAllow
+            if(!in_array(strtolower($ext), array_map("strtolower", $extAllow)))
+
+                # New Exception
+                throw new CrazyException(
+                    "Extension \"$ext\" of the file \"".$input["value"]["name"]."\" given isn't allowed... Here the file extension allowed : ".implode(", ", $extAllow),
+                    500,
+                    [
+                        "custom_code"   =>  "validate-050",
+                    ]
+                );
+
+        }
+
+        # Check if omit extension
+        if(isset($input["extOmit"]) && !empty($input["extOmit"]) && $input["extOmit"]){
+
+            # set ext allow
+            $extOmit = $input["extOmit"];
+
+            # Check extOmit is array
+            if(!is_array($extOmit))
+
+                # Convert to array
+                $extOmit = [$extOmit];
+
+            # check if ext already set
+            if($ext === null){
+
+                # Guess the mime type of the file
+                $mimeType = File::guessMime($input["value"]["tmp_name"]);
+    
+                # Set ext
+                $ext = array_search($extOmit, File::EXTENSION_TO_MIMETYPE) 
+                    ? array_search($extOmit, File::EXTENSION_TO_MIMETYPE)
+                    : @end(explode("/", $mimeType))
+                ;
+
+            }
+            
+            # Check mime type is in the extAllow
+            if(in_array(strtolower($ext), array_map("strtolower", $extOmit)))
+
+                # New Exception
+                throw new CrazyException(
+                    "Extension \"$ext\" of the file \"".$input["value"]["name"]."\" given is omited... Here the other file extension not allowed : ".implode(", ", $extOmit),
+                    500,
+                    [
+                        "custom_code"   =>  "validate-060",
+                    ]
+                );
+
+        }
 
     }
 
@@ -440,7 +591,7 @@ class Validate {
                 "\”".$input["value"]."\” isn't a valid email...",
                 500,
                 [
-                    "custom_code"   =>  "validate-004",
+                    "custom_code"   =>  "validate-070",
                 ]
             );
 
@@ -501,5 +652,96 @@ class Validate {
         return true;
 
     }
+
+    /**
+     * Is Valid File
+     * 
+     * Check if the file is a valid file
+     * 
+     * @param array give content from file $_FILE
+     * @param bool
+     */
+    public static function isValidFile(array $file = [], bool $exception = false):bool {
+
+        # Set result
+        $result = true;
+
+        try {
+    
+            // Undefined | Multiple Files | $_FILES Corruption Attack
+            // If this request falls under any of them, treat it invalid.
+            if (
+                !isset($file['error']) ||
+                is_array($file['error'])
+            ) {
+                throw new Exception('File contains errors');
+            }
+        
+            // Check $file['error'] value.
+            switch ($file['error']) {
+                case UPLOAD_ERR_OK:
+                    break;
+                case UPLOAD_ERR_NO_FILE:
+                    throw new Exception('No file sent');
+                case UPLOAD_ERR_INI_SIZE:
+                case UPLOAD_ERR_FORM_SIZE:
+                    throw new Exception('Exceeded filesize limit');
+                default:
+                    throw new Exception('Unknown errors');
+            }
+        
+            // You should also check filesize here. 
+            if ($file['size'] > 1000000) {
+                throw new Exception('Exceeded filesize limit');
+            }
+        
+            // DO NOT TRUST $file['mime'] VALUE !!
+            // Check MIME Type by yourself.
+            /* $finfo = new finfo(FILEINFO_MIME_TYPE);
+            if (false === $ext = array_search(
+                $finfo->file($file['tmp_name']),
+                array(
+                    'jpg' => 'image/jpeg',
+                    'png' => 'image/png',
+                    'gif' => 'image/gif',
+                ),
+                true
+            )) {
+                throw new Exception('Invalid file format');
+            } */
+        
+            // You should name it uniquely.
+            // DO NOT USE $file['name'] WITHOUT ANY VALIDATION !!
+            // On this example, obtain safe unique name from its binary data.
+            /* if (!move_uploaded_file(
+                $file['tmp_name'],
+                sprintf('./uploads/%s.%s',
+                    sha1_file($file['tmp_name']),
+                    $ext
+                )
+            )) {
+                throw new Exception('Failed to move uploaded file.');
+            } */
+        
+        } catch (Exception $e) {
+        
+            # Check Exception
+            if($exception)
+            
+                # Set result
+                throw new CrazyException($e->getMessage(), 500);
+
+            else
+
+                # Set result
+                $result = false;
+        
+        }
+        
+        # Return result
+        return $result;
+
+    }
+
 
 }

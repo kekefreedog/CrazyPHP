@@ -363,14 +363,14 @@ export default class Crazyrequest{
                     // Fill body content
                     bodyContent = body;
 
-                    // Check header 
+                    /* // Check header is defined
                     if(!(this.requestOptions.headers instanceof Headers))
 
-                        // Create headers
+                        // Init headers
                         this.requestOptions.headers = new Headers();
 
                     // Fill headers
-                    this.requestOptions.headers.append('Content-Type', 'multipart/form-data');
+                    this.requestOptions.headers.append('Content-Type', 'multipart/form-data'); */
 
                 }
     
