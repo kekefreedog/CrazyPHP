@@ -636,6 +636,12 @@ class File {
         "php"   =>  "text/php",
         # Csv
         "csv"   =>  "text/csv",
+        # Xlsx
+        "xlsx"  =>  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        # Pdf
+        "pdf"   =>  "application/pdf",
+        # Zip
+        "zip"   =>  "application/zip",
         # TBC ...
     ];
 

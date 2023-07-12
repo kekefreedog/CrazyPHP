@@ -28,6 +28,10 @@ use \DateTime as LegacyDateTime;
  */
 class DateTime extends LegacyDateTime {
 
+    /** Public static methods
+     ******************************************************
+     */
+
     /**
      * Last Update File
      * 
@@ -69,6 +73,23 @@ class DateTime extends LegacyDateTime {
 
         # Set result
         $result = new DateTime('1995-07-25');
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Current Year Month Day
+     * 
+     * Return current date in the format YYYY/MM/DD
+     * 
+     * @return string
+     */
+    public static function currentYearMonthDay():string {
+
+        # Set result
+        $result = (new DateTime())->format("Y/m/d");
 
         # Return result
         return $result;

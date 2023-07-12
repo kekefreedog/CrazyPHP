@@ -180,7 +180,7 @@ export default abstract class Crazypage {
 
                     reject({
                         status: false,
-                        message: `Failed to load the script ＄{FILE_URL}`
+                        message: `Failed to load the script ${url}`
                     });
 
                 });
