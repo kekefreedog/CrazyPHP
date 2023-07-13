@@ -141,20 +141,25 @@ export default class Crazyrequest{
                     // Check Crazy Hash
                     if(this.options.from === "internal" && result.headers.get("Crazy-Hash")){
 
-                        // Get crazy hash
-                        let crazyHash = result.headers.get("Crazy-Hash");
+                        // Check if ignore hash
+                        if(!("ignoreHash" in this.options && this.options.ignoreHash === true)){
 
-                        // Check hash
-                        if(crazyHash){
+                            // Get crazy hash
+                            let crazyHash = result.headers.get("Crazy-Hash");
 
-                            // Set response hash
-                            this.lastResponseCrazyHash = crazyHash;
+                            // Check hash
+                            if(crazyHash){
 
-                            // Check global
-                            if("Crazyobject" in window && typeof window.Crazyobject == "object" && window.Crazyobject !== null)
+                                // Set response hash
+                                this.lastResponseCrazyHash = crazyHash;
 
-                                // set hash in global
-                                window.Crazyobject["setHash"](crazyHash);
+                                // Check global
+                                if("Crazyobject" in window && typeof window.Crazyobject == "object" && window.Crazyobject !== null)
+
+                                    // set hash in global
+                                    window.Crazyobject["setHash"](crazyHash);
+
+                            }
 
                         }
 

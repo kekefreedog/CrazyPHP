@@ -307,7 +307,8 @@ export default abstract class Crazypage {
             {
                 method: "GET",
                 responseType: options.mimetype,
-                from: "internal"
+                from: "internal",
+                ignoreHash: true
             }
         ).fetch(query)
         .then(result => {

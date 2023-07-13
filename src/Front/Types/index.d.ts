@@ -41,6 +41,7 @@ declare global {
         responseType?: "arraybuffer"|"document"|"json"|"text"|"stream"|boolean,
         responseEncoding?: "utf8",
         from?: "internal"|"external",
+        ignoreHash?: boolean
     }
 
     /**
