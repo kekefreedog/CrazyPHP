@@ -20,9 +20,10 @@ export {default as Crazyconsole} from "./../Library/Crazyconsole";
 export {default as Crazyrequest} from "./../Library/Crazyrequest";
 export {default as Crazyelement} from "./../Library/Crazyelement";
 export {default as Pageregister} from "./../Library/Pageregister";
-export {default as Crazyobject} from "./../Core/Crazyobject";
 export {default as Crazyevents} from "./../Library/Crazyevents";
+export {default as LoaderPage} from "./../Library/Loader/Page";
 export {default as Crazycache} from "./../Library/Crazycache";
+export {default as Crazyobject} from "./../Core/Crazyobject";
 export {default as Crazypage} from "./../Library/Crazypage";
 
 /* Modules to export */
@@ -101,6 +102,41 @@ declare global {
     interface RouterResponseSchema {
         name?:string,
         path?:string
+    }
+
+    /** Interface | Loader
+     ******************************************************
+     */
+
+    /**
+     * Interface LoaderPageOptions
+     */
+    interface LoaderPageOptions {
+        name?:?string = null,
+        url?:?URL = null,
+        arguments?:?Object = null,
+        instance?:?Crazypage = null,
+        content?:?CallableFunction|string = null,
+        style?:?CallableFunction|string = null,
+        preAction?:?CallableFunction = null,
+        postAction?:?CallableFunction = null,
+        status?:?LoadPageOptionsStatus = null,
+        scriptLoaded?:?Array<string> = null,
+        hash?:?string = null,
+        eventsRegistered?:?Array<Object> = null,
+        componentsRegistered?:?Array<Object> = null
+    }
+
+    /**
+     * Interface LoadPageOptionsStatus
+     */
+    interface LoadPageOptionsStatus {
+        active:boolean = false,
+        preActionLoaded:boolean = false,
+        postActionLoaded:boolean = false,
+        scriptLoaded:boolean = false,
+        styleLoaded:boolean = false,
+        contentLoaded:boolean = false,
     }
 
 }
