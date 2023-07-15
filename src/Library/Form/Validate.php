@@ -54,14 +54,15 @@ class Validate {
         "INT"       =>  [
         ],
         "VARCHAR"   =>  [
-            "email"
+            "isEmail",
+            "isIpAddress"
         ],
         "ARRAY"     =>  [
         ], 
         "BOOL"      =>  [
         ],
         "FILE"      =>  [
-
+            "isValidFile"
         ]
     ];
 

@@ -339,7 +339,7 @@ class Process {
      * @param array $input
      * @return array
      */
-    public static function getResultSummary(array $inputs = []):array {
+    final public static function getResultSummary(array $inputs = []):array {
 
         # Get Get Result Summary
         return Validate::getResultSummary($inputs);
@@ -508,8 +508,7 @@ class Process {
         $result = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $input);
         
         # Remove all non-alphanumeric characters (except apostrophes, quotes, and backticks)
-        $string = preg_replace('/[^a-zA-Z0-9\/]/', '', $input);
-
+        $result = preg_replace('/[^a-zA-Z0-9\/]/', '', $input);
         
         # Replace all spaces with underscores
         $result = preg_replace('/\s+/', '_', $result);
@@ -676,6 +675,8 @@ class Process {
      * Insert a space before each capital letter, like this :
      * - HelloWorld <=> Hello World
      * 
+     * > Exception if it is the first character
+     * 
      * @param string $input
      * @return string
      */
@@ -717,7 +718,7 @@ class Process {
      * @param array $conditions Conditon to respect
      * @return array
      */
-    public static function wash(array $inputs = [], array $conditions = []):array {
+    final public static function wash(array $inputs = [], array $conditions = []):array {
 
         # Declare result
         $result = [];
@@ -762,7 +763,7 @@ class Process {
      * @param bool $keepNull Keep null or delete them from compilation
      * @return array
      */
-    public static function compilate(array $inputs = [], bool $keepNull = false):array {
+    final public static function compilate(array $inputs = [], bool $keepNull = false):array {
 
         # Declare result
         $result = [];
@@ -821,7 +822,7 @@ class Process {
      * @param string $separator Separator to avoid multidimensional array
      * @return array
      */
-    public static function sortByConditions(array $array = [], array $conditions = [], string $separator = "_"):array {
+    final public static function sortByConditions(array $array = [], array $conditions = [], string $separator = "_"):array {
 
         # Declare result
         $result = [];

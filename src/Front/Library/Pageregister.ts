@@ -383,6 +383,8 @@ import Crazyurl from './Crazyurl';
     /**
      * Load Internal Page
      * 
+     * Receive as parameter input : {name: pageName, path: path}
+     * 
      * @param input:RouterResponseSchema
      */
     public loadInternalPage = (input:RouterResponseSchema) => {
@@ -475,6 +477,10 @@ import Crazyurl from './Crazyurl';
 
                                 // Error
                                 throw new Error("Failed to load action of page");
+
+                            console.log("Refactor");
+                            console.log(this.cacheInstance?.get('app'));
+                            console.log("End Refactor");
 
                             // Load app in cache instance
                             return this.cacheInstance?.get('app');
