@@ -329,7 +329,7 @@ export default abstract class Crazypage {
             ){
 
                 // Load new page
-                window["Crazyobject"]["pages"].loadInternalPage(result.results[0]);
+                window["Crazyobject"]["pages"]?.loadInternalPage(result.results[0]);
                 
             }else{
 
@@ -350,6 +350,8 @@ export default abstract class Crazypage {
      * 
      * Load Action if js file using the page name and the hash stored.
      * Template use : `/dist/page/app/${name}.${hash}.js`
+     * 
+     * @deprecated
      * 
      * @return Promise
      */

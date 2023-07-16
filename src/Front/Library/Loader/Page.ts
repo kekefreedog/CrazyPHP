@@ -13,6 +13,7 @@
  */
 import {default as PageError} from './../Error/Page';
 import Crazyrequest from '../Crazyrequest';
+import Pageregister from '../Pageregister';
 
 /**
  * Crazy Page Loader
@@ -34,19 +35,19 @@ export default class Page {
 
         // Load page detail
         Page.loadPageDetail(options)
-/*             .then(
+            .then(
                 // Load Pre Action
                 Page.loadPreAction
-            ) */
+            )
             .then(
                 // Load Pre Action
                 Page.loadUrl
             )
-/*             .then(
+            .then(
                 // Load Script
                 Page.loadScript
             )
-            .then(
+/*            .then(
                 // Load Style
                 Page.loadStyle
             )
@@ -109,7 +110,7 @@ export default class Page {
             options = options.preAction(options);
 
         // Set status
-        options.status.preActionLoaded = true;
+        options = Page.setStatus(options, "preActionLoaded", true);
 
         // Return options
         return options;
@@ -124,6 +125,32 @@ export default class Page {
      * @param options:LoaderPageOptions Options with all page details
      */
     public static loadScript = async(options:LoaderPageOptions):Promise<LoaderPageOptions> =>  {
+
+        // Check if script already registered
+        if(
+            options.name && 
+            window.Crazyobject.pages?.routerAction &&
+            options.name in window.Crazyobject.pages.routerAction
+        ){
+
+            // Get current router action
+            let currentRouterAction = window.Crazyobject.pages.routerAction[options.name];
+
+            // Set instance in options
+            options.instance = currentRouterAction.instance;
+
+        }else
+        // Register the script 
+        if(options.name){
+
+            // Load action
+            await Pageregister.loadAction(options.name)
+                .then(script => {
+                    
+                })
+            ;
+
+        }
 
         // Return options
         return options;
@@ -192,14 +219,15 @@ export default class Page {
                     
                 }else{
 
-                    throw new Error(`No page corresponding to "${name}" in the router collection`)x
+                    throw new Error(`No page corresponding to "${name}" in the router collection`);
 
                 }
 
             })
         ;
-
-        console.log(options);
+        
+        // Set status
+        options = Page.setStatus(options, "urlLoaded", true);
 
         // Return options
         return options;
@@ -250,11 +278,36 @@ export default class Page {
             options = options.postAction(options);
 
         // Set options is loaded
-        options.status.postActionLoaded = true;
+        options = Page.setStatus(options, "postActionLoaded", true);
 
         // Return options
         return options;
         
+    }
+
+    /** Punlic methods
+     ******************************************************
+     */
+
+    /**
+     * 
+     * @param key:string Key of the status
+     * @param value 
+     */
+    private static setStatus(options:LoaderPageOptions, key:keyof LoadPageOptionsStatus, value:boolean):LoaderPageOptions {
+
+        // Check status is defined in options
+        if(!("status" in options) || options.status === null || !options.status)
+
+            // Set status
+            options.status = {};
+
+        // Set key in status
+        options.status[key] = value;
+
+        // Return options
+        return options;
+
     }
 
 

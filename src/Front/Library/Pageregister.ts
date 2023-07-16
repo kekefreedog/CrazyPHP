@@ -10,7 +10,8 @@
 
 /**
  * Dependances
- */
+*/
+import {default as LoaderScript} from './Loader/Script';
 import Crazyrequest from './Crazyrequest';
 import Crazycache from './Crazycache';
 import Crazypage from './Crazypage';
@@ -27,15 +28,19 @@ import Crazyurl from './Crazyurl';
  */
  export default class Pageregister {
 
-    /** Methods
+    /** Public Parameters
+     ******************************************************
+     */
+
+    /** @var routerAction:Object */
+    public routerAction:Object = [];
+
+    /** Private Parameters
      ******************************************************
      */
 
     /** @var cacheInstance:Crazycache|null */
     private cacheInstance:Crazycache|null = null;
-
-    /** @var routerAction:Object */
-    private routerAction:Object = [];
 
     /** @var customEvent:Event|null */
     private customEvent:Event;
@@ -45,10 +50,6 @@ import Crazyurl from './Crazyurl';
 
     /** @var history */
     private history:Array<Object> = [];
-
-    /** Parameters
-     ******************************************************
-     */
 
     /**
      * Constructor
@@ -510,7 +511,35 @@ import Crazyurl from './Crazyurl';
 
     }
 
-    /** Methods | Private
+
+
+    /** Private Methods | Scripts 
+     ******************************************************
+     */
+
+    /**
+     * Load Action
+     * 
+     * Load Action if js file using the page name and the hash stored.
+     * Template use : `/dist/page/app/${name}.${hash}.js`
+     * 
+     * @return Promise
+     */
+    public static loadAction = (name:string, async:boolean = true):Promise<any> => {
+
+        // Get hash
+        let hash = window.Crazyobject["getHash"]();
+
+        // Set url
+        let url:string = `/dist/page/app/${name}.${hash}.js`;
+
+        // Load script
+        return LoaderScript.load(url, name, async);
+
+    }
+    
+
+    /** Private Methods | Utilities 
      ******************************************************
      */
 

@@ -8,6 +8,8 @@
  * @copyright  2022-2022 Kévin Zarshenas
  */
 
+import Crazyobject from "./../Core/Crazyobject";
+
 /**
  * Dependances
  */
@@ -31,6 +33,18 @@ export {default as Crazypage} from "./../Library/Crazypage";
 
 // Declare GLobal type
 declare global {
+
+    /** Interface | Global
+     ******************************************************
+     */
+
+    interface Window {
+        Crazyobject: Crazyobject;
+    }
+
+    /** Interface
+     ******************************************************
+     */
 
     /**
      * Crazy Fetch Option
@@ -131,12 +145,13 @@ declare global {
      * Interface LoadPageOptionsStatus
      */
     interface LoadPageOptionsStatus {
-        active:boolean = false,
-        preActionLoaded:boolean = false,
-        postActionLoaded:boolean = false,
-        scriptLoaded:boolean = false,
-        styleLoaded:boolean = false,
-        contentLoaded:boolean = false,
+        active?:boolean = false,
+        preActionLoaded?:boolean = false,
+        postActionLoaded?:boolean = false,
+        scriptLoaded?:boolean = false,
+        styleLoaded?:boolean = false,
+        contentLoaded?:boolean = false,
+        urlLoaded?:boolean = false
     }
 
 }
