@@ -47,10 +47,10 @@ export default class Page {
                 // Load Script
                 Page.loadScript
             )
-/*            .then(
+            .then(
                 // Load Style
                 Page.loadStyle
-            )
+            )/*
             .then(
                 // Load Content
                 Page.loadContent
@@ -152,6 +152,38 @@ export default class Page {
 
         }
 
+        // Get registered
+        let registered = window.Crazyobject.getRegisteredPage(options.name ? options.name : "");
+
+        // Check html
+        if("html" in registered?.classReference && registered?.classReference.html){
+
+            // Set html in options
+            options.content = registered?.classReference.html;
+
+            // Set options
+            options = this.setStatus(options, "contentLoaded", true);
+
+        }
+
+        // Check html
+        if("css" in registered?.classReference && registered?.classReference.css){
+
+            // Set html in options
+            options.style = registered?.classReference.css.default.toString();
+
+            // Set options
+            options = this.setStatus(options, "styleLoaded", true);
+
+        }
+
+        // Set script loaded
+        options.scriptLoaded = registered?.classReference;
+
+        // Set options
+        options = this.setStatus(options, "scriptLoaded", true);
+
+
         // Return options
         return options;
 
@@ -219,7 +251,7 @@ export default class Page {
                     
                 }else{
 
-                    throw new Error(`No page corresponding to "${name}" in the router collection`);
+                    throw new Error(`No page corresponding to "${options.name}" in the router collection`);
 
                 }
 
@@ -242,6 +274,8 @@ export default class Page {
      * @param options:LoaderPageOptions Options with all page details
      */
     public static loadStyle = async(options:LoaderPageOptions):Promise<LoaderPageOptions> =>  {
+
+        console.log(options);
 
         // Return options
         return options;

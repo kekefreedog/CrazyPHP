@@ -78,3 +78,4 @@ export default class Error extends Crazypage {
  * Register current class
  */
 // window.Crazyobject.pages.register(Home);
+window.Crazyobject.registerPage(Error);

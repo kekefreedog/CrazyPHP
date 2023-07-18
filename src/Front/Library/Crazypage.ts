@@ -45,13 +45,13 @@ export default abstract class Crazypage {
      * @param html:string 
      * Duplicate of the class name because build change name of class
      */
-    public static readonly html = null;
+    public static readonly html:string|null|CallableFunction = null;
 
     /** 
      * @param css:string 
      * Duplicate of the class name because build change name of class
      */
-    public static readonly css = null;
+    public static readonly css:null|Object = null;
 
     /**
      * Constructor

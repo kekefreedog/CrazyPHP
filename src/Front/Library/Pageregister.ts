@@ -153,7 +153,7 @@ import Crazyurl from './Crazyurl';
      * @param page:Crazypage
      * @return void
      */
-    public register(page:Crazypage):void {
+    public register(page:typeof Crazypage):void {
 
         let registerFunction = value => {
 
@@ -214,16 +214,16 @@ import Crazyurl from './Crazyurl';
                         stylePastPageEl.remove();
 
                     // Load css
-                    if(page["css"] !== null && "default" in page["css"]){
+                    if(page.css !== null && "default" in page.css){
 
                         // Css string
-                        let cssString = page["css"].default.toString();
+                        let cssString = page.css.default?.toString();
 
                         // Create style element
                         let styleEl = document.createElement("style");
 
                         // Set content
-                        styleEl.innerText = cssString;
+                        styleEl.innerText = cssString ? cssString : "";
 
                         // Set attribute
                         styleEl.setAttribute("specific-to-page", page.className);

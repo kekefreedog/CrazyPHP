@@ -79,3 +79,4 @@ export default class Home extends Crazypage {
  * Register current class
  */
 window.Crazyobject.pages.register(Home);
+window.Crazyobject.registerPage(Home);

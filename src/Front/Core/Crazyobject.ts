@@ -13,9 +13,11 @@
  */
 import Componentregister from "./../Library/Componentregister";
 import Configregister from "./../Library/Configregister";
+import RegisterPage from "./../Library/Register/Page";
 import Pageregister from "./../Library/Pageregister";
 import Crazyconsole from "./../Library/Crazyconsole";
 import Crazyevents from "./../Library/Crazyevents";
+import Crazypage from "./../Library/Crazypage";
 
 /**
  * Crazy Object
@@ -36,7 +38,10 @@ export default class Crazyobject {
     public components:Componentregister|null = null;
 
     /** @var pages Pages class */
-    public pages:Pageregister|null = null;
+    public pages:Pageregister;
+
+    /** @var _registerPage Register page */
+    private _registerPage:RegisterPage;
 
     /** @var configs Configs class */
     public configs:Configregister|null = null;
@@ -61,6 +66,9 @@ export default class Crazyobject {
         // New Page Register
         this.pages = new Pageregister();
 
+        // Page Register
+        this._registerPage = RegisterPage;
+
         // New Config Register
         this.configs = new Configregister();
 
@@ -82,6 +90,37 @@ export default class Crazyobject {
     /** Methods | Page Register
      ******************************************************
      */
+
+    /**
+     * Register Page
+     * 
+     * @param page Page to register
+     */
+    public registerPage = (page:typeof Crazypage) => {
+
+        // Check function
+        if("register" in this._registerPage && typeof this._registerPage.register === "function")
+
+            // Call register in window
+            this._registerPage.register(page);
+
+    }
+
+    public getRegisteredPage = (name:string):RegisterPageRegistered|null => {
+
+        // Set result
+        let result:RegisterPageRegistered|null = null;
+
+        // Check function
+        if("getRegistered" in this._registerPage && typeof this._registerPage.getRegistered === "function")
+
+            // Call register in window
+            result = this._registerPage.getRegistered(name);
+
+        // Return result
+        return result;
+
+    }
 
     /** Methods | Config Register
      ******************************************************

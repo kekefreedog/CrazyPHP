@@ -59,7 +59,7 @@ export default class Script {
                 if(id)
 
                     // Set id in scriptEle
-                    scriptEle.id = id;
+                    scriptEle.id = `script-${id}`;
 
                 // Event load
                 scriptEle.addEventListener("load", e => {

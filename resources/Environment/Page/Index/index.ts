@@ -87,3 +87,4 @@ export default class Index extends Crazypage {
  * Register current class
  */
 window.Crazyobject.pages.register(Index);
+window.Crazyobject.registerPage(Index);
