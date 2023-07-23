@@ -27,3 +27,4 @@ export {default as LoaderPage} from "./Library/Loader/Page";
 export {default as Crazycache} from "./Library/Crazycache";
 export {default as Crazyobject} from "./Core/Crazyobject";
 export {default as Crazypage} from "./Library/Crazypage";
+export {default as DomRoot} from "./Library/Dom/Root";

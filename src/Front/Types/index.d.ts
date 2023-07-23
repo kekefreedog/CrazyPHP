@@ -9,6 +9,7 @@
  */
 
 import Crazyobject from "./../Core/Crazyobject";
+import Crazypage from "./../Library/Crazypage";
 
 /**
  * Dependances
@@ -29,6 +30,7 @@ export {default as LoaderPage} from "./../Library/Loader/Page";
 export {default as Crazycache} from "./../Library/Crazycache";
 export {default as Crazyobject} from "./../Core/Crazyobject";
 export {default as Crazypage} from "./../Library/Crazypage";
+export {default as DomRoot} from "./../Library/Dom/Root";
 
 /* Modules to export */
 /* export {}; */
@@ -85,11 +87,12 @@ declare global {
     /**
      * Crazy Page
      */
-    interface Crazypage {
+    /* interface Crazypage {
 
-        /** Name */
+        // Name
         name:string;
-    }
+    } */
+
     /**
      * String Crazy Page
      */
@@ -131,13 +134,14 @@ declare global {
         name?:?string = null,
         url?:?URL = null,
         arguments?:?Object = null,
-        instance?:?Crazypage = null,
+        instance?:?object = null,
         content?:?CallableFunction|string = null,
         style?:?CallableFunction|string = null,
         preAction?:?CallableFunction = null,
         postAction?:?CallableFunction = null,
         status?:?LoadPageOptionsStatus = null,
-        scriptLoaded?:?Array<string> = null,
+        scriptLoaded?:?typeof Crazypage = null,
+        scriptRunning?:?new () => typeof Crazypage = null,
         hash?:?string = null,
         eventsRegistered?:?Array<Object> = null,
         componentsRegistered?:?Array<Object> = null

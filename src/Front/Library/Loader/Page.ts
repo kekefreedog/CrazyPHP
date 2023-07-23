@@ -14,6 +14,8 @@
 import {default as PageError} from './../Error/Page';
 import Crazyrequest from '../Crazyrequest';
 import Pageregister from '../Pageregister';
+import Crazypage from '../Crazypage';
+import DomRoot from '../Dom/Root';
 
 /**
  * Crazy Page Loader
@@ -50,14 +52,18 @@ export default class Page {
             .then(
                 // Load Style
                 Page.loadStyle
-            )/*
+            )
             .then(
                 // Load Content
                 Page.loadContent
             ).then(
                 // Load Post Action
                 Page.loadPostAction
-            ).catch(
+            )
+            .then(
+                // Load Content
+                Page.loadOnReadyScript
+            )/*.catch(
                 err =>  {
                     console.log(PageError);
                 }
@@ -156,7 +162,7 @@ export default class Page {
         let registered = window.Crazyobject.getRegisteredPage(options.name ? options.name : "");
 
         // Check html
-        if("html" in registered?.classReference && registered?.classReference.html){
+        if(registered !== null && "classReference" in registered && "html" in registered?.classReference && registered?.classReference.html){
 
             // Set html in options
             options.content = registered?.classReference.html;
@@ -167,10 +173,14 @@ export default class Page {
         }
 
         // Check html
-        if("css" in registered?.classReference && registered?.classReference.css){
+        if(registered !== null && "classReference" in registered && "css" in registered?.classReference && registered?.classReference.css && "default" in registered?.classReference.css && typeof registered?.classReference.css.default === "string"){
 
             // Set html in options
-            options.style = registered?.classReference.css.default.toString();
+            options.style = registered?.classReference.css.default
+                .toString()
+                .replace(/\r?\n|\r/g, "")               // Remove end of line
+                .replace(/\/\*[\s\S]*?\*\//g, "")       // Remove /* Comment */
+            ;
 
             // Set options
             options = this.setStatus(options, "styleLoaded", true);
@@ -182,7 +192,6 @@ export default class Page {
 
         // Set options
         options = this.setStatus(options, "scriptLoaded", true);
-
 
         // Return options
         return options;
@@ -275,7 +284,25 @@ export default class Page {
      */
     public static loadStyle = async(options:LoaderPageOptions):Promise<LoaderPageOptions> =>  {
 
-        console.log(options);
+        // Check if css is set
+        if("style" in options && typeof options.style == "string"){
+
+            // Create style element
+            let styleEl = document.createElement("style");
+
+            // Add id to style el
+            styleEl.setAttribute("id", `style-${options.name}`);
+
+            // Set inner text
+            styleEl.innerText = options.style;
+
+            // Set status
+            Page.setStatus(options, "styleLoaded", true);
+
+            // Append the style element to the head of the document
+            document.head.appendChild(styleEl);
+
+        }
 
         // Return options
         return options;
@@ -291,9 +318,49 @@ export default class Page {
      */
     public static loadContent = async(options:LoaderPageOptions):Promise<LoaderPageOptions> =>  {
 
+        // Check content
+        if("content" in options && typeof options.content === "function"){
+
+            // Get content
+            let content:string = options.content({});
+
+            // Set content of dom root
+            DomRoot.setContent(content);
+
+        }
+
         // Return options
         return options;
         
+    }
+
+    /**
+     * Load On Ready Script Action
+     * 
+     * Execute on ready script
+     * 
+     * @param options:LoaderPageOptions Options with all page details
+     */
+    public static loadOnReadyScript = async(options:LoaderPageOptions):Promise<LoaderPageOptions> =>  {
+
+        console.log(typeof options.scriptLoaded);
+
+        // Check script loaded
+        if("scriptLoaded" in options && options.scriptLoaded && "constructor" in options.scriptLoaded){
+
+            // Set current class
+            let currentClass:any = options.scriptLoaded;
+
+            // New instance of this class
+            let instance = new currentClass();
+
+            // Set scriptRunning
+            options.scriptRunning = instance;
+
+        }
+
+        return options;
+
     }
 
     /**
