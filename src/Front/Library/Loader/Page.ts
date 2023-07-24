@@ -14,8 +14,8 @@
 import {default as PageError} from './../Error/Page';
 import Crazyrequest from '../Crazyrequest';
 import Pageregister from '../Pageregister';
-import Crazypage from '../Crazypage';
 import DomRoot from '../Dom/Root';
+import Crazyurl from '../Crazyurl';
 
 /**
  * Crazy Page Loader
@@ -50,24 +50,28 @@ export default class Page {
                 Page.loadScript
             )
             .then(
+                // Load Script
+                Page.updateUrl
+            )
+            .then(
                 // Load Style
                 Page.loadStyle
             )
             .then(
                 // Load Content
                 Page.loadContent
-            ).then(
-                // Load Post Action
-                Page.loadPostAction
             )
             .then(
                 // Load Content
                 Page.loadOnReadyScript
-            )/*.catch(
+            ).then(
+                // Load Post Action
+                Page.loadPostAction
+            ).catch(
                 err =>  {
-                    console.log(PageError);
+                    console.error(err);
                 }
-            ) */
+            );
 
     }
 
@@ -92,6 +96,7 @@ export default class Page {
      *  }
      * 
      * @param options:LoaderPageOptions Options with all page details
+     * @return Promise<LoaderPageOptions>
      */
     public static loadPageDetail = async(options:LoaderPageOptions):Promise<LoaderPageOptions> => {
 
@@ -106,6 +111,7 @@ export default class Page {
      * Execute custom pre actions
      * 
      * @param options:LoaderPageOptions Options with all page details
+     * @return Promise<LoaderPageOptions>
      */
     public static loadPreAction = async(options:LoaderPageOptions):Promise<LoaderPageOptions> =>  {
 
@@ -129,6 +135,7 @@ export default class Page {
      * Load Js scripts of the page
      * 
      * @param options:LoaderPageOptions Options with all page details
+     * @return Promise<LoaderPageOptions>
      */
     public static loadScript = async(options:LoaderPageOptions):Promise<LoaderPageOptions> =>  {
 
@@ -204,6 +211,7 @@ export default class Page {
      * Load url from name and arguments
      * 
      * @param options:LoaderPageOptions Options with all page details
+     * @return Promise<LoaderPageOptions>
      */
     public static loadUrl = async(options:LoaderPageOptions):Promise<LoaderPageOptions> =>  {
 
@@ -276,11 +284,32 @@ export default class Page {
     }
 
     /**
+     * Update Url
+     * 
+     * Update url of the page
+     * 
+     * @param options:LoaderPageOptions Options with all page details
+     * @return Promise<LoaderPageOptions>
+     */
+    public static updateUrl = async(options:LoaderPageOptions):Promise<LoaderPageOptions> =>  {
+
+        // Check url in options
+        if("url" in options && options.url !== null)
+
+            // Set new url
+            Crazyurl.set(options.url);
+
+        // Return options
+        return options;
+    }
+
+    /**
      * Load Style
      * 
      * Load Css styles of the page
      * 
      * @param options:LoaderPageOptions Options with all page details
+     * @return Promise<LoaderPageOptions>
      */
     public static loadStyle = async(options:LoaderPageOptions):Promise<LoaderPageOptions> =>  {
 
@@ -315,6 +344,7 @@ export default class Page {
      * Load html Content of the page
      * 
      * @param options:LoaderPageOptions Options with all page details
+     * @return Promise<LoaderPageOptions>
      */
     public static loadContent = async(options:LoaderPageOptions):Promise<LoaderPageOptions> =>  {
 
@@ -340,10 +370,9 @@ export default class Page {
      * Execute on ready script
      * 
      * @param options:LoaderPageOptions Options with all page details
+     * @return Promise<LoaderPageOptions>
      */
     public static loadOnReadyScript = async(options:LoaderPageOptions):Promise<LoaderPageOptions> =>  {
-
-        console.log(typeof options.scriptLoaded);
 
         // Check script loaded
         if("scriptLoaded" in options && options.scriptLoaded && "constructor" in options.scriptLoaded){
@@ -369,6 +398,7 @@ export default class Page {
      * Execute custom pre actions
      * 
      * @param options:LoaderPageOptions Options with all page details
+     * @return Promise<LoaderPageOptions>
      */
     public static loadPostAction = async(options:LoaderPageOptions):Promise<LoaderPageOptions> =>  {
 
@@ -391,9 +421,14 @@ export default class Page {
      */
 
     /**
+     * Set Status
      * 
+     * Set status in options
+     * 
+     * @param options:LoaderPageOptions Options with all page details
      * @param key:string Key of the status
-     * @param value 
+     * @param value :boolean True of False
+     * @return Promise<LoaderPageOptions>
      */
     private static setStatus(options:LoaderPageOptions, key:keyof LoadPageOptionsStatus, value:boolean):LoaderPageOptions {
 

@@ -16,6 +16,7 @@ import Configregister from "./../Library/Configregister";
 import RegisterPage from "./../Library/Register/Page";
 import Pageregister from "./../Library/Pageregister";
 import Crazyconsole from "./../Library/Crazyconsole";
+import HistoryPage from "./../Library/History/Page";
 import Crazyevents from "./../Library/Crazyevents";
 import Crazypage from "./../Library/Crazypage";
 
@@ -55,6 +56,9 @@ export default class Crazyobject {
     /** @var hash Hash of the current build */
     private hash:string = "";
 
+    /** @var history History Page instance */
+    public historyPage:HistoryPage;
+
     /**
      * Constructor
      */
@@ -77,6 +81,9 @@ export default class Crazyobject {
 
         // New Crazy Events
         this.events = new Crazyevents();
+
+        // Page history
+        this.historyPage = new HistoryPage();
 
         // Set hash
         this.hash = "";

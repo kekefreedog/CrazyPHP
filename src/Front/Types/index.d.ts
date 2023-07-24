@@ -25,6 +25,7 @@ export {default as Crazyconsole} from "./../Library/Crazyconsole";
 export {default as Crazyrequest} from "./../Library/Crazyrequest";
 export {default as Crazyelement} from "./../Library/Crazyelement";
 export {default as Pageregister} from "./../Library/Pageregister";
+export {default as HistoryPage} from "./../Library/History/Page";
 export {default as Crazyevents} from "./../Library/Crazyevents";
 export {default as LoaderPage} from "./../Library/Loader/Page";
 export {default as Crazycache} from "./../Library/Crazycache";
@@ -157,7 +158,8 @@ declare global {
         scriptLoaded?:boolean = false,
         styleLoaded?:boolean = false,
         contentLoaded?:boolean = false,
-        urlLoaded?:boolean = false
+        urlLoaded?:boolean = false,
+        urlUpdated?:boolean = false,
     }
 
     /** Interface | Register
