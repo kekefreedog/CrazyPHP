@@ -32,7 +32,7 @@ export default class Arrays {
      * 
      * @return any
      */
-    public static filterByKey = (array:Array<any> = [], key:string, keyValue:string) => array.filter(
+    public static filterByKey = (array:Array<any> = [], key:string, keyValue:string|Array<any>|null|Object) => array.filter(
         (aEl) => aEl[key] == keyValue
     );
     

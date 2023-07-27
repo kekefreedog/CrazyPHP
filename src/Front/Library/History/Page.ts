@@ -11,6 +11,7 @@
 /**
  * Dependances
  */
+import Arrays from '../Utility/Arrays';
 import {default as PageError} from './../Error/Page';
 
 /**
@@ -34,13 +35,76 @@ export default class Page {
     /** @param _future */
     private _future:Array<LoaderPageOptions> = [];
 
+    /** @param _currentHref  */
+    private _currentHref:string;
+
+    /** @param _collection Collection of url with state and LoaderPagOptions */
+    private _collection:Array<HistoryPageItem> = [];
+
+
+
     /**
      * Constructor
      * 
      */
     public constructor(){
 
-        
+        console.log("history");
+
+        // Pop state init
+        this._popStateInit();
+
+        // Set current href
+        this._currentHref = window.location.href;
+
+
+    }
+
+    /** Public methods
+     ******************************************************
+     */
+
+    /**
+     * Register
+     * 
+     * Register in collection new item
+     * 
+     * @param item 
+     * @return void
+     */
+    public register = (item:HistoryPageItem):void => {
+
+        // Check href
+        if(!item.href)
+
+            // Stop function\
+            return;
+
+        // Check state
+        if(!("state" in item) && item.state)
+
+            // Set state
+            item.state = null;
+
+        // Check if href in collection
+        let searchInCollection:Array<HistoryPageItem> = Arrays.filterByKey(this._collection, "href", item.href);
+
+        // Check searchInCollection
+        if(searchInCollection.length){
+
+            // Second search
+            let secondSearchInCollection:Array<HistoryPageItem> = Arrays.filterByKey(searchInCollection, "state", item.state ?? null);
+
+            // Check secondSearchInCollection
+            if(secondSearchInCollection.length)
+
+                // Stop register because is already exists
+                return;
+
+        }
+
+        // Push item in collection
+        this._collection.push(item);
 
     }
 
@@ -105,6 +169,51 @@ export default class Page {
 
         // Return page option
         return result;
+
+    }
+
+    /** Private methods
+     ******************************************************
+     */
+
+    private _popStateInit = ():void => {
+
+        // Catch event
+        window.addEventListener("popstate", this._popStateEvent);
+
+    }
+
+    private _popStateEvent = (e:PopStateEvent):void => {
+
+        // Prevent default
+        e.defaultPrevented;
+
+        // Get new href
+        let newHref = window.location.href;
+
+        // Seatch new href in collection
+        let search = Arrays.filterByKey(this._collection, "href", newHref);
+
+        // Check search
+        /* if(search.length){
+
+            // Load
+
+
+            // Stop function
+            return;
+
+        }
+
+        // Seatch new href in collection
+        let searchBack = Arrays.filterByKey(this._collection, "href", newHref);
+
+        // Check search
+        if(searchBack.length){
+
+
+
+        } */
 
     }
 

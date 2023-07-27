@@ -396,68 +396,6 @@ import Crazyurl from './Crazyurl';
             // 
             console.log("In the router action collection");
 
-            /* // Execute page
-            let currentPage = new this.routerAction[input.name].instance();
-
-            // Remove old css specific
-            let stylePastPageEl = document.querySelector("[specific-to-page]");
-
-            // Check if exists
-            if(stylePastPageEl !== null)
-
-                // Remove it
-                stylePastPageEl.remove();
-
-            // Load css
-            if(this.routerAction[input.name].instance["css"] !== null && "default" in this.routerAction[input.name].instance["css"]){
-
-                // Css string
-                let cssString = this.routerAction[input.name].instance["css"].default.toString();
-
-                // Create style element
-                let styleEl = document.createElement("style");
-
-                // Set content
-                styleEl.innerText = cssString;
-
-                // Set attribute
-                styleEl.setAttribute("specific-to-page", this.routerAction[input.name].instance.className);
-
-                // Add to document
-                document.head.appendChild(styleEl);
-
-            // Load html
-            if(typeof this.routerAction["html"] === "function"){
-
-                // Get html string
-                let htmlString:string = this.routerAction["html"]();
-
-                // Convert to dom
-                let htmlObject:Document = new DOMParser().parseFromString(htmlString, "text/html");
-            
-                // Get crazy-root
-                let crazyRootEl = document.getElementById("crazy-root");
-
-                // Get new content
-                let newContent = htmlObject.getElementById("crazy-root");
-
-                // Check el
-                if(crazyRootEl !== null && newContent !== null){
-
-                    // Replace with new content
-                    crazyRootEl.replaceWith(newContent);
-
-                }else{
-
-
-
-                }
-
-            }
-
-            // Add it to current page
-            this.currentPage = currentPage; */
-
         }else{
 
             //

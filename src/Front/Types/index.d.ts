@@ -152,14 +152,30 @@ declare global {
      * Interface LoadPageOptionsStatus
      */
     interface LoadPageOptionsStatus {
-        active?:boolean = false,
-        preActionLoaded?:boolean = false,
-        postActionLoaded?:boolean = false,
-        scriptLoaded?:boolean = false,
-        styleLoaded?:boolean = false,
-        contentLoaded?:boolean = false,
+        /* Status of the page */
+        // Is current page
+        isCurrentPage?:boolean = false,
+        // JS script file registered
+        scriptRegistered?:boolean = false,
+        // URL loaded
         urlLoaded?:boolean = false,
+        /* Action when page is loaded */
+        // Pre Action Executed
+        preActionExecuted?:boolean = false,
+        // Url updated
         urlUpdated?:boolean = false,
+        // Title updated
+        titleUpdated?:boolean = false,
+        // Style css loaded
+        styleLoaded?:boolean = false,
+        // Content loaded
+        contentLoaded?:boolean = false,
+        // On Ready Executed
+        onReadyExecuted?:boolean = false,
+        // Push to History
+        historyRegistered?:boolean = false,
+        // Post Action Executed
+        postActionExecuted?:boolean = false,
     }
 
     /** Interface | Register
@@ -171,9 +187,22 @@ declare global {
      */
     interface RegisterPageRegistered {
         className:string,
-        classReference:typeof Crazypage,
+        classReference:any,
         hashUsed?:string,
         dateLoaded:Date,
+    }
+
+    /** Interface | History
+     ******************************************************
+     */
+
+    /**
+     * Page History Item
+     */
+    interface HistoryPageItem  {
+        href:string,
+        state?:?Object,
+        loader:LoaderPageOptions
     }
 
 }

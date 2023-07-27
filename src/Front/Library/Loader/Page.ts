@@ -14,8 +14,8 @@
 import {default as PageError} from './../Error/Page';
 import Crazyrequest from '../Crazyrequest';
 import Pageregister from '../Pageregister';
-import DomRoot from '../Dom/Root';
 import Crazyurl from '../Crazyurl';
+import DomRoot from '../Dom/Root';
 
 /**
  * Crazy Page Loader
@@ -54,12 +54,20 @@ export default class Page {
                 Page.updateUrl
             )
             .then(
+                // Update Title
+                Page.updateTitle
+            )
+            .then(
                 // Load Style
                 Page.loadStyle
             )
             .then(
                 // Load Content
                 Page.loadContent
+            )
+            .then(
+                // Load Content
+                Page.registerInHistory
             )
             .then(
                 // Load Content
@@ -100,6 +108,23 @@ export default class Page {
      */
     public static loadPageDetail = async(options:LoaderPageOptions):Promise<LoaderPageOptions> => {
 
+        // Let keys
+        let keys:Array<keyof LoadPageOptionsStatus> = ["isCurrentPage", "scriptRegistered", "urlLoaded", "preActionExecuted", "urlUpdated", "titleUpdated", "styleLoaded", "contentLoaded", "onReadyExecuted", "historyRegistered","postActionExecuted"];
+
+        // Prepare options
+        for(let currentKey of keys){
+
+            // Check key is in options status
+            if(options.status !== undefined && options.status !== null && currentKey in options.status)
+
+                // Continue
+                continue;
+            
+            // Set status
+            options = Page.setStatus(options, currentKey, false);
+
+        }
+
         // Return options
         return options;
 
@@ -110,10 +135,18 @@ export default class Page {
      * 
      * Execute custom pre actions
      * 
+     * > Executed only the first time that the page is loaded
+     * 
      * @param options:LoaderPageOptions Options with all page details
      * @return Promise<LoaderPageOptions>
      */
     public static loadPreAction = async(options:LoaderPageOptions):Promise<LoaderPageOptions> =>  {
+
+        // Check status
+        if(options.status?.preActionExecuted === true)
+
+            // Stop function
+            return options;
 
         // Check if preAction is callable
         if(typeof options.preAction === "function")
@@ -122,7 +155,7 @@ export default class Page {
             options = options.preAction(options);
 
         // Set status
-        options = Page.setStatus(options, "preActionLoaded", true);
+        options = Page.setStatus(options, "preActionExecuted", true);
 
         // Return options
         return options;
@@ -138,6 +171,12 @@ export default class Page {
      * @return Promise<LoaderPageOptions>
      */
     public static loadScript = async(options:LoaderPageOptions):Promise<LoaderPageOptions> =>  {
+
+        // Check status
+        if(options.status?.scriptRegistered === true)
+
+            // Stop function
+            return options;
 
         // Check if script already registered
         if(
@@ -174,9 +213,6 @@ export default class Page {
             // Set html in options
             options.content = registered?.classReference.html;
 
-            // Set options
-            options = this.setStatus(options, "contentLoaded", true);
-
         }
 
         // Check html
@@ -189,16 +225,13 @@ export default class Page {
                 .replace(/\/\*[\s\S]*?\*\//g, "")       // Remove /* Comment */
             ;
 
-            // Set options
-            options = this.setStatus(options, "styleLoaded", true);
-
         }
 
         // Set script loaded
         options.scriptLoaded = registered?.classReference;
 
         // Set options
-        options = this.setStatus(options, "scriptLoaded", true);
+        options = this.setStatus(options, "scriptRegistered", true);
 
         // Return options
         return options;
@@ -214,6 +247,12 @@ export default class Page {
      * @return Promise<LoaderPageOptions>
      */
     public static loadUrl = async(options:LoaderPageOptions):Promise<LoaderPageOptions> =>  {
+
+        // Check status
+        if(options.status?.urlLoaded === true)
+
+            // Stop function
+            return options;
 
         // Check url is empty
         if("url" in options && options.url !== null)
@@ -293,6 +332,12 @@ export default class Page {
      */
     public static updateUrl = async(options:LoaderPageOptions):Promise<LoaderPageOptions> =>  {
 
+        // Check status
+        if(options.status?.urlUpdated === true)
+
+            // Stop function
+            return options;
+
         // Check url in options
         if("url" in options && options.url !== null)
 
@@ -304,6 +349,27 @@ export default class Page {
     }
 
     /**
+     * Update Title
+     * 
+     * Update title of the page
+     * 
+     * @param options:LoaderPageOptions Options with all page details
+     * @return Promise<LoaderPageOptions>
+     */
+    public static updateTitle = async(options:LoaderPageOptions):Promise<LoaderPageOptions> =>  {
+
+        // Check status
+        if(options.status?.titleUpdated === true)
+
+            // Stop function
+            return options;
+
+        // Return options
+        return options;        
+
+    }
+
+    /**
      * Load Style
      * 
      * Load Css styles of the page
@@ -312,6 +378,12 @@ export default class Page {
      * @return Promise<LoaderPageOptions>
      */
     public static loadStyle = async(options:LoaderPageOptions):Promise<LoaderPageOptions> =>  {
+
+        // Check status
+        if(options.status?.styleLoaded === true)
+
+            // Stop function
+            return options;
 
         // Check if css is set
         if("style" in options && typeof options.style == "string"){
@@ -348,6 +420,13 @@ export default class Page {
      */
     public static loadContent = async(options:LoaderPageOptions):Promise<LoaderPageOptions> =>  {
 
+        // Check status
+        if(options.status?.contentLoaded === true)
+
+            // Stop function
+            return options;
+    
+
         // Check content
         if("content" in options && typeof options.content === "function"){
 
@@ -364,6 +443,29 @@ export default class Page {
         
     }
 
+    public static registerInHistory = async(options:LoaderPageOptions):Promise<LoaderPageOptions> => {
+
+        // Check status
+        if(options.status?.historyRegistered === true)
+
+            // Stop function
+            return options;
+
+        // Get url
+        let urlString:string = options.url ? options.url?.toString() : "";
+
+        // Check history in window Crazyobject
+        window.Crazyobject.historyPage.register({
+            href: urlString,
+            loader: Page.resetOptions(options),
+            state: {}
+        })
+
+        // Return options
+        return options
+
+    }
+
     /**
      * Load On Ready Script Action
      * 
@@ -373,6 +475,12 @@ export default class Page {
      * @return Promise<LoaderPageOptions>
      */
     public static loadOnReadyScript = async(options:LoaderPageOptions):Promise<LoaderPageOptions> =>  {
+
+        // Check status
+        if(options.status?.onReadyExecuted === true)
+
+            // Stop function
+            return options;
 
         // Check script loaded
         if("scriptLoaded" in options && options.scriptLoaded && "constructor" in options.scriptLoaded){
@@ -386,8 +494,12 @@ export default class Page {
             // Set scriptRunning
             options.scriptRunning = instance;
 
+            // Set status
+            options = Page.setStatus(options, "onReadyExecuted", true);
+            
         }
-
+        
+        // Return options
         return options;
 
     }
@@ -402,6 +514,12 @@ export default class Page {
      */
     public static loadPostAction = async(options:LoaderPageOptions):Promise<LoaderPageOptions> =>  {
 
+        // Check status
+        if(options.status?.postActionExecuted === true)
+
+            // Stop function
+            return options;
+
         // Check if preAction is callable
         if(typeof options.postAction === "function")
 
@@ -409,7 +527,7 @@ export default class Page {
             options = options.postAction(options);
 
         // Set options is loaded
-        options = Page.setStatus(options, "postActionLoaded", true);
+        options = Page.setStatus(options, "postActionExecuted", true);
 
         // Return options
         return options;
@@ -440,6 +558,26 @@ export default class Page {
 
         // Set key in status
         options.status[key] = value;
+
+        // Return options
+        return options;
+
+    }
+
+    /**
+     * Reset option
+     * 
+     * 
+     */
+    private static resetOptions(options:LoaderPageOptions):LoaderPageOptions {
+
+        // Set options status
+        options = Page.setStatus(options, "isCurrentPage", false);
+        options = Page.setStatus(options, "styleLoaded", false);
+        options = Page.setStatus(options, "contentLoaded", false);
+        options = Page.setStatus(options, "onReadyExecuted", false);
+        options = Page.setStatus(options, "postActionExecuted", false);
+        options = Page.setStatus(options, "urlUpdated", false);
 
         // Return options
         return options;
