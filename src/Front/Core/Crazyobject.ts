@@ -21,6 +21,7 @@ import HistoryPage from "./../Library/History/Page";
 import Crazyevents from "./../Library/Crazyevents";
 import PageLoader from "./../Library/Loader/Page";
 import Crazypage from "./../Library/Crazypage";
+import Hash from './../Library/Utility/Hash';
 
 /**
  * Crazy Object
@@ -59,7 +60,8 @@ export default class Crazyobject {
     public events:Crazyevents|null = null;
 
     /** @var hash Hash of the current build */
-    private hash:string = "";
+    public hash:string = "";
+    public hashTemp:Hash;
 
     /** @var history History Page instance */
     public historyPage:HistoryPage;
@@ -69,13 +71,17 @@ export default class Crazyobject {
      */
     public constructor(input:CrazyObjectInput){
 
-        // New Component Register
+        console.log("dev");
+        console.log(input);
+
+        // Register Global Web Components give by the app
         this.components = new Componentregister(input);
 
-        // New Page Register
+        // New Page register
+        // dep
         this.pages = new Pageregister();
 
-        // New current page
+        // New current page instance
         this.currentPage = new CurrentPage();
 
         // Page Register
@@ -93,8 +99,30 @@ export default class Crazyobject {
         // Page history
         this.historyPage = new HistoryPage();
 
+
+        // Hash Init
+        this.hashInit();
+
+    }
+
+    /** Private Methods Init
+     ******************************************************
+     */
+
+    /**
+     * Hash Init
+     * 
+     * Prepare hash in your crazy page
+     * 
+     * @returns void
+     */
+    private hashInit = ():void => {
+
         // Set hash
         this.hash = "";
+
+        // Hash instance
+        this.hashTemp = new Hash();
 
     }
 
