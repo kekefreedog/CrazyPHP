@@ -25,6 +25,7 @@ export {default as Crazyconsole} from "./../Library/Crazyconsole";
 export {default as Crazyrequest} from "./../Library/Crazyrequest";
 export {default as Crazyelement} from "./../Library/Crazyelement";
 export {default as Pageregister} from "./../Library/Pageregister";
+export {default as CurrentPage} from "./../Library/Current/Page";
 export {default as HistoryPage} from "./../Library/History/Page";
 export {default as Crazyevents} from "./../Library/Crazyevents";
 export {default as LoaderPage} from "./../Library/Loader/Page";

@@ -28,6 +28,10 @@ Head :
         content: '{{App.name}}'
     - tag: meta
       attributes:
+        name: application-hash
+        content: '{{Front.lastBuild.hash}}'
+    - tag: meta
+      attributes:
         name: theme-color
         content: '#2196f3'
     - tag: meta
@@ -85,10 +89,6 @@ Head :
     - tag: meta
       attributes:
         name: apple-mobile-web-app-title
-        content: '{{App.name}}'
-    - tag: meta
-      attributes:
-        name: application-name
         content: '{{App.name}}'
     - tag: meta
       attributes:

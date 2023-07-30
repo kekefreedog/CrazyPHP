@@ -150,6 +150,8 @@ import Crazyurl from './Crazyurl';
      * 
      * Register page in current context
      * 
+     * @deprecated
+     * 
      * @param page:Crazypage
      * @return void
      */
@@ -467,6 +469,23 @@ import Crazyurl from './Crazyurl';
 
         // Get hash
         let hash = window.Crazyobject["getHash"]();
+
+        // Check hash
+        if(!hash){
+
+            // Get meta
+            let metaTagEl = document.querySelector('meta[name="application-hash"]');
+
+            // Check meta
+            if(metaTagEl === null || !("content" in metaTagEl) || !metaTagEl.content)
+
+                // New error
+                throw new Error(`Hash is empty...`);
+
+            // Set hash
+            hash = (metaTagEl.content as string);
+
+        }
 
         // Set url
         let url:string = `/dist/page/app/${name}.${hash}.js`;

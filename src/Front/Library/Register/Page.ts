@@ -41,8 +41,9 @@ export default class Page {
      * Register Page
      *
      * @param page:Crazypage instance to register
+     * @returns void
      */
-    public static register = (page:typeof Crazypage) => {
+    public static register = (page:typeof Crazypage):void => {
 
         // Check if page already in registered
         let result = Arrays.filterByKey(this.registered, "className", page.className);
@@ -70,6 +71,12 @@ export default class Page {
 
     }
 
+    /**
+     * Get Registered
+     * 
+     * @param name Name of the page registered
+     * @returns RegisterPageRegistered|null
+     */
     public static getRegistered = (name:string):RegisterPageRegistered|null => {
 
         // Set result
@@ -82,12 +89,10 @@ export default class Page {
             let search = Arrays.filterByKey(this.registered, "className", name);
 
             // Chech search
-            if(search.length > 0){
+            if(search.length > 0)
 
                 // Set result
                 result = search[0];
-
-            }
 
         }
 

@@ -36,7 +36,7 @@ export default class Page {
     public constructor(options:LoaderPageOptions){
 
         // Load page detail
-        Page.loadPageDetail(options)
+        return Page.loadPageDetail(options)
             .then(
                 // Load Pre Action
                 Page.loadPreAction
@@ -173,34 +173,33 @@ export default class Page {
     public static loadScript = async(options:LoaderPageOptions):Promise<LoaderPageOptions> =>  {
 
         // Check status
-        if(options.status?.scriptRegistered === true)
+        if(options.status?.scriptRegistered === false){
 
-            // Stop function
-            return options;
+            // Check if script already registered
+            if(
+                options.name && 
+                window.Crazyobject.pages?.routerAction &&
+                options.name in window.Crazyobject.pages.routerAction
+            ){
 
-        // Check if script already registered
-        if(
-            options.name && 
-            window.Crazyobject.pages?.routerAction &&
-            options.name in window.Crazyobject.pages.routerAction
-        ){
+                // Get current router action
+                let currentRouterAction = window.Crazyobject.pages.routerAction[options.name];
 
-            // Get current router action
-            let currentRouterAction = window.Crazyobject.pages.routerAction[options.name];
+                // Set instance in options
+                options.instance = currentRouterAction.instance;
 
-            // Set instance in options
-            options.instance = currentRouterAction.instance;
+            }else
+            // Register the script 
+            if(options.name){
 
-        }else
-        // Register the script 
-        if(options.name){
+                // Load action
+                await Pageregister.loadAction(options.name)
+                    .then(script => {
+                        
+                    })
+                ;
 
-            // Load action
-            await Pageregister.loadAction(options.name)
-                .then(script => {
-                    
-                })
-            ;
+            }
 
         }
 
@@ -484,7 +483,7 @@ export default class Page {
 
         // Check script loaded
         if("scriptLoaded" in options && options.scriptLoaded && "constructor" in options.scriptLoaded){
-
+            
             // Set current class
             let currentClass:any = options.scriptLoaded;
 

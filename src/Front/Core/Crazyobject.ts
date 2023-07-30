@@ -16,8 +16,10 @@ import Configregister from "./../Library/Configregister";
 import RegisterPage from "./../Library/Register/Page";
 import Pageregister from "./../Library/Pageregister";
 import Crazyconsole from "./../Library/Crazyconsole";
+import CurrentPage from "./../Library/Current/Page";
 import HistoryPage from "./../Library/History/Page";
 import Crazyevents from "./../Library/Crazyevents";
+import PageLoader from "./../Library/Loader/Page";
 import Crazypage from "./../Library/Crazypage";
 
 /**
@@ -40,6 +42,9 @@ export default class Crazyobject {
 
     /** @var pages Pages class */
     public pages:Pageregister;
+
+    /** @var currentPage Pages class */
+    public currentPage:CurrentPage;
 
     /** @var _registerPage Register page */
     private _registerPage:RegisterPage;
@@ -69,6 +74,9 @@ export default class Crazyobject {
 
         // New Page Register
         this.pages = new Pageregister();
+
+        // New current page
+        this.currentPage = new CurrentPage();
 
         // Page Register
         this._registerPage = RegisterPage;
@@ -110,6 +118,25 @@ export default class Crazyobject {
 
             // Call register in window
             this._registerPage.register(page);
+
+        // Check i it is the first page registered
+        if(this.currentPage.get() === null){
+
+            // Page loader
+            new PageLoader({
+                name: page.className,
+                // @ts-ignore
+                scriptLoaded: page,
+                status: {
+                    "scriptRegistered": true,
+                    "contentLoaded": true,
+                    "styleLoaded": true,
+                    "urlLoaded": true,
+                    "urlUpdated": true
+                }
+            });
+
+        }
 
     }
 
