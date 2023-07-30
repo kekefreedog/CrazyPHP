@@ -55,7 +55,8 @@ class Validate {
         ],
         "VARCHAR"   =>  [
             "isEmail",
-            "isIpAddress"
+            "isIpAddress",
+            "isValidUrl"
         ],
         "ARRAY"     =>  [
         ], 
@@ -635,6 +636,18 @@ class Validate {
      * @return bool
      */
     public static function isValidUrl(string $input = ""):bool{
+
+        // Check value
+        if(!filter_var($input['value'], FILTER_VALIDATE_URL))
+
+            # New Exception
+            throw new CrazyException(
+                "\”".$input["value"]."\” isn't a valid url...",
+                500,
+                [
+                    "custom_code"   =>  "validate-070",
+                ]
+            );
 
         return true;
 
