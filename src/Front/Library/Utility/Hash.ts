@@ -49,6 +49,7 @@ export default class Hash {
             this.set(hash);
 
         // New history
+        this._history = new History();
 
 
     }
@@ -64,7 +65,24 @@ export default class Hash {
      * 
      * @returns ?string
      */
-    public get = ():string|null => this._hash;
+    public get = ():string|null => {
+    
+        // Declare result
+        let result:null|string;
+
+        // Check if watch mode
+        if(this.isWatch())
+
+            // Set from meta tag
+            this.setFromRequest();
+
+        // Set result
+        result = this._hash;
+
+        // Return result
+        return result;
+        
+    }
 
 
     /**
@@ -139,28 +157,22 @@ export default class Hash {
      * 
      * @param url Url to fetch request
      */
-    public setFromRequest = (url:string = "/api/v2/Router/count"):Boolean => {
+    public setFromRequest = async (url:string = "/api/v2/Router/count"):Promise<Object|null> => {
 
         // Set result
-        let result = false;
+        let result = null;
 
         // Check url
         if(url){
 
             // New request instance
             let request = new Crazyrequest(url, {
-                from: "internal"
+                from: "internal",
+                cache: false
             });
 
             // Fetch request
-            let func = async () => {
-                return await request.fetch()
-            };
-
-            let response = func();
-
-            console.log(response);
-
+            return await request.fetch();
 
         }
 
@@ -186,6 +198,32 @@ export default class Hash {
 
             // Get all previous value
             result = this._history.getAllPrevious();
+
+        // Return result
+        return result;
+
+    }
+
+    /**
+     * Is Watch
+     * 
+     * Check if watch mode is enable in back
+     * 
+     * @return void 
+     */
+    public isWatch = ():Boolean => {
+
+        // Set result
+        let result:Boolean = false;
+
+        // Get metatag
+        const metaTag = document.querySelector(`meta[name="application-watch"]`);
+
+        // Check metatage
+        if(metaTag instanceof HTMLMetaElement && metaTag.content && metaTag.content == "true")
+
+            // Set result
+            result = true;
 
         // Return result
         return result;

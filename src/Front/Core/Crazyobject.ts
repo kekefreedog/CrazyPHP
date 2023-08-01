@@ -11,18 +11,16 @@
 /**
  * Dependances
  */
+import {default as UtilityEvents} from "./../Library/Utility/Events";
+import {default as RegisterPage} from "./../Library/Register/Page";
 import Componentregister from "./../Library/Componentregister";
-import Configregister from "./../Library/Configregister";
-import RegisterPage from "./../Library/Register/Page";
-import Pageregister from "./../Library/Pageregister";
+import {default as PageError} from './../Library/Error/Page';
 import Crazyconsole from "./../Library/Crazyconsole";
 import CurrentPage from "./../Library/Current/Page";
 import HistoryPage from "./../Library/History/Page";
 import Crazyevents from "./../Library/Crazyevents";
-import PageLoader from "./../Library/Loader/Page";
 import Crazypage from "./../Library/Crazypage";
 import Hash from './../Library/Utility/Hash';
-
 /**
  * Crazy Object
  *
@@ -39,73 +37,50 @@ export default class Crazyobject {
      */
 
     /** @var components Components class */
-    public components:Componentregister|null = null;
+    public components:Componentregister;
 
-    /** @var pages Pages class */
-    public pages:Pageregister;
+    /** @var currentPage Pages class */
+    public registerPage:RegisterPage;
 
     /** @var currentPage Pages class */
     public currentPage:CurrentPage;
 
-    /** @var _registerPage Register page */
-    private _registerPage:RegisterPage;
-
-    /** @var configs Configs class */
-    public configs:Configregister|null = null;
-
     /** @var console Configs class */
-    public console:Crazyconsole|null = null;
-
-    /** @var events Configs class */
-    public events:Crazyevents|null = null;
+    public console:Crazyconsole;
 
     /** @var hash Hash of the current build */
-    public hash:string = "";
-    public hashTemp:Hash;
+    public hash:Hash;
 
     /** @var history History Page instance */
     public historyPage:HistoryPage;
+
+    /** @var events Configs class */
+    public events:UtilityEvents;
 
     /**
      * Constructor
      */
     public constructor(input:CrazyObjectInput){
 
-        console.log("dev");
+        console.log("CrazyObjectInput --- start");
         console.log(input);
+        console.log("CrazyObjectInput --- end");
 
         // Register Global Web Components give by the app
         this.components = new Componentregister(input);
 
-        // New Page register
-        // dep
-        this.pages = new Pageregister();
-
-        // New current page instance
-        this.currentPage = new CurrentPage();
-
-        // Page Register
-        this._registerPage = RegisterPage;
-
-        // New Config Register
-        this.configs = new Configregister();
-
-        // New Config Register
-        this.console = new Crazyconsole();
-
-        // New Crazy Events
-        this.events = new Crazyevents();
-
-        // Page history
-        this.historyPage = new HistoryPage();
-
-
-        // Hash Init
-        this.hashInit();
+        // Init of the app
+        this.hashInit()                     // Init Hash
+            .then(this.historyPageInit)     // Init History Page
+            .then(this.eventInit)           // Init Event
+            .then(this.registerPageInit)    // Init Register Page
+            .then(this.currentPageInit)     // Init Current Page
+            .then(this.consoleInit)         // Init Current Page
+        ;
 
     }
 
-    /** Private Methods Init
+    /** Private Async Methods Init
      ******************************************************
      */
 
@@ -113,60 +88,153 @@ export default class Crazyobject {
      * Hash Init
      * 
      * Prepare hash in your crazy page
+     * Hash allow app to load the script from back when you are loading a new page
      * 
-     * @returns void
+     * @returns Promise<void>
      */
-    private hashInit = ():void => {
-
-        // Set hash
-        this.hash = "";
+    private hashInit = async():Promise<void> => {
 
         // Hash instance
-        this.hashTemp = new Hash();
+        this.hash = new Hash();
 
-    }
+        // Set hash from meta tag
+        if(!this.hash.setFromMetaTag()){
 
-    /** Methods | Component Register
-     ******************************************************
-     */
+            // Set hash from request
+            let resultFromRequest = await this.hash.setFromRequest();
 
-    /** Methods | Page Register
-     ******************************************************
-     */
+            // Check result not null
+            if(resultFromRequest === null)
 
-    /**
-     * Register Page
-     * 
-     * @param page Page to register
-     */
-    public registerPage = (page:typeof Crazypage) => {
-
-        // Check function
-        if("register" in this._registerPage && typeof this._registerPage.register === "function")
-
-            // Call register in window
-            this._registerPage.register(page);
-
-        // Check i it is the first page registered
-        if(this.currentPage.get() === null){
-
-            // Page loader
-            new PageLoader({
-                name: page.className,
-                // @ts-ignore
-                scriptLoaded: page,
-                status: {
-                    "scriptRegistered": true,
-                    "contentLoaded": true,
-                    "styleLoaded": true,
-                    "urlLoaded": true,
-                    "urlUpdated": true
-                }
-            });
+                // New error
+                throw new PageError("Can't retrieve the hash from back.")
 
         }
 
     }
+
+    /**
+     * History Page Init
+     * 
+     * Prepare History Instance
+     * 
+     * @returns Promise<void>
+     */
+    private historyPageInit = async():Promise<void> => {
+
+        // New instance
+        this.historyPage = new HistoryPage();
+
+    }
+
+    /**
+     * Register Page Init
+     * 
+     * Prepare History Instance
+     * 
+     * @returns Promise<void>
+     */
+    private registerPageInit = async():Promise<void> => {
+
+        // New instance
+        this.registerPage = new RegisterPage();
+
+    }
+
+    /**
+     * Current Page Init
+     * 
+     * Init current page
+     * 
+     * @returns Promise<void>
+     */
+    private currentPageInit = async():Promise<void> => {
+
+        // New current page instance
+        this.currentPage = new CurrentPage();
+
+    }
+
+    /**
+     * Events Init
+     * 
+     * Init Events
+     * 
+     * @returns Promise<void>
+     */
+    private eventInit = async():Promise<void> => {
+
+        // New Config Register
+        this.events = new UtilityEvents();
+
+        // Create default custom events
+        this.events.add("onRegisterPageOpen"); //--> Event to register new page
+        this.events.add("onFirstPageRegistered");   //--> Event to first page is registered
+
+    }
+
+    /**
+     * Console Init
+     * 
+     * Init console
+     * 
+     * @returns Promise<void>
+     */
+    private consoleInit = async():Promise<void> => {
+
+        // New Config Register
+        this.console = new Crazyconsole();
+
+    }
+
+    /** Public Methods | Register
+     ******************************************************
+     */
+
+    public register = (page:typeof Crazypage):void => {
+
+        /**
+         * On Register Page Open Event
+         * 
+         * @param e
+         * @returns void
+         */
+        let onRegisterPageOpenEvent = (e:Event):void => {
+
+            // Register current page
+            this.registerPage.register(page);
+
+            // Add Event listener
+            document.removeEventListener(
+                "onRegisterPageOpen",
+                onRegisterPageOpenEvent
+            );
+    
+        }
+
+        // Check if register has been init
+        if(
+            window.Crazyobject.registerPage !== undefined && 
+            "register" in window.Crazyobject.registerPage &&
+            typeof window.Crazyobject.registerPage.register === "function"
+        )
+
+            // Register current page
+            this.registerPage.register(page);
+
+        else
+
+            // Add Event listener and wait page register is ready
+            document.addEventListener(
+                "onRegisterPageOpen",
+                onRegisterPageOpenEvent
+            );
+
+    }
+
+    /** Methods | Page Register
+     ******************************************************
+     */
 
     public getRegisteredPage = (name:string):RegisterPageRegistered|null => {
 
@@ -174,83 +242,19 @@ export default class Crazyobject {
         let result:RegisterPageRegistered|null = null;
 
         // Check function
-        if("getRegistered" in this._registerPage && typeof this._registerPage.getRegistered === "function")
+        /* if("getRegistered" in this._registerPage && typeof this._registerPage.getRegistered === "function")
 
             // Call register in window
-            result = this._registerPage.getRegistered(name);
+            result = this._registerPage.getRegistered(name); */
 
         // Return result
         return result;
 
     }
 
-    /** Methods | Config Register
+    /** Private Methods | Events
      ******************************************************
      */
-
-    /** Methods | Hash
-     ******************************************************
-     */
-
-    /**
-     * Set Hash
-     * 
-     * Set hash in crazy object
-     * 
-     * @param hash:string
-     * @return void
-     */
-    public setHash = (hash:string) => {
-
-        // Check hash given is and hash stored is empty
-        if(hash && !this.hash){
-
-            // Set hash
-            this.hash = hash;
-
-            // Info
-            console.info("Crazy hash set");
-
-        }else
-        // If hash already stored and given one is
-        if(hash && this.hash){
-
-            // Check if hash are the same
-            if(hash != this.hash){
-
-                // Set hash
-                this.hash = hash;
-
-                // Info
-                console.info("Crazy hash updated");
-
-            }
-
-        }else
-        // Given hash is empty
-        if(!hash)
-
-            // Hash given is exmpty...
-            console.warn("Hash given is exmpty...");
-
-    }
-
-    /**
-     * Get Hash
-     * 
-     * Get Hash of Crazy app
-     * 
-     * @return string
-     */
-    public getHash = ():string => {
-
-        // Set result
-        let result:string = this.hash;
-
-        // Return result
-        return result;
-
-    }
 
     /** Constants
      ******************************************************

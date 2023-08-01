@@ -65,7 +65,9 @@ export default class Script {
                 scriptEle.addEventListener("load", e => {
 
                     // Resolve status
-                    resolve({ status: true });
+                    resolve({ 
+                        status: true
+                    });
 
                 });
 

@@ -13,8 +13,8 @@
  */
 export {default as Componentregister} from "./Library/Componentregister";
 export {default as Crazycomponent} from "./Library/Crazycomponent";
-export {default as Configregister} from "./Library/Configregister";
 export {default as Crazynavigator} from "./Library/Crazynavigator";
+export {default as UtilityEvents} from "./Library/Utility/Events";
 export {default as UtilityArrays} from "./Library/Utility/Arrays";
 export {default as Crazylanguage} from "./Library/Crazylanguage";
 export {default as RegisterPage} from "./Library/Register/Page";

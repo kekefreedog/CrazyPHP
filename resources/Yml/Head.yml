@@ -31,6 +31,10 @@ Head :
         name: application-hash
         content: '{{Front.lastBuild.hash}}'
     - tag: meta
+      attributes: 
+        name: application-watch
+        content: '{{Front.lastBuild.watch}}'
+    - tag: meta
       attributes:
         name: theme-color
         content: '#2196f3'

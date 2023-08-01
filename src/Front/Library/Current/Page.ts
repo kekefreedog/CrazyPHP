@@ -11,7 +11,7 @@
 /**
  * Dependances
  */
-import {default as LoaderPage} from './../Loader/Page';
+import {default as PageLoader} from "./../Loader/Page";
 import {default as PageError} from './../Error/Page';
 import Crazypage from '../Crazypage';
 
@@ -37,6 +37,75 @@ export default class Page {
      * Constructor
      */
     public constructor(){
+
+        // Check i it is the first page registered
+        if(this.get() === null){
+
+            // Get all page registered
+            let allPageRegistered:Array<RegisterPageRegistered> = window.Crazyobject.registerPage.getAll();
+
+            // Get registered page
+            if(allPageRegistered.length === 0){
+
+                // Function for event
+                let registerFirstcurrentPageEvent = (e:Event) => {
+
+                    // Get first page
+                    let page:RegisterPageRegistered = window.Crazyobject.registerPage.getAll().slice()[0];
+
+                    // Prepare loader page options
+                    let pageOptions:LoaderPageOptions = {
+                        name: page.className,
+                        // @ts-ignore
+                        scriptLoaded: page.classReference,
+                        status: {
+                            "scriptRegistered": true,
+                            "contentLoaded": true,
+                            "styleLoaded": true,
+                            "urlLoaded": true,
+                            "urlUpdated": true
+                        }
+                    }
+
+                    // Page loader
+                    new PageLoader(pageOptions);
+
+                    // New event listener
+                    document.removeEventListener(
+                        "onFirstPageRegistered",
+                        registerFirstcurrentPageEvent
+                    );
+
+                }
+
+                // New event listener
+                document.addEventListener(
+                    "onFirstPageRegistered",
+                    registerFirstcurrentPageEvent
+                );
+
+            }else{
+
+                // Get first page
+                let page:RegisterPageRegistered = window.Crazyobject.registerPage.getAll()[0];
+
+                // Page loader
+                new PageLoader({
+                    name: page.className,
+                    // @ts-ignore
+                    scriptLoaded: page,
+                    status: {
+                        "scriptRegistered": true,
+                        "contentLoaded": true,
+                        "styleLoaded": true,
+                        "urlLoaded": true,
+                        "urlUpdated": true
+                    }
+                });
+
+            }
+
+        }
 
     }
 
@@ -91,7 +160,7 @@ export default class Page {
             throw new PageError("Pleae set a page before execute it");
 
         // Load current page
-        new LoaderPage(this.current);
+        new PageLoader(this.current);
 
     }
 

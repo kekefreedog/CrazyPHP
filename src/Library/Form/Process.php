@@ -972,6 +972,12 @@ class Process {
                     # Get config value
                     $configValue = FileConfig::getValue($v);
 
+                    # Check if is bool
+                    if(is_bool($configValue))
+
+                        # Set value
+                        $configValue = $configValue ? "true" : "false";
+
                     # Check config value is string
                     if(!is_string($configValue))
 

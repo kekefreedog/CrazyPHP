@@ -11,9 +11,10 @@
 /**
  * Dependances
  */
+import {default as LoaderScript} from './../Loader/Script';
 import {default as PageError} from './../Error/Page';
-import Crazyrequest from '../Crazyrequest';
-import Pageregister from '../Pageregister';
+import Crazyrequest from './../Crazyrequest';
+import Pageregister from './../Pageregister';
 import Crazyurl from '../Crazyurl';
 import DomRoot from '../Dom/Root';
 
@@ -173,64 +174,51 @@ export default class Page {
     public static loadScript = async(options:LoaderPageOptions):Promise<LoaderPageOptions> =>  {
 
         // Check status
-        if(options.status?.scriptRegistered === false){
+        if(options.status?.scriptRegistered === false && options.name){
 
-            // Check if script already registered
-            if(
-                options.name && 
-                window.Crazyobject.pages?.routerAction &&
-                options.name in window.Crazyobject.pages.routerAction
-            ){
+            // Get hash
+            let hash:string|null = window.Crazyobject.hash.get();
+    
+            // Set url
+            let url:string = `/dist/page/app/${options.name}.${hash}.js`;
 
-                // Get current router action
-                let currentRouterAction = window.Crazyobject.pages.routerAction[options.name];
+            console.log("script-hash-start");
+            console.log(hash);
+            console.log("script-hash-end");
+    
+            // Load script
+            let script = await LoaderScript.load(url, options.name, true);
 
-                // Set instance in options
-                options.instance = currentRouterAction.instance;
-
-            }else
-            // Register the script 
-            if(options.name){
-
-                // Load action
-                await Pageregister.loadAction(options.name)
-                    .then(script => {
-                        
-                    })
-                ;
-
+            // Get registered
+            let registered = window.Crazyobject.registerPage.getRegistered(options.name ? options.name : "");
+    
+            // Check html
+            if(registered !== null && "classReference" in registered && "html" in registered?.classReference && registered?.classReference.html){
+    
+                // Set html in options
+                options.content = registered?.classReference.html;
+    
             }
+    
+            // Check html
+            if(registered !== null && "classReference" in registered && "css" in registered?.classReference && registered?.classReference.css && "default" in registered?.classReference.css && typeof registered?.classReference.css.default === "string"){
+    
+                // Set html in options
+                options.style = registered?.classReference.css.default
+                    .toString()
+                    .replace(/\r?\n|\r/g, "")               // Remove end of line
+                    .replace(/\/\*[\s\S]*?\*\//g, "")       // Remove /* Comment */
+                ;
+    
+            }
+    
+            // Set script loaded
+            options.scriptLoaded = registered?.classReference;
+    
+            // Set options
+            options = this.setStatus(options, "scriptRegistered", true);
 
         }
-
-        // Get registered
-        let registered = window.Crazyobject.getRegisteredPage(options.name ? options.name : "");
-
-        // Check html
-        if(registered !== null && "classReference" in registered && "html" in registered?.classReference && registered?.classReference.html){
-
-            // Set html in options
-            options.content = registered?.classReference.html;
-
-        }
-
-        // Check html
-        if(registered !== null && "classReference" in registered && "css" in registered?.classReference && registered?.classReference.css && "default" in registered?.classReference.css && typeof registered?.classReference.css.default === "string"){
-
-            // Set html in options
-            options.style = registered?.classReference.css.default
-                .toString()
-                .replace(/\r?\n|\r/g, "")               // Remove end of line
-                .replace(/\/\*[\s\S]*?\*\//g, "")       // Remove /* Comment */
-            ;
-
-        }
-
-        // Set script loaded
-        options.scriptLoaded = registered?.classReference;
-
-        // Set options
-        options = this.setStatus(options, "scriptRegistered", true);
 
         // Return options
         return options;

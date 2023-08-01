@@ -12,8 +12,8 @@
  * Dependances
  */
 import {default as PageError} from './../Error/Page';
-import Crazypage from '../Crazypage';
 import Arrays from '../Utility/Arrays';
+import Crazypage from '../Crazypage';
 
 /**
  * Crazy Page Loader
@@ -31,7 +31,17 @@ export default class Page {
      */
 
     /** @var registered Page registered */
-    private static registered:Array<RegisterPageRegistered> = [];
+    private registered:Array<RegisterPageRegistered> = [];
+
+    /**
+     * Constructor
+     */
+    public constructor(){
+
+        // Open Register (init when the registered is creates)
+        window.Crazyobject.events.dispatch("onRegisterPageOpen");
+
+    }
 
     /** Public static methods
      ******************************************************
@@ -43,7 +53,7 @@ export default class Page {
      * @param page:Crazypage instance to register
      * @returns void
      */
-    public static register = (page:typeof Crazypage):void => {
+    public register = (page:typeof Crazypage):void => {
 
         // Check if page already in registered
         let result = Arrays.filterByKey(this.registered, "className", page.className);
@@ -61,13 +71,20 @@ export default class Page {
             let newRegister:RegisterPageRegistered = {
                 className : page.className,
                 classReference: page,
-                dateLoaded: new Date()
+                dateLoaded: new Date(),
+                scriptUrl: new URL(`${window.location.origin}/dist/${page.className}.${window.Crazyobject.hash.get()}.js`)
             }
 
             // Push register im registered
-            Page.registered.push(newRegister);
+            this.registered.push(newRegister);
 
         }
+
+        // Check if first page loaded
+        window.Crazyobject.events.has("onFirstPageRegistered");
+
+            // Dispatch event
+            window.Crazyobject.events.dispatch("onFirstPageRegistered");
 
     }
 
@@ -77,7 +94,7 @@ export default class Page {
      * @param name Name of the page registered
      * @returns RegisterPageRegistered|null
      */
-    public static getRegistered = (name:string):RegisterPageRegistered|null => {
+    public getRegistered = (name:string):RegisterPageRegistered|null => {
 
         // Set result
         let result:RegisterPageRegistered|null = null;
@@ -100,5 +117,14 @@ export default class Page {
         return result;
 
     }
+
+    /**
+     * Get All
+     * 
+     * Get All Page registered
+     * 
+     * @returns Array<RegisterPageRegistered>
+     */
+    public getAll = ():Array<RegisterPageRegistered> => this.registered;
 
 }

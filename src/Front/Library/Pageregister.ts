@@ -467,31 +467,54 @@ import Crazyurl from './Crazyurl';
      */
     public static loadAction = (name:string, async:boolean = true):Promise<any> => {
 
-        // Get hash
-        let hash = window.Crazyobject["getHash"]();
+        let hash:string|null;
 
-        // Check hash
-        if(!hash){
+        // Check if watch mode
+        if(window.Crazyobject.hash.isWatch()){
 
-            // Get meta
-            let metaTagEl = document.querySelector('meta[name="application-hash"]');
+            // Set from request
+            return window.Crazyobject.hash.setFromRequest().then(() => {
+                
+                // Get hash
+                hash = window.Crazyobject.hash.get();
 
-            // Check meta
-            if(metaTagEl === null || !("content" in metaTagEl) || !metaTagEl.content)
+                // Set url
+                let url:string = `/dist/page/app/${name}.${hash}.js`;
 
-                // New error
-                throw new Error(`Hash is empty...`);
+                // Load script
+                return LoaderScript.load(url, name, async);
+            
+            });
 
-            // Set hash
-            hash = (metaTagEl.content as string);
+        }else{
+
+            // Get hash
+            hash = window.Crazyobject.hash.get();
+
+            // Check hash
+            if(!hash){
+    
+                // Get meta
+                let metaTagEl = document.querySelector('meta[name="application-hash"]');
+    
+                // Check meta
+                if(metaTagEl === null || !("content" in metaTagEl) || !metaTagEl.content)
+    
+                    // New error
+                    throw new Error(`Hash is empty...`);
+    
+                // Set hash
+                hash = (metaTagEl.content as string);
+    
+            }
+    
+            // Set url
+            let url:string = `/dist/page/app/${name}.${hash}.js`;
+    
+            // Load script
+            return LoaderScript.load(url, name, async);
 
         }
-
-        // Set url
-        let url:string = `/dist/page/app/${name}.${hash}.js`;
-
-        // Load script
-        return LoaderScript.load(url, name, async);
 
     }
     

@@ -16,9 +16,9 @@ import Crazypage from "./../Library/Crazypage";
  */
 export {default as Componentregister} from "./../Library/Componentregister";
 export {default as Crazycomponent} from "./../Library/Crazycomponent";
-export {default as Configregister} from "./../Library/Configregister";
 export {default as Crazynavigator} from "./../Library/Crazynavigator";
 export {default as UtilityArrays} from "./../Library/Utility/Arrays";
+export {default as UtilityEvents} from "./../Library/Utility/Events";
 export {default as Crazylanguage} from "./../Library/Crazylanguage";
 export {default as RegisterPage} from "./../Library/Register/Page";
 export {default as Crazyconsole} from "./../Library/Crazyconsole";
@@ -192,6 +192,7 @@ declare global {
         classReference:any,
         hashUsed?:string,
         dateLoaded:Date,
+        scriptUrl:URL,
     }
 
     /** Interface | History
