@@ -62,10 +62,6 @@ export default class Crazyobject {
      */
     public constructor(input:CrazyObjectInput){
 
-        console.log("CrazyObjectInput --- start");
-        console.log(input);
-        console.log("CrazyObjectInput --- end");
-
         // Register Global Web Components give by the app
         this.components = new Componentregister(input);
 

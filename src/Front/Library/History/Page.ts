@@ -49,8 +49,6 @@ export default class Page {
      */
     public constructor(){
 
-        console.log("history");
-
         // Pop state init
         this._popStateInit();
 

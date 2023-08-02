@@ -11,9 +11,9 @@
 /**
  * Dependances
  */
-import {Crazypage} from "crazyphp";
 const css = require("!!css-loader!sass-loader!./style.scss");
 const html = require("./template.hbs");
+import {Crazypage} from "crazyphp";
 require("./style.scss");
 
 /**
@@ -78,5 +78,4 @@ export default class Home extends Crazypage {
 /**
  * Register current class
  */
-window.Crazyobject.pages.register(Home);
-window.Crazyobject.registerPage(Home);
+window.Crazyobject.register(Home);

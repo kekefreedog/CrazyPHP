@@ -181,10 +181,6 @@ export default class Page {
     
             // Set url
             let url:string = `/dist/page/app/${options.name}.${hash}.js`;
-
-            console.log("script-hash-start");
-            console.log(hash);
-            console.log("script-hash-end");
     
             // Load script
             let script = await LoaderScript.load(url, options.name, true);

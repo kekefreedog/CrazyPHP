@@ -21,6 +21,8 @@ import Crazyurl from './Crazyurl';
  * Page Register
  *
  * Methods for manage page loaded and to load
+ * 
+ * @deprecated
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
