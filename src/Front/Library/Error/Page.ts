@@ -1,7 +1,7 @@
 /**
- * Front
+ * Error
  *
- * Front TS Scrips for your Crazy App
+ * Front TS Scrips for manage error
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
@@ -9,27 +9,32 @@
  */
 
 /**
- * Config Register
+ * Dependances
+ */
+
+/**
+ * Crazy Page Loader
  *
- * Methods for manage config loaded and to load
+ * Methods for load a page
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2022 Kévin Zarshenas
  */
- export default class Configregister {
-
-    /** Parameters
-     ******************************************************
-     */
+export default class Page extends Error {
 
     /**
      * Constructor
+     * 
+     * @param message:string  
+     * @param return self
      */
-    public constructor(){
+    constructor(message:string) {
 
+        // Call parent
+        super(message);
 
-
+        
     }
 
 }

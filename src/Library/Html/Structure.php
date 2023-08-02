@@ -18,6 +18,7 @@ namespace CrazyPHP\Library\Html;
 use CrazyPHP\Library\Template\Handlebars;
 use CrazyPHP\Exception\CrazyException;
 use Symfony\Component\Finder\Finder;
+use CrazyPHP\Library\Form\Validate;
 use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\File\Config;
@@ -122,6 +123,9 @@ class Structure {
 
         # Set result
         $result = $this->instance["Handlebars"]->render($response);
+
+        # Set last hash
+        $this->_setHash($result);
 
         # Return result
         return $result;
@@ -264,16 +268,28 @@ class Structure {
             $element["html"] = $attributesOrContent;
 
         }else{
+
             # Prepare element
             $element["tag"] = $tag;
 
             # Check attributes
-            if(!empty($attributesOrContent) || $attributesOrContent)
+            if(!empty($attributesOrContent) || $attributesOrContent){
 
                 # Set attributes
                 $element["attributes"] = is_string($attributesOrContent) ? 
                     [$attributesOrContent => null] :
                         $attributesOrContent;
+
+                # Check if bool in attributes
+                /* foreach($element["attributes"] as &$value)
+
+                    # Check if is bool
+                    if(is_bool($value))
+                    
+                        # Convert value to string
+                        $value = $value ? "true" : "false"; */
+
+            }
 
             # Check children
             if($children && !empty($children))
@@ -639,6 +655,71 @@ class Structure {
 
         # Return current instance
         return $this;
+
+    }
+
+    /** Private methods
+     ******************************************************
+     */
+
+    private function _setHash(string &$input):void {
+
+        # Get watch
+        if(Config::getValue("Front.lastBuild.watch")){
+
+            # New finder
+            $finder = new Finder();
+
+            # Prepare finder
+            $finder
+                ->files()
+                ->name('index.*.js')
+                ->in(File::path("@app_root/".Config::getValue("App.public")."/dist"))
+                ->depth('== 0')
+            ;
+
+            # Check finder
+            if($finder->hasResults())
+
+                # Iteration file
+                foreach ($finder as $file){
+
+                    # Prepare pattern
+                    $pattern = '/\w+\.([a-fA-F0-9]+)\.js/';
+
+                    # Search
+                    preg_match($pattern, $file->getFilename(), $matches);
+
+                    # Set hash
+                    $hash = $matches[1] ?? null;
+
+                }
+
+            else 
+
+                # Set hash
+                $hash = null;
+
+        }else
+
+
+            # Get hash
+            $hash = Config::getValue("Front.lastBuild.hash");
+
+        # Prepare pattern
+        $pattern = '/<meta\s+name="application-hash"\s+content="([a-fA-F0-9]+)">/';
+
+        # Check hash
+        if($hash === null)
+
+            # Stop function
+            return;
+
+        # Prepare replacement
+        $replacement = "<meta name=\"application-hash\" content=\"$hash\">";
+
+        # Replace
+        $input = preg_replace($pattern, $replacement, $input);
 
     }
 

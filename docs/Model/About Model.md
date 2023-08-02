@@ -15,14 +15,23 @@ Model:
   - name: Router
     type: config
     attributes: 
-      - name: name
-        label: Name
-        description: Name of the router
-        type: VARCHAR
-        default: null
-        required: true
-        process: null
-        validate: null
+      - name: name                                    # Name of the attribute
+        label: Name                                   # Label used on the UI
+        description: Name of the router               # Description used on the UI
+        type: VARCHAR                                 # Type of the attributes INT|VARCHAR|ARRAYBOOL|FILE
+        default: null                                 # Define the default value, used in case the value given is null 
+        required: true                                # Define if the value is required
+        process: null                                 # Define the process to apply to the attributes null|array
+        validate: null                                # Define the validate to apply to the attributes null|array
+        select:                                       # In case you want generate a select form, you can define the value -> label to do it
+          value01: label01
+          value02: label02
+        multiple: false                               # Define if multiple value allowed in the attributes
+        extAllow:                                     # In case of FILE, define the extension allowed
+        extOmit:                                      # In case of FILE, define the extension to omit
+        source:                                       # Can be use in case you want retrieve value from another model (if key01 is find before key02, it will stop at the first found except if multiple is selected)
+          - key01
+          - key02
       - name: path
         label: Path
         description: Path of the front controller

@@ -45,8 +45,6 @@ export default class Crazyurl{
 
         }
 
-        console.log(newPathname);
-
         // Push new pathname
         window.history.pushState({}, "", newPathname.toString());
 

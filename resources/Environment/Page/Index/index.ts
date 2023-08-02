@@ -11,7 +11,7 @@
 /**
  * Dependances
  */
-import {Crazypage, Crazylanguage} from "crazyphp";
+import {Crazypage, Crazylanguage, LoaderPage} from "crazyphp";
 const html = require("./template.hbs");
 // const css = require("./style.scss");
 
@@ -71,12 +71,12 @@ export default class Index extends Crazypage {
         // Detect language of navigator
         let language = Crazylanguage.getNavigatorLanguage();
 
-        // Redirect to home page
-        this.redirectByName("Home", {
+        // Load page (redirection)
+        new LoaderPage({
+            name: "Home",
             arguments: {
                 language: language
-            },
-            mimetype: "json"
+            }
         });
 
     }
@@ -86,4 +86,4 @@ export default class Index extends Crazypage {
 /**
  * Register current class
  */
-window.Crazyobject.pages.register(Index);
+window.Crazyobject.register(Index);

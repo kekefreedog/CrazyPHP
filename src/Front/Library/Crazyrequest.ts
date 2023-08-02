@@ -153,11 +153,8 @@ export default class Crazyrequest{
                                 // Set response hash
                                 this.lastResponseCrazyHash = crazyHash;
 
-                                // Check global
-                                if("Crazyobject" in window && typeof window.Crazyobject == "object" && window.Crazyobject !== null)
-
-                                    // set hash in global
-                                    window.Crazyobject["setHash"](crazyHash);
+                                // set hash in global
+                                window.Crazyobject.hash.set(crazyHash);
 
                             }
 

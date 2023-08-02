@@ -27,7 +27,8 @@
         "nyholm/psr7": "^1.5",
         "nyholm/psr7-server": "^1.0",
         "laminas/laminas-httphandlerrunner": "^2.3",
-        "psr/http-message": "^1.0"
+        "psr/http-message": "^1.0",
+        "cboden/ratchet": "^0.4.4"
     },
     "require-dev": {
         "phpunit/phpunit": "^10.0"

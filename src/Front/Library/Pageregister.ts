@@ -10,7 +10,8 @@
 
 /**
  * Dependances
- */
+*/
+import {default as LoaderScript} from './Loader/Script';
 import Crazyrequest from './Crazyrequest';
 import Crazycache from './Crazycache';
 import Crazypage from './Crazypage';
@@ -20,6 +21,8 @@ import Crazyurl from './Crazyurl';
  * Page Register
  *
  * Methods for manage page loaded and to load
+ * 
+ * @deprecated
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
@@ -27,15 +30,19 @@ import Crazyurl from './Crazyurl';
  */
  export default class Pageregister {
 
-    /** Methods
+    /** Public Parameters
+     ******************************************************
+     */
+
+    /** @var routerAction:Object */
+    public routerAction:Object = [];
+
+    /** Private Parameters
      ******************************************************
      */
 
     /** @var cacheInstance:Crazycache|null */
     private cacheInstance:Crazycache|null = null;
-
-    /** @var routerAction:Object */
-    private routerAction:Object = [];
 
     /** @var customEvent:Event|null */
     private customEvent:Event;
@@ -45,10 +52,6 @@ import Crazyurl from './Crazyurl';
 
     /** @var history */
     private history:Array<Object> = [];
-
-    /** Parameters
-     ******************************************************
-     */
 
     /**
      * Constructor
@@ -149,10 +152,12 @@ import Crazyurl from './Crazyurl';
      * 
      * Register page in current context
      * 
+     * @deprecated
+     * 
      * @param page:Crazypage
      * @return void
      */
-    public register(page:Crazypage):void {
+    public register(page:typeof Crazypage):void {
 
         let registerFunction = value => {
 
@@ -213,16 +218,16 @@ import Crazyurl from './Crazyurl';
                         stylePastPageEl.remove();
 
                     // Load css
-                    if(page["css"] !== null && "default" in page["css"]){
+                    if(page.css !== null && "default" in page.css){
 
                         // Css string
-                        let cssString = page["css"].default.toString();
+                        let cssString = page.css.default?.toString();
 
                         // Create style element
                         let styleEl = document.createElement("style");
 
                         // Set content
-                        styleEl.innerText = cssString;
+                        styleEl.innerText = cssString ? cssString : "";
 
                         // Set attribute
                         styleEl.setAttribute("specific-to-page", page.className);
@@ -383,6 +388,8 @@ import Crazyurl from './Crazyurl';
     /**
      * Load Internal Page
      * 
+     * Receive as parameter input : {name: pageName, path: path}
+     * 
      * @param input:RouterResponseSchema
      */
     public loadInternalPage = (input:RouterResponseSchema) => {
@@ -392,68 +399,6 @@ import Crazyurl from './Crazyurl';
 
             // 
             console.log("In the router action collection");
-
-            /* // Execute page
-            let currentPage = new this.routerAction[input.name].instance();
-
-            // Remove old css specific
-            let stylePastPageEl = document.querySelector("[specific-to-page]");
-
-            // Check if exists
-            if(stylePastPageEl !== null)
-
-                // Remove it
-                stylePastPageEl.remove();
-
-            // Load css
-            if(this.routerAction[input.name].instance["css"] !== null && "default" in this.routerAction[input.name].instance["css"]){
-
-                // Css string
-                let cssString = this.routerAction[input.name].instance["css"].default.toString();
-
-                // Create style element
-                let styleEl = document.createElement("style");
-
-                // Set content
-                styleEl.innerText = cssString;
-
-                // Set attribute
-                styleEl.setAttribute("specific-to-page", this.routerAction[input.name].instance.className);
-
-                // Add to document
-                document.head.appendChild(styleEl);
-
-            // Load html
-            if(typeof this.routerAction["html"] === "function"){
-
-                // Get html string
-                let htmlString:string = this.routerAction["html"]();
-
-                // Convert to dom
-                let htmlObject:Document = new DOMParser().parseFromString(htmlString, "text/html");
-            
-                // Get crazy-root
-                let crazyRootEl = document.getElementById("crazy-root");
-
-                // Get new content
-                let newContent = htmlObject.getElementById("crazy-root");
-
-                // Check el
-                if(crazyRootEl !== null && newContent !== null){
-
-                    // Replace with new content
-                    crazyRootEl.replaceWith(newContent);
-
-                }else{
-
-
-
-                }
-
-            }
-
-            // Add it to current page
-            this.currentPage = currentPage; */
 
         }else{
 
@@ -475,6 +420,10 @@ import Crazyurl from './Crazyurl';
 
                                 // Error
                                 throw new Error("Failed to load action of page");
+
+                            console.log("Refactor");
+                            console.log(this.cacheInstance?.get('app'));
+                            console.log("End Refactor");
 
                             // Load app in cache instance
                             return this.cacheInstance?.get('app');
@@ -504,7 +453,75 @@ import Crazyurl from './Crazyurl';
 
     }
 
-    /** Methods | Private
+
+
+    /** Private Methods | Scripts 
+     ******************************************************
+     */
+
+    /**
+     * Load Action
+     * 
+     * Load Action if js file using the page name and the hash stored.
+     * Template use : `/dist/page/app/${name}.${hash}.js`
+     * 
+     * @return Promise
+     */
+    public static loadAction = (name:string, async:boolean = true):Promise<any> => {
+
+        let hash:string|null;
+
+        // Check if watch mode
+        if(window.Crazyobject.hash.isWatch()){
+
+            // Set from request
+            return window.Crazyobject.hash.setFromRequest().then(() => {
+                
+                // Get hash
+                hash = window.Crazyobject.hash.get();
+
+                // Set url
+                let url:string = `/dist/page/app/${name}.${hash}.js`;
+
+                // Load script
+                return LoaderScript.load(url, name, async);
+            
+            });
+
+        }else{
+
+            // Get hash
+            hash = window.Crazyobject.hash.get();
+
+            // Check hash
+            if(!hash){
+    
+                // Get meta
+                let metaTagEl = document.querySelector('meta[name="application-hash"]');
+    
+                // Check meta
+                if(metaTagEl === null || !("content" in metaTagEl) || !metaTagEl.content)
+    
+                    // New error
+                    throw new Error(`Hash is empty...`);
+    
+                // Set hash
+                hash = (metaTagEl.content as string);
+    
+            }
+    
+            // Set url
+            let url:string = `/dist/page/app/${name}.${hash}.js`;
+    
+            // Load script
+            return LoaderScript.load(url, name, async);
+
+        }
+
+    }
+    
+
+    /** Private Methods | Utilities 
      ******************************************************
      */
 

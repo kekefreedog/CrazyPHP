@@ -45,13 +45,13 @@ export default abstract class Crazypage {
      * @param html:string 
      * Duplicate of the class name because build change name of class
      */
-    public static readonly html = null;
+    public static readonly html:string|null|CallableFunction = null;
 
     /** 
      * @param css:string 
      * Duplicate of the class name because build change name of class
      */
-    public static readonly css = null;
+    public static readonly css:null|Object = null;
 
     /**
      * Constructor
@@ -172,12 +172,17 @@ export default abstract class Crazypage {
     
                 // Event if loaded
                 scriptEle.addEventListener("load", (ev) => {
+
+                    // Set resolve response
                     resolve({ status: true });
+
                 });
     
                 // Event if error
                 scriptEle.addEventListener("error", (ev) => {
 
+                    
+                    // Set resolve response
                     reject({
                         status: false,
                         message: `Failed to load the script ${url}`
@@ -324,7 +329,7 @@ export default abstract class Crazypage {
             ){
 
                 // Load new page
-                window["Crazyobject"]["pages"].loadInternalPage(result.results[0]);
+                window["Crazyobject"]["pages"]?.loadInternalPage(result.results[0]);
                 
             }else{
 
@@ -343,7 +348,10 @@ export default abstract class Crazypage {
     /**
      * Load Action
      * 
-     * Load Action if js file
+     * Load Action if js file using the page name and the hash stored.
+     * Template use : `/dist/page/app/${name}.${hash}.js`
+     * 
+     * @deprecated
      * 
      * @return Promise
      */
@@ -361,12 +369,12 @@ export default abstract class Crazypage {
         else
 
             // Error
-            new Error("Crazyobject isn't valid... Can't retrieve the hash");
+            new Error("Crazyobject isn't valid, can't retrieve the hash. Try to reload the page");
 
         // Set url
         let url:string = `/dist/page/app/${name}.${hash}.js`;
 
-        console.log(`Url loaded : "${url}"`);
+        // console.log(`Url loaded : "${url}"`);
 
         // Load script
         return this.loadScript(url, async);
