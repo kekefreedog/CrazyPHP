@@ -8,7 +8,7 @@
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2022 Kévin Zarshenas
+ * @copyright  2022-2023 Kévin Zarshenas
  */
 namespace  CrazyPHP\Interface;
 
@@ -24,7 +24,7 @@ use CrazyPHP\Interface\CrazyController;
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2022 Kévin Zarshenas
+ * @copyright  2022-2023 Kévin Zarshenas
  */
 interface CrazyApi2 extends CrazyController {
 
