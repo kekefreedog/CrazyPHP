@@ -15,6 +15,8 @@ namespace Tests\Library\File;
 /**
  * Dependances
  */
+
+use CrazyPHP\Library\File\File;
 use CrazyPHP\Library\Migration\Migration;
 use PHPUnit\Framework\TestCase;
 use CrazyPHP\Model\Env;
@@ -50,6 +52,14 @@ class MigrationTest extends TestCase {
             "phpunit_test"      =>  true,
         ]);
 
+        # Setup env
+        Env::set([
+            "app_root"          =>  File::path(self::TEMP_FOLDER)
+        ]);
+
+        # Copy resources
+        File::copy("@crazyphp_root/resources/Test/MigrationTest", self::TEMP_FOLDER);
+
     }
 
 
@@ -61,6 +71,9 @@ class MigrationTest extends TestCase {
      * @return void
      */
     public static function tearDownAfterClass():void {
+
+        # Remove temp folder
+        File::removeAll(self::TEMP_FOLDER);
 
         # Reset env variables
         Env::reset();
@@ -83,6 +96,22 @@ class MigrationTest extends TestCase {
         # New migration instance
         $migration = new Migration();
 
+        # Get action upgradePageRegisterCommand
+        $getActionByNameResult = $migration->getActionByName("upgradePageRegisterCommand");
+
+        # Set preview count 
+        $previewResult = $getActionByNameResult["_fromPreview"] ?? [];
+
+        # Assert | Check if equal to two value
+        $this->assertCount(2, $previewResult);
+
     }
+
+    /** Public method | Tests
+     ******************************************************
+     */
+
+    /** @const TEMP_FOLDER for test */
+    const TEMP_FOLDER = "@crazyphp_root/tests/.temp";
 
 }

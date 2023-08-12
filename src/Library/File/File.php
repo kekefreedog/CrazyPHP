@@ -8,7 +8,7 @@
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2023 Kévin Zarshenas
+ * @copyright  2022-2022 Kévin Zarshenas
  */
 namespace CrazyPHP\Library\File;
 
@@ -26,7 +26,7 @@ use CrazyPHP\Model\Env;
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2023 Kévin Zarshenas
+ * @copyright  2022-2022 Kévin Zarshenas
  */
 class File {
 
@@ -474,8 +474,28 @@ class File {
             # Create folder
             mkdir($path_folder, 0777, true);
 
-        # Set result
-        $result = copy($path_source, $path_target);
+        # Check if path_source is dir
+        if(is_dir($path_source)){
+   
+            # open the source directory
+            $dir = opendir($path_source);
+            
+            # Loop through the files in source directory
+            foreach(scandir($path_source) as $file)
+            
+                # Check not parent of current folder
+                if($file != '.' && $file != '..' )
+            
+                    // Recursively calling self function
+                    $result = self::copy("$path_source/$file", "$path_target/$file");
+            
+            # Close directory
+            closedir($dir);
+
+        }else
+
+            # Set result
+            $result = copy($path_source, $path_target);
 
         # Return result
         return $result;

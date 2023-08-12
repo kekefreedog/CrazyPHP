@@ -16,12 +16,14 @@ namespace  CrazyPHP\Library\Migration;
  * Dependances
  */
 use CrazyPHP\Exception\CrazyException;
+use Symfony\Component\Finder\Finder;
 use CrazyPHP\Library\Form\Validate;
 use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\Cache\Cache;
 use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\File\File;
+use CrazyPHP\Library\String\Strings;
 
 /**
  * Migration
@@ -40,6 +42,9 @@ class Migration {
 
     /** @param bool $preview Preview mode */
     private bool $_preview;
+
+    /** @param array $preview Preview result */
+    private array $_previewResult;
 
     /** @param array $_actions List of actions */
     private array $_actions = [];
@@ -63,9 +68,8 @@ class Migration {
         /* Load Migration Config Files */
         $this->_loadConfigFiles();
 
-        /** Run actions */
-        $this->_runActions();
-
+        /** Run preview */
+        $this->_runPreviews();
 
 
     }
@@ -92,6 +96,39 @@ class Migration {
     }
 
     /**
+     * Get Action By Name
+     * 
+     * Return action using name parameter
+     * 
+     * @param string actionName Name of the action
+     * @return array|null
+     */
+    public function getActionByName(string $actionName):array|null {
+
+        # Set result
+        $result = null;
+
+        # Check action name
+        if(!$actionName)
+
+            # Return result
+            return $result;
+
+        # Search in action
+        $founded = Arrays::filterByKey($this->_actions, "name", $actionName);
+
+        # Check founded
+        if(!empty($founded))
+
+            # Set result
+            $result = $founded[array_key_last($founded)];
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
      * 
      */
     public function isFrontBuildRequired():bool {
@@ -104,24 +141,133 @@ class Migration {
 
     }
 
-    /** Public methods | Actions
+    /** Public methods | Preview
      ******************************************************
      */
 
     /**
+     * Previw String Replace
      * 
+     * Search file where we have to run a string replace
+     * 
+     * @param string $from 
+     * @param string $to 
+     * @param string|array $name = "*" 
+     * @param string|array $in
+     * @param bool $_preview = true
+     * @return array
      */
-    public function actionStringReplace(
-        string|array $from, 
-        string|array $to, 
-        string|array $name = "*", 
+    public static function previewStringReplace(
+        string $from,
+        string $to,
         string|array $in,
-        bool $_preview = true
-    ):void {
+        string|array $name = "*"
+    ):array|null {
 
+        # Set result
+        $result = null;
 
+        # Check in exists
+        if($in == "" || empty($in) || $from == "")
+
+            # Stop function
+            return $result;
+
+        # New finder
+        $finder = new Finder();
+
+        ## In
+
+        # Check in is array
+        if(!is_array($in))
+
+            # Convert in to array
+            $in = [$in];
+
+        # Set in clean
+        $inClean = [];
+        
+        # Iteration of in
+        foreach($in as $inCurrent)
+
+            # Check in
+            if(is_string($inCurrent) && $inCurrent && File::exists($inCurrent))
+
+                # Push to in clean
+                $inClean[] = File::path($inCurrent);
+
+        # Check in
+        if(empty($inClean))
+
+            # Stop function
+            return $result;
+
+        # Set in
+        $finder->in($inClean);
+
+        ## Files
+        $finder->files();
+
+        ## Name
+
+        # Check in is array
+        if(!is_array($name))
+
+            # Convert in to array
+            $name = [$name];
+
+        # Set in clean
+        $nameClean = [];
+        
+        # Iteration of in
+        foreach($name as $nameCurrent)
+
+            # Check  name
+            if(is_string($name) && $name)
+
+                # Push to in clean
+                $nameClean[] = $nameCurrent;
+
+        # Check name clean
+        if(!empty($nameClean))
+
+            # Set name
+            $finder->name($inClean);
+
+        ## Contains
+
+        # Set contains
+        $finder->contains($from);
+
+        ## Result
+
+        # Set result
+        $result = [];
+
+        # Check has result
+        if($finder->hasResults())
+
+            # Iteration file
+            foreach($finder as $file)
+
+                # Push value to result
+                $result[] = [
+                    "description"   =>  "Will replace \"$from\" by \"$to\"",
+                    "parameters"    =>  [
+                        "file"          =>  $file->getRealPath(),
+                        "search"        =>  $from,
+                        "replace"       =>  $to
+                    ],
+                ];
+
+        # Return result
+        return $result;
 
     }
+
+    /** Public methods | Run
+     ******************************************************
+     */
 
     /** Private methods
      ******************************************************
@@ -179,9 +325,69 @@ class Migration {
      * 
      * @return void
      */
-    private function _runActions():void {
+    private function _runPreviews():void {
 
-        
+        # Iteration of actions
+        foreach($this->_actions as &$action){
+
+            # Check action
+            if(!isset($action["action"]) || !isset($action["action"]["type"]))
+
+                # Continue iteration
+                continue;
+
+            # Preview method
+            $previewMethodName = $this->_getMethodName($action["action"]["type"]);
+
+            # Check method exists
+            if(method_exists($this, $previewMethodName)){
+
+                # Copy action
+                $actionParameters = $action["action"];
+
+                # Check if type
+                if(isset($actionParameters["type"]))
+
+                    # remove it
+                    unset($actionParameters["type"]);
+
+                # Run preview method
+                $previewResult = call_user_func_array(self::class."::$previewMethodName", $actionParameters);
+
+            }
+
+            # Push result in action
+            $action["_fromPreview"] = $previewResult;
+
+        }
+
+    }
+
+    /**
+     * Get Method Name
+     * 
+     * Return method name from action type to preview or run
+     * 
+     * @param string $actionType
+     * @param string $prefix
+     * @return string
+     */
+    private function _getMethodName(string $actionType, string $prefix = "preview"):string {
+
+        # Set result
+        $result = "";
+
+        # Check action type
+        if(!$actionType)
+
+            # Stop function
+            return $result;
+
+        # Set result
+        $result = strtolower($prefix).Process::snakeToCamel($actionType, true);
+
+        # Return result
+        return $result;
 
     }
 
