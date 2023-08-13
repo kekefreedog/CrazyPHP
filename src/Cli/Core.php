@@ -124,7 +124,23 @@ class Core extends CLI {
                 "long"          =>  "run",
                 "help"          =>  "Register config asset in your crazy application"
             ]
-        ]
+        ],
+        # Migration
+        "CrazyMigration"    =>  [
+            # Check migration
+            [
+                "type"          =>  "command",
+                "long"          =>  "check",
+                "help"          =>  "Check if migration is required."
+            ],
+            # Run migration
+            [
+                "type"          =>  "command",
+                "long"          =>  "run",
+                "help"          =>  "Run migration of your crazy application."
+            ]
+        ],
+
     ];
 
     /** Arguments
@@ -1248,6 +1264,62 @@ class Core extends CLI {
             ->out("🎉 Front JS generated with success 🎉")
             ->br()
         ;
+
+    }
+
+    /** Protected Methods Action | For CrazyFront
+     ******************************************************
+     */
+
+    /** 
+     * Action Check
+     * 
+     * Check if migration of your crazy application is required
+     * 
+     * @param array $inputs Collection of inputs with opts, args & cmd
+     */
+    protected function actionCrazyMigrationCheck(array $inputs = []){
+
+        # New climate
+        $climate = new CLImate();
+
+        # Add asci folder
+        $climate->addArt(self::ASCII_ART["crazyphp"]);
+        
+        # Draw crazy php logo
+        $climate->draw('crazyphp');
+
+        # Title of current action
+        $climate->backgroundBlue()->out("🚀 Run check migration")->br();
+          
+        # Check command is in router
+        $this->_checkInRouter($inputs);
+
+    }
+
+    /** 
+     * Action Run
+     * 
+     * Run migration of your crazy application
+     * 
+     * @param array $inputs Collection of inputs with opts, args & cmd
+     */
+    protected function actionCrazyMigrationRun(array $inputs = []){
+
+        # New climate
+        $climate = new CLImate();
+
+        # Add asci folder
+        $climate->addArt(self::ASCII_ART["crazyphp"]);
+        
+        # Draw crazy php logo
+        $climate->draw('crazyphp');
+
+        # Title of current action
+        $climate->backgroundBlue()->out("🚀 Run migration")->br();
+          
+        # Check command is in router
+        $this->_checkInRouter($inputs);
 
     }
 

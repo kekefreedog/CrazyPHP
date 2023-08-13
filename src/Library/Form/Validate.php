@@ -757,5 +757,30 @@ class Validate {
 
     }
 
+    /**
+     * Is Regex
+     * 
+     * Check if string given is regex
+     * 
+     * @param string $pattern
+     * @return bool
+     */
+    public static function isRegex(string $pattern):bool {
+
+        # Set result
+        $result = false;
+
+        # Check pattern
+        if($pattern){
+
+            # Test the pattern by using it in preg_match
+            $result = @preg_match($pattern, '') !== false;
+
+        }
+    
+        # Return result
+        return $result;
+
+    }
 
 }

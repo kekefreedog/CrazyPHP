@@ -96,6 +96,9 @@ class MigrationTest extends TestCase {
         # New migration instance
         $migration = new Migration();
 
+        # Run preview
+        $migration->runPreviews();
+
         # Get action upgradePageRegisterCommand
         $getActionByNameResult = $migration->getActionByName("upgradePageRegisterCommand");
 
@@ -104,6 +107,31 @@ class MigrationTest extends TestCase {
 
         # Assert | Check if equal to two value
         $this->assertCount(2, $previewResult);
+
+        # Check $previewResult
+        if(!empty($previewResult)){
+
+            # Run migration
+            $migration->run();
+
+            # Iteration of preview result
+            foreach($previewResult as $preview){
+
+                # Open file
+                $fileContent = file_get_contents($preview["parameters"]["file"]);
+
+                # Check if contains result
+                $this->assertStringContainsString($preview["parameters"]["replace"], $fileContent);
+
+                # Check if contains search value
+                $searchIncluded = strpos($fileContent, $preview["parameters"]["search"]) !== false ? true : false;
+
+                # Check if false
+                $this->assertFalse($searchIncluded, "Value \"".$preview["parameters"]["search"]."\" is always included in the file \"".basename($preview["parameters"]["file"]."\""));
+
+            }
+
+        }
 
     }
 

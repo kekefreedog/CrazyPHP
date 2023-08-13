@@ -16,14 +16,11 @@ namespace  CrazyPHP\Library\Migration;
  * Dependances
  */
 use CrazyPHP\Exception\CrazyException;
-use Symfony\Component\Finder\Finder;
 use CrazyPHP\Library\Form\Validate;
+use Symfony\Component\Finder\Finder;
 use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\Array\Arrays;
-use CrazyPHP\Library\Cache\Cache;
-use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\File\File;
-use CrazyPHP\Library\String\Strings;
 
 /**
  * Migration
@@ -43,8 +40,8 @@ class Migration {
     /** @param bool $preview Preview mode */
     private bool $_preview;
 
-    /** @param array $preview Preview result */
-    private array $_previewResult;
+    /** @param array $preview Check if preview has been ran */
+    private bool $_previewRan = false;
 
     /** @param array $_actions List of actions */
     private array $_actions = [];
@@ -65,18 +62,165 @@ class Migration {
         # Set preview
         $this->_preview = !$process;
 
-        /* Load Migration Config Files */
+        # Load Migration Config Files
         $this->_loadConfigFiles();
 
-        /** Run preview */
-        $this->_runPreviews();
+        # Check process
+        if($process){
 
+            # Run preview
+            $this->runPreviews();
+
+            # Run actions
+            $this->run();
+
+        }
 
     }
 
     /** Public methods
      ******************************************************
      */
+
+    /**
+     * Run
+     * 
+     * Run all actions
+     * 
+     * @param bool $previewRequired
+     * @return void
+     */
+    public function run(bool $previewRequired = false):void {
+
+        # Check previewRequired
+        if(!$this->_previewRan)
+
+            # New error
+            throw new CrazyException(
+                "You must run preview method before run actions of migration.",
+                500,
+                [
+                    "custom_code"   =>  "migration-001"
+                ]
+            );
+
+        # Iteration of actions
+        foreach($this->_actions as &$action){
+
+            # Check _fromPreview
+            if(
+                !isset($action["_fromPreview"]) || 
+                $action["_fromPreview"] === null ||
+                !$action["_fromPreview"] || 
+                empty($action["_fromPreview"])
+            ){
+
+                # Continue iteration
+                continue;
+
+            }
+
+            # Check action
+            if(!isset($action["action"]) || !isset($action["action"]["type"]))
+
+                # Continue iteration
+                continue;
+
+            # Preview method
+            $runMethodName = $this->_getMethodName($action["action"]["type"], "run");
+
+            # Check method exists
+            if(method_exists($this, $runMethodName)){
+
+                # Iteration from preview
+                foreach($action["_fromPreview"] as $preview)
+
+                    # Run action
+                    call_user_func_array(self::class."::$runMethodName", $preview["parameters"] ?? []);
+
+            }
+
+        }
+
+    }
+
+    /**
+     * Run Actions
+     * 
+     * Run all actions
+     * 
+     * @param bool $overwrite exisiting preview result
+     * @return void
+     */
+    public function runPreviews(bool $overwrite = true):void {
+
+        # Iteration of actions
+        foreach($this->_actions as &$action){
+
+            # Check overwrite
+            if($overwrite && isset($action["_fromPreview"]))
+
+                # Continue
+                continue;
+
+            # Check action
+            if(!isset($action["action"]) || !isset($action["action"]["type"]))
+
+                # Continue iteration
+                continue;
+
+            # Preview method
+            $previewMethodName = $this->_getMethodName($action["action"]["type"]);
+
+            # Check method exists
+            if(method_exists($this, $previewMethodName)){
+
+                # Copy action
+                $actionParameters = $action["action"];
+
+                # Check if type
+                if(isset($actionParameters["type"]))
+
+                    # remove it
+                    unset($actionParameters["type"]);
+
+                # Run preview method
+                $previewResult = call_user_func_array(self::class."::$previewMethodName", $actionParameters);
+
+            }
+
+            # Push result in action
+            $action["_fromPreview"] = $previewResult;
+
+        }
+
+        # Switch 
+        $this->_previewRan = true;
+
+    }
+
+    /**
+     * Reset previews
+     * 
+     * Reset preview results on all actions
+     * 
+     * @return void
+     */
+    public function resetPreviews():void {
+
+        # Iteration of actions
+        foreach($this->_actions as &$action)
+
+            # Check if isset $action["_fromPreview"]
+            if(isset($action["_fromPreview"]))
+
+                # Unset the parameter
+                unset($action["_fromPreview"]);
+
+        # Swith false the _previewRan parameter
+        $this->_previewRan = false;
+
+    }
 
     /**
      * Get Actions
@@ -269,6 +413,48 @@ class Migration {
      ******************************************************
      */
 
+    /**
+     * Run String Replace
+     * 
+     * Run string replacement on specific file
+     */
+    public static function runStringReplace(
+        string $file,
+        string $search,
+        string $replace
+    ):bool {
+
+        # Ser result
+        $result = false;
+
+        # check file and search
+        if($file && File::exists($file) && $search){
+
+            # Open file
+            $fileContent = file_get_contents($file);
+
+            # Check search if regex
+            if(Validate::isRegex($search))
+
+                # New content
+                $fileContent = preg_replace($search, $replace, $fileContent);
+
+            # If search not regex
+            else
+
+                # Replace content
+                $fileContent = str_replace($search, $replace, $fileContent);
+
+            # Replace content
+            file_put_contents($file, $fileContent);
+
+        }
+
+        # Return result
+        return $result;
+
+    }
+
     /** Private methods
      ******************************************************
      */
@@ -313,51 +499,6 @@ class Migration {
                         $this->_isFrontBuildRequired = true;
 
                 }
-
-        }
-
-    }
-
-    /**
-     * Run Actions
-     * 
-     * Run all actions
-     * 
-     * @return void
-     */
-    private function _runPreviews():void {
-
-        # Iteration of actions
-        foreach($this->_actions as &$action){
-
-            # Check action
-            if(!isset($action["action"]) || !isset($action["action"]["type"]))
-
-                # Continue iteration
-                continue;
-
-            # Preview method
-            $previewMethodName = $this->_getMethodName($action["action"]["type"]);
-
-            # Check method exists
-            if(method_exists($this, $previewMethodName)){
-
-                # Copy action
-                $actionParameters = $action["action"];
-
-                # Check if type
-                if(isset($actionParameters["type"]))
-
-                    # remove it
-                    unset($actionParameters["type"]);
-
-                # Run preview method
-                $previewResult = call_user_func_array(self::class."::$previewMethodName", $actionParameters);
-
-            }
-
-            # Push result in action
-            $action["_fromPreview"] = $previewResult;
 
         }
 
