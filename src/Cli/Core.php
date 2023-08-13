@@ -28,6 +28,7 @@ use CrazyPHP\Model\App\Delete;
 use League\CLImate\CLImate;
 use splitbrain\phpcli\CLI;
 use CrazyPHP\Cli\Form;
+use CrazyPHP\Library\Migration\Migration;
 
 /**
  * Core
@@ -1277,8 +1278,9 @@ class Core extends CLI {
      * Check if migration of your crazy application is required
      * 
      * @param array $inputs Collection of inputs with opts, args & cmd
+     * @return Migration for run / upgrade command
      */
-    protected function actionCrazyMigrationCheck(array $inputs = []){
+    protected function actionCrazyMigrationCheck(array $inputs = []):Migration{
 
         # New climate
         $climate = new CLImate();
@@ -1295,6 +1297,84 @@ class Core extends CLI {
         # Check command is in router
         $this->_checkInRouter($inputs);
 
+        # New migration instance
+        $migration = new Migration();
+
+        # Enable cli on migration instance
+        $migration->enableCliMessage(
+            true,
+            function (array $action, bool $preview = true) use ($climate) {
+                # Message start
+                $climate
+                    ->br()
+                    ->yellow("🟠 Run ".strtolower(Process::spaceBeforeCapital(($preview ? "Preview " : "").($action["name"] ?? ""))))
+                ;
+                # Check if description
+                if($action["description"] ?? false)
+                    # Message
+                    $climate
+                        ->out('>>> ℹ️  '.$action["description"])
+                    ;
+            },
+            function (array $action, bool $preview = true) use ($climate) {
+                # Message end
+                $climate
+                    ->green("🟢 ".ucfirst(strtolower(Process::spaceBeforeCapital(($preview ? "Preview " : "").($action["name"] ?? ""))))." ran with success")
+                    ->br()
+                ;
+            }
+        );
+
+        # Run preview 
+        $migration->runPreviews();
+
+        # Message for summary
+        $climate
+            ->br()
+            ->lightBlue()
+            ->bold()
+            ->out("📝 Summary about the check migration 📝")
+            ->br()
+        ;
+
+        # Get summary
+        $summary = $migration->getCliSummaryForTable();
+
+        # Check summary
+        if($summary === null)
+
+            # New error
+            throw new CrazyException(
+                "No migration action found",
+                200,
+                [
+                    "custom_code"   =>  "core-003"
+                ]
+            );
+
+        # Error detect
+        else
+
+            # Display summary
+            $climate
+                ->table($summary)
+                ->br()
+            ;
+
+        # Check if front build required
+        if($migration->isFrontBuildRequired())
+
+            # Flank
+            $climate
+                ->bold()
+                ->yellow()
+                ->out('>>> <underline>Front build will be required after migration.</underline>')
+                ->br()
+            ;
+
+        # Return migration
+        return $migration;
+
     }
 
     /** 
@@ -1306,20 +1386,42 @@ class Core extends CLI {
      */
     protected function actionCrazyMigrationRun(array $inputs = []){
 
+        # Retrieve migration from check command
+        $migration = $this->actionCrazyMigrationCheck($inputs);
+
         # New climate
         $climate = new CLImate();
 
-        # Add asci folder
-        $climate->addArt(self::ASCII_ART["crazyphp"]);
+        # Message
+        $input = $climate
+            ->lightBlue()
+            ->bold()
+            ->confirm('✅ Do you want run migration ? ✅')
+        ;
         
-        # Draw crazy php logo
-        $climate->draw('crazyphp');
+        # Check action confirmed
+        if (!$input->confirmed()){
+
+            # Stop message
+            $climate
+                ->br()
+                ->bold()
+                ->red("✋ Action canceled ✋")
+                ->br()
+            ;
+
+            # Stop action
+            return;
+
+        }
 
         # Title of current action
-        $climate->backgroundBlue()->out("🚀 Run migration")->br();
-          
-        # Check command is in router
-        $this->_checkInRouter($inputs);
+        $climate
+            ->br()
+            ->backgroundBlue()
+            ->out("🚀 Run migration")->br()
+        ;
+        
 
     }
 

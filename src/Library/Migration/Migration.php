@@ -21,6 +21,7 @@ use Symfony\Component\Finder\Finder;
 use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\File\File;
+use League\CLImate\CLImate;
 
 /**
  * Migration
@@ -49,12 +50,25 @@ class Migration {
     /** @param bool $_isFrontBuildRequired */
     private bool $_isFrontBuildRequired = false;
 
+    /** @param bool $_cliMessage */
+    private bool $_cliMessage = false;
+
+    /** @param array $_cliMessageSummary */
+    private array $_cliMessageSummary = [];
+    private array $_cliMessageSummaryTemp = [];
+
+    /** @param array $_cliMessageCallable */
+    private ?array $_cliMessageCallable = [
+        "before"    =>  null,
+        "after"     =>  null
+    ];
+
     /**
      * Constructor
      * 
      * Construct
      * 
-     * @param bool $process Process migration or just preview
+     * @param bool $process Just instance the class or run all process
      * @return self
      */
     public function __construct(bool $process = false){
@@ -136,7 +150,7 @@ class Migration {
                 foreach($action["_fromPreview"] as $preview)
 
                     # Run action
-                    call_user_func_array(self::class."::$runMethodName", $preview["parameters"] ?? []);
+                    $this->$runMethodName(...($preview["parameters"] ?? []));
 
             }
 
@@ -156,6 +170,12 @@ class Migration {
 
         # Iteration of actions
         foreach($this->_actions as &$action){
+
+            # Check cli message
+            if($this->_cliMessage && is_callable($this->_cliMessageCallable["before"] ?? false))
+
+                # Message start
+                $this->_cliMessageCallable["before"]($action);
 
             # Check overwrite
             if($overwrite && isset($action["_fromPreview"]))
@@ -185,12 +205,23 @@ class Migration {
                     unset($actionParameters["type"]);
 
                 # Run preview method
-                $previewResult = call_user_func_array(self::class."::$previewMethodName", $actionParameters);
+                $previewResult = $this->$previewMethodName(...$actionParameters);
 
             }
 
             # Push result in action
             $action["_fromPreview"] = $previewResult;
+
+            # Check cli message
+            if($this->_cliMessage && is_callable($this->_cliMessageCallable["after"] ?? false)){
+
+                # Message end
+                $this->_cliMessageCallable["after"]($action);
+
+            }
+
+            # Check summary temp
+            $this->_cliMessageFillSummary($action["name"] ?? "");
 
         }
 
@@ -273,12 +304,69 @@ class Migration {
     }
 
     /**
+     * Is Front Build Required
      * 
+     * Check if front build required after execution of migration
      */
     public function isFrontBuildRequired():bool {
 
         # Set result
         $result = $this->_isFrontBuildRequired;
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Enable Cli Message
+     * 
+     * Enable message during execution
+     * 
+     * @param bool $enable Enable of disable cli message
+     * @param callable|null $callBefore to execute before each message
+     * @param callable|null $callAfter to execute after each message
+     * @return void
+     */
+    public function enableCliMessage(bool $enable = true, callable|null $callBefore = null, callable|null $callAfter = null):void {
+
+        # Check enable
+        if($enable){
+
+            # Check callBefore
+            if($callBefore !== null && is_callable($callBefore))
+
+                # Set in 
+                $this->_cliMessageCallable["before"] = $callBefore;
+
+            # Check callBefore
+            if($callAfter !== null &&  is_callable($callAfter))
+
+                # Set in 
+                $this->_cliMessageCallable["after"] = $callAfter;
+
+            # Set cli message
+            $this->_cliMessage = true;
+
+        # Check if disable
+        }else
+
+            # Set cli message
+            $this->_cliMessage = false;
+
+    }
+
+    /**
+     * Get Cli Summary For Table
+     * 
+     * Return summary formated for climate table
+     * 
+     * @return array|null
+     */
+    public function getCliSummaryForTable():array|null {
+
+        # Set result
+        $result = empty($this->_cliMessageSummary) ? null : $this->_cliMessageSummary;
 
         # Return result
         return $result;
@@ -301,7 +389,7 @@ class Migration {
      * @param bool $_preview = true
      * @return array
      */
-    public static function previewStringReplace(
+    public function previewStringReplace(
         string $from,
         string $to,
         string|array $in,
@@ -392,10 +480,10 @@ class Migration {
         if($finder->hasResults())
 
             # Iteration file
-            foreach($finder as $file)
+            foreach($finder as $file){
 
                 # Push value to result
-                $result[] = [
+                $temp = [
                     "description"   =>  "Will replace \"$from\" by \"$to\"",
                     "parameters"    =>  [
                         "file"          =>  $file->getRealPath(),
@@ -403,6 +491,15 @@ class Migration {
                         "replace"       =>  $to
                     ],
                 ];
+
+                # Cli message
+                $this->_cliMessagePreview($temp);
+               
+
+                # Push to result
+                $result[] = $temp;
+
+            }
 
         # Return result
         return $result;
@@ -418,7 +515,7 @@ class Migration {
      * 
      * Run string replacement on specific file
      */
-    public static function runStringReplace(
+    public function runStringReplace(
         string $file,
         string $search,
         string $replace
@@ -529,6 +626,87 @@ class Migration {
 
         # Return result
         return $result;
+
+    }
+
+    /**
+     * Cli Message Preview
+     * 
+     * Display message for preview method
+     * 
+     * @param array $temp
+     * @return void
+     */
+    private function _cliMessagePreview(array $temp = []):void {
+
+        # Check cli message is enable
+        if($this->_cliMessage){
+
+            $message =  
+                "<blue>[-] New action found</blue>".
+                (
+                    ($temp["description"] ?? false) 
+                        ? " : ".$temp["description"]
+                        : ""
+                ).
+                (
+                    ($temp["parameters"]["file"] ?? false)
+                        ? " in \"".str_replace(
+                            File::path("@app_root"),
+                            "",
+                            str_replace(
+                                File::path("@crazyphp_root"),
+                                "",
+                                $temp["parameters"]["file"]
+                            )
+                        )."\""
+                        : ""
+                )
+            ;
+
+            # Display message
+            (new CLImate())->out($message);
+
+            # Push message in summary temp
+            $this->_cliMessageSummaryTemp[] = str_replace(
+                [
+                    "[-] ",
+                    "<blue>New action found</blue> : ",
+                    "<blue>New action found</blue> "
+                ],
+                "",
+                $message
+            );
+
+        }
+
+    }
+
+    /**
+     * Cli Message Fill Summary
+     * 
+     * Spread summary temp in summary with action name
+     * > Will be use for cli table to get summary
+     * 
+     * @param string $actionName
+     * @return void
+     */
+    private function _cliMessageFillSummary(string $actionName):void {
+
+        # Check cli message is enable
+        if($this->_cliMessage && !empty($this->_cliMessageSummaryTemp))
+
+            # Iteration _cliMessageSummaryTemp
+            foreach($this->_cliMessageSummaryTemp as $summary)
+
+                # Push value in summary
+                $this->_cliMessageSummary[] = [
+                    "Action"        =>  $actionName ? ucfirst(strtolower(Process::spaceBeforeCapital($actionName))) : "Migration Action",
+                    "Description"   =>  $summary
+                ];
+
+        # Clean _cliMessageSummary
+        $this->_cliMessageSummaryTemp = [];
 
     }
 
