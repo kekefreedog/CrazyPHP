@@ -8,7 +8,7 @@
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2022 Kévin Zarshenas
+ * @copyright  2022-2023 Kévin Zarshenas
  */
 namespace App\Controller\Assets;
 
@@ -26,7 +26,7 @@ use CrazyPHP\Core\Response;
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2022 Kévin Zarshenas
+ * @copyright  2022-2023 Kévin Zarshenas
  */
 class Favicon extends Controller {
 

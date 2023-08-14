@@ -8,7 +8,7 @@
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2022 Kévin Zarshenas
+ * @copyright  2022-2023 Kévin Zarshenas
  */
 namespace CrazyPHP\Model\Docker;
 
@@ -34,7 +34,7 @@ use CrazyPHP\Model\Config;
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2022 Kévin Zarshenas
+ * @copyright  2022-2023 Kévin Zarshenas
  */
 class Delete extends CrazyModel implements CrazyCommand {
 

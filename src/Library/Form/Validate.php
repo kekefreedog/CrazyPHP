@@ -8,7 +8,7 @@
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2022 Kévin Zarshenas
+ * @copyright  2022-2023 Kévin Zarshenas
  */
 namespace  CrazyPHP\Library\Form;
 
@@ -29,7 +29,7 @@ use finfo;
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2022 Kévin Zarshenas
+ * @copyright  2022-2023 Kévin Zarshenas
  */
 class Validate {
 
@@ -757,5 +757,30 @@ class Validate {
 
     }
 
+    /**
+     * Is Regex
+     * 
+     * Check if string given is regex
+     * 
+     * @param string $pattern
+     * @return bool
+     */
+    public static function isRegex(string $pattern):bool {
+
+        # Set result
+        $result = false;
+
+        # Check pattern
+        if($pattern){
+
+            # Test the pattern by using it in preg_match
+            $result = @preg_match($pattern, '') !== false;
+
+        }
+    
+        # Return result
+        return $result;
+
+    }
 
 }

@@ -446,6 +446,77 @@ class File {
     }
 
     /**
+     * Path Reverse
+     * 
+     * Reverse path by they env name
+     * Exemple : 
+     * - "/etc/app/project" => "@app_root"
+     * - "/etc/app/project/vendor/../crazy/php" => "@crazyphp_root"
+     * 
+     * @param string $input
+     * @param string|array $env Env to reverse
+     * @return string
+     */
+    public static function pathReverse(string $input, string|array $env):string {
+
+        # Set result
+        $result = $input;
+
+        # Check inputs
+        if($input && ($env || !empty($env))){
+
+            # Check env is array
+            if(!is_array($env))
+
+                # Convert to array
+                $env = [$env];
+
+            # Check env
+            if(!empty($env))
+
+                # Iteration env
+                foreach($env as $currentEnv){
+
+                    $currentEnv = strtoupper((string)str_replace("@", "", $currentEnv));
+
+                    # Check env exists
+                    if($env && Env::has($currentEnv)){
+
+                        # Get env
+                        $currentEnvValue = Env::get($currentEnv);
+
+                        # Set alt
+                        $alts = [$currentEnvValue];
+
+                        # Check if valid folder
+                        if(File::exists($currentEnvValue) && ($realpath = realpath($currentEnvValue)) != $currentEnvValue)
+
+                            # Set second alt
+                            $alts[] = $realpath;
+
+                        # Iteration alt
+                        foreach($alts as $alt){
+
+                            # Check if is in string
+                            if(strpos($result, $alt) !== false)
+
+                                # Replace str
+                                $result = str_replace($alt, "@".strtolower($currentEnv), $result);
+
+                        }
+
+                    }
+
+                }
+
+        }
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
      * Copy
      * 
      * Copy with check of folder and check of path
@@ -474,8 +545,28 @@ class File {
             # Create folder
             mkdir($path_folder, 0777, true);
 
-        # Set result
-        $result = copy($path_source, $path_target);
+        # Check if path_source is dir
+        if(is_dir($path_source)){
+   
+            # open the source directory
+            $dir = opendir($path_source);
+            
+            # Loop through the files in source directory
+            foreach(scandir($path_source) as $file)
+            
+                # Check not parent of current folder
+                if($file != '.' && $file != '..' )
+            
+                    // Recursively calling self function
+                    $result = self::copy("$path_source/$file", "$path_target/$file");
+            
+            # Close directory
+            closedir($dir);
+
+        }else
+
+            # Set result
+            $result = copy($path_source, $path_target);
 
         # Return result
         return $result;

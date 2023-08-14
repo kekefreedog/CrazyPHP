@@ -1,0 +1,42 @@
+# #
+# Migration
+#
+# Define list of migration actions
+#
+# YAML version 1.2
+#
+# @package    kzarshenas/crazyphp
+# @author     kekefreedog <kevin.zarshenas@gmail.com>
+# @copyright  2022-2023 Kévin Zarshenas
+# #
+Migration:
+  actions:
+    - name: upgradePageRegisterCommand
+      description: Upgrade command that register pages
+      action: 
+        type: string_replace
+        from: window.Crazyobject.pages.register(
+        to: window.Crazyobject.register(
+        name: "*.ts"
+        in: "@app_root/app/Environment"
+      frontBuildRequired: true
+    - name: upgradeEs2021OnTsConfig
+      description: Upgrade es2020 to es2021 on ts config
+      action: 
+        type: string_replace
+        from: es2020
+        to: es2021
+        name: tsconfig.json
+        in: "@app_root"
+      frontBuildRequired: true
+    - name: upgradeGitignore
+      description: Add some rules in .gitignore file
+      action: 
+        type: add_line
+        add: |-
+          # Vscode
+          .vscode"
+        position: end
+        name: ".gitignore"
+        in: "@app_root"
+      frontBuildRequired: true
