@@ -108,8 +108,17 @@ class MigrationTest extends TestCase {
         # Assert | Check if equal to two value
         $this->assertCount(2, $previewResult);
 
+        # Get action upgradePageRegisterCommand
+        $getActionByNameResultSecond = $migration->getActionByName("upgradeGitignore");
+
+        # Set preview count 
+        $previewResultSeconnd = $getActionByNameResultSecond["_fromPreview"] ?? [];
+
+        # Assert | Check if equal to two value
+        $this->assertCount(1, $previewResultSeconnd);
+
         # Check $previewResult
-        if(!empty($previewResult)){
+        if(!empty($previewResult) && !empty($previewResultSeconnd)){
 
             # Run migration
             $migration->run();
@@ -128,6 +137,17 @@ class MigrationTest extends TestCase {
 
                 # Check if false
                 $this->assertFalse($searchIncluded, "Value \"".$preview["parameters"]["search"]."\" is always included in the file \"".basename($preview["parameters"]["file"]."\""));
+
+            }
+
+            # Iteration of preview result
+            foreach($previewResultSeconnd as $preview){
+
+                # Open file
+                $fileContent = file_get_contents($preview["parameters"]["file"]);
+
+                # Check if contains result
+                $this->assertStringContainsString($preview["parameters"]["add"], $fileContent);
 
             }
 

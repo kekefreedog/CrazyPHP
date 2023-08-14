@@ -29,13 +29,14 @@ Migration:
         name: tsconfig.json
         in: "@app_root"
       frontBuildRequired: true
-#    - name: upgradeGitignore
-#      description: Add some rules in .gitignore file
-#      action: 
-#        type: add_line
-#        add: >
-#          # Vscode
-#          .vscode"
-#        name: .gitignore
-#        in: "@app_root"
-#      frontBuildRequired: true#
+    - name: upgradeGitignore
+      description: Add some rules in .gitignore file
+      action: 
+        type: add_line
+        add: |-
+          # Vscode
+          .vscode"
+        position: end
+        name: ".gitignore"
+        in: "@app_root"
+      frontBuildRequired: true

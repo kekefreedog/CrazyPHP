@@ -1280,7 +1280,7 @@ class Core extends CLI {
      * @param array $inputs Collection of inputs with opts, args & cmd
      * @return Migration for run / upgrade command
      */
-    protected function actionCrazyMigrationCheck(array $inputs = []):Migration{
+    protected function actionCrazyMigrationCheck(array $inputs = [], bool $endMessage = true):Migration{
 
         # New climate
         $climate = new CLImate();
@@ -1372,6 +1372,17 @@ class Core extends CLI {
                 ->br()
             ;
 
+        # Check end message
+        if($endMessage)
+
+            # Success message
+            $climate
+                ->lightGreen()
+                ->bold()
+                ->out("🎉 Migration checked with success 🎉")
+                ->br()
+            ;
+
         # Return migration
         return $migration;
 
@@ -1387,7 +1398,7 @@ class Core extends CLI {
     protected function actionCrazyMigrationRun(array $inputs = []){
 
         # Retrieve migration from check command
-        $migration = $this->actionCrazyMigrationCheck($inputs);
+        $migration = $this->actionCrazyMigrationCheck($inputs, false);
 
         # New climate
         $climate = new CLImate();
@@ -1421,7 +1432,17 @@ class Core extends CLI {
             ->backgroundBlue()
             ->out("🚀 Run migration")->br()
         ;
-        
+
+
+
+        # Success message
+        $climate
+            ->br()
+            ->lightGreen()
+            ->bold()
+            ->out("🎉 Migration ran with success 🎉")
+            ->br()
+        ;
 
     }
 

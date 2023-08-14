@@ -384,10 +384,10 @@ class Migration {
      * 
      * @param string $from 
      * @param string $to 
-     * @param string|array $name = "*" 
+     * @param string|array $name = "*" Name of the file, can be regex
      * @param string|array $in
      * @param bool $_preview = true
-     * @return array
+     * @return array|null
      */
     public function previewStringReplace(
         string $from,
@@ -437,6 +437,23 @@ class Migration {
         # Set in
         $finder->in($inClean);
 
+        ## Exclude
+
+        # Set folder to exclude
+        $foldersToExclude = [];
+
+        # Check ignore folders
+        if(!empty(self::FOLDERS_TO_IGNORE))
+
+            # Iteration of folders
+            foreach(self::FOLDERS_TO_IGNORE as $_folderIgnorePath)
+
+                # Add to exclude
+                $foldersToExclude[] = File::path($_folderIgnorePath);
+
+        # Push exclude to finder
+        $finder->exclude($foldersToExclude);
+
         ## Files
         $finder->files();
 
@@ -455,7 +472,7 @@ class Migration {
         foreach($name as $nameCurrent)
 
             # Check  name
-            if(is_string($name) && $name)
+            if(is_string($nameCurrent) && $nameCurrent)
 
                 # Push to in clean
                 $nameClean[] = $nameCurrent;
@@ -464,7 +481,7 @@ class Migration {
         if(!empty($nameClean))
 
             # Set name
-            $finder->name($inClean);
+            $finder->name($nameClean);
 
         ## Contains
 
@@ -506,6 +523,159 @@ class Migration {
 
     }
 
+    /**
+     * Preview Add Line
+     * 
+     * Check if some files are missing line
+     * 
+     * @param string $add Lines to add
+     * @param string|array $in Which folder 
+     * @param string|array $name = "*" Name of the file (can be regex)
+     * @param string $position = "end",   # Top or end   
+     * @return array|null
+     */
+    public function previewAddLine(
+        string $add,
+        string|array $in,
+        string $position = "end",
+        string|array $name = "*"
+    ):array|null {
+
+        # Set result
+        $result = null;
+
+        # Check in exists
+        if($in == "" || empty($in) || $add == "" || !in_array($position, ["start", "end"]))
+
+            # Stop function
+            return $result;
+
+        # New finder
+        $finder = new Finder();
+
+        ## In
+
+        # Check in is array
+        if(!is_array($in))
+
+            # Convert in to array
+            $in = [$in];
+
+        # Set in clean
+        $inClean = [];
+        
+        # Iteration of in
+        foreach($in as $inCurrent)
+
+            # Check in
+            if(is_string($inCurrent) && $inCurrent && File::exists($inCurrent))
+
+                # Push to in clean
+                $inClean[] = File::path($inCurrent);
+
+        # Check in
+        if(empty($inClean))
+
+            # Stop function
+            return $result;
+
+        # Set in
+        $finder->in($inClean);
+
+        ## Exclude
+
+        # Set folder to exclude
+        $foldersToExclude = [];
+
+        # Check ignore folders
+        if(!empty(self::FOLDERS_TO_IGNORE))
+
+            # Iteration of folders
+            foreach(self::FOLDERS_TO_IGNORE as $_folderIgnorePath)
+
+                # Add to exclude
+                $foldersToExclude[] = File::path($_folderIgnorePath);
+
+        # Push exclude to finder
+        $finder->exclude($foldersToExclude);
+
+        ## Files
+        $finder->files();
+
+        ## Name
+
+        # Check in is array
+        if(!is_array($name))
+
+            # Convert in to array
+            $name = [$name];
+
+        # Set in clean
+        $nameClean = [];
+        
+        # Iteration of in
+        foreach($name as $nameCurrent)
+
+            # Check  name
+            if(is_string($nameCurrent) && $nameCurrent){
+
+                # Push to in clean
+                $nameClean[] = $nameCurrent;
+
+                ## Check if .gitignore
+                if(strpos($nameCurrent, ".") !== false){}
+
+                    # Disable ignore .gitignore on the finder instance
+                    $finder->ignoreDotFiles(false);
+
+            }
+
+        # Check name clean
+        if(!empty($nameClean))
+
+            # Set name
+            $finder->name($nameClean);
+
+        ## Contains
+
+        # Set contains
+        $finder->notContains($add);
+
+        ## Result
+
+        # Set result
+        $result = [];
+
+        # Check has result
+        if($finder->hasResults())
+
+            # Iteration file
+            foreach($finder as $file){
+
+                # Push value to result
+                $temp = [
+                    "description"   =>  "Will add new line \"".preg_replace('~[\r\n]~', '<br>', $add)."\" at the \"$position\"",
+                    "parameters"    =>  [
+                        "file"          =>  $file->getRealPath(),
+                        "add"           =>  $add,
+                        "position"      =>  $position
+                    ],
+                ];
+
+                # Cli message
+                $this->_cliMessagePreview($temp);
+               
+
+                # Push to result
+                $result[] = $temp;
+
+            }
+
+        # Return result
+        return $result;
+
+    }
+
     /** Public methods | Run
      ******************************************************
      */
@@ -514,6 +684,11 @@ class Migration {
      * Run String Replace
      * 
      * Run string replacement on specific file
+     * 
+     * @param string $file
+     * @param string $search
+     * @param string $replace
+     * @return bool
      */
     public function runStringReplace(
         string $file,
@@ -543,7 +718,53 @@ class Migration {
                 $fileContent = str_replace($search, $replace, $fileContent);
 
             # Replace content
-            file_put_contents($file, $fileContent);
+            $result = file_put_contents($file, $fileContent) ? true : false;
+
+        }
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Run Add Line
+     * 
+     * Run add line on file
+     * 
+     * @param string $file
+     * @param string $add
+     * @param string $position
+     * @return bool
+     */
+    public function runAddLine(
+        string $file,
+        string $add,
+        string $position
+    ):bool {
+
+        # Set result
+        $result = false;
+
+        # Check file exists
+        if(File::exists($file) && in_array($position, ["start", "end"])){
+
+            # Open file
+            $fileContent = file_get_contents($file);
+
+            # Check position
+            if($position == "start")
+
+                # Push add in file content
+                $fileContent = $add.PHP_EOL.$fileContent;
+
+            else
+
+                # Push add in end of file content
+                $fileContent = $fileContent.PHP_EOL.$add;
+
+            # Push to file
+            $result = file_put_contents($file, $fileContent) ? true : false;
 
         }
 
@@ -716,5 +937,15 @@ class Migration {
 
     /** @const string CONFIG_PATH */
     public const CRAZY_PHP_MIGRATION_PATH = "@crazyphp_root/resources/Yml/Migration.yml";
+
+    /** Private constants
+     ******************************************************
+     */
+
+    /** @var const FOLDERS_TO_IGNORE */
+    private const FOLDERS_TO_IGNORE = [
+        "vendor", 
+        "node_modules"
+    ];
 
 }
