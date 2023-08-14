@@ -64,9 +64,12 @@ class Trash {
      * @param string $target File to send to trash
      * @param string $hierarchy Subfolder in the trash where is sent the file
      * @param bool $moveToTrash After copy in trash, it deletes the original file given
-     * @return void
+     * @return string|bool Return the path of the file
      */
-    public static function send(string $target = "", string $hierarchy = "", bool $moveToTrash = true):void {
+    public static function send(string $target = "", string $hierarchy = "", bool $moveToTrash = true):string|bool {
+
+        # Set result
+        $result = false;
 
         # Check if file exists
         if(File::exists($target)){
@@ -80,13 +83,24 @@ class Trash {
                 # Get trash path
                 $trashPath = static::getPath();
 
-                # Copy file
-                File::copy(
-                    $target, 
+                # Set trash target
+                $trashTarget = 
                     rtrim($trashPath, "/")."/".
                     ($hierarchy ? trim($hierarchy, "/")."/" : "").
                     pathinfo($target, PATHINFO_BASENAME)."_".static::_getCurrentDate()
+                ;
+
+                # Copy file
+                $result = File::copy(
+                    $target, 
+                    $trashTarget
                 );
+
+                # Check trash
+                if($result !== false)
+
+                    # Set result
+                    $result = $trashTarget;
 
             }
 
@@ -97,6 +111,9 @@ class Trash {
                 File::remove($target);
 
         }
+
+        # Return result
+        return $result;
 
     }
 

@@ -16,10 +16,12 @@ namespace  CrazyPHP\Library\Migration;
  * Dependances
  */
 use CrazyPHP\Exception\CrazyException;
-use CrazyPHP\Library\Form\Validate;
 use Symfony\Component\Finder\Finder;
+use CrazyPHP\Library\Form\Validate;
+use CrazyPHP\Library\Time\DateTime;
 use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\Array\Arrays;
+use CrazyPHP\Library\File\Trash;
 use CrazyPHP\Library\File\File;
 use League\CLImate\CLImate;
 
@@ -50,6 +52,10 @@ class Migration {
     /** @param bool $_isFrontBuildRequired */
     private bool $_isFrontBuildRequired = false;
 
+    /** Private parameters | Cli
+     ******************************************************
+     */
+
     /** @param bool $_cliMessage */
     private bool $_cliMessage = false;
 
@@ -62,6 +68,19 @@ class Migration {
         "before"    =>  null,
         "after"     =>  null
     ];
+
+    /** Private parameters | Trash
+     ******************************************************
+     */
+
+    /** @param bool $_useTrash */
+    private bool $_useTrash = true;
+
+    /** @param string $_useTrash */
+    private string $_trashSubFolder = "";
+
+    /** @param array $_trashSummary */
+    private array $_trashSummary = [];
 
     /**
      * Constructor
@@ -78,6 +97,9 @@ class Migration {
 
         # Load Migration Config Files
         $this->_loadConfigFiles();
+
+        # Prepare trash
+        $this->_prepareTrash();
 
         # Check process
         if($process){
@@ -147,14 +169,25 @@ class Migration {
             if(method_exists($this, $runMethodName)){
 
                 # Iteration from preview
-                foreach($action["_fromPreview"] as $preview)
+                foreach($action["_fromPreview"] as $preview){
+
+                    # Check if file is in parameter
+                    if($preview["parameters"]["file"] ?? false)
+
+                        # Copy file to trash
+                        $this->_sendToTrash($preview["parameters"]["file"]);
 
                     # Run action
                     $this->$runMethodName(...($preview["parameters"] ?? []));
 
+                }
+
             }
 
         }
+
+        # Summary in trash
+        $this->_summaryInTrash();
 
     }
 
@@ -850,6 +883,10 @@ class Migration {
 
     }
 
+    /** Private methods | Cli
+     ******************************************************
+     */
+
     /**
      * Cli Message Preview
      * 
@@ -930,6 +967,87 @@ class Migration {
         $this->_cliMessageSummaryTemp = [];
 
     }
+
+    /** Private methods | Trash
+     ******************************************************
+     */
+
+    /**
+     * Prepare Trash
+     * 
+     * Prepare trash
+     * > To use in constructor
+     * 
+     * @return void
+     */
+    private function _prepareTrash():void {
+
+        # Check if use trash is enable
+        if($this->_useTrash)
+
+            # Set subfolder trash name
+            $this->_trashSubFolder = "migration/".(new DateTime())->format('Uu');
+
+    }
+
+    /**
+     * Send To Trash
+     * 
+     * Send file to trash
+     * 
+     * @param string filePath
+     * @return void
+     */
+    private function _sendToTrash(string $filePath):void {
+
+        # Check if use trash is enable
+        if($this->_useTrash){
+
+            # Sent file to trash
+            $trashPath = Trash::send($filePath, $this->_trashSubFolder, false);
+
+            # Push trash to summary
+            $this->_trashSummary[] = [
+                "before"    =>  $trashPath,
+                "now"       =>  File::pathReverse($filePath, ["app_root", "crazyphp_root"])
+            ];
+
+        }
+
+    }
+    
+    /**
+     * Summary In Trash
+     * 
+     * Send summury to the trash
+     * 
+     * @return void
+     */
+    private function _summaryInTrash():void {
+
+        # Check trash is use
+        if($this->_useTrash && !empty($this->_trashSummary))
+
+            # Send summary in trash
+            Trash::sendAnObject(
+                [
+                    "date"          =>  explode("/", $this->_trashSubFolder)[1],
+                    "filesMigrated" =>  $this->_trashSummary
+                ],
+                "migration",
+                $this->_trashSubFolder
+            );
+
+    }
+
+    /**
+     * Get Last Trash Summary
+     * 
+     * Return array of the last trash summary
+     * 
+     * @return void
+     */
+
 
     /** Public constants
      ******************************************************
