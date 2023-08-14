@@ -1307,7 +1307,7 @@ class Core extends CLI {
                 # Message start
                 $climate
                     ->br()
-                    ->yellow("🟠 Run ".strtolower(Process::spaceBeforeCapital(($preview ? "Preview " : "").($action["name"] ?? ""))))
+                    ->yellow("🟠 Run ".strtolower(Process::spaceBeforeCapital((($preview == true) ? "Preview " : "").($action["name"] ?? ""))))
                 ;
                 # Check if description
                 if($action["description"] ?? false)
@@ -1319,7 +1319,7 @@ class Core extends CLI {
             function (array $action, bool $preview = true) use ($climate) {
                 # Message end
                 $climate
-                    ->green("🟢 ".ucfirst(strtolower(Process::spaceBeforeCapital(($preview ? "Preview " : "").($action["name"] ?? ""))))." ran with success")
+                    ->green("🟢 ".ucfirst(strtolower(Process::spaceBeforeCapital((($preview == true) ? "Preview " : "").($action["name"] ?? ""))))." ran with success")
                     ->br()
                 ;
             }
