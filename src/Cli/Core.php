@@ -1433,7 +1433,7 @@ class Core extends CLI {
             ->out("🚀 Run migration")->br()
         ;
 
-
+        $migration->run();
 
         # Success message
         $climate

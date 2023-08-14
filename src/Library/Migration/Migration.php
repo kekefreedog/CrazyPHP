@@ -143,6 +143,12 @@ class Migration {
         # Iteration of actions
         foreach($this->_actions as &$action){
 
+            # Check cli message
+            if($this->_cliMessage && is_callable($this->_cliMessageCallable["before"] ?? false))
+
+                # Message start
+                $this->_cliMessageCallable["before"]($action, false);
+
             # Check _fromPreview
             if(
                 !isset($action["_fromPreview"]) || 
@@ -171,6 +177,9 @@ class Migration {
                 # Iteration from preview
                 foreach($action["_fromPreview"] as $preview){
 
+                    # Message
+                    $this->_cliMessageRun($preview);
+
                     # Check if file is in parameter
                     if($preview["parameters"]["file"] ?? false)
 
@@ -183,6 +192,12 @@ class Migration {
                 }
 
             }
+
+            # Check cli message
+            if($this->_cliMessage && is_callable($this->_cliMessageCallable["after"] ?? false))
+
+                # Message end
+                $this->_cliMessageCallable["after"]($action, false);
 
         }
 
@@ -886,6 +901,59 @@ class Migration {
     /** Private methods | Cli
      ******************************************************
      */
+
+    /**
+     * Cli Message Run
+     * 
+     * Display message for preview method
+     * 
+     * @param array $temp
+     * @return void
+     */
+    private function _cliMessageRun(array $temp = []):void {
+
+        # Check cli message is enable
+        if($this->_cliMessage){
+
+            $message =  
+                "<blue>[✓] Action run</blue>".
+                (
+                    ($temp["description"] ?? false) 
+                        ? " : ".$temp["description"]
+                        : ""
+                ).
+                (
+                    ($temp["parameters"]["file"] ?? false)
+                        ? " in \"".str_replace(
+                            File::path("@app_root"),
+                            "",
+                            str_replace(
+                                File::path("@crazyphp_root"),
+                                "",
+                                $temp["parameters"]["file"]
+                            )
+                        )."\""
+                        : ""
+                )
+            ;
+
+            # Display message
+            (new CLImate())->out($message);
+
+            # Push message in summary temp
+            $this->_cliMessageSummaryTemp[] = str_replace(
+                [
+                    "[✓] ",
+                    "<blue>Action run</blue> : ",
+                    "<blue>Action run</blue> "
+                ],
+                "",
+                $message
+            );
+
+        }
+
+    }
 
     /**
      * Cli Message Preview
