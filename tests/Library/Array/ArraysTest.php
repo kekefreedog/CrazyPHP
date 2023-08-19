@@ -264,4 +264,36 @@ class ArraysTest extends TestCase{
 
     }
 
+    /**
+     * Test Has
+     * 
+     * @return void
+     */
+    public function testHas():void {
+
+        # Set array A
+        $arrayA = [
+            "toto"  => [
+                "titi"  => "value"
+            ]
+        ];
+
+        # Set array B
+        $arrayB = [
+            "toto"  => [
+                "tutu"  => "value"
+            ]
+        ];
+
+        # Value to search
+        $searchKey = "toto.titi";
+
+        # Assert 1
+        $this->assertTrue(Arrays::has($arrayA, $searchKey));
+
+        # Assert 2
+        $this->assertFalse(Arrays::has($arrayB, $searchKey));
+
+    }
+
 }

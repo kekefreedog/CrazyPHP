@@ -23,6 +23,7 @@ use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\File\Trash;
 use CrazyPHP\Library\File\File;
+use CrazyPHP\Model\Env;
 use League\CLImate\CLImate;
 
 /**
@@ -716,6 +717,70 @@ class Migration {
 
                 # Push to result
                 $result[] = $temp;
+
+            }
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Preview Reduce Path
+     * 
+     * Check if some files need to have a reduce path
+     *
+     * @param array $in Key with folder path, app with the attribute
+     * @param string|array $env Env to use in redice path function (by default app_root)
+     * @return array|null
+     */
+    public function previewReducePath(
+        array $in = [],
+        string|array $env = ""
+    ):array|null {
+
+        # Set result
+        $result = null;
+
+        # Global check
+        if(!$env || empty($env) || empty($in))
+
+            # Return result
+            return $result;
+
+        # Check en is array
+        if(!is_array($env))
+
+            # Convert to array
+            $env = [$env];
+
+        # Set clean env
+        $envClean = [];
+
+        # Iteration of env
+        foreach($env as $currentEnv)
+
+            # Check env exists
+            if($currentEnv && Env::has($currentEnv))
+
+                # Push in env clean
+                $envClean[] = Env::get($currentEnv);
+
+        # Set clean in
+        $cleanInt = [];
+
+        # Iteration of in
+        foreach($in as $filePath => $key)
+
+            # Check if file exists
+            if(
+                is_string($filePath) && 
+                File::exists($filePath) && 
+                $key
+
+            ){
+
+                # Check if key is null
 
             }
 

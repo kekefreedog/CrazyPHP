@@ -16,6 +16,7 @@ namespace CrazyPHP\Model;
  * 
  */
 use CrazyPHP\Exception\CrazyException;
+use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\Form\Process;
 
 /**
@@ -82,6 +83,10 @@ class Env{
     /**
      * Get
      * 
+     * Get env from name
+     * 
+     * Exemple `@app_root, `app_root`, `@crazyphp_root`, `crazyphp_root`
+     * 
      * @param string $input Input to process
      * @param bool $nullIfNotExists Return null is not exists
      * 
@@ -91,6 +96,9 @@ class Env{
 
         # Declare result
         $result = "";
+
+        # Remove @
+        $input = ltrim($input, "@");
 
         # Process input
         $input = strtoupper($input);
@@ -111,6 +119,26 @@ class Env{
         $result = $GLOBALS[static::PREFIX][$input] ?? null;
 
         # Return
+        return $result;
+
+    }
+
+    /**
+     * Get All
+     * 
+     * Get All env stored
+     * 
+     * @return array
+     */
+    public static function getAll():array {
+
+        # Set result
+        $result = $GLOBALS[static::PREFIX];
+
+        # Change case
+        $result = Arrays::changeKeyCaseRecursively($result);
+
+        # Return result
         return $result;
 
     }
@@ -141,6 +169,9 @@ class Env{
 
         # Process input
         $input = strtoupper($input);
+
+        # Remove @
+        $input = ltrim($input, "@");
 
         # Get globals
         $result = isset($GLOBALS[static::PREFIX][$input]) ? true : false;

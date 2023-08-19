@@ -1,5 +1,7 @@
 # Manager Favicon
 
+You can change the Favicon using the following website :
+
 ## Html tags
 
 ```html

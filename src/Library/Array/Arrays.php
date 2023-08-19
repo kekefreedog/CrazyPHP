@@ -27,6 +27,50 @@ namespace  CrazyPHP\Library\Array;
  */
 class Arrays{
 
+    /** Public Static Methods | Exploration
+     ******************************************************
+     */
+
+
+
+    /**
+     * Has
+     * 
+     * Check if file has parameter
+     * 
+	 * @param array $array content
+     * @param string $input Name in the array
+     * 
+     * @return array
+     */
+    public static function has(array $array, string $input = "") :bool {
+
+        # Declare result
+        $result = false;
+
+        # Check input
+        if(!$input)
+
+            # Return result
+            return $result;
+
+        # Replace separator
+        $input = str_replace(static::SEPARATOR, "___", $input);
+
+        # Get value
+        $valueToCheck = Arrays::parseKey($input, $array, static::SEPARATOR);
+
+        # Check value to check
+        if($valueToCheck !== null)
+
+            # Update result
+            $result = true;
+
+        # Return result
+        return $result;
+
+    }
+
     /** Public Static Methods
      ******************************************************
      */
@@ -434,5 +478,12 @@ class Arrays{
 		# Return subject
 		return $subject;
 	}
+
+    /** Public Constants
+     ******************************************************
+     */
+
+    /** @const separator */
+    public const SEPARATOR = ["/", ".", "___"];
 
 }

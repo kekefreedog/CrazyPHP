@@ -176,6 +176,39 @@ class Json{
         return $result;
         
     }
+
+    /**
+     * Has
+     * 
+     * Check if json has key
+     * > Exemple : json has "titi.toto"
+     * 
+     * @param string $path
+     * @return bool
+     */
+    public static function has(string $path = "", $key = ""):bool {
+
+        # Set result
+        $result = false;
+
+        # Check path and key
+        if($path && $key){
+
+            # Open file
+            $jsonContent = static::open($path);
+
+            # Check jsoncontent
+            if(!empty($jsonContent))
+
+                # Check if key is in
+                $result = Arrays::has($jsonContent, $key);
+
+        }
+
+        # return result
+        return $result;
+
+    }
     
     /**
      * Set value in json

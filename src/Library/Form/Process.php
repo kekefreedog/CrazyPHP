@@ -21,8 +21,7 @@ use CrazyPHP\Library\Form\Validate;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Model\Config;
-use ReflectionMethod;
-use ReflectionClass;
+use CrazyPHP\Model\Env;
 
 /**
  * Process form values
@@ -499,7 +498,7 @@ class Process {
      * @param string $input
      * @return string
      */
-    public static function cleanPath($input):string {
+    public static function cleanPath(string $input):string {
 
         # Declare result
         $result = "";
@@ -518,6 +517,80 @@ class Process {
         
         # Return result
         return $result;
+    }
+
+    /**
+     * Reduce Path
+     * 
+     * Reduce path using given env
+     * 
+     * @param string $input
+     * @param string|array $env Exemple @app_root or @crazyphp_root
+     * @param string $replaceBy By default replace path by current folder "."
+     * @return string
+     */
+    public static function reducePath(string $input, string|array $env = "@app_root", string $replaceBy = "."):string {
+
+        # Set result
+        $result = $input;
+
+        # Check input and env
+        if(!$input || !$env || empty($env) || !File::exists($input))
+
+            # Stop function
+            return $result;
+
+        # Check env is not array
+        if(!is_array($env))
+
+            # Convert to array
+            $env = [$env];
+
+        # Set clean env
+        $cleanEnv = [];
+
+        # Iteration of env
+        foreach($env as $value){
+
+            # Check env exists
+            if($value && Env::has($value)){
+
+                # Get path
+                $currentEnv = Env::get($value);
+            
+                # Check current env
+                if($currentEnv && File::exists($currentEnv) && !in_array($currentEnv, $cleanEnv)){
+
+                    # Push in current en as is
+                    $cleanEnv[] = $currentEnv;
+
+                    # Get real path
+                    $currentEnvReal = realpath($currentEnv);
+
+                    # Check if in array
+                    if(!in_array($currentEnvReal, $cleanEnv))
+
+                        # Push in clean env
+                        $cleanEnv[] = $currentEnvReal;
+
+                }
+
+            }
+
+        }
+
+        # Check clean env
+        if(!empty($cleanEnv))
+
+            # Iteration clean env
+            foreach($cleanEnv as $currentEnv)
+
+                # Str replace
+                $result = str_replace($currentEnv, $replaceBy, $result);
+        
+        # Return result
+        return $result;
+
     }
 
     /**

@@ -303,6 +303,42 @@ class File {
     }
 
     /**
+     * Has Intance
+     * 
+     * Check if file has instance to open it (exemple json & yaml file will return true)
+     * 
+     * @param string $path path of file to open
+     * @return bool
+     */
+    public static function hasIntance(string $path = ""):bool {
+
+        # Declare result
+        $result = false;
+
+        # Get path
+        $path = self::path($path);
+
+        # Check file exists
+        if(!File::exists($path))
+
+            # Return result
+            return $result;
+        
+        # Guess mimetype
+        $mime = File::guessMime($path);
+
+        # Check instance is available
+        if(isset(self::MIMTYPE_TO_CLASS[$mime]))
+
+            # Set result
+            $result = true;
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
      * Get Last Modified Date
      * 
      * Get last modified date of file or group of files

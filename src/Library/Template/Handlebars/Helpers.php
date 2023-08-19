@@ -17,7 +17,6 @@ namespace CrazyPHP\Library\Template\Handlebars;
  */
 
 use CrazyPHP\Exception\CrazyException;
-use CrazyPHP\Library\File\Json;
 use ReflectionMethod;
 use ReflectionClass;
 use Exception;
@@ -307,6 +306,30 @@ class Helpers {
             $result = $e->getMessage();
 
         }
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Resolve
+     * 
+     * Get realpath of path
+     * 
+     * @param mixed $a
+     * @return string
+     */
+    public static function resolve(mixed $a):mixed {
+
+        # Set result
+        $result = $a;
+
+        # Check if is file
+        if(is_string($a) && $a && (is_dir($a) || is_file($a)))
+
+            # Get real path
+            $result = realpath($a);
 
         # Return result
         return $result;

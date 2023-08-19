@@ -22,6 +22,7 @@ use CrazyPHP\Library\File\Composer;
 use CrazyPHP\Library\File\Header;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Library\File\Yaml;
+use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Model\Env;
 
 /**
@@ -53,7 +54,7 @@ class Config{
      */
     public const DEFAULT_CONFIG_FILES = [
         "App"       =>  [
-            "path_source"   =>  "@app_root"."/composer.json",
+            "path_source"   =>  "@app_root/composer.json",
             "path_target"   =>  self::DEFAULT_PATH."/App.yml",
             "action_set"    =>  "_setAppConfig",
         ],
@@ -352,7 +353,7 @@ class Config{
 
             # Set framework content
             $frameworkContent = [
-                "path"      =>  realpath(File::path("@crazyphp_root"))
+                "path"      =>  Process::reducePath(File::path("@crazyphp_root"))
             ];
 
         else
@@ -364,7 +365,7 @@ class Config{
             true,
             $composerContent,
             [
-                "root"      =>  Env::get("app_root"),
+                "root"      =>  Process::reducePath(File::path("@app_root")),
                 # To delete for production
                 "framework" =>  $frameworkContent,
                 "public"    =>  "public"

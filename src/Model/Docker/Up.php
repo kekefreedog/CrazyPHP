@@ -157,6 +157,12 @@ class Up implements CrazyCommand {
         $this->runCheck();
 
         /**
+         * Set Workdir in Docker Compose
+         * 1. Set Workdir in docker compose
+         */
+        # $this->runSetWorkingDir();
+
+        /**
          * Start
          * 1. Start docker compose
          */

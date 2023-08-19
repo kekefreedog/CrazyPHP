@@ -38,9 +38,6 @@ export default class Page {
      */
     public constructor(){
 
-        // Open Register (init when the registered is creates)
-        window.Crazyobject.events.dispatch("onRegisterPageOpen");
-
     }
 
     /** Public static methods

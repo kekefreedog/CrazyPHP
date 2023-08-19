@@ -135,6 +135,9 @@ export default class Crazyobject {
         // New instance
         this.registerPage = new RegisterPage();
 
+        // Open Register (init when the registered is creates)
+        window.Crazyobject.events.dispatch("onRegisterPageOpen");
+
     }
 
     /**
@@ -195,7 +198,7 @@ export default class Crazyobject {
          * @param e
          * @returns void
          */
-        let onRegisterPageOpenEvent = (e:Event):void => {
+        var onRegisterPageOpenEvent = (e:Event):void => {
 
             // Register current page
             this.registerPage.register(page);

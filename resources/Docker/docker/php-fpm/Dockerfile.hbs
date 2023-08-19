@@ -1,7 +1,5 @@
 FROM phpdockerio/php:8.1-fpm
-# WORKDIR "/Users/kzarshenas/Sites/CrazyTest"
-WORKDIR "{{_config.App.root}}"
-
+WORKDIR ${PWD}
 RUN apt-get update; \
     apt-get -y --no-install-recommends install \
         git \ 

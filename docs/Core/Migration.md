@@ -35,7 +35,7 @@ Replace string by another string.
 
 *Exemple*
 
-You want replace `window.Crazyobject.pages.register(` by `window.Crazyobject.register(` in all ts file in the folder `@app_root/app/Environment` and then noticed that this action required to rebuild the front script
+You want replace `window.Crazyobject.pages.register(` by `window.Crazyobject.register(` in all ts file in the folder `@app_root/app/Environment` and then noticed that this action required to rebuild the front script files.
 
 Here the action you can use :
 ```yml
@@ -78,5 +78,35 @@ Here the action you can use :
         name: "*.gitignore"
         in: "@app_root"
     frontBuildRequired: true
+[...]
+```
+
+### Reduce Path
+
+Reduce absolute path to relative
+
+*Exemple*
+
+You want convert absolute path to relative path of the attribute `App.root` in `@app_root/config/App.yml` and then noticed that this action required to rebuild the docker files
+```yml
+App:
+    # Before
+    root: /Users/kzarshenas/Sites/CrazyProject/CrazyDev
+    # After
+    root: "."
+```
+
+Here the action you can use :
+```yml
+[...]
+- name: relativePathOnConfigs
+    description: Reduce path to relative to avoid project moving to another folder
+    action: 
+    type: reduce_path
+    env: app_root
+    in:
+        - "@app_root/config/App.yml": App.root
+        - "@app_root/config/App.yml": App.framework.path
+    newDockerRequired: true
 [...]
 ```

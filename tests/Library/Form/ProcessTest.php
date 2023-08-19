@@ -114,4 +114,27 @@ class ProcessTest extends TestCase{
 
     }
 
+    /**
+     * Test Reduce Path
+     * 
+     * Test reducePath function
+     * 
+     * @return void
+     */
+    public function testReducePath():void {
+
+        # Set input
+        $input = getcwd()."/src/Core";
+
+        # Set output
+        $output = "./src/Core";
+
+        # Process
+        $result = Process::reducePath($input, "crazyphp_root");
+
+        # Assert
+        $this->assertEquals($result, $output);
+
+    }
+
 }

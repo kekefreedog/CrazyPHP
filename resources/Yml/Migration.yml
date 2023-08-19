@@ -40,3 +40,12 @@ Migration:
         name: ".gitignore"
         in: "@app_root"
       frontBuildRequired: true
+    - name: relativePathOnConfigs
+      description: Reduce path to relative to avoid project moving to another folder
+      action: 
+        type: reduce_path
+        env: app_root
+        in:
+          - "@app_root/config/App.yml": App.root
+          - "@app_root/config/App.yml": App.framework.path
+      newDockerRequired: true
