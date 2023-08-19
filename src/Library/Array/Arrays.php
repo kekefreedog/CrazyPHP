@@ -412,6 +412,9 @@ class Arrays{
 				# Set value
 				$arrayDepth = $arrayDepth[$keyExploded[$i]];
 
+				# Increment i
+				$i++;
+
 			}else{
 
 				# Set result as null

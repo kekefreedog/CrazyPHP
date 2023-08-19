@@ -16,6 +16,7 @@ namespace CrazyPHP\Library\File;
  * 
  */
 use CrazyPHP\Exception\CrazyException;
+use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\Time\DateTime;
 use CrazyPHP\Model\Env;
 
@@ -316,22 +317,90 @@ class File {
         $result = false;
 
         # Get path
-        $path = self::path($path);
+        $path = static::path($path);
 
         # Check file exists
-        if(!File::exists($path))
+        if(!static::exists($path))
 
             # Return result
             return $result;
         
         # Guess mimetype
-        $mime = File::guessMime($path);
+        $mime = static::guessMime($path);
 
         # Check instance is available
         if(isset(self::MIMTYPE_TO_CLASS[$mime]))
 
             # Set result
             $result = true;
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Has Key
+     * 
+     * Check if given file has key
+     * 
+     * @param string $path
+     * @param string $key
+     * @return bool
+     */
+    public static function hasKey(string $path = "", string $key = ""):bool {
+
+        # Set result
+        $result = false;
+
+        # Check path and key
+        if(!$path || !static::exists($path) || !static::hasIntance($path) || !$key)
+
+            # Stop function
+            return $result;
+
+        # Get content of file
+        $fileContent = static::open($path);
+
+        # Check file content
+        if($fileContent)
+
+            # Check if has key
+            $result = Arrays::has($fileContent, $key);
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Has Key
+     * 
+     * Check if given file has key
+     * 
+     * @param string $path
+     * @param string $key
+     * @return mixed
+     */
+    public static function getKey(string $path = "", string $key = ""):mixed {
+
+        # Set result
+        $result = false;
+
+        # Check path and key
+        if(!$path || !static::exists($path) || !static::hasIntance($path) || !$key)
+
+            # Stop function
+            return $result;
+
+        # Get content of file
+        $fileContent = static::open($path);
+
+        # Check file content
+        if($fileContent && !empty($fileContent))
+
+            # Check if has key
+            $result = Arrays::getKey($fileContent, $key);
 
         # Return result
         return $result;
@@ -739,6 +808,30 @@ class File {
         };
 
         $rrmdir($path, $rrmdir);
+
+    }
+
+    /**
+     * Resolve
+     * 
+     * Resolve real path / absolute path of the given path
+     * 
+     * @param string $path
+     * @return string
+     */
+    public static function resolve(string $path = ""):string {
+
+        # Set result
+        $result = static::path($path);
+
+        # Check path exits
+        if(static::exists($result))
+
+            # Set realpath
+            $result = realpath($result);
+
+        # Return result
+        return $result;
 
     }
 

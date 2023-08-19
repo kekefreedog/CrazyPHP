@@ -46,6 +46,7 @@ Migration:
         type: reduce_path
         env: app_root
         in:
-          - "@app_root/config/App.yml": App.root
-          - "@app_root/config/App.yml": App.framework.path
+          "@app_root/config/App.yml": 
+            - App.root
+            - App.framework.path
       newDockerRequired: true

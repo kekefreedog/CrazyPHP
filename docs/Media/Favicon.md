@@ -1,0 +1,30 @@
+# Favicon
+
+## Default favicon
+
+By default, application register the crazy dog favicon icon collection
+
+```yml
+Asset:
+  Media:
+    Favicon:
+      android-chrome-192x192: "@crazyphp_root/resources/Favicon/android-chrome-192x192.png"
+      android-chrome-512x512: "@crazyphp_root/resources/Favicon/android-chrome-512x512.png"
+      apple-touch-icon-57x57: "@crazyphp_root/resources/Favicon/apple-touch-icon-57x57.png"
+      apple-touch-icon-60x60: "@crazyphp_root/resources/Favicon/apple-touch-icon-60x60.png"
+      apple-touch-icon-72x72: "@crazyphp_root/resources/Favicon/apple-touch-icon-72x72.png"
+      apple-touch-icon-76x76: "@crazyphp_root/resources/Favicon/apple-touch-icon-76x76.png"
+      apple-touch-icon-114x114: "@crazyphp_root/resources/Favicon/apple-touch-icon-114x114.png"
+      apple-touch-icon-152x152: "@crazyphp_root/resources/Favicon/apple-touch-icon-152x152.png"
+      apple-touch-icon-180x180: "@crazyphp_root/resources/Favicon/apple-touch-icon-180x180.png"
+      apple-touch-icon: "@crazyphp_root/resources/Favicon/apple-touch-icon.png"
+      favicon-16x16: "@crazyphp_root/resources/Favicon/favicon-16x16.png"
+      favicon-32x32: "@crazyphp_root/resources/Favicon/favicon-32x32.png"
+      favicon: "@crazyphp_root/resources/Favicon/favicon.ico"
+      mstile-150x150: "@crazyphp_root/resources/Favicon/mstile-150x150.png"
+      safari-pinned-tab: "@crazyphp_root/resources/Favicon/safari-pinned-tab.svg"
+```
+
+## Custom favicon
+
+1. Visit the website https://realfavicongenerator.net/

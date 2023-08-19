@@ -713,7 +713,6 @@ class Migration {
 
                 # Cli message
                 $this->_cliMessagePreview($temp);
-               
 
                 # Push to result
                 $result[] = $temp;
@@ -757,32 +756,89 @@ class Migration {
         # Set clean env
         $envClean = [];
 
+        # Backup env
+        $envBackup = [];
+
         # Iteration of env
         foreach($env as $currentEnv)
 
             # Check env exists
-            if($currentEnv && Env::has($currentEnv))
+            if($currentEnv && Env::has($currentEnv)){
 
                 # Push in env clean
                 $envClean[] = Env::get($currentEnv);
 
-        # Set clean in
-        $cleanInt = [];
+                # Push to env backup
+                $envBackup[] = $currentEnv;
+
+            }
 
         # Iteration of in
         foreach($in as $filePath => $key)
 
             # Check if file exists
-            if(
-                is_string($filePath) && 
-                File::exists($filePath) && 
-                $key
+            if(File::exists($filePath)){
 
-            ){
+                # Check key is array
+                if(!is_array($key))
 
-                # Check if key is null
+                    # Convert to array
+                    $key = [$key];
+
+                # Check key
+                if(!empty($key))
+
+                    # Iteration des keys
+                    foreach($key as $currentKey)
+
+                        # Check key
+                        if($currentKey && File::hasKey($filePath, $currentKey)){
+
+                            # Get value
+                            $value = File::getKey($filePath, $currentKey);
+
+                            # Set continue
+                            $continue = true;
+
+                            # Check env is in value
+                            foreach($envClean as $envTemp)
+
+                                # Set env
+                                if(strpos($value, $envTemp) !== false)
+
+                                    # Set continue
+                                    $continue = false;
+
+                            # Check continue
+                            if($continue)
+
+                                # Continue iteration
+                                continue;
+
+                            # Push value to result
+                            $temp = [
+                                "description"   =>  "Will reduce path of \"$value\" from key \"$currentKey\"",
+                                "parameters"    =>  [
+                                    "file"          =>  File::resolve($filePath),
+                                    "key"           =>  $currentKey,
+                                    "env"           =>  count($envBackup) <= 1
+                                        ? ( $envBackup[0] ?? "" )
+                                        : $envBackup
+                                    ,
+                                    "value"         =>  $value
+                                ],
+                            ];
+
+                            # Cli message
+                            $this->_cliMessagePreview($temp);
+
+                            # Push to result
+                            $result[] = $temp;
+
+                        }
 
             }
+
 
         # Return result
         return $result;
@@ -880,6 +936,32 @@ class Migration {
             $result = file_put_contents($file, $fileContent) ? true : false;
 
         }
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Run Reduce Path
+     * 
+     * Run reduce absolute path to relative path
+     * 
+     * @param string $file
+     * @param string $key
+     * @param string|array $env
+     * @param string $value
+     * @return bool
+     */
+    public function runReducePath(
+        string $file,
+        string $key,
+        string|array $env,
+        string $value
+    ):bool {
+
+        # Set result
+        $result = true;
 
         # Return result
         return $result;
