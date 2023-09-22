@@ -862,6 +862,8 @@ class File {
         "pdf"   =>  "application/pdf",
         # Zip
         "zip"   =>  "application/zip",
+        # Js
+        "js"    =>  "application/javascript",
         # TBC ...
     ];
 

@@ -71,15 +71,34 @@ export default class Page {
                 Page.registerInHistory
             )
             .then(
-                // Load Content
-                Page.loadOnReadyScript
-            ).then(
-                // Load Post Action
-                Page.loadPostAction
-            ).catch(
-                err =>  {
-                    console.error(err);
+                (options:LoaderPageOptions) => {
+                    // Check ready state
+                    if(document.readyState !== 'loading') {
+                        // Load Content
+                        Page.loadOnReadyScript(options)
+                            .then(
+                                // Load Post Action
+                                Page.loadPostAction
+                            ).catch(
+                                Page.catchError
+                            );
+                    }else{
+                        // Event listener
+                        document.addEventListener('DOMContentLoaded', () => {
+                            // Load Content
+                            Page.loadOnReadyScript(options)
+                                .then(
+                                    // Load Post Action
+                                    Page.loadPostAction
+                                ).catch(
+                                    Page.catchError
+                                );
+                        });
+                    }
+
                 }
+            ).catch(
+                Page.catchError
             );
 
     }
@@ -517,7 +536,18 @@ export default class Page {
         
     }
 
-    /** Punlic methods
+    /** Private methods
+     ******************************************************
+     */
+
+     private static catchError(error:any):void {
+
+        // Display error
+        console.error(error);
+
+     }
+
+    /** Private methods
      ******************************************************
      */
 

@@ -114,7 +114,6 @@ class Structure {
         # Set response
         $response = $this->response;
 
-
         # Check custom response
         if($customResponse !== null)
 
@@ -594,31 +593,86 @@ class Structure {
             # Set routesCurrentName
             $routesCurrentName = Context::get("routes.current.name");
 
-            # Search js generated
-            $finder
-                ->files()
-                ->name("$routesCurrentName.*.js")
-                ->depth('== 0')
-                ->in(File::path("@app_root/public/dist/page/app"))
-            ;
+            # Check $routesCurrentName
+            if($routesCurrentName){
 
-            # Check files
-            if(!$finder->hasResults())
-                            
-                # New error
-                throw new CrazyException(
-                    "It looks generation of js files with watch mode enable failed...", 
-                    500,
-                    [
-                        "custom_code"   =>  "structure-003",
-                    ]
-                );
+                # Search js generated
+                $finder
+                    ->files()
+                    ->name("$routesCurrentName.*.js")
+                    ->depth('== 0')
+                    ->in(File::path("@app_root/public/dist/page/app"))
+                ;
+
+                # Check files
+                if(!$finder->hasResults()){
+                                
+                    # New error
+                    throw new CrazyException(
+                        "It looks generation of js files with watch mode enable failed... Impossible to found script for \"$routesCurrentName\”", 
+                        500,
+                        [
+                            "custom_code"   =>  "structure-003",
+                        ]
+                    );
+
+                }
+
+            }else{
+
+                # Pattern
+                $pattern = '/\/dist\/page\/app\/(.*?)\./';
+    
+                # Search the string with the pattern
+                if(preg_match($pattern, $_SERVER["REQUEST_URI"] ?? "", $matches)){
+                    
+                    # Route of current name
+                    $routesCurrentName = $matches[1];
+
+                    # Search js generated
+                    $finder
+                        ->files()
+                        ->name("$routesCurrentName.*.js")
+                        ->depth('== 0')
+                        ->in(File::path("@app_root/public/dist/page/app"))
+                    ;
+    
+                    # Check files
+                    if(!$finder->hasResults()){
+                                    
+                        # New error
+                        throw new CrazyException(
+                            "It looks generation of js files with watch mode enable failed... Impossible to found script for \"$routesCurrentName\”", 
+                            500,
+                            [
+                                "custom_code"   =>  "structure-003",
+                            ]
+                        );
+    
+                    }
+
+                }else{
+
+                    # New error
+                    throw new CrazyException(
+                        "It looks generation of js files with watch mode enable failed... Sorry", 
+                        500,
+                        [
+                            "custom_code"   =>  "structure-003",
+                        ]
+                    );
+
+                }
+
+            }
 
             # Iteration of finder
-            foreach($finder as $file)
+            foreach($finder as $file){
 
                 # Push in scripts
                 $configFront[] = "page/app/".$file->getRelativePathname();
+
+            }
 
         }else{
 
@@ -648,10 +702,12 @@ class Structure {
         }
 
         # Iteration of config value
-        foreach($configFront as $file)
+        foreach($configFront as $file){
 
             # Add in the body
             $this->setElement("html.body", ["src" => "/dist/$file"], "script");
+
+        }
 
         # Return current instance
         return $this;
