@@ -71,7 +71,36 @@ export default class Crazyevents {
      */
     private _eventDispatcher = (e:Event):void => {
 
-        console.log(e);
+        // Get target el
+        let targetEl = e.target as HTMLElement;
+
+        // Check tagname
+        let tagName:string = targetEl.tagName;
+
+        console.log(tagName);
+
+        // Check function exits
+        if(typeof this[`${tagName.toLowerCase()}Event`] === "function")
+
+            // Execute
+            this[`${tagName.toLowerCase()}Event`](targetEl);
+
+    }
+
+    /** Events By Tag
+     ******************************************************
+     */
+
+    /**
+     * A Event
+     * 
+     * Event on element "a"
+     * 
+     * @param el 
+     */
+    private aEvent = (el:HTMLElement):void => {
+
+        console.log("is aaa");
 
     }
 

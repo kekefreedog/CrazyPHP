@@ -103,7 +103,7 @@ export default class Page {
 
     }
 
-    /** Punlic methods
+    /** Public methods 
      ******************************************************
      */
 

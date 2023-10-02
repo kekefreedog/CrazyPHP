@@ -1,0 +1,137 @@
+/**
+ * Utility
+ *
+ * Front TS Scrips for multiple tasks
+ *
+ * @package    kzarshenas/crazyphp
+ * @author     kekefreedog <kevin.zarshenas@gmail.com>
+ * @copyright  2022-2023 Kévin Zarshenas
+ */
+
+/**
+ * Dependances
+ */
+import {default as PageError} from './../Error/Page';
+
+/**
+ * Events
+ *
+ * Methods for store custom events
+ *
+ * @package    kzarshenas/crazyphp
+ * @author     kekefreedog <kevin.zarshenas@gmail.com>
+ * @copyright  2022-2023 Kévin Zarshenas
+ */
+export default class ColorSchema {
+
+
+    /** Construct
+     ******************************************************
+     */
+
+    constructor(){
+
+        // Get stored them
+        let storedTheme = ColorSchema.getTheme();
+
+        // Check document already loaded
+        if(document.readyState !== 'loading') {
+
+            // Set color theme
+            ColorSchema.setTheme(storedTheme);
+
+        }else
+
+            // Check if local storage
+            document.addEventListener("DOMContentLoaded", () => {
+                
+                // Set color theme
+                ColorSchema.setTheme(storedTheme);
+
+            });
+
+        // Get dark mode preference
+        const darkModePreference = window.matchMedia("(prefers-color-scheme: dark)");
+
+        // Detect change
+        darkModePreference.addEventListener("change", e => e.matches && ColorSchema.setTheme(ColorSchema.get()));
+
+        // Get light mode preference
+        const lightModePreference = window.matchMedia("(prefers-color-scheme: light)");
+
+        // Detect change
+        lightModePreference.addEventListener("change", e => e.matches && ColorSchema.setTheme(ColorSchema.get()));
+
+    }
+
+    /** Public static methods
+     ******************************************************
+     */
+
+    /**
+     * Get
+     * 
+     * Get color schema
+     * 
+     * @source https://stackoverflow.com/questions/56393880/how-do-i-detect-dark-mode-using-javascript
+     * 
+     * @return 'dark'|'light'
+     */
+    public static get = ():'dark'|'light' => window?.matchMedia?.('(prefers-color-scheme:dark)')?.matches ? 'dark' : 'light';
+
+    /**
+     * Set Theme
+     * 
+     * Set theme of the page
+     * 
+     * @param theme:'dark'|'light'
+     * @param useLocalStorage:boolean
+     * 
+     * @return void
+     */
+    public static setTheme = (theme:'dark'|'light', useLocalStorage:boolean = false):void => {
+
+            // Set on html
+            document.documentElement.setAttribute('theme', theme);
+
+            // If useLocalStorage
+            if("localStorage" in window && useLocalStorage)
+
+                // Set in local storage
+                window.localStorage.setItem('crazy-theme', theme);
+
+    }
+
+    /**
+     * Get Theme
+     * 
+     * Get them of the page
+     * 
+     * @param useLocalStorage:boolean
+     * @return 'dark'|'light'
+     */
+    public static getTheme = (useLocalStorage:boolean = false):'dark'|'light' => {
+        
+        // Result
+        let result:'dark'|'light' = ColorSchema.get();
+
+        // if useLocalStorage
+        if("localStorage" in window && useLocalStorage){
+
+            // Get in local storage
+            let localStorageValue = localStorage.getItem('crazy-theme') || ColorSchema.get();
+
+            // Check value is light or dark
+            if(localStorageValue in ['dark','light'])
+
+                // Set result
+                result = localStorageValue as 'dark'|'light';
+
+        }
+
+        // Return result
+        return result;
+
+    }
+
+}

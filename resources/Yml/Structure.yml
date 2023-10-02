@@ -137,6 +137,13 @@ Structure:
                     source: "@crazyphp_root/resources/Ts/Front/style/index.ts"
                 folders:
                   scss:
+                    folders:
+                      component:
+                        files:
+                          _crazy_content.scss:
+                            source: "@crazyphp_root/resources/Scss/style/component/_crazy_content.scss"
+                          _navigation_rail.scss:
+                            source: "@crazyphp_root/resources/Scss/style/component/_navigation_rail.scss"
                     files:
                       color_class.scss:
                         source: "@crazyphp_root/resources/Scss/style/color_class.scss"

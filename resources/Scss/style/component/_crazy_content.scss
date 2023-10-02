@@ -1,0 +1,28 @@
+/// /// ///
+/// Component - Crazy Content
+///
+/// Crazy Content
+///
+/// @package    kzarshenas/crazyphp
+/// @author     kekefreedog <kevin.zarshenas@gmail.com>
+/// @copyright  2022-2023 Kévin Zarshenas
+/// /// /// 
+
+/// Variables
+///////////////////////////////////////////////////////
+///
+
+$crazy-content-height: 100vh;
+
+/// Style
+///////////////////////////////////////////////////////
+///
+#crazy-content {
+
+    // Dimension
+    height: $crazy-content-height;
+    
+    // Overflow
+    overflow: auto;
+
+}

@@ -12,6 +12,7 @@
  * Dependances
  */
 export {default as Componentregister} from "./Library/Componentregister";
+export {default as ColorSchema} from "./Library/Utility/ColorSchema";
 export {default as Crazycomponent} from "./Library/Crazycomponent";
 export {default as Crazynavigator} from "./Library/Crazynavigator";
 export {default as UtilityEvents} from "./Library/Utility/Events";
@@ -27,7 +28,10 @@ export {default as HistoryPage} from "./Library/History/Page";
 export {default as Crazyevents} from "./Library/Crazyevents";
 export {default as LoaderPage} from "./Library/Loader/Page";
 export {default as Crazycache} from "./Library/Crazycache";
+export {default as Crazystate} from "./Library/Crazystate";
 export {default as Crazyobject} from "./Core/Crazyobject";
 export {default as Crazypage} from "./Library/Crazypage";
+export {default as Crazyurl} from "./Library/Crazyurl";
+export {default as Form} from "./Library/Utility/Form";
 export {default as Hash} from "./Library/Utility/Hash";
 export {default as DomRoot} from "./Library/Dom/Root";
