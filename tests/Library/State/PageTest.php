@@ -15,6 +15,8 @@ namespace Tests\Library\File;
 /**
  * Dependances
  */
+
+use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\State\Page;
 use PHPUnit\Framework\TestCase;
 use CrazyPHP\Model\Env;
@@ -38,7 +40,7 @@ class PageTest extends TestCase{
     public const INPUT = [
         "context"   =>  true,
         "cookie"    =>  true,
-        "config"    =>  true
+        "config"    =>  ["Middleware"]
     ];
 
     /** @const array RESULT */
@@ -101,7 +103,15 @@ class PageTest extends TestCase{
         # Get result
         $result = $pageState->render();
 
-        print_r($result);
+        # Prepare result await
+        $resultAwait = [
+            "_context"  =>  [],
+            "_cookies"  =>  [],
+            "_config"   =>  Config::get(static::INPUT["config"])
+        ];
+
+        # Assert
+        $this->assertEquals($result, $resultAwait);
 
     }
 

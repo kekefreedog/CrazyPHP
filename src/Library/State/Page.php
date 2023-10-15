@@ -16,6 +16,7 @@ namespace  CrazyPHP\Library\State;
  * Dependances
  */
 use CrazyPHP\Exception\CrazyException;
+use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\File\Config;
 use CrazyPHP\Model\Context;
 
@@ -40,6 +41,9 @@ class Page {
     /** @var array $result */
     private $result = [];
 
+    /** @var array $ui */
+    private $ui = [];
+
     /**
      * Constructor
      * 
@@ -60,17 +64,51 @@ class Page {
      */
 
     /**
+     * Push UI Content
+     * 
+     * @param string $key
+     * @param mixed $value
+     * @param bool $createIfNotExists Replace content is already exists
+     * @return Page
+     */
+    public function pushUiContent(string $key, mixed $value, bool $createIfNotExists = true):Page {
+
+        # Set content
+        $result = Arrays::setKey($this->ui, $key, $value, $createIfNotExists);
+
+        # Check
+        if(!$result)
+        
+            # New Exception
+            throw new CrazyException(
+                "Key \"$key\" do not exists in UI content of the current page state. Switch parameter to \"createIfNotExists\" for fixing it.", 
+                500,
+                [
+                    "custom_code"   =>  "state-page-001",
+                ]
+            );
+
+        # Return self
+        return $this;
+
+    }
+
+
+    /**
      * Push Context
      * 
      * Push config in state
      * 
      * @param bool $trigger
-     * @return void
+     * @return Page
      */
-    public function pushContext(bool $trigger = true):void {
+    public function pushContext(bool $trigger = true):Page {
 
         # Swith value in options
         $this->options["context"] = $trigger;
+
+        # Return self
+        return $this;
 
     }
 
@@ -80,12 +118,15 @@ class Page {
      * Push cookie in state
      * 
      * @param bool $trigger
-     * @return void
+     * @return Page
      */
-    public function pushCookie(bool $trigger = true):void {
+    public function pushCookie(bool $trigger = true):Page {
 
         # Swith value in options
         $this->options["cookie"] = $trigger;
+
+        # Return self
+        return $this;
 
     }
 
@@ -95,9 +136,9 @@ class Page {
      * Push config in state
      * 
      * @param bool|string|array $configs
-     * @return void
+     * @return Page
      */
-    public function pushConfig(bool|string|array $configs = true):void {
+    public function pushConfig(bool|string|array $configs = true):Page {
 
         # Check if string
         if(is_string($configs))
@@ -107,6 +148,9 @@ class Page {
 
         # Push config
         $this->options["config"] = $configs;
+
+        # Return self
+        return $this;
 
     }
 
@@ -141,7 +185,10 @@ class Page {
             $result["_config"] = $this->_getConfigs(
                 $this->options["config"] === true
                     ? []
-                    : $this->options["config"]
+                    : ( is_array($this->options["config"])
+                            ? $this->options["config"] 
+                            :[$this->options["config"]]
+                    )
             );
 
         # Return result

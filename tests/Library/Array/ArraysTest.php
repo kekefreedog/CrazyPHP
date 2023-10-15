@@ -296,4 +296,97 @@ class ArraysTest extends TestCase{
 
     }
 
+    /**
+     * Test Has Key
+     * 
+     * @return void
+     */
+    public function testHasKey():void {
+
+        # Set array A
+        $arrayA = [
+            "toto"  => [
+                "titi"  => "value"
+            ]
+        ];
+
+        # Set array B
+        $arrayB = [
+            "toto"  => [
+                "tutu"  => "value"
+            ]
+        ];
+
+        # Value to search
+        $searchKey = "toto.titi";
+
+        # Assert 1
+        $this->assertTrue(Arrays::hasKey($arrayA, $searchKey));
+
+        # Assert 2
+        $this->assertFalse(Arrays::hasKey($arrayB, $searchKey));
+
+    }
+
+    /**
+     * Test Get Key
+     * 
+     * @return void
+     */
+    public function testGetKey():void {
+
+        # Set array A
+        $arrayA = [
+            "toto"  => [
+                "titi"  => "value"
+            ]
+        ];
+
+        # Value to search
+        $searchKeyA = "toto.titi";
+        $searchKeyB = "toto";
+
+        # Assert 1
+        $this->assertEquals(Arrays::getKey($arrayA, $searchKeyA), $arrayA["toto"]["titi"]);
+
+        # Assert 2
+        $this->assertEquals(Arrays::getKey($arrayA, $searchKeyB), $arrayA["toto"]);
+
+    }
+
+    /**
+     * Test Get Key
+     * 
+     * @return void
+     */
+    public function testSetKey():void {
+
+        # Set array A
+        $result = [
+            "toto"  => [
+                "titi"  => "value"
+            ]
+        ];
+
+        # Set array
+        $array = [];
+
+        # Value to search
+        $keyA = "toto.titi";
+        $keyB = "toto.tata";
+
+        # Value
+        $value = "value";
+
+        # Assert 1
+        $this->assertTrue(Arrays::setKey($array, $keyA, $value));
+
+        # Assert 2
+        $this->assertEquals($array, $result);
+
+        # Assert 3
+        $this->assertFalse(Arrays::setKey($array, $keyB, $value, false));
+
+    }
+
 }

@@ -381,9 +381,9 @@ class Arrays{
 	 * @param array $array Array to process
 	 * @param string $key Key of the item to extract "titi.toto"
 	 * @param string|array $separators Separator for key
-	 * @return any
+	 * @return mixed
 	 */
-	public static function getKey(array $array = [], string $key = "", string|array $separators = [".", "/"]) {
+	public static function getKey(array $array = [], string $key = "", string|array $separators = [".", "/"]):mixed {
 
 		# Set result
 		$result = $array;
@@ -427,6 +427,162 @@ class Arrays{
 
 		# Set result
 		$result = $arrayDepth;
+
+		# Return result
+		return $result;
+		
+	}
+
+	/**
+	 * Has Key
+	 * 
+	 * Check if key in array
+	 * 
+	 * @param array $array Array to process
+	 * @param string $key Key of the item to extract "titi.toto"
+	 * @param string|array $separators Separator for key
+	 * @return bool
+	 */
+	public static function hasKey(array $array = [], string $key = "", string|array $separators = [".", "/"]):bool {
+
+		# Set result
+		$result = false;
+
+		# Check array
+		if(empty($array) || empty($key))
+
+			# Return result
+			return $result;
+
+		# Replace separator
+		$key = str_replace($separators, "___", $key);
+
+		# Explode
+		$keyExploded = explode("___", $key);
+
+		# Set current array depth
+		$arrayDepth = &$array;
+
+		# Get value
+		$i=0;while(isset($keyExploded[$i]))
+
+			# Check
+			if(isset($arrayDepth[$keyExploded[$i]])){
+
+				# Set value
+				$arrayDepth = $arrayDepth[$keyExploded[$i]];
+
+				# Increment i
+				$i++;
+
+			}else{
+
+				# Set result as null
+				$arrayDepth = null;
+
+				# Stop loop
+				break;
+
+			}
+
+		# Check $arrayDepth
+		if($arrayDepth !== null)
+
+			# Set result
+			$result = true;
+
+		# Return result
+		return $result;
+		
+	}
+
+	/**
+	 * Set Key
+	 * 
+	 * Extract key in array
+	 * 
+	 * @param array &$array Array to process
+	 * @param string $key Key of the item to extract "titi.toto"
+	 * @param mixed $value Value to pish
+	 * @param bool $createIfNotExists Create if not exists
+	 * @param string|array $separators Separator for key
+	 * @return bool
+	 */
+	public static function setKey(array &$array, string $key, mixed $value, bool $createIfNotExists = true, string|array $separators = [".", "/"]):bool {
+
+		# Set result
+		$result = false;
+
+		# Check array
+		if(empty($key))
+
+			# Return result
+			return $result;
+
+		# Replace separator
+		$key = str_replace($separators, "___", $key);
+
+		# Explode
+		$keyExploded = explode("___", $key);
+
+		# Set current array depth
+		$arrayDepth = &$array;
+
+		# Push value 
+		$pushValue = true;
+
+		# Get value
+		$i=0;while(isset($keyExploded[$i]))
+
+			# Check
+			if(isset($arrayDepth[$keyExploded[$i]])){
+
+				# Set value
+				$arrayDepth = &$arrayDepth[$keyExploded[$i]];
+
+				# Increment i
+				$i++;
+
+			}else{
+
+				# Check createIfNotExists
+				if($createIfNotExists){
+
+					# Create key on array
+					$arrayDepth[$keyExploded[$i]] = [];
+
+					# Set value
+					$arrayDepth = &$arrayDepth[$keyExploded[$i]];
+
+					# Increment i
+					$i++;
+
+				# Stop iteration
+				}else{
+
+					# Push value 
+					$pushValue = false;
+
+					# Set result as null
+					$arrayDepth = null;
+
+					# Stop loop
+					break;
+
+				}
+
+			}
+
+		# Chech push value
+		if($pushValue){
+
+			# Push value in $arrayDepth
+			$arrayDepth = $value;
+
+			# Set result
+			$result = true;
+
+		}
 
 		# Return result
 		return $result;
