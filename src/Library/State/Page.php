@@ -15,6 +15,7 @@ namespace  CrazyPHP\Library\State;
 /**
  * Dependances
  */
+use CrazyPHP\Library\State\Components\Form;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\File\Config;
@@ -87,6 +88,50 @@ class Page {
                     "custom_code"   =>  "state-page-001",
                 ]
             );
+
+        # Return self
+        return $this;
+
+    }
+
+    /**
+     * Push Form
+     * 
+     * Push form in content
+     * 
+     * @param array $form Form parameters
+     * @return Page
+     */
+    public function pushForm(array $form = []):Page {
+
+        # Form
+        $form = new Form($form);
+
+        # Get result
+        $formRender = $form->render();
+
+        # Get id
+        $formId = $form->getId();
+
+        # Check id
+        if(!$formId)
+
+            # Set from id
+            $formId = empty($this->ui["forms"])
+                ? "A"
+                : (
+                    is_string($lastKey = array_key_last($this->ui["forms"]))
+                        ? $lastKey++
+                        : (
+                            is_int($lastKey)
+                                ? strval($lastKey++)
+                                : "A"
+                        )
+                )
+            ;
+
+        # Push in ui
+        $this->pushUiContent("forms.$formId", $formRender);
 
         # Return self
         return $this;
@@ -190,6 +235,12 @@ class Page {
                             :[$this->options["config"]]
                     )
             );
+
+        # Check ui
+        if(!empty($this->ui))
+
+            # Push ui
+            $result["_ui"] = $this->ui;
 
         # Return result
         return $result;
