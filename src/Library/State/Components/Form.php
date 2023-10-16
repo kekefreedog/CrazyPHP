@@ -16,6 +16,8 @@ namespace  CrazyPHP\Library\State\Components;
  * Dependances
  */
 use CrazyPHP\Exception\CrazyException;
+use CrazyPHP\Library\Form\Process;
+use ReflectionClass;
 
 /**
  * Page
@@ -68,7 +70,33 @@ class Form {
      * @param bool $process Just instance the class or run all process
      * @return self
      */
-    public function __construct(){
+    public function __construct(array|null $form = null){
+
+        # Check form
+        if($form && !empty($form)){
+
+            # New reflection class
+            $reflectionClass = new ReflectionClass($this);
+
+            # Iteration of form
+            foreach($form as $k => $v){
+
+                # Prepare method name
+                $methodName = (
+                    strpos($k, "item") !== false
+                        ? "push"
+                        : "set"
+                ).Process::snakeToCamel($k, true);
+
+                # Check if set method
+                if($reflectionClass->hasMethod($methodName))
+
+                    # Call method with value
+                    $this->{$methodName}($v);
+
+            }
+
+        }
 
     }
 
@@ -123,6 +151,24 @@ class Form {
 
         # Set id
         $this->_title = $title;
+
+        # Return self
+        return $this;
+
+    }
+
+    /**
+     * Set Entity
+     * 
+     * Set Entity of the form
+     * 
+     * @param string $title Title of the form
+     * @return Form
+     */
+    public function setEntity(string $entity = ""):Form {
+
+        # Set id
+        $this->_entity = $entity;
 
         # Return self
         return $this;
@@ -246,7 +292,6 @@ class Form {
 
             # Push id
             $result["id"] = $this->_id;
-        $result = [];
 
         # Check title
         if(!$minimize || $this->_title)
@@ -271,6 +316,12 @@ class Form {
 
             # Push on_ready
             $result["on_ready"] = $this->_on_ready;
+
+        # Check items
+        if(!empty($this->_items))
+
+            # Push on_ready
+            $result["items"] = $this->_items;
 
         # Return result
         return $result;
