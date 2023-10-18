@@ -17,9 +17,13 @@ namespace  CrazyPHP\Library\State;
  */
 use CrazyPHP\Library\State\Components\Form;
 use CrazyPHP\Exception\CrazyException;
+use CrazyPHP\Exception\CatchState;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\File\Config;
+use CrazyPHP\Library\Form\Query;
 use CrazyPHP\Model\Context;
+use CrazyPHP\Model\Env;
+use Exception;
 
 /**
  * Page
@@ -242,6 +246,9 @@ class Page {
             # Push ui
             $result["_ui"] = $this->ui;
 
+        # Check if catch state enable
+        $this->_catchState($result);
+
         # Return result
         return $result;
 
@@ -299,6 +306,77 @@ class Page {
 
     }
 
+    /**
+     * Catch State
+     * 
+     * Check catch state
+     * 
+     * @param array $result of the page state
+     * @return void
+     */
+    private function _catchState(array $result = []):void {
+
+        # Check env
+        if(Env::has(static::ENV_CATCH_STATE) && Env::get(static::ENV_CATCH_STATE)){
+
+            # New exception
+            throw new CatchState("", 0, $result);
+
+        }
+
+    }
+
+    /** Public static methods
+     ******************************************************
+     */
+
+    /**
+     * Get State
+     * 
+     * Get State for Router Api
+     * 
+     * @param array $options Option
+     * @return array
+     */
+    public static function getState(array $options = []):array {
+
+        # Set result
+        $result = [];
+
+        # Class name
+        $classname = Query::get()["filters"]["name"] ?? false;
+
+        # Check controller in options
+        if(
+            $classname &&
+            method_exists("App\Controller\App\\".$classname, "get")
+        )
+
+            # Try
+            try{
+ 
+                # Set env to catch state
+                Env::set([static::ENV_CATCH_STATE => true]);
+
+                # Prepare method string
+                $method = "App\Controller\App\\$classname::get";
+
+                # Execute method
+                $method([]);
+
+            # Catch state
+            }catch(CatchState $e){
+
+                # Set result
+                $result = $e->getState();
+
+            }
+
+        # Return result
+        return $result;
+
+    }
+
     /** Public constants
      ******************************************************
      */
@@ -316,5 +394,8 @@ class Page {
         // Config => ["app", "router"...]
         "config"    =>  false
     ];
+
+    /** @var string ENV_CATCH_STATE  */
+    public const ENV_CATCH_STATE = "catch_state";
 
 }

@@ -22,9 +22,12 @@ use CrazyPHP\Exception\CrazyException;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Http\Message\StreamInterface;
 use CrazyPHP\Library\File\Composer;
-use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\Time\DateTime;
+use CrazyPHP\Exception\CatchState;
+use CrazyPHP\Library\File\Config;
+use CrazyPHP\Library\State\Page;
 use CrazyPHP\Library\File\File;
+use CrazyPHP\Model\Env;
 
 /**
  * Response
@@ -62,6 +65,9 @@ class Response {
      * @return self
      */
     public function __construct(){
+
+        # Check no blocker
+        $this->checkBlocker();
 
         # New instance
         $this->instance = new Psr17Factory();
@@ -389,6 +395,17 @@ class Response {
 
         # Add crazy hash
         $this->header["Crazy-Hash"] = Config::getValue("Front.lastBuild.hash");
+
+    }
+
+    /**
+     * Check blocker
+     * 
+     * Check if blocker
+     * 
+     * @return void
+     */
+    private function checkBlocker():void {
 
     }
 
