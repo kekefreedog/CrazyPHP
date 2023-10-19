@@ -448,13 +448,22 @@ class Validate {
 
                 else
                 # Check value is a password
-                if($input['type'] === "ARRAY")
+                if($input['type'] === "ARRAY"){
+
+                    # Check raw
+                    if($input["raw"] ?? false)
+
+                        # Set value
+                        $value = $input['value'];
+
+                    # Else encode in json
+                    else
                     
-                    # Transform 
-                    $value = json_encode($input['value']);
+                        # Transform 
+                        $value = json_encode($input['value']);
 
                 # Process value
-                else
+                }else
                     
                     # Check value
                     $value = $input['value'] ?

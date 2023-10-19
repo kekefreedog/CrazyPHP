@@ -15,16 +15,16 @@ namespace  CrazyPHP\Core;
 /**
  * Dependances
  */
-use CrazyPHP\Library\Router\Router as LibraryRouter;
-use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
-use Mezon\Router\Router as VendorRouter;
+use CrazyPHP\Library\State\Page as State;
 use CrazyPHP\Exception\CrazyException;
-use Nyholm\Psr7\Factory\Psr17Factory;
+use CrazyPHP\Library\Html\Structure;
 use CrazyPHP\Library\Time\DateTime;
+use CrazyPHP\Exception\CatchState;
 use CrazyPHP\Library\File\Config;
-use CrazyPHP\Library\File\File;
+use CrazyPHP\Core\ApiResponse;
+use CrazyPHP\Core\Response;
 use CrazyPHP\Model\Context;
-use Nyholm\Psr7\Request;
+use CrazyPHP\Model\Env;
 
 /**
  * Controller
@@ -36,6 +36,84 @@ use Nyholm\Psr7\Request;
  * @copyright  2022-2023 Kévin Zarshenas
  */
 class Controller {
+
+    /** Public static methods
+     ******************************************************
+     */
+
+    /**
+     * Structure
+     * 
+     * Return structure instance
+     * 
+     * @return Structure
+     */
+    public static function Structure():Structure {
+
+        # New structure
+        $result = new Structure();
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * State
+     * 
+     * Return state instance
+     * 
+     * @return State
+     */
+    public static function State():State {
+
+        # New structure
+        $result = new State();
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * ApiResponse
+     * 
+     * Return api reponse instance
+     * 
+     * @return ApiResponse
+     */
+    public static function ApiResponse():ApiResponse {
+
+        # New structure
+        $result = new ApiResponse();
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Reponse
+     * 
+     * Return reponse instance
+     * 
+     * @return Response
+     */
+    public static function Response():Response {       
+        
+        # Check env
+        if(Env::has(State::ENV_CATCH_STATE) && Env::get(State::ENV_CATCH_STATE))
+
+            # New exception
+            throw new CatchState();
+
+        # New structure
+        $result = new Response();
+
+        # Return result
+        return $result;
+
+    }
 
     /** Public static methods | Context
      ******************************************************

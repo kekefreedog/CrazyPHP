@@ -129,7 +129,7 @@ export default class Page {
     public static loadPageDetail = async(options:LoaderPageOptions):Promise<LoaderPageOptions> => {
 
         // Let keys
-        let keys:Array<keyof LoadPageOptionsStatus> = ["isCurrentPage", "scriptRegistered", "urlLoaded", "preActionExecuted", "urlUpdated", "titleUpdated", "styleLoaded", "contentLoaded", "onReadyExecuted", "historyRegistered","postActionExecuted"];
+        let keys:Array<keyof LoadPageOptionsStatus> = ["isCurrentPage", "hasState", "scriptRegistered", "urlLoaded", "preActionExecuted", "urlUpdated", "titleUpdated", "styleLoaded", "contentLoaded", "onReadyExecuted", "historyRegistered","postActionExecuted"];
 
         // Prepare options
         for(let currentKey of keys){
@@ -306,6 +306,17 @@ export default class Page {
 
                     // Load new page
                     options.url = result.results[0].path;
+
+                    // Check state
+                    if("state" in result.results[0] && Object.keys(result.results[0].state).length){
+
+                        // Set state in options
+                        options.state = result.results[0].state;
+
+                        // Switch status
+                        Page.setStatus(options, "hasState", true);
+
+                    }
                     
                 }else{
 
@@ -427,13 +438,18 @@ export default class Page {
 
             // Stop function
             return options;
-    
+
+        // Prepare stateObject
+        let stateObject = options.status?.hasState
+            ? options.state
+            : {}
+        ;
 
         // Check content
         if("content" in options && typeof options.content === "function"){
 
             // Get content
-            let content:string = options.content({});
+            let content:string = options.content(stateObject);
 
             // Set content of dom root
             DomRoot.setContent(content);
@@ -586,6 +602,7 @@ export default class Page {
 
         // Set options status
         options = Page.setStatus(options, "isCurrentPage", false);
+        options = Page.setStatus(options, "hasState", false);
         options = Page.setStatus(options, "styleLoaded", false);
         options = Page.setStatus(options, "contentLoaded", false);
         options = Page.setStatus(options, "onReadyExecuted", false);

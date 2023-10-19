@@ -148,6 +148,7 @@ declare global {
         preAction?:?CallableFunction = null,
         postAction?:?CallableFunction = null,
         status?:?LoadPageOptionsStatus = null,
+        state?:Array<any> = null,
         scriptLoaded?:?typeof Crazypage = null,
         scriptRunning?:?new () => typeof Crazypage = null,
         hash?:?string = null,
@@ -162,6 +163,8 @@ declare global {
         /* Status of the page */
         // Is current page
         isCurrentPage?:boolean = false,
+        // Has state
+        hasState?:boolean = false,
         // JS script file registered
         scriptRegistered?:boolean = false,
         // URL loaded
