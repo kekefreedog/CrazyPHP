@@ -470,14 +470,14 @@ class Handlebars {
      * Crazy Preset with the maximum of compatibility
      */
     public const CRAZY_PRESET = [
-        "flags"     =>  LightnCandy::FLAG_HANDLEBARSJS|LightnCandy::FLAG_RUNTIMEPARTIAL/*  | LightnCandy::FLAG_ERROR_LOG */,
+        "flags"     =>  LightnCandy::FLAG_HANDLEBARSJS_FULL|LightnCandy::FLAG_RUNTIMEPARTIAL|LightnCandy::FLAG_PARENT/*  | LightnCandy::FLAG_ERROR_LOG */,
     ];
 
     /**
      * Crazy Preset with the maximum of compatibility
      */
     public const HTML_STRUCTURE = [
-        "flags" =>  LightnCandy::FLAG_HANDLEBARSJS|LightnCandy::FLAG_RUNTIMEPARTIAL|LightnCandy::FLAG_SPVARS|LightnCandy::FLAG_NAMEDARG|LightnCandy::FLAG_ERROR_LOG,
+        "flags" =>  LightnCandy::FLAG_HANDLEBARSJS|LightnCandy::FLAG_RUNTIMEPARTIAL|LightnCandy::FLAG_SPVARS|LightnCandy::FLAG_NAMEDARG|LightnCandy::FLAG_ERROR_LOG|LightnCandy::FLAG_PARENT,
     ];
 
     /**

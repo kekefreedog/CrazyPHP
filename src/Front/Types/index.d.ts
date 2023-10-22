@@ -26,6 +26,7 @@ export {default as Crazyconsole} from "./../Library/Crazyconsole";
 export {default as Crazyrequest} from "./../Library/Crazyrequest";
 export {default as Crazyelement} from "./../Library/Crazyelement";
 export {default as Pageregister} from "./../Library/Pageregister";
+export {default as Crazypartial} from "./../Library/Crazypartial";
 export {default as CurrentPage} from "./../Library/Current/Page";
 export {default as HistoryPage} from "./../Library/History/Page";
 export {default as Crazyevents} from "./../Library/Crazyevents";
@@ -76,6 +77,7 @@ declare global {
     interface CrazyObjectInput {
         globalComponentsCollection:Object;
         globalStateCollection?:Object
+        globalPartials?:Object
     }
 
     /**
@@ -149,6 +151,7 @@ declare global {
         postAction?:?CallableFunction = null,
         status?:?LoadPageOptionsStatus = null,
         state?:Array<any> = null,
+        partials?:Object = null,
         scriptLoaded?:?typeof Crazypage = null,
         scriptRunning?:?new () => typeof Crazypage = null,
         hash?:?string = null,
@@ -186,6 +189,8 @@ declare global {
         historyRegistered?:boolean = false,
         // Post Action Executed
         postActionExecuted?:boolean = false,
+        // Partials Scanned
+        partialsScanned?:boolean = false,
     }
 
     /** Interface | Register
@@ -201,6 +206,16 @@ declare global {
         hashUsed?:string,
         dateLoaded:Date,
         scriptUrl:URL,
+    }
+
+    /**
+     * Register Partial Scanned
+     */
+    interface RegisterPartialScanned {
+        name:string,
+        target:Element
+        callable:Crazypartial
+        id:number
     }
 
     /** Interface | History

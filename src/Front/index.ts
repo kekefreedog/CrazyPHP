@@ -21,6 +21,7 @@ export {default as Crazylanguage} from "./Library/Crazylanguage";
 export {default as RegisterPage} from "./Library/Register/Page";
 export {default as Crazyconsole} from "./Library/Crazyconsole";
 export {default as Crazyrequest} from "./Library/Crazyrequest";
+export {default as Crazypartial} from "./Library/Crazypartial";
 export {default as Crazyelement} from "./Library/Crazyelement";
 export {default as Pageregister} from "./Library/Pageregister";
 export {default as CurrentPage} from "./Library/Current/Page";

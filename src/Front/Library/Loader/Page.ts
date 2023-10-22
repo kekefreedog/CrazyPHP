@@ -67,6 +67,10 @@ export default class Page {
                 Page.loadContent
             )
             .then(
+                // Scan Partials
+                Page.scanPartials
+            )
+            .then(
                 // Load Content
                 Page.registerInHistory
             )
@@ -285,7 +289,8 @@ export default class Page {
                 method: "GET",
                 responseType: "json",
                 from: "internal",
-                ignoreHash: true
+                ignoreHash: true,
+                cache: false,
             }
         );
 
@@ -461,6 +466,50 @@ export default class Page {
         
     }
 
+
+    /**
+     * Scan Partials
+     * 
+     * Scan partials in html
+     * 
+     * @param options 
+     * @returns 
+     */
+    public static scanPartials = async(options:LoaderPageOptions):Promise<LoaderPageOptions> => {
+
+        // Check status
+        if(options.status?.partialsScanned === true)
+
+            // Stop function
+            return options;
+
+        // Scan partials and get result
+        let partialsScanned:Object = window.Crazyobject.partials.scan("body");
+
+        // Check partials scanned
+        if(Object.keys(partialsScanned).length){
+
+            // Set partials
+            options.partials = partialsScanned;
+
+            // Iteration partial script
+            for(let partial in options.partials){
+
+                // Run partial script
+                new options.partials[partial].callable(options.partials[partial]);
+
+            }
+
+        }
+        
+        // Set status
+        options = Page.setStatus(options, "partialsScanned", true);
+
+        // Return options
+        return options
+
+    }
+
     public static registerInHistory = async(options:LoaderPageOptions):Promise<LoaderPageOptions> => {
 
         // Check status
@@ -507,7 +556,7 @@ export default class Page {
             let currentClass:any = options.scriptLoaded;
 
             // New instance of this class
-            let instance = new currentClass();
+            let instance = new currentClass(options);
 
             // Set scriptRunning
             options.scriptRunning = instance;

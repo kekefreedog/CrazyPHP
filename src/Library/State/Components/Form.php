@@ -46,8 +46,8 @@ class Form {
     /** @var string $_entity Entity of the form */
     private string $_entity = "";
 
-    /** @var array $_on_ready On ready */
-    private string $_on_ready = "";
+    /** @var array $_onready On ready */
+    private string $_onready = "";
 
     /** @var array $_items of the form */
     private array $_items = [];
@@ -204,7 +204,7 @@ class Form {
     public function setOnReady(string $onReady = ""):Form {
 
         # Set id
-        $this->_on_ready = $onReady;
+        $this->_onready = $onReady;
 
         # Return self
         return $this;
@@ -311,16 +311,16 @@ class Form {
             # Push entity
             $result["entity"] = $this->_entity;
 
-        # Check on_ready
-        if(!$minimize || $this->_on_ready)
+        # Check onready
+        if(!$minimize || $this->_onready)
 
-            # Push on_ready
-            $result["on_ready"] = $this->_on_ready;
+            # Push onready
+            $result["onready"] = $this->_onready;
 
         # Check items
         if(!empty($this->_items))
 
-            # Push on_ready
+            # Push onready
             $result["items"] = $this->_items;
 
         # Return result

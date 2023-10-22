@@ -11,6 +11,7 @@
 /**
  * Dependances
  */
+import {default as RegisterPartial} from "./../Library/Register/Partial";
 import {default as UtilityEvents} from "./../Library/Utility/Events";
 import {default as RegisterPage} from "./../Library/Register/Page";
 import Componentregister from "./../Library/Componentregister";
@@ -23,6 +24,7 @@ import Crazyevents from "./../Library/Crazyevents";
 import Crazystate from "./../Library/Crazystate";
 import Crazypage from "./../Library/Crazypage";
 import Hash from './../Library/Utility/Hash';
+
 /**
  * Crazy Object
  *
@@ -40,6 +42,9 @@ export default class Crazyobject {
 
     /** @var components Components class */
     public components:Componentregister;
+
+    /** @var partials Partials class */
+    public partials:RegisterPartial;
 
     /** @var currentPage Pages class */
     public registerPage:RegisterPage;
@@ -73,12 +78,16 @@ export default class Crazyobject {
         // Register Global Web Components give by the app
         this.components = new Componentregister(input);
 
+        // Register Partials
+        this.partials = new RegisterPartial();
+
         // Color schema
         this.colorSchema = new ColorSchema();
 
         // Init of the app
         this.hashInit(input)                // Init Hash
             .then(this.stateInit)           // Init state
+            .then(this.partialsInit)        // Init Partials
             .then(this.historyPageInit)     // Init History Page
             .then(this.eventInit)           // Init Event
             .then(this.registerPageInit)    // Init Register Page
@@ -135,6 +144,23 @@ export default class Crazyobject {
 
         // New crazy state instance
         this.state = new Crazystate(input);
+
+        // Return input
+        return input;
+
+    }
+
+    /**
+     * Partials Init
+     * 
+     * Prepare partial in your crazy page
+     * 
+     * @returns Promise<void>
+     */
+    private partialsInit = async(input:CrazyObjectInput):Promise<CrazyObjectInput> => {
+
+        // Register global partials
+        this.partials.register(input.globalPartials);
 
         // Return input
         return input;
