@@ -25,5 +25,6 @@ import { Crazyobject } from "../Types";
  * @copyright  2022-2023 Kévin Zarshenas
  */
 export default abstract class Crazypartial {
+    
 
 }
