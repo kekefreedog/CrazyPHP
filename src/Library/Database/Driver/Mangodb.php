@@ -21,6 +21,7 @@ use CrazyPHP\Library\Cli\Command as CliCommand;
 use CrazyPHP\Interface\CrazyDatabaseDriver;
 use CrazyPHP\Exception\CrazyException;
 use MongoDB\Driver\Manager;
+use MongoDB\BSON\ObjectId;
 use MongoDB\Database;
 use MongoDB\Client;
 
@@ -491,6 +492,119 @@ class Mangodb implements CrazyDatabaseDriver {
     }
 
     /**
+     * Update One To Collection
+     * 
+     * Update one value to collection
+     * 
+     * @param string $collectionName
+     * @param array $value
+     * @param string $id
+     * @param string $database
+     * @param array $validator
+     */
+    public function updateOneToCollection(string $collectionName, array $value, string $id, string $database = "", array $validator = []) {
+
+        # Set result
+        $result = null;
+
+        # Check input
+        if(!$collectionName || empty($id) || empty($value) || !$database)
+
+            # Return result
+            return $result;
+
+        # Set database
+        $database = $this->client->$database;
+
+        # Go in collection
+        $collection = $database->$collectionName;
+
+        # Prepare id
+        $criteria = ['_id' => new ObjectId($id)];
+
+        # Prepare value to set
+        $valueToSet = [
+            '$set'  =>  $value
+        ];
+
+        # Result
+        $result = $collection->updateOne($criteria, $valueToSet);
+
+        if($result->isAcknowledged())
+
+            # Set result
+            $result = [
+                "code"      =>  200,
+                "message"   =>  "Item updated"
+            ];
+
+        else
+
+            # Set result
+            $result = [
+                "code"      =>  500,
+                "message"   =>  "Item not updated"
+            ];
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Delete One To Collection
+     * 
+     * Delete one value to collection
+     * 
+     * @param string $collectionName
+     * @param string $id
+     * @param string $database
+     */
+    public function deleteOneToCollection(string $collectionName, string $id, string $database = "") {
+
+        # Set result
+        $result = null;
+
+        # Check input
+        if(!$collectionName || !$database)
+
+            # Return result
+            return $result;
+
+        # Set database
+        $database = $this->client->$database;
+
+        # Go in collection
+        $collection = $database->$collectionName;
+
+        # Prepare id
+        $criteria = ['_id' => new ObjectId($id)];
+
+        # Result
+        $result = $collection->deleteOne($criteria);
+
+        if($result->getDeletedCount() === 1)
+
+            # Set result
+            $result = [
+                "code"      =>  200,
+                "message"   =>  "Item deleted"
+            ];
+
+        else
+
+            # Set result
+            $result = [
+                "code"      =>  500,
+                "message"   =>  "Item not deleted"
+            ];
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
      * Find
      * 
      * Find value
@@ -525,7 +639,7 @@ class Mangodb implements CrazyDatabaseDriver {
             $result[] = $document;
 
         # Return result
-        return $result;
+        return $result === null ? [] : $result;
 
     }
 
@@ -560,7 +674,7 @@ class Mangodb implements CrazyDatabaseDriver {
         ]);
 
         # Return result
-        return $result;
+        return $result === null ? [] : $result;
 
     }
 

@@ -24,6 +24,7 @@ use CrazyPHP\Library\File\Config;
 use CrazyPHP\Core\ApiResponse;
 use CrazyPHP\Core\Response;
 use CrazyPHP\Model\Context;
+use CrazyPHP\Core\Model;
 use CrazyPHP\Model\Env;
 
 /**
@@ -44,7 +45,7 @@ class Controller {
     /**
      * Structure
      * 
-     * Return structure instance
+     * Return structure Instance
      * 
      * @return Structure
      */
@@ -52,6 +53,23 @@ class Controller {
 
         # New structure
         $result = new Structure();
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Model
+     * 
+     * Return Model Instance
+     * 
+     * @return Model
+     */
+    public static function Model():Model {
+
+        # New structure
+        $result = new Model();
 
         # Return result
         return $result;
@@ -166,6 +184,124 @@ class Controller {
 
             # Change key case
             $result = array_change_key_case($result);
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Get Http Request Data
+     * 
+     * Getting data from an HTTP request
+     * 
+     * @return array
+     */
+    public static function getHttpRequestData():array {
+
+        # Set result
+        $result = [];
+
+        # Switch
+        switch($_SERVER['REQUEST_METHOD']){
+
+            # Get
+            case 'GET':
+
+                # Set result
+                $result = $_GET;
+                
+                # Break
+                break;
+
+            # Post
+            case 'POST':
+
+                # Set result
+                $result = $_POST;
+                
+                # Break
+                break;
+
+            # PUT, DELETE, PATCH
+            case 'PUT':
+            case 'DELETE':
+            case 'PATCH':
+
+                # Set raw data
+                $rawData = file_get_contents("php://input");
+
+                # Check if formdata
+                if(strpos($rawData, 'Content-Disposition: form-data;') !== false){
+
+                    /**
+                     * @source https://stackoverflow.com/questions/5483851/manually-parse-raw-multipart-form-data-data-with-php
+                     */
+
+                    // read incoming data
+                    $input = file_get_contents('php://input');
+                    
+                    // grab multipart boundary from content type header
+                    preg_match('/boundary=(.*)$/', $_SERVER['CONTENT_TYPE'], $matches);
+                    $boundary = $matches[1];
+                    
+                    // split content by boundary and get rid of last -- element
+                    $a_blocks = preg_split("/-+$boundary/", $input);
+                    array_pop($a_blocks);
+                        
+                    // loop data blocks
+                    foreach ($a_blocks as $id => $block)
+                    {
+                      if (empty($block))
+                        continue;
+                      
+                      // you'll have to var_dump understand this and maybe replace \n or \r with a visibile char
+                      
+                      // parse uploaded files
+                      if (strpos($block, 'application/octet-stream') !== FALSE)
+                      {
+                        // match "name", then everything after "stream" (optional) except for prepending newlines 
+                        preg_match('/name=\"([^\"]*)\".*stream[\n|\r]+([^\n\r].*)?$/s', $block, $matches);
+                      }
+                      // parse all other fields
+                      else
+                      {
+                        // match "name" and optional value in between newline sequences
+                        preg_match('/name=\"([^\"]*)\"[\n|\r]+([^\n\r].*)?\r$/s', $block, $matches);
+                      }
+                      $data[$matches[1]] = $matches[2] ?? "";
+                    } 
+
+                }else{
+
+                    # Parse value from input
+                    parse_str($rawData, $data);
+
+                }
+
+                # Set result
+                $result = $data;
+                
+                # Break
+                break;
+
+            # Options
+            case 'OPTIONS':
+
+                # Set result
+                $result = [];
+                
+                # Break
+                break;
+
+            default:
+
+                # Set result
+                $result = [];
+                
+                # Break
+                break;
+        }
 
         # Return result
         return $result;

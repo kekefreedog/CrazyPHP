@@ -47,6 +47,8 @@ export default class Form {
                 this._initOnReady
             ).then(
                 this._initEventOnSubmit
+            ).then(
+                this._initEventOnReset
             )
         ;
 
@@ -197,6 +199,56 @@ export default class Form {
     }
 
     /**
+     * Reset Value
+     * 
+     * Set value of form
+     * 
+     * @returns void
+     */
+    public resetValue = ():void => {
+
+        // Get all select and input on form el
+        let items = this._formEl.querySelectorAll("select, input");
+
+        // Check items
+        if(items.length)
+
+            // Iteration items
+            for (let i = 0; i < items.length; i++){
+
+                // Check if name
+                if("name" in items[i] && items[i]["name"] !== ""){
+
+                    // Check if value
+                    if(items[i].hasAttribute("value")){
+
+                        // Reset value
+                        items[i].removeAttribute("value");
+                        
+
+                    console.log(items[i].removeAttribute("value"));
+
+                    }
+
+                    // Check if value_id
+                    if(items[i].hasAttribute("value_id"))
+
+                        // Reset value
+                        items[i].removeAttribute("value_id");
+
+                }
+
+            }
+
+        // Check if form has value_id
+        if(this._formEl.hasAttribute("value_id"))
+
+            // Reset value
+            this._formEl.removeAttribute("value");
+
+    }
+
+    /**
      * Get Form Data
      * 
      * Get formdata by name
@@ -299,32 +351,177 @@ export default class Form {
         // Get entity
         let entity:Attr|null = target.attributes.getNamedItem("entity");
 
+        // Get value_id
+        let valueID:Attr|null = target.attributes.getNamedItem("value_id");
+
+        // Check entity or value id
+        if(entity !== null && valueID !== null)
+
+            // Create item
+            this._onSubmitUpdate(entity.value, valueID.value, formData)
+                .then(
+                    v => {
+
+                        // Unlock target
+                        this.unlock();
+
+                    }
+                );
+
+        else
         // Check entity
         if(entity !== null){
 
-            // Get entity
-            let entityValue:string = entity.value;
+            // Create item
+            this._onSubmitCreate(entity.value, formData)
+                .then(
+                    value => {
 
-            // Prepare request
-            let request = new Crazyrequest(`/api/v2/${entityValue}/create`, {
-                method: "POST",
-                header:{
-                    'Cache-Control': 'no-cache, no-store, must-revalidate'
-                },
-                cache: false
-            });
+                        // Check v
+                        if(value.results.length)
+                            
+                            // Set values
+                            this.setValue(value.results[0], value.results[0]._id);
 
-            // Run request
-            request.fetch(formData).then(
-                v => {
-
-                    // Unlock target
-                    this.unlock();
-
-                }
-            );
+                        // Unlock target
+                        this.unlock();
+    
+                    }
+                );
 
         }
+
+    }
+
+    /**
+     * Event On Reset
+     * 
+     * Event on reset
+     * 
+     * @param e:Event
+     * @return void
+     */
+    private eventOnReset = (e:Event):void => {
+
+        // Lock form
+        this.lock();
+
+        // Check form in e.target
+        if(e.target !== null && "form" in e.target && e.target.form instanceof HTMLFormElement){
+
+            // Get target
+            let formEl = e.target.form;
+
+            // Get value_id
+            let valueID:Attr|null = formEl.attributes.getNamedItem("value_id");
+
+            // Get value_id
+            let entity:Attr|null = formEl.attributes.getNamedItem("entity");
+
+            // Check valueID
+            if(valueID && entity){
+
+                this._onSubmiDelete(entity.value, valueID.value)
+                    .then(v => {
+
+                        // Reset value
+                        this.resetValue();
+
+                    }).then(v => {
+
+                        // Retrive other value
+                        this._initOnReady()
+
+                    })
+
+            }else{
+
+                // Unlock
+                this.unlock();
+
+            }
+
+        }
+
+    }
+
+    /** Private methods | Event Specific Action
+     ******************************************************
+     */
+
+    /**
+     * On Submit Create
+     * 
+     * Create item in back
+     * 
+     * @param entityValue
+     * @param formData
+     * @return Promise<any>
+     */
+    private _onSubmitCreate = async (entityValue:string, formData:FormData):Promise<any> => {
+
+        // Prepare request
+        let request = new Crazyrequest(`/api/v2/${entityValue}/create`, {
+            method: "POST",
+            header:{
+                'Cache-Control': 'no-cache, no-store, must-revalidate'
+            },
+            cache: false
+        });
+
+        // Run request
+        return request.fetch(formData);
+
+    }
+
+    /**
+     * On Submit Update
+     * 
+     * Update item in back
+     * 
+     * @param entityValue
+     * @param valueID
+     * @param formData
+     * @return Promise<any>
+     */
+    private _onSubmitUpdate = async (entityValue:string, valueID:string, formData:FormData):Promise<any> => {
+
+        // Prepare request
+        let request = new Crazyrequest(`/api/v2/${entityValue}/update/${valueID}`, {
+            method: "PUT",
+            header:{
+                'Cache-Control': 'no-cache, no-store, must-revalidate'
+            },
+            cache: false
+        });
+
+        // Run request
+        return request.fetch(formData);
+
+    }
+
+    /**
+     * On Submit Delete
+     * 
+     * Delete item in back
+     * 
+     * @param entityValue
+     * @param valueID
+     * @return Promise<any>
+     */
+    private _onSubmiDelete = async (entityValue:string, valueID:string):Promise<any> => {
+
+        // Prepare request
+        let request = new Crazyrequest(`/api/v2/${entityValue}/delete/${valueID}`, {
+            method: "DELETE",
+            header:{
+                'Cache-Control': 'no-cache, no-store, must-revalidate'
+            },
+            cache: false
+        });
+
+        // Run request
+        return request.fetch();
 
     }
 
@@ -342,7 +539,7 @@ export default class Form {
     public lock = ():void => {
 
         // Get all select and input on form el
-        let items = this._formEl.querySelectorAll("select, input, button[type=\"submit\"]");
+        let items = this._formEl.querySelectorAll("select, input, button[type=\"submit\"], button[type=\"reset\"]");
 
         // Check items
         if(items.length)
@@ -380,7 +577,7 @@ export default class Form {
     public unlock = ():void => {
 
         // Get all select and input on form el
-        let items = this._formEl.querySelectorAll("select, input, button[type=\"submit\"]");
+        let items = this._formEl.querySelectorAll("select, input, button[type=\"submit\"], button[type=\"reset\"]");
 
         // Check items
         if(items.length)
@@ -505,13 +702,20 @@ export default class Form {
                     // Unlock
                     this.unlock();
 
-                    // Set values
-                    this.setValue(value.results[0], value.results[0]._id);
+                    // Check result
+                    if(value.results.length)
+
+                        // Set values
+                        this.setValue(value.results[0], value.results[0]._id);
 
                 })
             ;
 
-        }
+        // If not action, unlock form
+        }else
+            
+            // Unlock
+            this.unlock();
 
     }
 
@@ -529,6 +733,32 @@ export default class Form {
             "submit",
             this.eventOnSubmit
         );
+
+    }
+
+    /**
+     * Init Event on reset
+     * 
+     * Event On reset on form
+     * 
+     * @return Promise<void>
+     */
+    private _initEventOnReset = async():Promise<void> => {
+
+        // Search if button reset
+        let resetEls = this._formEl.querySelectorAll('button[type="reset"]');
+
+        // Check result
+        if(resetEls.length)
+
+            // Iteration
+            for(let i = 0; i < resetEls.length; i++)
+
+                // Add event on them
+                resetEls[i].addEventListener(
+                    "click",
+                    this.eventOnReset
+                );
 
     }
 
@@ -680,29 +910,92 @@ export default class Form {
             // Set value
             itemEl.setAttribute("value", value);
 
-            // Check values id is string
-            if(typeof valuesID === "string"){
-
-                // Set entity_id
-                itemEl.setAttribute("value_id", valuesID);
-
-            }else
-            // Check value is object
-            if(valuesID !== null && Object.keys(valuesID).includes(itemEl["name"])){
-
-                // Set entity_id
-                itemEl.setAttribute("value_id", valuesID[itemEl["name"]]);
-
-            }else
-            // Check if $oid
-            if(valuesID && typeof valuesID === "object" && "$oid" in valuesID){
-
-                // Set entity_id
-                itemEl.setAttribute("value_id", valuesID["$oid"] as string);
-
-            }
+            // Set id
+            this._setID(valuesID, itemEl);
 
         }
+
+    }
+
+    /** Private methods | Set value | Set Custom Data
+     ******************************************************
+     */
+
+    /**
+     * Set ID
+     * 
+     * Set ID of the item of the from
+     * 
+     * @param valueID
+     * @param itemEl
+     * @returns void 
+     */
+    private _setID(valueID:string|Object|null, itemEl:HTMLElement):void {
+
+        // Declare key collection
+        let keysCollection:Array<string> = [];
+        let currentValueID:string|null;
+
+        // Check values id is string
+        if(typeof valueID === "string"){
+
+            // Set entity_id
+            itemEl.setAttribute("value_id", valueID);
+
+        }else
+        // Check value is object
+        if(valueID !== null && Object.keys(valueID).includes(itemEl["name"])){
+
+            // Set entity_id
+            itemEl.setAttribute("value_id", valueID[itemEl["name"]]);
+
+        }else
+        // Check if $oid
+        if(valueID && typeof valueID === "object" && "$oid" in valueID){
+
+            // Set entity_id
+            itemEl.setAttribute("value_id", valueID["$oid"] as string);
+
+        }
+
+        // Get items of form
+        let itemsEls = this._formEl.querySelectorAll("select, input");
+
+        // Iterations items
+        for(let i = 0; i < itemsEls.length; i++) {
+
+            // Get value ID
+            currentValueID = itemsEls[i].getAttribute("value_id");
+
+            // Check if attribute _ID
+            if(currentValueID === null)
+
+                // Stop method
+                return;
+
+            // Check if key in keysCollection
+            if(!keysCollection.includes(currentValueID))
+
+                // Push key in collection
+                keysCollection.push(currentValueID);
+            
+
+        }
+
+        // Check if multiple keus in key collection
+        if(keysCollection.length > 1)
+
+            // Stop method
+            return;
+
+        // Iteration of items
+        for(let i = 0; i < itemsEls.length; i++)
+
+            // Remove attribute value id
+            itemsEls[i].removeAttribute("value_id");
+
+        // Push value id in form
+        this._formEl.setAttribute("value_id", keysCollection.pop() as string);
 
     }
 

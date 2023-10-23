@@ -52,6 +52,9 @@ class Form {
     /** @var array $_items of the form */
     private array $_items = [];
 
+    /** @var boolean $_reset */
+    private bool $_reset = false;
+
     /** @var array $_items_schema Schema of an item */
     private array $_item_schema = [
         "name"      =>  "",
@@ -212,6 +215,24 @@ class Form {
     }
 
     /**
+     * Set Reset
+     * 
+     * Set Reset action of the form
+     * 
+     * @param bool $reset Reset of the form
+     * @return Form
+     */
+    public function setReset(bool $reset = false):Form {
+
+        # Set id
+        $this->_reset = $reset;
+
+        # Return self
+        return $this;
+
+    }
+
+    /**
      * Push Item
      * 
      * Push item of the form
@@ -316,6 +337,12 @@ class Form {
 
             # Push onready
             $result["onready"] = $this->_onready;
+
+        # Check onready
+        if(!$minimize || $this->_reset)
+
+            # Push onready
+            $result["reset"] = $this->_reset;
 
         # Check items
         if(!empty($this->_items))

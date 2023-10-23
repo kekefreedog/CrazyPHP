@@ -50,6 +50,12 @@ class Mongo implements CrazyDriverModel {
     /** @var Schema $schema */
     private Schema|null $schema = null;
 
+    /** @var string|null $id for select one item */
+    private string|null $id = null;
+
+    /** @var book $delete */
+    private bool $delete = false;
+
     /** @var array find options */
     private $findOptions = [];
 
@@ -105,6 +111,9 @@ class Mongo implements CrazyDriverModel {
      * @return self
      */
     public function parseId(string|int $id, ?array $options = null):self {
+
+        # Set id
+        $this->id = $id;
 
         # Return self
         return $this;
@@ -229,6 +238,9 @@ class Mongo implements CrazyDriverModel {
      */
     public function pushToTrash(?array $options = null):self {
 
+        # Set remove
+        $this->delete = true;
+
         # Return self
         return $this;
 
@@ -250,7 +262,46 @@ class Mongo implements CrazyDriverModel {
         # Set result
         $result = [];
 
-        # Check schema
+        # Check delete with id
+        if($this->id && $this->delete && $this->schema === null){
+
+            # Get result
+            $result[] = $this->mongodb->deleteOneToCollection($this->arguments["collection"], $this->id, $this->arguments["database"]);
+
+        }else
+        # Update with id
+        if($this->schema !== null && $this->id !== null){
+
+            # Check collection
+            $schemaResult = $this->schema->getResult();
+
+            # Check result
+            if(!empty($schemaResult)){
+
+                # Iteration
+                foreach($schemaResult as $v){
+
+                    # Declare data
+                    $data = [];
+
+                    # Iteration v
+                    foreach($v as $item)
+
+                        # Push in data
+                        $data[$item["name"]] = $item["value"];
+
+                    # Get validator
+                    $validator = Mangodb::convertToMongoSchema($this->arguments["schema"]);
+
+                    # Get result
+                    $result[] = $this->mongodb->updateOneToCollection($this->arguments["collection"], $data, $this->id, $this->arguments["database"], $validator);
+
+                }
+
+            }
+
+        }else
+        # Insert to mongo Check schema
         if($this->schema !== null){
 
             # Check collection

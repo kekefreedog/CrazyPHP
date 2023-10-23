@@ -18,6 +18,8 @@ Api:
           - batch
         methods:
           - post
+          - put # For fix some issues
+          - delete # For fix some issues
         middleware : {}
       - name: ApiV2All # Tested
         controller: CrazyPHP\Controller\ApiV2All

@@ -304,6 +304,18 @@ export default class Crazyrequest{
 
         }
 
+        // Check cache
+        if(this.options.cache === false){
+
+            // Push pragma
+            this.requestOptions.headers.set("Pragma", "no-cache");
+
+            // Push Cache-Control
+            this.requestOptions.headers.set("Cache-Control", "no-cache");
+
+
+        }
+
     }
 
     /**
@@ -373,6 +385,27 @@ export default class Crazyrequest{
 
                     // Fill headers
                     this.requestOptions.headers.append('Content-Type', 'multipart/form-data'); */
+
+                }
+    
+                // Check body content
+                if(bodyContent !== null)
+
+                    // Set body
+                    this.requestOptions.body = bodyContent;
+
+            }else
+            // For put
+            if(["PUT", "put"].includes(this.requestOptions.method ?? "")){
+
+                // Declare body content
+                let bodyContent:FormData|null = null;
+
+                // Check if formdata
+                if(body instanceof FormData){
+
+                    // Fill body content
+                    bodyContent = body;
 
                 }
     
