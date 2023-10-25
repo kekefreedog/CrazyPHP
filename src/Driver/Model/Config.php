@@ -395,10 +395,10 @@ class Config implements CrazyDriverModel {
      * 
      * Use for test for force summary argument value
      * 
-     * @param ?bool $input Summary state
+     * @param null|bool|array $input Summary state
      * @return self
      */
-    public function forceSummary(?bool $input = null):self {
+    public function forceSummary(null|bool|array $input = null):self {
 
         # Check input
         if($input === null)

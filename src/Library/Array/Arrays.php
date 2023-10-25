@@ -638,6 +638,30 @@ class Arrays{
 		return $subject;
 	}
 
+	public static function convertStringsToIntegers(array $array = []):array {
+
+		# Check array
+		if(!empty($array))
+
+			# Iteration array
+			foreach ($array as $key => $value)
+
+				# Check if is array
+				if (is_array($value))
+
+					# Call himself
+					$array[$key] = static::convertStringsToIntegers($value);
+
+				else 
+				# Check if string
+				if (is_string($value) && ctype_digit($value))
+					$array[$key] = (int) $value;
+
+		# Return array
+		return $array;
+
+	}
+
     /** Public Constants
      ******************************************************
      */
