@@ -511,13 +511,16 @@ class Structure {
             # Prepare option
             $option = [
                 'template'  =>  $preset,
+                'partials'  =>  Handlebars::loadAppPartials()
             ];
 
         # Else
         else
 
             # Set option
-            $option = [];
+            $option = [
+                'partials'  =>  Handlebars::loadAppPartials()
+            ];
 
         # Prepare template
         $templateInstance = new $instance($option);

@@ -11,16 +11,20 @@
 /**
  * Dependances
  */
+import {default as RegisterPartial} from "./../Library/Register/Partial";
 import {default as UtilityEvents} from "./../Library/Utility/Events";
 import {default as RegisterPage} from "./../Library/Register/Page";
 import Componentregister from "./../Library/Componentregister";
 import {default as PageError} from './../Library/Error/Page';
+import ColorSchema from "./../Library/Utility/ColorSchema";
 import Crazyconsole from "./../Library/Crazyconsole";
 import CurrentPage from "./../Library/Current/Page";
 import HistoryPage from "./../Library/History/Page";
 import Crazyevents from "./../Library/Crazyevents";
+import Crazystate from "./../Library/Crazystate";
 import Crazypage from "./../Library/Crazypage";
 import Hash from './../Library/Utility/Hash';
+
 /**
  * Crazy Object
  *
@@ -38,6 +42,9 @@ export default class Crazyobject {
 
     /** @var components Components class */
     public components:Componentregister;
+
+    /** @var partials Partials class */
+    public partials:RegisterPartial;
 
     /** @var currentPage Pages class */
     public registerPage:RegisterPage;
@@ -57,6 +64,12 @@ export default class Crazyobject {
     /** @var events Configs class */
     public events:UtilityEvents;
 
+    /** @var colorSchema Color Schema */
+    public colorSchema:ColorSchema;
+
+    /** @var state State */
+    public state:Crazystate;
+
     /**
      * Constructor
      */
@@ -65,8 +78,16 @@ export default class Crazyobject {
         // Register Global Web Components give by the app
         this.components = new Componentregister(input);
 
+        // Register Partials
+        this.partials = new RegisterPartial();
+
+        // Color schema
+        this.colorSchema = new ColorSchema();
+
         // Init of the app
-        this.hashInit()                     // Init Hash
+        this.hashInit(input)                // Init Hash
+            .then(this.stateInit)           // Init state
+            .then(this.partialsInit)        // Init Partials
             .then(this.historyPageInit)     // Init History Page
             .then(this.eventInit)           // Init Event
             .then(this.registerPageInit)    // Init Register Page
@@ -88,7 +109,7 @@ export default class Crazyobject {
      * 
      * @returns Promise<void>
      */
-    private hashInit = async():Promise<void> => {
+    private hashInit = async(input:CrazyObjectInput):Promise<CrazyObjectInput> => {
 
         // Hash instance
         this.hash = new Hash();
@@ -107,6 +128,43 @@ export default class Crazyobject {
 
         }
 
+        // Return input
+        return input;
+
+    }
+
+    /**
+     * State Init
+     * 
+     * Prepare state instances in your crazy page
+     * 
+     * @returns Promise<void>
+     */
+    private stateInit = async(input:CrazyObjectInput):Promise<CrazyObjectInput> => {
+
+        // New crazy state instance
+        this.state = new Crazystate(input);
+
+        // Return input
+        return input;
+
+    }
+
+    /**
+     * Partials Init
+     * 
+     * Prepare partial in your crazy page
+     * 
+     * @returns Promise<void>
+     */
+    private partialsInit = async(input:CrazyObjectInput):Promise<CrazyObjectInput> => {
+
+        // Register global partials
+        this.partials.register(input.globalPartials);
+
+        // Return input
+        return input;
+
     }
 
     /**
@@ -116,10 +174,13 @@ export default class Crazyobject {
      * 
      * @returns Promise<void>
      */
-    private historyPageInit = async():Promise<void> => {
+    private historyPageInit = async(input:CrazyObjectInput):Promise<CrazyObjectInput> => {
 
         // New instance
         this.historyPage = new HistoryPage();
+
+        // Return input
+        return input;
 
     }
 
@@ -130,13 +191,16 @@ export default class Crazyobject {
      * 
      * @returns Promise<void>
      */
-    private registerPageInit = async():Promise<void> => {
+    private registerPageInit = async(input:CrazyObjectInput):Promise<CrazyObjectInput> => {
 
         // New instance
         this.registerPage = new RegisterPage();
 
         // Open Register (init when the registered is creates)
         window.Crazyobject.events.dispatch("onRegisterPageOpen");
+
+        // Return input
+        return input;
 
     }
 
@@ -147,10 +211,13 @@ export default class Crazyobject {
      * 
      * @returns Promise<void>
      */
-    private currentPageInit = async():Promise<void> => {
+    private currentPageInit = async(input:CrazyObjectInput):Promise<CrazyObjectInput> => {
 
         // New current page instance
         this.currentPage = new CurrentPage();
+
+        // Return input
+        return input;
 
     }
 
@@ -161,14 +228,20 @@ export default class Crazyobject {
      * 
      * @returns Promise<void>
      */
-    private eventInit = async():Promise<void> => {
+    private eventInit = async(input:CrazyObjectInput):Promise<CrazyObjectInput> => {
 
         // New Config Register
         this.events = new UtilityEvents();
 
+        // New crazy event
+        /* new Crazyevents(); */
+
         // Create default custom events
-        this.events.add("onRegisterPageOpen"); //--> Event to register new page
+        this.events.add("onRegisterPageOpen");      //--> Event to register new page
         this.events.add("onFirstPageRegistered");   //--> Event to first page is registered
+
+        // Return input
+        return input;
 
     }
 
@@ -179,10 +252,13 @@ export default class Crazyobject {
      * 
      * @returns Promise<void>
      */
-    private consoleInit = async():Promise<void> => {
+    private consoleInit = async(input:CrazyObjectInput):Promise<CrazyObjectInput> => {
 
         // New Config Register
         this.console = new Crazyconsole();
+
+        // Return input
+        return input;
 
     }
 

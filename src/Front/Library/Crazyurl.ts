@@ -96,8 +96,12 @@ export default class Crazyurl{
 
         // Return new url
         return newUrl;
+
     }
-      
+
+    /** Public static methods
+     ******************************************************
+     */
 
     /**
      * Remove Query Parameters
@@ -112,6 +116,48 @@ export default class Crazyurl{
         const newUrl = `${window.location.pathname}?${searchParams.toString()}`;
         window.history.pushState(null, "", newUrl);
         
+
+    }
+
+    /**
+     * Is Same Domain
+     * 
+     * Check if given url is same domain
+     * 
+     * @param href 
+     * @returns boolean
+     */
+    public static isSameDomain = (href:string):boolean => {
+
+        // Declare result
+        let result:boolean = false;
+
+        // Check href
+        if(!href)
+
+            // Return result
+            return result;
+
+        // Try
+        try {
+
+            // URL object
+            const hrefUrl = new URL(href);
+    
+            // Compare the origins of the two URLs
+            result = window.location.origin === hrefUrl.origin;
+
+        // Catch error
+        } catch (error) {
+
+            // Invalid URL
+
+            result = false;
+            
+        }
+
+        // Return result
+        return result;
 
     }
 

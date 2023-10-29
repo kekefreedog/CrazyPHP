@@ -16,11 +16,10 @@ namespace  CrazyPHP\Core;
  * Dependances
  */
 use CrazyPHP\Exception\CrazyException;
-use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\File\Config;
+use CrazyPHP\Library\File\File;
 use CrazyPHP\Model\Context;
 use CrazyPHP\Core\Response;
-use CrazyPHP\Library\File\File;
 
 /**
  * Api Response

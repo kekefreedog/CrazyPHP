@@ -3,9 +3,11 @@
 ## Version 1
 
 ### Description
+
 - Full details and good practice on how parameters available in api response.
 
 ### Response Json
+
 ```json
 {
     // Errors
@@ -117,7 +119,7 @@
     "_cookies": {
 
     },
-    // Errors
+    // Context
     "_context":{
         "route":{
             "current": "/",

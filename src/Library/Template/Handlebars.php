@@ -21,6 +21,7 @@ use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\Cache\Cache;
 use CrazyPHP\Library\File\File;
 use LightnCandy\LightnCandy;
+use Symfony\Component\Finder\Finder;
 
 /**
  * Handlebars
@@ -106,6 +107,21 @@ class Handlebars {
     /** Public methods
      ******************************************************
      */
+
+    /**
+     * Get Partials
+     * 
+     * @return null|array
+     */
+    public function getPartials():?array {
+
+        # Set result
+        $result = $this->partials;
+
+        # Return result
+        return $result;
+
+    }
 
     /**
      * Load
@@ -365,6 +381,86 @@ class Handlebars {
 
     }
 
+    /**
+     * Load App Partials
+     * 
+     * Load all app partials
+     * 
+     * @param string|array $partialDirs
+     * @return array|null
+     */
+    public static function loadAppPartials(string|array $partialDirs = self::PARTIAL_DIR, string|array $extensions = self::EXTENSIONS):array|null {
+
+        # Set result
+        $result = null;
+
+        # Check partials dir is array
+        if(is_string($partialDirs))
+
+            # Convert to array
+            $partialDirs = [$partialDirs];
+
+        # Prepare extensions
+        if(is_string($extensions))
+
+            # Set extensions
+            $extensions = [$extensions];
+
+        # Prepare names
+        $names = [];
+
+        # Check extension
+        if(!empty($extensions))
+
+            # Iterations extensions
+            foreach($extensions as $extension)
+
+                # Add in name
+                $names[] = "*.".ltrim($extension, ".");
+
+        # Check partial dirs
+        if(!empty($partialDirs))
+
+            # Iterations partials dirs
+            foreach($partialDirs as $partialDir)
+
+                # Check partial dir
+                if($partialDir){
+
+                    # New finder
+                    $finder = new Finder();
+
+                    # Preapre finder
+                    $finder
+                        ->files()
+                        ->name($names)
+                        ->in(File::path($partialDir))
+                    ;
+                    
+                    # Check has result
+                    if($finder->hasResults())
+
+                        # Iteration result
+                        foreach($finder as $file){
+
+                            # Get name
+                            $name = rtrim(ltrim($file->getBasename($file->getExtension()), "_"), ".");
+
+                            # Get content
+                            $content = $file->getContents();
+
+                            # Push in result
+                            $result[$name] = $content;
+
+                        }
+
+                }
+
+        # Return result
+        return $result;
+
+    }
+    
 
     /** Public constants | Options preset
      ******************************************************
@@ -374,14 +470,14 @@ class Handlebars {
      * Crazy Preset with the maximum of compatibility
      */
     public const CRAZY_PRESET = [
-        "flags"     =>  LightnCandy::FLAG_HANDLEBARSJS/*  | LightnCandy::FLAG_ERROR_LOG */,
+        "flags"     =>  LightnCandy::FLAG_HANDLEBARSJS_FULL|LightnCandy::FLAG_RUNTIMEPARTIAL|LightnCandy::FLAG_PARENT/*  | LightnCandy::FLAG_ERROR_LOG */,
     ];
 
     /**
      * Crazy Preset with the maximum of compatibility
      */
     public const HTML_STRUCTURE = [
-        "flags" =>  LightnCandy::FLAG_HANDLEBARSJS|LightnCandy::FLAG_RUNTIMEPARTIAL|LightnCandy::FLAG_SPVARS| LightnCandy::FLAG_ERROR_LOG,
+        "flags" =>  LightnCandy::FLAG_HANDLEBARSJS|LightnCandy::FLAG_RUNTIMEPARTIAL|LightnCandy::FLAG_SPVARS|LightnCandy::FLAG_NAMEDARG|LightnCandy::FLAG_ERROR_LOG|LightnCandy::FLAG_PARENT,
     ];
 
     /**
@@ -398,5 +494,11 @@ class Handlebars {
         "handlebars", "hbs"
     ];
     
+    /**
+     * Directories of partials
+     */
+    public const PARTIAL_DIR = [
+        "@app_root/assets/Hbs/partials"
+    ];
 
 }
