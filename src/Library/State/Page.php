@@ -17,9 +17,11 @@ namespace  CrazyPHP\Library\State;
  */
 use CrazyPHP\Library\State\Components\Form;
 use CrazyPHP\Exception\CrazyException;
+use CrazyPHP\Library\Form\Validate;
 use CrazyPHP\Exception\CatchState;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\File\Config;
+use CrazyPHP\Library\File\File;
 use CrazyPHP\Library\Form\Query;
 use CrazyPHP\Model\Context;
 use CrazyPHP\Model\Env;
@@ -45,6 +47,12 @@ class Page {
 
     /** @var array $result */
     private $result = [];
+
+    /** @var string $status code */
+    private $status_code = 200;
+
+    /** @var array $errors */
+    private $errors = [];
 
     /** @var array $ui */
     private $ui = [];
@@ -200,6 +208,104 @@ class Page {
 
         # Return self
         return $this;
+
+    }
+
+    /**
+     * Set Status Code
+     * 
+     * @param int $status_code
+     * @return Page
+     */
+    public function setStatusCode(int $status_code = 200, $errorOption = []):self {
+
+        # Check status code
+        if(Validate::isValidHttpStatusCode($status_code)){
+
+            # Set status code
+            $this->status_code = $status_code;
+
+            # Check code is error
+            if($code >= 400 && $code <= 599){
+
+                # Check error option
+                if(empty($errorOption)){
+
+                    # Check if option is empty
+                    $file = File::open("@crazyphp_root/resources/Yml/HttpStatusCode.yml");
+
+                    # Get default
+                    $errorOption = $file["HttpStatusCode"]["default"] ?? [];
+
+                }
+
+                # Push code in error options
+                $errorOption["code"] = $status_code;
+
+                # Push error
+                $this->pushError($errorOption);
+
+            }
+
+        }
+
+        # Return self
+        return $this;
+
+    }
+
+    /**
+     * Push Error
+     * 
+     * @param array $options
+     * @return Page
+     */
+    public function pushError(array $options = []):self {
+
+        # Here
+
+        # Return self
+        return $this;
+
+    }
+
+    /**
+     * Push Errors
+     * 
+     * @param array $errors
+     * @return Page
+     */
+    public function pushErrors(array $errors = []):self {
+
+        # Check $errors
+        if(!empty($errors))
+
+            # Iteration errors
+            foreach($errors as $error)
+
+                # Check error
+                if(is_array($errors))
+
+                    # Push error
+                    $this->pushError($error);
+
+        # Return self
+        return $this;
+
+    }
+
+    /**
+     * Get Status Code
+     * 
+     * @return int
+     */
+    public function getStatusCode():int {
+
+        # Set result
+        $result = $this->status_code;
+
+        # Return result
+        return $result;
 
     }
 
