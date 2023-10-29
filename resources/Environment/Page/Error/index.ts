@@ -12,8 +12,8 @@
  * Dependances
  */
 const html = require("./template.hbs");
-import {Crazypage} from "crazyphp";
 const css = require("./style.scss");
+import {Crazypage} from "crazyphp";
 
 /**
  * Crazy Object

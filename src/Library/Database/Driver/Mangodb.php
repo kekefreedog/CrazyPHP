@@ -21,6 +21,7 @@ use CrazyPHP\Library\Cli\Command as CliCommand;
 use CrazyPHP\Interface\CrazyDatabaseDriver;
 use CrazyPHP\Exception\CrazyException;
 use MongoDB\Driver\Manager;
+use MongoDB\BSON\ObjectId;
 use MongoDB\Database;
 use MongoDB\Client;
 
@@ -440,6 +441,243 @@ class Mangodb implements CrazyDatabaseDriver {
 
     }
 
+    /**
+     * Insert To Collection
+     * 
+     * Insert value to collection
+     * 
+     * @param string $collectionName
+     * @param array $value
+     * @param string $database
+     * @param bool $createIfNotExists
+     * @param array $validator
+     */
+    public function insertToCollection(string $collectionName, array $value, string $database = "", bool $createIfNotExists = false, array $validator = []) {
+
+        # Set result
+        $result = null;
+
+        # Check input
+        if(!$collectionName || empty($value) || !$database)
+
+            # Return result
+            return $result;
+
+        # Set database
+        $database = $this->client->$database;
+
+        # Check has
+        if(!$this->hasCollection($collectionName, $database)){
+
+            # Check if create
+            if(!$createIfNotExists)
+
+                # Stop
+                return $result;
+
+            # Set collection
+            $database->createCollection($collectionName, $validator);
+
+        }
+
+        # Go in collection
+        $collection = $database->$collectionName;
+
+        # Result
+        $result = $collection->insertOne($value);
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Update One To Collection
+     * 
+     * Update one value to collection
+     * 
+     * @param string $collectionName
+     * @param array $value
+     * @param string $id
+     * @param string $database
+     * @param array $validator
+     */
+    public function updateOneToCollection(string $collectionName, array $value, string $id, string $database = "", array $validator = []) {
+
+        # Set result
+        $result = null;
+
+        # Check input
+        if(!$collectionName || empty($id) || empty($value) || !$database)
+
+            # Return result
+            return $result;
+
+        # Set database
+        $database = $this->client->$database;
+
+        # Go in collection
+        $collection = $database->$collectionName;
+
+        # Prepare id
+        $criteria = ['_id' => new ObjectId($id)];
+
+        # Prepare value to set
+        $valueToSet = [
+            '$set'  =>  $value
+        ];
+
+        # Result
+        $result = $collection->updateOne($criteria, $valueToSet);
+
+        if($result->isAcknowledged())
+
+            # Set result
+            $result = [
+                "code"      =>  200,
+                "message"   =>  "Item updated"
+            ];
+
+        else
+
+            # Set result
+            $result = [
+                "code"      =>  500,
+                "message"   =>  "Item not updated"
+            ];
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Delete One To Collection
+     * 
+     * Delete one value to collection
+     * 
+     * @param string $collectionName
+     * @param string $id
+     * @param string $database
+     */
+    public function deleteOneToCollection(string $collectionName, string $id, string $database = "") {
+
+        # Set result
+        $result = null;
+
+        # Check input
+        if(!$collectionName || !$database)
+
+            # Return result
+            return $result;
+
+        # Set database
+        $database = $this->client->$database;
+
+        # Go in collection
+        $collection = $database->$collectionName;
+
+        # Prepare id
+        $criteria = ['_id' => new ObjectId($id)];
+
+        # Result
+        $result = $collection->deleteOne($criteria);
+
+        if($result->getDeletedCount() === 1)
+
+            # Set result
+            $result = [
+                "code"      =>  200,
+                "message"   =>  "Item deleted"
+            ];
+
+        else
+
+            # Set result
+            $result = [
+                "code"      =>  500,
+                "message"   =>  "Item not deleted"
+            ];
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Find
+     * 
+     * Find value
+     * 
+     * @param string $collectionName
+     * @param string $database
+     */
+    public function find(string $collectionName, string $database, array $options = []):array|null {
+
+        # Set result
+        $result = null;
+
+        # Check input
+        if(!$collectionName || !$database)
+
+            # Return result
+            return $result;
+
+        # Connect to database
+        $database = $this->client->$database;
+
+        # Connect to the collection
+        $collection = $database->$collectionName;
+
+        # Last result
+        $documents = $collection->find([], $options);
+
+        # Iteration documents found
+        foreach($documents as $document)
+
+            # Push in result
+            $result[] = $document;
+
+        # Return result
+        return $result === null ? [] : $result;
+
+    }
+
+    /**
+     * Find Last One
+     * 
+     * Find last value of collection
+     * 
+     * @param string $collectionName
+     * @param string $database
+     */
+    public function findLastOne(string $collectionName, string $database):array|null {
+
+        # Set result
+        $result = null;
+
+        # Check input
+        if(!$collectionName || empty($value) || !$database)
+
+            # Return result
+            return $result;
+
+        # Connect to database
+        $database = $this->client->$database;
+
+        # Connect to the collection
+        $collection = $database->$collectionName;
+
+        # Last result
+        $result = $collection->findOne([], [
+            'sort' => ['_id' => -1],
+        ]);
+
+        # Return result
+        return $result === null ? [] : $result;
+
+    }
+
     /** Public Static Methods | Utilities
      ******************************************************
      */
@@ -508,6 +746,97 @@ class Mangodb implements CrazyDatabaseDriver {
         ;
 
         # Return result
+        return $result;
+
+    }
+
+    /** 
+     * Convert Crazy Schema to Mongodb Schema
+     * 
+     * @param schema
+     * @return array
+     */
+    public static function convertToMongoSchema(array $schema = []):array {
+
+        # Declare result
+        $result = [];
+
+        # Check schema
+        if(empty($schema))
+
+            # Return result
+            return $result;
+
+        # Declare properties
+        $properties = [];
+
+        # Declare required
+        $required = [];
+    
+        # Iteration schema
+        foreach($schema as $attribute){
+
+            # Get type
+            $type = $attribute['type'];
+    
+            # Convert SQL data types to BSON data types
+            switch($type){
+
+                # Case varchar
+                case 'VARCHAR':
+
+                    # Set bson type
+                    $bsonType = 'string';
+
+                    # Break
+                    break;
+
+                # Set default
+                default:
+
+                    # Set bson type
+                    $bsonType = 'string';
+
+            }
+    
+            # Fill properties
+            $properties[$attribute['name']] = [
+                'bsonType' => $bsonType,
+                'description' => ($attribute['label'] ?? $attribute['name'])." must be a \”$bsonType\”"
+            ];
+
+            # Check required
+            if($attribute["required"] ?? false)
+
+                # Fill required
+                $required[] = $attribute['name'];
+
+        }
+
+        # Check properties and required
+        if(!empty($properties) || !empty($required)){
+
+            # Prepare result
+            $result = [
+                'validator' => [
+                    '$jsonSchema' => [
+                        'bsonType' => 'object'
+                    ]
+                ]
+            ];
+
+            # Check properties
+            if(!empty($properties))
+
+                $result["validator"]['$jsonSchema']["properties"] = $properties;
+
+            # Check properties
+            if(!empty($required))
+    
+                $result["validator"]['$jsonSchema']["required"] = $required;
+
+        }
+    
         return $result;
 
     }

@@ -15,10 +15,7 @@ namespace {{Namespace}};
 /**
  * Dependances
  */
-use CrazyPHP\Library\Html\Structure;
-use CrazyPHP\Core\ApiResponse;
 use CrazyPHP\Core\Controller;
-use CrazyPHP\Core\Response;
 
 /**
  * {{Name}}
@@ -40,7 +37,7 @@ class {{Class}} extends Controller {
     public static function get($request){
 
         # Set structure
-        $structure = (new Structure())
+        $structure = static::Structure()
             ->setDoctype()
             ->setLanguage()
             ->setHead()
@@ -51,7 +48,7 @@ class {{Class}} extends Controller {
         ;
 
         # Set response
-        (new Response())
+        static::Response()
             ->setContent($structure)
             ->send();
 
@@ -69,7 +66,7 @@ class {{Class}} extends Controller {
         $content = [];
 
         # Set response
-        (new ApiResponse())
+        static::ApiResponse()
             ->setStatusCode($statutCode)
             ->pushContent("results", $content)
             ->send();
@@ -88,7 +85,7 @@ class {{Class}} extends Controller {
         $content = [];
 
         # Set response
-        (new ApiResponse())
+        static::ApiResponse()
             ->setStatusCode($statutCode)
             ->pushContent("results", $content)
             ->send();
@@ -121,7 +118,7 @@ class {{Class}} extends Controller {
         $content = [];
 
         # Set response
-        (new ApiResponse())
+        static::ApiResponse()
             ->setStatusCode($statutCode)
             ->pushContent("results", $content)
             ->send();

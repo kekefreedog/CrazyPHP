@@ -37,7 +37,19 @@ class ApiV2Delete extends Controller {
      */
     public static function delete():void {
 
-        
+        # Get id
+        $id = (string) self::getParametersUrl("id");
+
+        # Declare content
+        $content = self::Model()
+            ->deleteById($id)
+        ;
+
+        # Set response
+        self::ApiResponse()
+            ->setStatusCode()
+            ->pushContent("results", $content)
+            ->send();
 
     }
 

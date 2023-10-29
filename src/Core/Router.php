@@ -16,6 +16,7 @@ namespace  CrazyPHP\Core;
  * Dependances
  */
 use CrazyPHP\Library\Router\Router as LibraryRouter;
+use Mezon\Router\Types\BaseType as VendorBaseType;
 use Mezon\Router\Router as VendorRouter;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Array\Arrays;
@@ -335,6 +336,9 @@ class Router extends VendorRouter {
     /** Public constant
      ******************************************************
      */
+
+    /** @param string PARAMETER_NAME_REGEX */
+    public const PARAMETER_NAME_REGEX = VendorBaseType::PARAMETER_NAME_REGEXP;
 
     /** @const CACHE_ROUTER */
     public const CACHE_PATH = "@app_root/.cache/app/router/";

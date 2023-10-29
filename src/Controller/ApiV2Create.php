@@ -16,8 +16,8 @@ namespace CrazyPHP\Controller;
  * Dependances
  */
 use CrazyPHP\Exception\CrazyException;
-use CrazyPHP\Core\ApiResponse;
 use CrazyPHP\Core\Controller;
+use CrazyPHP\Core\Model;
 
 /**
  * Api V2 Create
@@ -36,6 +36,17 @@ class ApiV2Create extends Controller {
      * @return void
      */
     public static function post():void {
+
+        # Declare content
+        $content = self::Model()
+            ->create($_POST ?? [])
+        ;
+
+        # Set response
+        self::ApiResponse()
+            ->setStatusCode()
+            ->pushContent("results", $content)
+            ->send();
 
     }
 

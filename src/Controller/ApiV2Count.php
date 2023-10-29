@@ -46,8 +46,22 @@ class ApiV2Count extends Controller {
         # New model
         $model = new Model();
 
+        # Get data
+        $data = self::getHttpRequestData();
+
+        # Set filters
+        $filters = $data ?? null;
+
+        # Set options
+        $options = [];
+        if(isset($data["summary_fields"])) $options["summary_fields"] = $data["summary_fields"];
+        if(isset($data["grouping"])) $options["grouping"] = $data["grouping"];
+
         # Declare content
-        $content = $model->countWithFilters();
+        $content = $model->countWithFilters(
+            $data["filters"] ?? null,
+            !empty($options) ? $options : null
+        );
 
         # Get last modified date of model config
         $lastModified = FileConfig::getLastModified("Model");

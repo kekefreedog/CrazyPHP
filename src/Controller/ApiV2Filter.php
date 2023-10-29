@@ -56,7 +56,7 @@ class ApiV2Filter extends Controller {
         $lastModified = FileConfig::getLastModified("Model");
 
         # Set response
-        (new ApiResponse())
+        static::ApiResponse()
             ->addLastModified($lastModified)
             ->setStatusCode()
             ->pushContent("results", $content)

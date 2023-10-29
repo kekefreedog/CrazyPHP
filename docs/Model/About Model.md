@@ -38,6 +38,12 @@ Model:
         type: VARCHAR
         validate: [isValidUrl]
         required: false
+      - name: state
+        label: State
+        description: State of the front controller
+        type: ARRAY
+        required: false
+        raw: true                                     # Avoid json conversion and set raw value 
 ```
 
 ## How to use it ?

@@ -37,7 +37,22 @@ class ApiV2Update extends Controller {
      */
     public static function put():void {
 
-        
+        # Get id
+        $id = (string) self::getParametersUrl("id");
+
+        # Get data
+        $data = self::getHttpRequestData();
+
+        # Declare content
+        $content = self::Model()
+            ->updateById($id, $data)
+        ;
+
+        # Set response
+        self::ApiResponse()
+            ->setStatusCode()
+            ->pushContent("results", $content)
+            ->send();
 
     }
 

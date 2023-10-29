@@ -67,6 +67,10 @@ export default class Page {
                 Page.loadContent
             )
             .then(
+                // Scan Partials
+                Page.scanPartials
+            )
+            .then(
                 // Load Content
                 Page.registerInHistory
             )
@@ -103,7 +107,7 @@ export default class Page {
 
     }
 
-    /** Punlic methods
+    /** Public methods 
      ******************************************************
      */
 
@@ -129,7 +133,7 @@ export default class Page {
     public static loadPageDetail = async(options:LoaderPageOptions):Promise<LoaderPageOptions> => {
 
         // Let keys
-        let keys:Array<keyof LoadPageOptionsStatus> = ["isCurrentPage", "scriptRegistered", "urlLoaded", "preActionExecuted", "urlUpdated", "titleUpdated", "styleLoaded", "contentLoaded", "onReadyExecuted", "historyRegistered","postActionExecuted"];
+        let keys:Array<keyof LoadPageOptionsStatus> = ["isCurrentPage", "hasState", "scriptRegistered", "urlLoaded", "preActionExecuted", "urlUpdated", "titleUpdated", "styleLoaded", "contentLoaded", "onReadyExecuted", "historyRegistered","postActionExecuted"];
 
         // Prepare options
         for(let currentKey of keys){
@@ -285,7 +289,8 @@ export default class Page {
                 method: "GET",
                 responseType: "json",
                 from: "internal",
-                ignoreHash: true
+                ignoreHash: true,
+                cache: false,
             }
         );
 
@@ -306,6 +311,17 @@ export default class Page {
 
                     // Load new page
                     options.url = result.results[0].path;
+
+                    // Check state
+                    if("state" in result.results[0] && Object.keys(result.results[0].state).length){
+
+                        // Set state in options
+                        options.state = result.results[0].state;
+
+                        // Switch status
+                        Page.setStatus(options, "hasState", true);
+
+                    }
                     
                 }else{
 
@@ -427,13 +443,18 @@ export default class Page {
 
             // Stop function
             return options;
-    
+
+        // Prepare stateObject
+        let stateObject = options.status?.hasState
+            ? options.state
+            : {}
+        ;
 
         // Check content
         if("content" in options && typeof options.content === "function"){
 
             // Get content
-            let content:string = options.content({});
+            let content:string = options.content(stateObject);
 
             // Set content of dom root
             DomRoot.setContent(content);
@@ -443,6 +464,50 @@ export default class Page {
         // Return options
         return options;
         
+    }
+
+
+    /**
+     * Scan Partials
+     * 
+     * Scan partials in html
+     * 
+     * @param options 
+     * @returns 
+     */
+    public static scanPartials = async(options:LoaderPageOptions):Promise<LoaderPageOptions> => {
+
+        // Check status
+        if(options.status?.partialsScanned === true)
+
+            // Stop function
+            return options;
+
+        // Scan partials and get result
+        let partialsScanned:Object = window.Crazyobject.partials.scan("body");
+
+        // Check partials scanned
+        if(Object.keys(partialsScanned).length){
+
+            // Set partials
+            options.partials = partialsScanned;
+
+            // Iteration partial script
+            for(let partial in options.partials){
+
+                // Run partial script
+                new options.partials[partial].callable(options.partials[partial]);
+
+            }
+
+        }
+        
+        // Set status
+        options = Page.setStatus(options, "partialsScanned", true);
+
+        // Return options
+        return options
+
     }
 
     public static registerInHistory = async(options:LoaderPageOptions):Promise<LoaderPageOptions> => {
@@ -491,7 +556,7 @@ export default class Page {
             let currentClass:any = options.scriptLoaded;
 
             // New instance of this class
-            let instance = new currentClass();
+            let instance = new currentClass(options);
 
             // Set scriptRunning
             options.scriptRunning = instance;
@@ -586,6 +651,7 @@ export default class Page {
 
         // Set options status
         options = Page.setStatus(options, "isCurrentPage", false);
+        options = Page.setStatus(options, "hasState", false);
         options = Page.setStatus(options, "styleLoaded", false);
         options = Page.setStatus(options, "contentLoaded", false);
         options = Page.setStatus(options, "onReadyExecuted", false);

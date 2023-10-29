@@ -151,9 +151,9 @@ interface CrazyDriverModel {
      * 
      * Use for test for force summary argument value
      * 
-     * @param ?bool $input Summary state
+     * @param null|bool|array $input Summary state
      * @return self
      */
-    public function forceSummary(?bool $input = true):self;
+    public function forceSummary(null|bool|array $input = true):self;
 
 }
