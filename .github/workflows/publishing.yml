@@ -15,4 +15,4 @@ jobs:
       with:
         php-version: '7.4'
     - name: Run custom script to update versions
-      run: php ./scripts/update-versions.php "${{ github.event.release.tag_name }}"
+      run: php ./.github/workflows/scripts/update-versions.php "${{ github.event.release.tag_name }}"
