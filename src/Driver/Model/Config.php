@@ -370,8 +370,11 @@ class Config implements CrazyDriverModel {
             # Set route name
             $routeName = Context::getCurrentRoute("name");
 
+        # Get arguments
+        $arguments = Query::getArguments();
+
         # Get reverse route
-        $result = Router::reverse((string)$routeName, Query::getArguments());
+        $result = Router::reverse((string)$routeName, $arguments);
 
         # Get host name
         $hostname = isset($_SERVER['REQUEST_SCHEME']) && isset($_SERVER['HTTP_HOST']) 

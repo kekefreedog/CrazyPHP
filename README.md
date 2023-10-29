@@ -34,6 +34,20 @@ Delete router
 php vendor/kzarshenas/crazyphp/bin/CrazyCommand delete router
 ```
 
+## Router Type
+
+New router type
+
+```sh
+php vendor/kzarshenas/crazyphp/bin/CrazyCommand new routerType
+```
+
+Delete router type
+
+```sh
+php vendor/kzarshenas/crazyphp/bin/CrazyCommand delete routerType
+```
+
 ## Trash
 
 Clean trash
@@ -90,6 +104,7 @@ php vendor/phpunit/phpunit/phpunit
 | CONFIG_LOCATION        | @config_location        | \<string> | Determine the location of the configs files              |
 | ROUTER_APP_PATH        | @router_app_path        | \<string> | Determine the path of the front files of the routers     |
 | ROUTER_CONTROLLER_PATH | @router_controller_path | \<string> | Determine the path of the back end controller of routers |
+| ROUTER_TYPE_PATH       | @router_type_path       | \<string> | Determine the path of the back end router type           |
 | TRASH_PATH             | @trash_path             | \<string> | Determine the path of the trash                          |
 | TRASH_DISABLE          | @trash_disable          | \<string> | Determine if the trash is disable                        |
 

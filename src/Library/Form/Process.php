@@ -59,7 +59,8 @@ class Process {
             "snakeToCamel",
             "spaceBeforeCapital",
             "ucfirst",
-            "cleanPath"
+            "cleanPath",
+            "strtolower"
         ],
         "ARRAY"     =>  [
         ], 
@@ -779,6 +780,19 @@ class Process {
 
         # Return result
         return ucfirst($input);
+
+    }
+
+    /**
+     * Lower Case
+     * 
+     * @param string
+     * @return string
+     */
+    public static function strtolower(string $input):string {
+
+        # Return result
+        return strtolower($input);
 
     }
 

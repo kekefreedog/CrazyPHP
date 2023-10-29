@@ -1524,6 +1524,11 @@ class Core extends CLI {
                         "class"     =>  "\CrazyPHP\Model\Router\Create",
                         "parameter" =>  "router",
                     ],
+                    # Router
+                    "routerType"   =>  [
+                        "class"     =>  "\CrazyPHP\Model\RouterType\Create",
+                        "parameter" =>  "router",
+                    ],
                 ],
             ],
             # Command delete
@@ -1538,6 +1543,11 @@ class Core extends CLI {
                     "router"    =>  [
                         "class"     =>  "\CrazyPHP\Model\Router\Delete",
                         "parameter" =>  "routers",
+                    ],
+                    # Router
+                    "routerType"   =>  [
+                        "class"     =>  "\CrazyPHP\Model\RouterType\Delete",
+                        "parameter" =>  "router",
                     ],
                     # Trash
                     "trash"     =>  [
