@@ -1,0 +1,30 @@
+name: Publishing
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  update-package-version:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Update package.json version on release
+      uses: medallyon/update-package-version-on-release@v1
+
+  version-composer:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Version Composer
+      uses: juliansangillo/version-composer@v1.1
+
+  update-versions:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Run custom script to update versions
+      run: ./scripts/update-versions.sh "${{ github.event.release.tag_name }}"
