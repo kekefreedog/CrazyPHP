@@ -62,6 +62,7 @@ Router:
   parameters:
     api:
       format: json
+  type : {}
   methods:
     - get
     - post

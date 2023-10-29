@@ -583,6 +583,7 @@ class Router {
      * Get Summary
      * 
      * Get a summary of existing routers
+     * 
      * @return array
      */
     public static function getSummary():array {
@@ -608,6 +609,43 @@ class Router {
                         $result["$type.".$router["name"]] = "(".ucfirst($type).") ".$router["name"];
 
                     }
+
+                }
+
+            }
+
+        }
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Get Router Type Summary
+     * 
+     * Get a summary of existing router type
+     * 
+     * @return array
+     */
+    public static function getRouterTypeSummary():array {
+
+        # Set result
+        $result = [];
+
+        # Get routers
+        $routerTypeCollection = Config::getValue("Router.type");
+
+        # Check routers
+        if(is_array($routerTypeCollection) && !empty($routerTypeCollection)){
+
+            # Iteration routers
+            foreach($routerTypeCollection as $routerType){
+
+                # Check router name
+                if(isset($routerType["name"]) && $routerType["name"]){
+
+                    $result[$routerType["name"]] = ucfirst($routerType["name"]);
 
                 }
 
@@ -660,6 +698,24 @@ class Router {
 
     }
 
+    /**
+     * Get Router Type Path
+     * 
+     * Get path of the custom router type
+     * env : "router_type_path"
+     * 
+     * @return string
+     */
+    public static function getRouterTypePath():string {
+
+        # Set result
+        $result = Env::get("router_type_path", true) ?: static::ROUTER_TYPE_PATH;
+
+        # Return result
+        return $result;
+
+    }
+
     /** Public constants
      ******************************************************
      */
@@ -682,5 +738,8 @@ class Router {
 
     /** @const public ROUTER_CONTROLLER_PATH */
     public const ROUTER_CONTROLLER_PATH = "@app_root/app/Controller/";
+
+    /** @const public ROUTER_TYPE_PATH */
+    public const ROUTER_TYPE_PATH = "@app_root/app/Library/Router/Type/";
 
 }
