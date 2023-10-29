@@ -574,6 +574,11 @@ class Router {
         # Set result
         $result = $routerInstance->reverse($name, $arguments ?: []);
 
+        # Fix issue from mezon
+        foreach ($arguments as $name => $value) {
+            $result = preg_replace('/\[([A-Za-z_-]*)\:' . $name . ']/', $value, $result);
+        }
+
         # Return result
         return $result;
 

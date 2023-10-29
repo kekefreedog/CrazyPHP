@@ -18,6 +18,7 @@ namespace  CrazyPHP\Core;
 use CrazyPHP\Library\Router\Router as LibraryRouter;
 use Mezon\Router\Types\BaseType as VendorBaseType;
 use Mezon\Router\Router as VendorRouter;
+use CrazyPHP\Interface\CrazyRouterType;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\Cache\Cache;
@@ -158,6 +159,9 @@ class Router extends VendorRouter {
 
             # Set collection
             $collection = Config::get("Router");
+
+        /* Add custom type */
+        $this->addRouterType();
 
         /* Add Pages */
 
@@ -332,6 +336,46 @@ class Router extends VendorRouter {
             unlink($fileCachePath);
 
     }
+
+    /** Private methods
+     ******************************************************
+     */
+
+    /**
+     * Add Router Type
+     * 
+     * Add router type define in the app
+     * 
+     * @return void
+     */
+    private function addRouterType():void {
+
+        # Get router type config
+        $routerTypeCollection = Config::getValue("Router.type");
+
+        # Check router type
+        if(!empty($routerTypeCollection))
+
+            # Iteration router type
+            foreach($routerTypeCollection as $router){
+
+                # Check name and collectio
+                if(
+                    ($router["name"] ?? false) &&
+                    ($router["class"] ?? false) &&
+                    class_exists($router["class"]) &&
+                    new $router["class"] instanceof CrazyRouterType
+                ){
+
+                    # Push in router
+                    $this->addType(strtolower($router["name"]), $router["class"]);
+
+                }
+
+            }
+
+    }
+
 
     /** Public constant
      ******************************************************
