@@ -10,29 +10,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
       with:
-        node-version: '14'
-    - name: Install jq
-      run: sudo apt-get install -y jq
+        php-version: '7.4'
     - name: Run custom script to update versions
-      run: bash ./scripts/update-versions.sh "${{ github.event.release.tag_name }}"
-
-  # If there's an updated version of version-composer that resolves the add-path issue, use it here:
-  # version-composer:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - name: Checkout code
-  #     uses: actions/checkout@v2
-  #   - name: Version Composer
-  #     uses: juliansangillo/version-composer@<new-version>
-
-  # If the update-package-version action requires a tag without the 'v' prefix, you might need to adjust your tagging scheme or find an alternative action.
-  # update-package-version:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - name: Checkout code
-  #   - uses: actions/checkout@v2
-  #   - name: Update package.json version on release
-  #   - uses: medallyon/update-package-version-on-release@v1
+      run: php ./scripts/update-versions.php "${{ github.event.release.tag_name }}"
