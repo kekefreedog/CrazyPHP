@@ -15,6 +15,7 @@ namespace  CrazyPHP\Library\State;
 /**
  * Dependances
  */
+use CrazyPHP\Library\Exception\HttpStatusCode;
 use CrazyPHP\Library\State\Components\Form;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Form\Validate;
@@ -226,7 +227,7 @@ class Page {
             $this->status_code = $status_code;
 
             # Check code is error
-            if($code >= 400 && $code <= 599){
+            if($this->status_code >= 400 && $this->status_code <= 599){
 
                 # Check error option
                 if(empty($errorOption)){
@@ -257,12 +258,29 @@ class Page {
     /**
      * Push Error
      * 
-     * @param array $options
+     * @param array $options = [
+     *      "code",
+     *      "type",
+     *      "detail",
+     *      "_status_code",
+     * ]
      * @return Page
      */
     public function pushError(array $options = []):self {
 
-        # Here
+        # Check code
+        if($options["code"] ?? false){
+
+            # Get error
+            $errorContent = HttpStatusCode::get($options["code"], $options);
+
+            # Check error content
+            if(!empty($errorContent))
+
+                # Push in error
+                $this->errors[] = $errorContent;
+
+        }
 
         # Return self
         return $this;
@@ -320,6 +338,12 @@ class Page {
 
         # Set result
         $result = $this->result;
+
+        # Check error
+        if(!empty($this->errors))
+
+            # Push errors
+            $result["errors"] = $this->errors;
 
         # Check if context
         if($this->options["context"] ?? false)

@@ -11,9 +11,10 @@
 /**
  * Dependances
  */
+const css = require("!!css-loader!sass-loader!./style.scss");
 const html = require("./template.hbs");
-const css = require("./style.scss");
 import {Crazypage} from "crazyphp";
+require("./style.scss");
 
 /**
  * Crazy Object
@@ -24,13 +25,13 @@ import {Crazypage} from "crazyphp";
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2023 Kévin Zarshenas
  */
-export default class Error extends Crazypage {
+export default class Home extends Crazypage {
 
     /** 
      * @param className:string 
      * Duplicate of the class name because build change name of class
      */
-    public static readonly className:string = "Error";
+    public static readonly className:string = "Home";
 
     /** 
      * @param html:string 
@@ -68,7 +69,7 @@ export default class Error extends Crazypage {
      */
     public onReady = ():void => {
 
-        console.log("hello Error");
+        console.log("hello home");
 
     }
 
@@ -77,5 +78,4 @@ export default class Error extends Crazypage {
 /**
  * Register current class
  */
-// window.Crazyobject.pages.register(Home);
-window.Crazyobject.register(Error);
+window.Crazyobject.register(Home);

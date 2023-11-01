@@ -92,14 +92,14 @@ HttpStatusCode:
   # Default
   default:
     code: null
-    title: Error
+    type: null
     detail:
     _status_code: 
-      title: null
+      title: Error
       style:
         color:
-          text: white,
+          text: white
           fill: grey darken-1    
         icon:
-          class: material-icons,
+          class: material-icons
           text: error
