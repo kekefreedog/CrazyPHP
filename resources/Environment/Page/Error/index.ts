@@ -12,6 +12,7 @@
  * Dependances
  */
 const css = require("!!css-loader!sass-loader!./style.scss");
+import {Carousel} from "@materializecss/materialize";
 const html = require("./template.hbs");
 import {Crazypage} from "crazyphp";
 require("./style.scss");
@@ -46,6 +47,11 @@ export default class Home extends Crazypage {
     public static readonly css = css;
 
     /**
+     * Carousel Instance
+     */
+    public carouselInstance:Carousel|null = null; 
+
+    /**
      * Constructor
      */
     public constructor(){
@@ -69,7 +75,34 @@ export default class Home extends Crazypage {
      */
     public onReady = ():void => {
 
-        console.log("hello home");
+        console.log("hello error back");
+
+        // Init carousel
+        this.initCarousel();
+
+    }
+
+    /**
+     * Init Carousel
+     * 
+     * @return void
+     */
+    private initCarousel = () => {
+        
+        // Get error-carousel
+        let errorCarouselEl = document.getElementById("error-carousel");
+
+        // Check el
+        if(errorCarouselEl !== null)
+
+            // New carousel instance
+            this.carouselInstance = new Carousel(
+                errorCarouselEl,
+                {
+                    fullWidth: true,
+                    indicators: true
+                }
+            );
 
     }
 
