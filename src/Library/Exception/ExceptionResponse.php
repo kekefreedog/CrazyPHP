@@ -155,7 +155,7 @@ class ExceptionResponse {
                     ->setLanguage()
                     ->setHead()
                     ->setJsScripts("Error")
-                    ->setBodyTemplate($templatePath, null, $state, "Error")
+                    ->setBodyTemplate($templatePath, null, (array) $state, "Error")
                     ->prepare()
                     ->render()
                 ;

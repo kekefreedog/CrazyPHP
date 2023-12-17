@@ -1,4 +1,15 @@
+/// /// ///
+/// Page - Error
+///
+/// Style of error page
+///
+/// @package    kzarshenas/crazyphp
+/// @author     kekefreedog <kevin.zarshenas@gmail.com>
+/// @copyright  2022-2023 Kévin Zarshenas
+/// /// /// 
 
+/* Import Crazy Content */
+@import "./../../../Front/style/scss/component/crazy_content";
 
 $crazy-left-navigation-rail-always-visible-z-index: 1000;
 $crazy-left-navigation-rail-always-visible-width: 88px;

@@ -11,30 +11,32 @@
   !--}}
 
 {{!-- Root --}}
-{{#httpStatusCode errors.0 "*"}}
-<div id="crazy-root" descriptive-id="" class="row screen-fit-min-y screen-flex screen-center {{colorThemeSuffix primary-color "" "light"}} {{colorThemeSuffix secondary-color "" "dark"}} {{colorThemeSuffix primary-color "text" "light"}} {{colorThemeSuffix secondary-color "text" "dark"}}">
-{{/httpStatusCode}}
+<div id="crazy-root" descriptive-id="" class="carousel carousel-slider {{!-- center --}} screen-fit-min-y">
 
-        {{#each errors as |error|}}
-        <div class="col l6 m6 s12 offset-m3 offset-l3">
-        
-            {{!-- Get heetp status code --}}
-            {{#httpStatusCode error "*"}}
+    {{!-- Statuc --}}
+    <div class="carousel-fixed-item center">
+      <regular-btn size="small" type="extended" icon-text="home" label="Home" size="small" depth="outlined"></regular-btn>
+    </div>
 
-                <h1 class="mt-0 mb-0 font-weight-500 {{colorThemeSuffix primary-color "text" "dark"}} {{colorThemeSuffix secondary-color "text" "light"}}" style="font-size: 6rem;">Error {{code}}</h1>
-
-                <h3 class="mt-0 mb-0 font-weight-200">
-                    <a class="btn-floating z-depth-0 {{colorThemeSuffix primary-color "" "dark"}} {{colorThemeSuffix secondary-color "" "light"}}" style="vertical-align: -5px;">
-                        <i class="{{icon-class}} {{colorThemeSuffix primary-color "text" "light"}} {{colorThemeSuffix secondary-color "text" "dark"}}">{{icon-text}}</i>
-                    </a>
-                    <span class="{{colorThemeSuffix primary-color "text" "dark"}} {{colorThemeSuffix secondary-color "text" "light"}}">{{title}}</span>
-                </h3>
-
-                <blockquote class="{{colorThemeSuffix primary-color "border" "dark"}} {{colorThemeSuffix secondary-color "border" "light"}} {{colorThemeSuffix primary-color "text" "dark"}} {{colorThemeSuffix secondary-color "text" "light"}}">{{description}}</blockquote>
-            
-            {{/httpStatusCode}}
-
-        </div>
-        {{/each}}
+    {{!-- Iteration of errors --}}
+    {{#each errors as |error|}}
+    <div class="carousel-item {{error._status_code.style.color.fill}} white-text row" href="{{@key}}">
+      <div class="col l3 offset-l5">
+        {{!-- Icon --}}
+        <h1><regular-btn 
+          size="small"
+          color-primary="{{error._status_code.style.color.text}}"
+          color-secondary="{{error._status_code.style.color.fill}}"
+          {{#if error._status_code.style.icon.text}}icon-text="{{error._status_code.style.icon.text}}"{{/if}}
+          {{#if error._status_code.style.icon.class}}icon-class="{{error._status_code.style.icon.class}}"{{/if}}
+          size="large"
+          depth="flat"
+        ></regular-btn>
+        {{error.code}}</h1>
+        <h2>{{error.detail}}</h2>
+        <blockquote>{{error._status_code.title}}</blockquote>
+      </div>
+    </div>
+    {{/each}}
 
 </div>

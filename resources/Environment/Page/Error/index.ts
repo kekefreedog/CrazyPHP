@@ -75,7 +75,7 @@ export default class Home extends Crazypage {
      */
     public onReady = ():void => {
 
-        console.log("hello error back");
+        console.log("hello error front");
 
         // Init carousel
         this.initCarousel();
@@ -90,7 +90,7 @@ export default class Home extends Crazypage {
     private initCarousel = () => {
         
         // Get error-carousel
-        let errorCarouselEl = document.getElementById("error-carousel");
+        let errorCarouselEl = document.getElementById("crazy-root");
 
         // Check el
         if(errorCarouselEl !== null)
@@ -100,7 +100,8 @@ export default class Home extends Crazypage {
                 errorCarouselEl,
                 {
                     fullWidth: true,
-                    indicators: true
+                    indicators: true,
+                    noWrap: true
                 }
             );
 
