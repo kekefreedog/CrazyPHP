@@ -49,44 +49,42 @@ module.exports = {
     },
     module: {
         rules: [
-        {
-            test: /\.s[ac]ss$/i,
-            use: [
-                "style-loader",
-                "css-loader",
-                "sass-loader",
-            ],
-        },
-        {
-            test: /.([cm]?ts|tsx)$/,
-            loader: 'ts-loader',
-        },
-        {
-            test: /\.ya?ml$/,
-            use: 'yaml-loader'
-        },
-        {
-            test: /\.(handlebars|hbs)$/,
-            loader: "handlebars-loader",
-            options: {
-                helperDirs: [
-                    path.resolve(__dirname, "./vendor/kzarshenas/crazyphp/resources/Js/Handlebars"),
+            {
+                test: /\.s[ac]ss$/i,
+                use: [
+                    "style-loader",
+                    "css-loader",
+                    "sass-loader",
                 ],
-            }
-        },
-        {
-            test: /\.(woff|woff2|eot|ttf)$/,
-            type: 'asset/resource',
-            generator: {
-                filename: 'fonts/[name][ext]',
-            }
-        },
-        {
-            test: /\.svg$/,
-            generator: {
-                filename: 'svg/[name].svg',
             },
-        },
+            {
+                test: /.([cm]?ts|tsx)$/,
+                loader: 'ts-loader',
+            },
+            {
+                test: /\.ya?ml$/,
+                use: 'yaml-loader'
+            },
+            {
+                test: /\.(handlebars|hbs)$/,
+                loader: "handlebars-loader",
+                options: {
+                    helperDirs: [
+                        path.resolve(__dirname, "./vendor/kzarshenas/crazyphp/resources/Js/Handlebars"),
+                    ],
+                }
+            },
+            {
+                test: /\.(woff|woff2|eot|ttf)$/,
+                type: 'asset/resource',
+                generator: {
+                    filename: 'fonts/[name][ext]',
+                }
+            },
+            {
+                test: /\.svg$/,
+                loader: 'svg-inline-loader'
+            },
         ],
     },
     optimization: {

@@ -2,6 +2,7 @@
 .cache
 .database
 .trash
+docs/crazyphp
 
 # Composer dependances (PHP)
 /vendor/

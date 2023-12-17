@@ -544,9 +544,10 @@ class Structure {
      * 
      * Set Js Scripts in body
      * 
+     * @param string $forceCurrentName Force a current name (error page for exemple)
      * @return self
      */
-    public function setJsScripts():self {
+    public function setJsScripts(string $forceCurrentName = null):self {
 
         # Declare scripts
         $configFront = [];
@@ -594,7 +595,7 @@ class Structure {
             $finder = new Finder();
 
             # Set routesCurrentName
-            $routesCurrentName = Context::get("routes.current.name");
+            $routesCurrentName = $forceCurrentName ?: Context::get("routes.current.name");
 
             # Check $routesCurrentName
             if($routesCurrentName){
@@ -683,7 +684,7 @@ class Structure {
             $configFront = Config::getValue("Front.lastBuild.files");
 
             # Current page
-            $currentPage = "page/app/".Context::get("routes.current.name").".".Config::getValue("Front.lastBuild.hash").".js";
+            $currentPage = "page/app/".($forceCurrentName ?: Context::get("routes.current.name")).".".Config::getValue("Front.lastBuild.hash").".js";
 
             # Js script for current page
             if(file_exists(File::path("@app_root/public/dist/$currentPage")))

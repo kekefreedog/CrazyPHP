@@ -16,6 +16,7 @@ namespace  CrazyPHP\Exception;
  * Dependances
  */
 use CrazyPHP\Interface\Exception as InterfaceException;
+use CrazyPHP\Library\Exception\ExceptionResponse;
 use Throwable;
 use Exception;
 
@@ -80,6 +81,31 @@ class CrazyException extends Exception implements InterfaceException{
 
         // Construct parent
         parent::__construct($message, $code, $previous);
+
+    }
+
+    /** Publis methods
+     ******************************************************
+     */
+
+    /**
+     * Render
+     * 
+     * Render error on html, json... depending of the mime type waited
+     * 
+     * @param bool $exitAtTheEnd Exit script at the end
+     * @return void
+     */
+    public function render(bool $exitAtTheEnd = true):void {
+
+        # Exception reponse
+        new ExceptionResponse($this);
+
+        # Check exitAtTheEnd
+        if($exitAtTheEnd)
+
+            # Exit
+            exit();
 
     }
 

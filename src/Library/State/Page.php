@@ -288,6 +288,28 @@ class Page {
     }
 
     /**
+     * Push Exception
+     * 
+     * @param Exception $crazyException
+     * @return Page
+     */
+    public function pushException(Exception $exception):self {
+
+        # Prepare option
+        $options = [
+            "code"      =>  $exception->getCode(),
+            "detail"    =>  $exception->getMessage(),
+        ];
+
+        # Push error in state
+        $this->pushError($options);
+
+        # Return self
+        return $this;
+
+    }
+
+    /**
      * Push Errors
      * 
      * @param array $errors

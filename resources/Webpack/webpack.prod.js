@@ -84,9 +84,7 @@ module.exports = {
             },
             {
                 test: /\.svg$/,
-                generator: {
-                    filename: 'svg/[name].svg',
-                },
+                loader: 'svg-inline-loader'
             },
         ],
     },

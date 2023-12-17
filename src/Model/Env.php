@@ -144,6 +144,33 @@ class Env{
     }
 
     /**
+     * Remove
+     * 
+     * Remove env from name
+     * 
+     * Exemple `@app_root, `app_root`, `@crazyphp_root`, `crazyphp_root`
+     * 
+     * @param string $input Input to remove
+     * 
+     * @return void
+     */
+    public static function remove(string $input = "", bool $nullIfNotExists = false):void {
+
+        # Remove @
+        $input = ltrim($input, "@");
+
+        # Process input
+        $input = strtoupper($input);
+
+        # Check input
+        if(static::has($input))
+
+            # Get globals
+            unset($GLOBALS[static::PREFIX][$input]);
+
+    }
+
+    /**
      * Has
      * 
      * @param string $input Input to process

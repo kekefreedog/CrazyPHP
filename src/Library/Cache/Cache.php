@@ -17,6 +17,7 @@ namespace CrazyPHP\Library\Cache;
  */
 
 use Phpfastcache\Exceptions\PhpfastcacheInvalidArgumentException;
+use Phpfastcache\Exceptions\PhpfastcacheDriverConnectException;
 use Phpfastcache\Exceptions\PhpfastcacheSimpleCacheException;
 use Phpfastcache\Drivers\Mongodb\Config as MemcachedConfig;
 use Phpfastcache\Core\Pool\ExtendedCacheItemPoolInterface;
@@ -31,6 +32,7 @@ use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\File\File;
 use Phpfastcache\CacheManager;
 use CrazyPHP\Model\Env;
+use Exception;
 
 /**
  * Cache
@@ -96,11 +98,31 @@ class Cache extends Psr16Adapter {
                 ->setItemDetailedDate($configuration["options"]["itemDetailedDate"])
             ;
 
-            # Set driver instance
-            $driverInstance = CacheManager::getInstance(
-                $configuration["driver"], 
-                $config
-            );
+            # Try
+            try{
+
+                # Set driver instance
+                $driverInstance = CacheManager::getInstance(
+                    $configuration["driver"], 
+                    $config
+                );
+
+            }catch(PhpfastcacheDriverConnectException $e){
+
+                # New exception
+                $exception = new CrazyException(
+                    "Mango issue, restart your docker container",
+                    500,    
+                    [
+                        "custom_code"   =>  "cache-001",
+                    ],
+                    $e
+                );
+
+                # Render exception
+                $exception->render();
+
+            }
 
         }
 
@@ -337,7 +359,7 @@ class Cache extends Psr16Adapter {
                 "Driver \"$driver\" for your cache instance isn't valid...",
                 500,
                 [
-                    "custom_code"   =>  "cache-001",
+                    "custom_code"   =>  "cache-002",
                 ]
             );
 
