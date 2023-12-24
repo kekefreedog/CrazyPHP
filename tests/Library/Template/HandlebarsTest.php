@@ -183,7 +183,7 @@ class HandlebarsTest extends TestCase{
      * 
      * @return void
      */
-    /* public function testColorToCssClass():void {
+    public function testColorToCssClass():void {
 
         # Set input 1
         $input1 = [
@@ -231,8 +231,8 @@ class HandlebarsTest extends TestCase{
         $this->assertEquals($output3b, Helpers::colorToCssClass($input3, "true"));
 
         # Asset 4
-        $this->assertEquals("error", Helpers::colorToCssClass($input4, false));
+        $this->assertEquals("", Helpers::colorToCssClass($input4, false));
 
-    } */
+    }
 
 }

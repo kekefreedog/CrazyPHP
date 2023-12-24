@@ -17,6 +17,7 @@ namespace CrazyPHP\Library\Template\Handlebars;
  */
 
 use CrazyPHP\Exception\CrazyException;
+use CrazyPHP\Library\Form\Process;
 use ReflectionMethod;
 use ReflectionClass;
 use Exception;
@@ -190,6 +191,106 @@ class Helpers {
         # Return result
         return $result;
 
+    }
+
+    /**
+     * Color Prefix
+     * 
+     * Add color prefix for convert material color to specific color propoerty
+     * 
+     * @param a Value to compare
+     * @param v Value to compare with
+     * @return string
+     */
+    public static function colorPrefix($a, $v) {
+
+        # Set result
+        $result = $a;
+
+        # Check parameters 
+        if(is_string($a) && is_string($v) && $a && $v){
+
+            # Check if space in string a
+            if(strpos($a, " ")!==false)
+
+                # Set result
+                $result = "$v-$result-$v";
+
+            else
+
+                # Set result
+                $result = "$v-$result";
+
+        }
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Color To Css Class
+     * 
+     * @param $color Color
+     * @param $inverse Without inverse, color is set as fill in light and text in dark. Just invert that fact
+     * @return string
+     */
+    public static function colorToCssClass(mixed $color, mixed $inverse = false):string {
+
+        # Check if color is not an array or is null
+        if (!is_array($color) || $color === null)
+
+            # Return object
+            return "";
+    
+        # Default color
+        $defaultFill = "grey darken-1";
+        $defaultText = "white";
+    
+        # Set text and fill with defaults if not set
+        $text = isset($color['text']) && $color['text'] ? $color['text'] : $defaultText;
+        $fill = isset($color['fill']) && $color['fill'] ? $color['fill'] : $defaultFill;
+    
+        # Retrieve bool value
+        $isInverse = Process::bool($inverse);
+    
+        # Declare result
+        $result = "";
+
+        # If is not inverse
+        if(!$isInverse){
+
+            # Set fill as fill for light mode
+            $result .= static::colorPrefix($fill, "light-mode") . " ";
+
+            # Set text as text for light mode
+            $result .= static::colorPrefix(static::colorSuffix($text, "text"), "light-mode") . " ";
+
+            # Set fill as text for dark mode
+            $result .= static::colorPrefix(static::colorSuffix($fill, "text"), "dark-mode") . " ";
+
+            # Set text as fill for dark mode
+            $result .= static::colorPrefix($text, "dark-mode") . " ";
+
+        # If is inverse
+        }else{
+
+            # Set fill as text for light mode
+            $result .= static::colorPrefix(static::colorSuffix($fill, "text"), "light-mode") . " ";
+
+            # Set text as fill for light mode
+            $result .= static::colorPrefix($text, "light-mode") . " ";
+
+            # Set fill as fill for dark mode
+            $result .= static::colorPrefix($fill, "dark-mode") . " ";
+
+            # Set text as fill for light mode
+            $result .= static::colorPrefix(static::colorSuffix($text, "text"), "dark-mode") . " ";
+        
+        };
+    
+        // Trim the result to remove any trailing space
+        return trim($result)." ";
     }
 
     /**

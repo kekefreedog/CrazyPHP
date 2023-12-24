@@ -9,13 +9,13 @@
  */
 
 /**
- * Color Suffix
+ * Color Prefix
  * 
  * Add color suffix for convert material color to specific color propoerty
  * 
  * @param a Value to compare
- * @param suffix Value to compare with
+ * @param prefix Prefix to set
  * @param options Not used
  * @return string
  */
-module.exports = (a, suffix, options) => (a && suffix) ? (a.includes(" ") ? a.trim().replace(" ", `-${suffix} ${suffix}-`) : a + `-${suffix}`) : a;
+colorSuffix = (a, prefix) => (a && prefix) ? (a.includes(" ") ? `${prefix}-${a.trim()}-${prefix}-` : `${prefix}-${a.trim()}`) : a;
