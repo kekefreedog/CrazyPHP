@@ -1,5 +1,5 @@
 /**
- * Handlebars Comparaison Helpers
+ * Handlebars Crazy Helpers
  *
  * @source https://github.com/helpers/handlebars-helpers
  * 
@@ -18,4 +18,4 @@
  * @param options Not used
  * @return string
  */
-colorSuffix = (a, prefix) => (a && prefix) ? (a.includes(" ") ? `${prefix}-${a.trim()}-${prefix}-` : `${prefix}-${a.trim()}`) : a;
+module.exports = (a, prefix) => (a && prefix) ? (a.includes(" ") ? `${prefix}-${a.trim()}-${prefix}-` : `${prefix}-${a.trim()}`) : a;

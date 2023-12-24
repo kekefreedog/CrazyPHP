@@ -1,5 +1,5 @@
 /**
- * Handlebars Comparaison Helpers
+ * Handlebars Crazy Helpers
  *
  * @source https://github.com/helpers/handlebars-helpers
  * 

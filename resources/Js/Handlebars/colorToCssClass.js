@@ -19,24 +19,25 @@
  * 
  * @param color Color collection with fill and text
  * @param inverse Inverse color order
+ * @param options Not used
  * @return string
  */
-module.exports = (color, inverse = false, options = null) => {
+module.exports = (color, inverse, options) => {
+
+  // Set result
+  let result = "titi";
+
+  // Check if color is not an object
+  if(typeof a !== "object")
+      
+    // Return result
+    return result;
 
   // Declare color suffix function (do same thing than ./colorSuffix.js)
   colorSuffix = (a, suffix) => (a && suffix) ? (a.includes(" ") ? a.trim().replace(" ", `-${suffix} ${suffix}-`) : a + `-${suffix}`) : a;
 
   // Declare color prefix function (do same thing than ./colorPrefix.js)
   colorPrefix = (a, prefix) => (a && prefix) ? (a.includes(" ") ? `${prefix}-${a.trim()}-${prefix}-` : `${prefix}-${a.trim()}`) : a;
-    
-  // Declare result
-  let result = "";
-
-  // Check if color is not an object
-  if (typeof color !== "object" || color === null || Array.isArray(color))
-      
-    // Return result
-    return result;
 
   // Default color
   let defaultFill = "grey darken-1";
@@ -84,6 +85,6 @@ module.exports = (color, inverse = false, options = null) => {
   }
 
   // Return result
-  return result.trim() + " ";
+  return `${result.trim()} `;
     
 }
