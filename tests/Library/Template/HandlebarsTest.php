@@ -127,43 +127,6 @@ class HandlebarsTest extends TestCase{
      */
 
     /**
-     * Test Color Suffix
-     * 
-     * @return void
-     */
-    /*  public function testColorSuffix():void {
-
-        # Set input 1
-        $input1 = "red";
-        $output1 = "red-text";
-
-        # Set input 2
-        $input2 = "red";
-        $output2 = "light-mode-red";
-
-        # Set input 3
-        $input3 = "red darken-2";
-        $output3 = "red-text text-darken-2";
-
-        # Set input 4
-        $input4 = "red darken-2";
-        $output4 = "light-mode-red-text text-darken-2-light-mode";
-
-        # Assert 1
-        $this->assertEquals(Helpers::colorSuffix($input1, "text"), $output1);
-
-        # Assert 2
-        $this->assertEquals(Helpers::colorSuffix($input2, "", "light-mode"), $output2);
-
-        # Assert 3
-        $this->assertEquals(Helpers::colorSuffix($input3, "text"), $output3);
-
-        # Assert 3
-        $this->assertEquals(Helpers::colorSuffix($input4, "text", "light-mode"), $output4);
-
-    } */
-
-    /**
      * Test Json Stringofy Suffix
      * 
      * @return void
@@ -179,11 +142,113 @@ class HandlebarsTest extends TestCase{
     }
 
     /**
-     * Text Color To Css Class
+     * Test Expand Color Fill
      * 
      * @return void
      */
-    public function testColorToCssClass():void {
+    public function testExpandColorFill():void {
+
+        # Set input 1
+        $input1 = [
+            "fill"  =>  "blue",
+            "text"  =>  "red",
+        ];
+
+        # Set output1
+        $output1 = "light-mode-blue dark-mode-red ";
+
+        # Set input 2
+        $input2 = [
+            "fill"  =>  "blue darken-1",
+            "text"  =>  "red lighten-6",
+        ];
+
+        # Set output2
+        $output2 = "light-mode-blue darken-1-light-mode dark-mode-red lighten-6-dark-mode ";
+
+        # Set input 3
+        $input3 = [
+            "fill"  =>  "blue",
+            "text"  =>  "red",
+        ];
+
+        # Set output 3
+        $output3 = "light-mode-blue-text dark-mode-red-text ";
+
+        # Set input 4
+        $input4 = [
+            "fill"  =>  "blue darken-1",
+            "text"  =>  "red lighten-6",
+        ];
+
+        # Set output 4
+        $output4 = "light-mode-blue-border border-darken-1-light-mode dark-mode-red-border border-lighten-6-dark-mode ";
+
+        # Assert
+        $this->assertEquals(Helpers::expandColorFill($input1), $output1);
+        $this->assertEquals(Helpers::expandColorFill($input2), $output2);
+        $this->assertEquals(Helpers::expandColorFill($input3, "text"), $output3);
+        $this->assertEquals(Helpers::expandColorFill($input4, "border"), $output4);
+
+    }
+
+    /**
+     * Test Expand Color Text
+     * 
+     * @return void
+     */
+    public function testExpandColorText():void {
+
+        # Set input 1
+        $input1 = [
+            "text"  =>  "blue",
+            "fill"  =>  "red",
+        ];
+
+        # Set output1
+        $output1 = "light-mode-blue dark-mode-red ";
+
+        # Set input 2
+        $input2 = [
+            "text"  =>  "blue darken-1",
+            "fill"  =>  "red lighten-6",
+        ];
+
+        # Set output2
+        $output2 = "light-mode-blue darken-1-light-mode dark-mode-red lighten-6-dark-mode ";
+
+        # Set input 3
+        $input3 = [
+            "text"  =>  "blue",
+            "fill"  =>  "red",
+        ];
+
+        # Set output 3
+        $output3 = "light-mode-blue-text dark-mode-red-text ";
+
+        # Set input 4
+        $input4 = [
+            "text"  =>  "blue darken-1",
+            "fill"  =>  "red lighten-6",
+        ];
+
+        # Set output 4
+        $output4 = "light-mode-blue-border border-darken-1-light-mode dark-mode-red-border border-lighten-6-dark-mode ";
+
+        # Assert
+        $this->assertEquals(Helpers::expandColorText($input1), $output1);
+        $this->assertEquals(Helpers::expandColorText($input2), $output2);
+        $this->assertEquals(Helpers::expandColorText($input3, "text"), $output3);
+        $this->assertEquals(Helpers::expandColorText($input4, "border"), $output4);
+
+    }
+
+    /**
+     * Test Color To Css Class
+     * 
+     * @return void
+     */
+    public function testExpandColor():void {
 
         # Set input 1
         $input1 = [
@@ -219,19 +284,19 @@ class HandlebarsTest extends TestCase{
         $input4 = "error";
 
         # Asset 1
-        $this->assertEquals($output1a, Helpers::colorToCssClass($input1, false));
-        $this->assertEquals($output1b, Helpers::colorToCssClass($input1, 1));
+        $this->assertEquals($output1a, Helpers::expandColor($input1, true));
+        $this->assertEquals($output1b, Helpers::expandColor($input1, 0));
 
         # Asset 2
-        $this->assertEquals($output2a, Helpers::colorToCssClass($input2, "false"));
-        $this->assertEquals($output2b, Helpers::colorToCssClass($input2, "true"));
+        $this->assertEquals($output2a, Helpers::expandColor($input2, "true"));
+        $this->assertEquals($output2b, Helpers::expandColor($input2, "false"));
 
         # Asset 3
-        $this->assertEquals($output3a, Helpers::colorToCssClass($input3, ""));
-        $this->assertEquals($output3b, Helpers::colorToCssClass($input3, "true"));
+        $this->assertEquals($output3a, Helpers::expandColor($input3, "true"));
+        $this->assertEquals($output3b, Helpers::expandColor($input3, ""));
 
         # Asset 4
-        $this->assertEquals("", Helpers::colorToCssClass($input4, false));
+        $this->assertEquals("", Helpers::expandColor($input4, true));
 
     }
 
