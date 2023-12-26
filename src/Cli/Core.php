@@ -249,8 +249,21 @@ class Core extends CLI {
                     "cmd"   =>  $options->getCmd()
                 ];
 
-                # Execute action and pass input data
-                $this->{$methodName}($input);
+                # Try
+                try{
+
+                    # Execute action and pass input data
+                    $this->{$methodName}($input);
+
+                }catch(CrazyException $e){
+
+                    # New climate
+                    $climate = new CLImate();
+
+                    # Return error message
+                    echo $climate->red("🔴 ".$e->getMessage());
+
+                }
 
             }
 

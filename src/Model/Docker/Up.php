@@ -27,6 +27,7 @@ use CrazyPHP\Library\Cli\Command;
 use CrazyPHP\Library\File\Docker;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Library\File\Json;
+use CrazyPHP\Library\System\Port;
 use CrazyPHP\Model\Config;
 use CrazyPHP\Model\Env;
 
@@ -157,10 +158,13 @@ class Up implements CrazyCommand {
         $this->runCheck();
 
         /**
-         * Set Workdir in Docker Compose
-         * 1. Set Workdir in docker compose
+         * Run Is Port Taken
+         * 
+         * Check if the port define in docker config is already take
+         * 
+         * @return self
          */
-        # $this->runSetWorkingDir();
+        $this->runIsPortTaken();
 
         /**
          * Start
@@ -230,6 +234,50 @@ class Up implements CrazyCommand {
                 ]
             );
 
+        # Return self
+        return $this;
+
+    }
+
+    /**
+     * Run Is Port Taken
+     * 
+     * Check if the port define in docker config is already take
+     * 
+     * @return self
+     */
+    public function runIsPortTaken():self {
+
+        # Get port
+        $port = Docker::getLocalHostPort();
+
+        # Check port
+        if($port === null)
+            
+            # New error
+            throw new CrazyException(
+                "Docker compose doesn't have any port defined.",
+                500,
+                [
+                    "custom_code"   =>  "up-010",
+                ]
+            );
+
+        # Check if port is available
+        if(Port::isTaken("localhost", $port))
+
+            # New error
+            throw new CrazyException(
+                "Port $port is already taken by your localhost.",
+                500,
+                [
+                    "custom_code"   =>  "up-010",
+                ]
+            );
+
+        # Echo successfull message
+        echo "✅ Port $port is available".PHP_EOL;
+        
         # Return self
         return $this;
 
