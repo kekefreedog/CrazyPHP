@@ -147,6 +147,7 @@ class Package{
         "ts-loader"                                 =>  "*",
         "yaml-loader"                               =>  "*",
         "handlebars-loader"                         =>  "*",
+        "svg-inline-loader"                         =>  "*",
         # Custom file
         "js-yaml"                                   =>  "*",
         "repair"                                    =>  "*",

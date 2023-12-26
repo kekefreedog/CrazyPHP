@@ -1,0 +1,105 @@
+# #
+# Http Status Code
+#
+# List of http status code
+#
+# YAML version 1.2
+#
+# @package    kzarshenas/crazyphp
+# @author     kekefreedog <kevin.zarshenas@gmail.com>
+# @copyright  2022-2023 Kévin Zarshenas
+# #
+HttpStatusCode:
+  # 200
+  # 300
+  # 400
+  # Request unauthorized
+  401:
+    code: 401
+    type: null
+    detail: null
+    _status_code:
+      title: Unauthorized
+      style:
+        color:
+          text: black
+          fill: red
+        icon:
+          class: material-icons
+          text: block
+
+  # Request not find
+  404:
+    code: 404
+    type: null
+    detail: null
+    _status_code:
+      title: Not Found
+      style:
+        color:
+          text: black
+          fill: orange
+        icon:
+          class: material-icons
+          text: power
+
+  # Conflict
+  409:
+    code: 409
+    type: null
+    detail: null
+    _status_code:
+      title: Not Found
+      style:
+        color:
+          text: purple
+          fill: white
+        icon:
+          class: material-icons
+          text: sports_mma
+
+  # 500
+  # Internal Server Error
+  500:
+    code: 500
+    type: null
+    detail: null
+    _status_code:
+      title: Internal Server Error
+      style:
+        color:
+          text: black
+          fill: orange
+        icon:
+          class: material-icons
+          text: error
+
+  # Not Implemented on server
+  501:
+    code: 501
+    type: null
+    detail: null
+    _status_code:
+      title: Not Implemented
+      style:
+        color:
+          text: white
+          fill: grey darken-1
+        icon:
+          class: material-icons
+          text: rule
+  # 600
+  # Default
+  default:
+    code: null
+    type: null
+    detail:
+    _status_code: 
+      title: Error
+      style:
+        color:
+          text: white
+          fill: grey darken-1    
+        icon:
+          class: material-icons
+          text: error

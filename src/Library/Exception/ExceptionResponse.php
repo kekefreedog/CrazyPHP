@@ -15,7 +15,8 @@ namespace CrazyPHP\Library\Exception;
 /** 
  * Dependances
  */
-
+use CrazyPHP\Library\State\Page as State;
+use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Exception\Error;
 use CrazyPHP\Library\Html\Structure;
 use CrazyPHP\Library\File\Config;
@@ -23,6 +24,7 @@ use CrazyPHP\Library\File\Header;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Core\ApiResponse;
 use CrazyPHP\Core\Response;
+use CrazyPHP\Model\Env;
 use Exception;
 
 /**
@@ -61,14 +63,17 @@ class ExceptionResponse {
      * 
      * @return self
      */
-    public function __construct(Exception $exception){
+    public function __construct(Exception|CrazyException $exception){
+
+        # Set env to use file cache
+        Env::set(["cache_driver" => "Files"]);
 
         # Ingest exception
         $this->ingestException($exception);
-        
+
         # Check request Accept
         $this->checkRequestAccept();
-
+        
         # Prepare View
         $this->prepareView();
 
@@ -93,7 +98,7 @@ class ExceptionResponse {
      * @param Exception $exception
      * @return void
      */
-    private function ingestException(Exception $exception):void {
+    private function ingestException(Exception|CrazyException $exception):void {
 
         # Ingest exception
         $this->exception = $exception;
@@ -138,13 +143,19 @@ class ExceptionResponse {
                 # Template path
                 $templatePath = str_replace($publicFolder, "", getcwd())."app/Environment/Page/Error/template.hbs";
 
+                # Prepare state
+                $state = (new State())
+                    ->pushException($this->exception)
+                    ->render()
+                ;
+
                 # Set structure
                 $structure = (new Structure())
                     ->setDoctype()
                     ->setLanguage()
                     ->setHead()
-                    ->setJsScripts()
-                    ->setBodyTemplate($templatePath, null, $data, "Error")
+                    ->setJsScripts("Error")
+                    ->setBodyTemplate($templatePath, null, (array) $state, "Error")
                     ->prepare()
                     ->render()
                 ;

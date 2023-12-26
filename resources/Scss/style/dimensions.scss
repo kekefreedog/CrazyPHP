@@ -63,6 +63,22 @@
 
     }
 
+    // Place element in the vertical center only
+    &.screen-center-y {
+
+        // Position
+        align-items: center;
+
+    }
+
+    // Place element in the horizontal center only
+    &.screen-center-x {
+
+        // Position
+        justify-content: center;
+
+    }
+
     /* Children */
 
     // Grow of flex child

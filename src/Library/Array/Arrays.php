@@ -227,6 +227,38 @@ class Arrays{
 
     }
 
+    /**
+     * Merge multidimensional array bis
+	 * 
+     * @param bool $createIfNotExists Create parameter if not exists in precedents arrays
+     * @param array ...$inputs All arrays to merge
+     * @return array
+     */
+	public static function mergeMultidimensionalArraysBis(bool $createIfNotExists = false, array ...$inputs): array {
+
+		# Take the first array as the starting point
+		$merged = array_shift($inputs);
+	
+		foreach ($inputs as $array) {
+			foreach ($array as $key => $value) {
+				if (isset($merged[$key]) && is_array($merged[$key]) && is_array($value)) {
+					// If the key exists in both arrays and both values are arrays, merge them
+					$merged[$key] = self::mergeMultidimensionalArrays($createIfNotExists, $merged[$key], $value);
+				} else {
+					if ($createIfNotExists && isset($merged[$key])) {
+						// If createIfNotExists is true and the key exists, create a new key
+						$merged[] = $value;
+					} else {
+						// Otherwise, overwrite the value in the merged array
+						$merged[$key] = $value;
+					}
+				}
+			}
+		}
+	
+		return $merged;
+	}
+
 	/**
 	 * Parse Key
 	 * 

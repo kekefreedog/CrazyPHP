@@ -1,0 +1,121 @@
+/// /// ///
+/// Page - Error
+///
+/// Style of error page
+///
+/// @package    kzarshenas/crazyphp
+/// @author     kekefreedog <kevin.zarshenas@gmail.com>
+/// @copyright  2022-2023 Kévin Zarshenas
+/// /// /// 
+
+/* Import Crazy Content */
+@import "./../../../Front/style/scss/component/crazy_content";
+
+$crazy-left-navigation-rail-always-visible-z-index: 1000;
+$crazy-left-navigation-rail-always-visible-width: 88px;
+$crazy-left-navigation-rail-collapsible-width: 230px;
+
+
+#crazy-left-navigation-rail {
+
+    // Z Index
+    z-index: calc($crazy-left-navigation-rail-always-visible-z-index + 100);
+
+    /* Children */
+
+    // PArt always visible
+    .crazy-left-navigation-rail-always-visible {
+
+        // Sticky
+        position: sticky;
+
+        // z index
+        z-index: calc($crazy-left-navigation-rail-always-visible-z-index + 200);
+
+        // background
+        background: green;
+
+        /* Children */
+
+        // Nav
+        nav{
+
+            // Dimension
+            width: $crazy-left-navigation-rail-always-visible-width;
+            min-height: 100vh;
+
+            // Margin
+            padding-top: 20px;
+
+            // Color
+            background: unset;
+
+            // Shadow
+            box-shadow: unset;
+
+            // Flex
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            /* Children */
+
+            // Justify
+            &.justify-top {
+
+                // Flex
+                justify-content: flex-start;
+
+            }
+
+            // Justify
+            &.justify-bottom {
+
+                // Flex
+                justify-content: flex-end;
+
+            }
+
+            // Justify
+            &.justify-center {
+
+                // Flex
+                justify-content: center;
+
+            }
+
+            // A
+            a {
+
+                // z-index
+                z-index: calc($crazy-left-navigation-rail-always-visible-z-index + 300);
+
+                // Margin
+                margin-bottom: 15px;
+
+            }
+            
+        }
+
+    }
+
+    // Collapsible part
+    .crazy-left-navigation-rail-collapsible {
+
+        // z-index
+        z-index: $crazy-left-navigation-rail-always-visible-z-index;
+
+        position: absolute;
+        top: 0;
+        left: calc($crazy-left-navigation-rail-always-visible-width - $crazy-left-navigation-rail-collapsible-width);
+
+
+        width: $crazy-left-navigation-rail-collapsible-width;
+        min-height: 100vh;
+
+
+        background: violet;
+
+    }
+
+}

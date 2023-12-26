@@ -52,6 +52,7 @@ class Validate {
      */
     private $dispatch = [
         "INT"       =>  [
+            "isValidHttpStatusCode"
         ],
         "VARCHAR"   =>  [
             "isEmail",
@@ -552,6 +553,30 @@ class Validate {
     /** Public Static Methods
      ******************************************************
      */
+
+    /**
+     * Is Valid Http Status Code
+     * 
+     * Check int is valid http status code
+     * 
+     * @param int $code
+     * @return bool
+     */
+    public static function isValidHttpStatusCode(int $code = 200):bool {
+
+        # Set result
+        $result = false;
+
+        # Check code
+        if($code && $code >= 100 && $code <= 599)
+
+            # Set result
+            $result = true;
+
+        # Return result
+        return $result;
+
+    }
 
     /**
      * Is Email

@@ -102,6 +102,8 @@ Structure:
             folders:
               App:
                 files:
+                  Error.php:
+                    source: "@crazyphp_root/resources/Php/app/Controller/App/Error.php"
                   Home.php:
                     source: "@crazyphp_root/resources/Php/app/Controller/App/Home.php"
                   Index.php:
@@ -212,11 +214,11 @@ Structure:
                   Error:
                     files:
                       index.ts:
-                        source: "@crazyphp_root/resources/Environment/Page/Home/index.ts"
+                        source: "@crazyphp_root/resources/Environment/Page/Error/index.ts"
                       style.scss:
-                        source: "@crazyphp_root/resources/Environment/Page/Home/style.scss"
+                        source: "@crazyphp_root/resources/Environment/Page/Error/style.scss"
                       template.hbs:
-                        source: "@crazyphp_root/resources/Environment/Page/Home/template.hbs"
+                        source: "@crazyphp_root/resources/Environment/Page/Error/template.hbs"
                   # Home
                   Home:
                     files:
