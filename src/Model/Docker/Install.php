@@ -36,6 +36,25 @@ use CrazyPHP\Model\Env;
  */
 class Install implements CrazyCommand {
 
+    /** Public constants
+     ******************************************************
+     */
+
+    public const REQUIRED_VALUES = [
+        # Configuration
+        [
+            "name"          =>  "configuration",
+            "description"   =>  "Type of configuration to set up on your crazy docker",
+            "type"          =>  "ARRAY",
+            "default"       =>  "https",
+            "multiple"      =>  true,
+            "select"        =>  [
+                "http"          =>  "Http",
+                "https"         =>  "Https (Certbot)",
+            ],
+        ],
+    ];
+
     /** Private Parameters
      ******************************************************
      */
@@ -62,12 +81,6 @@ class Install implements CrazyCommand {
         Env::set(["cache_driver"=>"Files"]);
 
     }
-
-    /** Public constants
-     ******************************************************
-     */
-
-    public const REQUIRED_VALUES = [];
 
     /** Public static methods
      ******************************************************
@@ -278,6 +291,15 @@ class Install implements CrazyCommand {
             $result['_config']['App']['root'] = $value;
 
         }
+
+        # Check inputs
+        if(isset($this->inputs[array_key_first($this->inputs)]) && !empty($this->inputs[array_key_first($this->inputs)]))
+
+            # Iterations of inputs
+            foreach($this->inputs[array_key_first($this->inputs)] as $input)
+
+                # Set key => value
+                $result[$input["name"]] = $input["value"];
 
         # Return result
         return $result;

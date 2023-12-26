@@ -637,7 +637,7 @@ class Core extends CLI {
             $climate
                 ->lightBlue()
                 ->bold()
-                ->out("👋 First we need informations about your new ".$inputs['args'][0]." 👋");
+                ->out("👋 First we need informations about your new Docker Compose 👋");
             ;
         
             # Display form

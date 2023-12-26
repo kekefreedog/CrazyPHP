@@ -470,7 +470,7 @@ class Handlebars {
      * Crazy Preset with the maximum of compatibility
      */
     public const CRAZY_PRESET = [
-        "flags"     =>  LightnCandy::FLAG_HANDLEBARSJS_FULL|LightnCandy::FLAG_RUNTIMEPARTIAL|LightnCandy::FLAG_PARENT/*  | LightnCandy::FLAG_ERROR_LOG */,
+        "flags"     =>  LightnCandy::FLAG_HANDLEBARSJS_FULL|LightnCandy::FLAG_RUNTIMEPARTIAL|LightnCandy::FLAG_PARENT|LightnCandy::FLAG_ADVARNAME/*  | LightnCandy::FLAG_ERROR_LOG */,
     ];
 
     /**

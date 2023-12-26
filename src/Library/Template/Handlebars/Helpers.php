@@ -541,6 +541,59 @@ class Helpers {
         return $result;
 
     }
-    
+
+    /**
+     * In Array
+     * 
+     * Block helper that renders the block if an array has the
+     * given `value`. Optionally specify an inverse block to render
+     * when the array does not have the given value.
+     * 
+     * @param mixed $array
+     * @param mixed $value
+     * @param mixed $options
+     */
+    public static function inArray(mixed $array, mixed $value, mixed $option) {
+
+        # Check array
+        if(is_array($array) && is_string($value) && $value && in_array($value, $array))
+
+            # Return fn
+            return $option["fn"]();
+
+        # Else
+        return $option["inverse"]();
+
+    }
+
+    /**
+     * Length
+     * 
+     * Returns the length of the given string or array.
+     * 
+     * @param mixed $value
+     * @param mixed options
+     */
+    public static function length($value) {
+
+        # Check if array
+        if(is_array($value))
+
+            # Return length
+            return count($value);
+
+        else
+        # If string
+        if(is_string($value))
+
+            # Return length
+            return strlen($value);
+
+        else
+
+            # Return 0
+            return 0;
+        
+    }
 
 }
