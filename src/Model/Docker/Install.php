@@ -18,12 +18,13 @@ namespace CrazyPHP\Model\Docker;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Interface\CrazyCommand;
 use CrazyPHP\Library\File\Structure;
+use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\File\Docker;
+use CrazyPHP\Library\File\Mkcert;
 use CrazyPHP\Library\Cli\Command;
 use CrazyPHP\Library\System\Os;
 use CrazyPHP\Library\File\File;
-use CrazyPHP\Library\Form\Process;
 use League\CLImate\CLImate;
 use CrazyPHP\Model\Env;
 
@@ -163,10 +164,29 @@ class Install implements CrazyCommand {
     public function run():self {
 
         /**
+         * Run Check Vhost
+         * 1. Run Check and Set if needed vhost depending of the OS
+         */
+        $this->runCheckVhost();
+
+        /**
+         * Run Mkcert setup
+         * 1. Prepare cert for htttps on local
+         */
+        $this->runMkcertSetup();
+
+        /**
          * Run Structure Folder
          * 1. Prepare folder structure
          */
         $this->runStructureFolder();
+
+        /**
+         * Run Certbot Dry Run
+         * 1. Run Certbot Dry Run to check everything is working well regarding Certbot :
+         * `docker compose run --rm  certbot certonly --webroot --webroot-path /var/www/certbot/ --dry-run -d localhost`
+         */
+        $this->runCertbotDryRun();
 
         /**
          * Run Update Database Config
@@ -292,7 +312,72 @@ class Install implements CrazyCommand {
         }else{
 
             # Message
-            echo "ℹ️ Step disabled";
+            echo "ℹ️  Step disabled".PHP_EOL;
+
+        }
+
+        # Return instance
+        return $this;
+
+    }
+
+    /**
+     * Run Mkcert setup
+     * 
+     * Prepare cert for htttps on local
+     * 
+     * @return self
+     */
+    public function runMkcertSetup():self {
+
+        # Get data
+        $data = $this->_getData(true);
+
+        # Check https in configuration
+        if(in_array("https-local", $data["configuration"])){
+
+            # Check mkcert is installed
+            if(!Mkcert::isInstalled()){
+
+                # Echo
+                echo "🔴 Ensure mkcert is installed on your system".PHP_EOL;
+                
+                # Check os
+                if(Os::isMac()){
+
+                    # Echo
+                    echo 'Install with homebrew :'.PHP_EOL;
+                    echo '- Command `brew install mkcert`'.PHP_EOL;
+                    echo '- Command `brew install nss # if you use Firefox`'.PHP_EOL;
+                    echo 'Install with MacPorts :'.PHP_EOL;
+                    echo '- Command `sudo port selfupdate`'.PHP_EOL;
+                    echo '- Command `sudo port install mkcert`'.PHP_EOL;
+                    echo '- Command `sudo port install nss # if you use Firefox`'.PHP_EOL;
+
+                }else{
+
+                    # Echo
+                    echo 'Visit page https://github.com/FiloSottile/mkcert#installation for more information'.PHP_EOL;
+
+                }
+
+                # Stop method
+                exit;
+            
+            }else{
+
+                # Echo
+                echo "✅ Mkcert is well installed".PHP_EOL;
+
+                # Run mkcert setup
+                $resultMkcertRun = Mkcert::run();
+
+            }
+            
+        }else{
+
+            # Message
+            echo "ℹ️  Step disabled".PHP_EOL;
 
         }
 
@@ -365,7 +450,7 @@ class Install implements CrazyCommand {
         }else{
 
             # Message
-            echo "ℹ️ Step disabled";
+            echo "ℹ️  Step disabled".PHP_EOL;
 
         }
 

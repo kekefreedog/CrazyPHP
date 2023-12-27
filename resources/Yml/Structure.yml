@@ -30,7 +30,12 @@ Structure:
       assets:
         folders:
           Css: null
-          Hbs: null
+          Hbs: 
+            folders:
+              partials:
+                files:
+                  hello.hbs:
+                    source: "@crazyphp_root/resources/Hbs/Partials/hello.hbs"
           Jpeg: null
           Js: null
           Png: null

@@ -14,18 +14,13 @@ services:
             - '.:${PWD}'
             - './docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf'{{#inArray configuration "https-online"}}
             - './docker/certbot/www:/var/www/certbot/:ro'
-            - ./docker/certbot/conf/:/etc/nginx/ssl/:ro{{/inArray}} 
+            - './docker/certbot/conf/:/etc/nginx/ssl/:ro'{{/inArray}}{{#inArray configuration "https-local"}}
+            - './docker/mkcert/localhost.pem:/etc/nginx/certs/localhost.pem'
+            - './docker/mkcert/localhost-key.pem:/etc/nginx/certs/localhost-key.pem'{{/inArray}}
         ports:{{#is (length configuration) "0"}} []{{/is}}{{#inArray configuration "http"}}
             - '80:80'{{/inArray}}{{#inArray configuration "https-online"}}
-            - '443:443'{{/inArray}}{{#inArray configuration "https-online"}}
-
-    {{!-- CERBOT --}}
-    # CERBOT
-    certbot:
-        image: certbot/certbot:latest
-        volumes:
-        - ./docker/certbot/www:/var/www/certbot/:rw
-        - ./docker/certbot/conf/:/etc/letsencrypt/:rw{{/inArray}}
+            - '443:443'{{/inArray}}{{#inArray configuration "https-local"}}
+            - '443:443'{{/inArray}}
 
     {{!-- PHP 8 --}}
     # PHP
