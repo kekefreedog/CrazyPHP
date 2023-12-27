@@ -394,16 +394,21 @@ class Up implements CrazyCommand {
         $dockerConfig = FileConfig::getValue("Docker.services");
 
         # Check docker service config
-        if(!$dockerConfig || empty($dockerConfig))
+        if(!$dockerConfig || empty($dockerConfig)){
+
+            # Down docker compose
+            Docker::down();
 
             # New error
             throw new CrazyException(
-                "Please execute `php vendor/kzarshenas/crazyphp/bin/CrazyDocker new` first.",
+                "Please execute `php vendor/kzarshenas/crazyphp/bin/CrazyDocker new` first or retry `php vendor/kzarshenas/crazyphp/bin/CrazyDocker up`.",
                 500,
                 [
                     "custom_code"   =>  "up-005",
                 ]
             );
+
+        }
 
         # Check database config
         if($databaseConfig && !empty($databaseConfig))

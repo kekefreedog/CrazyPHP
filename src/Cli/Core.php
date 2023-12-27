@@ -28,6 +28,7 @@ use CrazyPHP\Model\App\Delete;
 use League\CLImate\CLImate;
 use splitbrain\phpcli\CLI;
 use CrazyPHP\Cli\Form;
+use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\Migration\Migration;
 
 /**
@@ -865,6 +866,19 @@ class Core extends CLI {
         # Get port
         $port = Docker::getLocalHostPort();
 
+        # Get server name
+        $servername = Config::getValue("App.server.name");
+
+        # Check server name
+        if($servername !== null && $servername)
+
+            # Message about port
+            $climate
+                ->br()
+                ->out("ℹ️  Open your browser and navigate to \"<bold><underline>http://$servername/</underline></black>\". If everything is working, you'll see a welcome page.")
+            ;
+
+        else
         # Check port
         if($port)
 
