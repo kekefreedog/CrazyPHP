@@ -653,17 +653,17 @@ class Core extends CLI {
             $formResult = (new Validate($formResult))->getResult();
 
             # fill result
-            $result[$router['parameter']] = $formResult;
+            $result[$router['parameter'] ?? "input"] = $formResult;
 
             # Prepare display value
-            $summary[$router['parameter']] = Validate::getResultSummary($formResult);
+            $summary[$router['parameter'] ?? "input"] = Validate::getResultSummary($formResult);
             
             # Message
             $climate
                 ->br()
                 ->lightBlue()
                 ->bold()
-                ->out("📝 Summary about the creation of your new ".$inputs['args'][0]." 📝")
+                ->out("📝 Summary about the creation of your new Docker config 📝")
                 ->br()
             ;
 

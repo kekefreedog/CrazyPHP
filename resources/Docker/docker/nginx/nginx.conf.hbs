@@ -1,5 +1,6 @@
-server {
+{{#is (length configuration) "1"}}{{#inArray configuration "http"}}server {
     listen 80 default;
+    server_name {{#if _config.App.server.name}}{{_config.App.server.name}} {{/if}}localhost 127.0.0.1;  # Replace with your domain name
     client_max_body_size 108M;
     access_log /var/log/nginx/application.access.log;
     root {{resolve _config.App.root}}/{{_config.App.public}};
@@ -19,4 +20,78 @@ server {
         fastcgi_buffer_size 32k;
         include fastcgi_params;
     }
+}{{/inArray}}{{#inArray configuration "https-online"}}server {
+    listen 443 default_server ssl http2;
+    listen [::]:443 ssl http2;
+    
+    server_name {{#if _config.App.server.name}}{{_config.App.server.name}} {{/if}}localhost 127.0.0.1;  # Replace with your domain name
+
+    ssl_certificate /etc/nginx/ssl/live/example.org/fullchain.pem;
+    ssl_certificate_key /etc/nginx/ssl/live/example.org/privkey.pem;
+
+    client_max_body_size 108M;
+    access_log /var/log/nginx/application.access.log;
+    root {{resolve _config.App.root}}/{{_config.App.public}}
+    index index.php;
+
+    location / {
+        try_files $uri /index.php$is_args$args;
+    }
+
+    # Existing PHP location block
+    location ~ \.php$ {
+        fastcgi_pass php-fpm:9000;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param PHP_VALUE "error_log=/var/log/nginx/application_php_errors.log";
+        fastcgi_buffers 16 16k;
+        fastcgi_buffer_size 32k;
+        include fastcgi_params;
+    }
 }
+{{/inArray}}{{else}}{{#inArray configuration "https-online"}}
+server {
+    listen 80;
+    listen [::]:80;
+
+    server_name {{#if _config.App.server.name}}{{_config.App.server.name}} {{/if}}localhost 127.0.0.1;
+    server_tokens off;
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    location / {
+        return 301 https://{{#if _config.App.server.name}}{{_config.App.server.name}}{{else}}localhost{{/if}}$request_uri;
+    }
+}
+server {
+    listen 443 default_server ssl http2;
+    listen [::]:443 ssl http2;
+    
+    server_name {{#if _config.App.server.name}}{{_config.App.server.name}} {{/if}}localhost 127.0.0.1;  # Replace with your domain name
+
+    ssl_certificate /etc/nginx/ssl/live/example.org/fullchain.pem;
+    ssl_certificate_key /etc/nginx/ssl/live/example.org/privkey.pem;
+
+    client_max_body_size 108M;
+    access_log /var/log/nginx/application.access.log;
+    root {{resolve _config.App.root}}/{{_config.App.public}}
+    index index.php;
+
+    location / {
+        try_files $uri /index.php$is_args$args;
+    }
+
+    # Existing PHP location block
+    location ~ \.php$ {
+        fastcgi_pass php-fpm:9000;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param PHP_VALUE "error_log=/var/log/nginx/application_php_errors.log";
+        fastcgi_buffers 16 16k;
+        fastcgi_buffer_size 32k;
+        include fastcgi_params;
+    }
+}
+{{/inArray}}{{/is}}

@@ -23,6 +23,8 @@ use CrazyPHP\Library\File\Docker;
 use CrazyPHP\Library\Cli\Command;
 use CrazyPHP\Library\System\Os;
 use CrazyPHP\Library\File\File;
+use CrazyPHP\Library\Form\Process;
+use League\CLImate\CLImate;
 use CrazyPHP\Model\Env;
 
 /**
@@ -50,7 +52,8 @@ class Install implements CrazyCommand {
             "multiple"      =>  true,
             "select"        =>  [
                 "http"          =>  "Http",
-                "https"         =>  "Https (Certbot)",
+                "https-online"  =>  "Https (Online using Certbot)",
+                "https-local"   =>  "Https (Local using Mkcert)"
             ],
         ],
     ];
@@ -63,6 +66,11 @@ class Install implements CrazyCommand {
      * Inputs
      */
     private $inputs = [];
+
+    /**
+     * Server Name
+     */
+    private $serverName = null;
 
     /**
      * Constructor
@@ -178,6 +186,122 @@ class Install implements CrazyCommand {
     }
 
     /**
+     * Run Check Vhost
+     * 
+     * Run Check and Set if needed vhost depending of the OS
+     * 
+     * @return self
+     */
+    public function runCheckVhost():self {
+
+        # Get data
+        $data = $this->_getData(true);
+
+        # Check https in configuration
+        if(in_array("https-online", $data["configuration"])){
+            
+            # Check website value
+            if(Config::has("App.server.name")){
+
+                # Get servername
+                $serverName = Config::getValue("App.server.name");
+
+                # Check servername
+                if(!$serverName)
+
+                    # New error
+                    throw new CrazyException(
+                        "Server name (App.server.name) in config/App.yml is empty, please fill it and retry.", 
+                        500,
+                        [
+                            "custom_code"   =>  "install-docker-001",
+                        ]
+                    );
+
+                # Get host
+                $host = Config::getValue("App.server.host") ?: "127.0.0.1";
+
+            }else{
+
+                # Get app name
+                $appName = Config::getValue("App.name");
+
+                # Check app name
+                if(!$appName || !is_string($appName))
+
+                    # New error
+                    throw new CrazyException(
+                        "App name (App.name) in config/App.yml is empty, please fill it and retry.", 
+                        500,
+                        [
+                            "custom_code"   =>  "install-docker-002",
+                        ]
+                    );
+
+                # Keep last part
+                $exploded = explode("/", $appName);
+
+                # Clean appname
+                $appName = Process::alphanumeric(end($exploded));
+
+                # Set server name
+                $serverName = "$appName.com";
+
+                # Set servername
+                Config::setValue("App.server.name", $serverName);
+
+                # Set host
+                $host = "127.0.0.1";
+
+                # Set ip
+                Config::setValue("App.server.host", $host);
+
+            }
+
+            # Check if is in hosts path
+            if(Os::isInHostsFile($host, $serverName)){
+
+                # Message
+                echo "✅ $serverName well set on the hosts file of your ".Os::getOs().PHP_EOL;;
+
+            }else{
+
+                # Echo alert
+                echo "ℹ️ Maybe root or admin password will be ask for update the hosts file".PHP_EOL;
+
+                if(Os::appendToHostsFile($host, $serverName)){
+
+                    # Echo
+                    echo "✅ Server name successfully appended to the hosts file.".PHP_EOL;
+                
+                }else{
+
+                    # New error
+                    throw new CrazyException(
+                        "Failed to append `$host $serverName` to the hosts file `".Os::getHostPath()."`. Please add it manually and retry.", 
+                        500,
+                        [
+                            "custom_code"   =>  "install-docker-003",
+                        ]
+                    );
+                
+                }
+
+            }
+            
+        }else{
+
+            # Message
+            echo "ℹ️ Step disabled";
+
+        }
+
+        # Return instance
+        return $this;
+
+    }
+
+    /**
      * Run Structure Folder
      * 
      * Prepare folder structure
@@ -194,6 +318,56 @@ class Install implements CrazyCommand {
 
         # Run creation of docker structure
         Structure::create($structurePath, $data);
+
+        # Return instance
+        return $this;
+
+    }
+
+    /**
+     * Run Certbot Dry Run
+     * 
+     * Run Certbot Dry Run to check everything is working well regarding Certbot :
+     * `docker compose run --rm  certbot certonly --webroot --webroot-path /var/www/certbot/ --dry-run -d localhost`
+     * 
+     * @return self
+     */
+    public function runCertbotDryRun():self {
+
+        # Get data
+        $data = $this->_getData(true);
+
+        # Check https in configuration
+        if(in_array("https-online", $data["configuration"])){
+
+            # Set serverName
+            $serverName = Config::getValue("App.server.name");
+
+            # Check server name
+            if(!is_string($serverName) || !$serverName || strpos($serverName, ".") === false)
+
+                # New error
+                throw new CrazyException(
+                    "Server name (App.server.name) in config/App.yml is empty, please fill it and retry.", 
+                    500,
+                    [
+                        "custom_code"   =>  "install-docker-003Ò",
+                    ]
+                );
+
+            # Exec command
+            $result = Docker::run("--rm certbot certonly --webroot --webroot-path /var/www/certbot/ --dry-run -d ".$serverName);
+
+            # 
+            print_r($result);
+            exit;
+
+        }else{
+
+            # Message
+            echo "ℹ️ Step disabled";
+
+        }
 
         # Return instance
         return $this;
@@ -257,39 +431,45 @@ class Install implements CrazyCommand {
      * 
      * Get all data needed for template engine
      * 
+     * @param bool $onlyInput Return only input
      * @return array
      */
-    private function _getData():array {
+    private function _getData(bool $onlyInput = false):array {
 
         # Set result
         $result = [];
 
-        # Set config
-        $config = Config::get([
-            "App", "Database"
-        ]);
+        # Check onlyInput
+        if(!$onlyInput){
 
-        # Push config in result
-        $result['_config'] = $config;
+            # Set config
+            $config = Config::get([
+                "App", "Database"
+            ]);
 
-        # Check if windows
-        if(Os::isWindows()){
+            # Push config in result
+            $result['_config'] = $config;
 
-            # Update _config.App.root
-            $value = $config['_config']['App']['root'];
-            
-            # Change \ or \\ by /
-            $value = str_replace(["\\", "\\\\"], "/", $value);
+            # Check if windows
+            if(Os::isWindows()){
 
-            # Split by : of disk
-            $explodedValue = explode(":", $value, 2);
+                # Update _config.App.root
+                $value = $config['_config']['App']['root'];
+                
+                # Change \ or \\ by /
+                $value = str_replace(["\\", "\\\\"], "/", $value);
 
-            # Set new value
-            $value = "/mnt/".strtolower($explodedValue[0]).$explodedValue[1];
+                # Split by : of disk
+                $explodedValue = explode(":", $value, 2);
 
-            # Set $value = _config.App.root
-            $result['_config']['App']['root'] = $value;
+                # Set new value
+                $value = "/mnt/".strtolower($explodedValue[0]).$explodedValue[1];
 
+                # Set $value = _config.App.root
+                $result['_config']['App']['root'] = $value;
+
+            }
+        
         }
 
         # Check inputs
