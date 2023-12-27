@@ -287,7 +287,7 @@ class Install implements CrazyCommand {
             }else{
 
                 # Echo alert
-                echo "ℹ️ Maybe root or admin password will be ask for update the hosts file".PHP_EOL;
+                echo "ℹ️  Root or admin password will be ask for update the hosts file".PHP_EOL;
 
                 if(Os::appendToHostsFile($host, $serverName)){
 
@@ -368,6 +368,9 @@ class Install implements CrazyCommand {
 
                 # Echo
                 echo "✅ Mkcert is well installed".PHP_EOL;
+
+                # Echo alert
+                echo "ℹ️  Root or admin password will be ask for install certificates".PHP_EOL;
 
                 # Run mkcert setup
                 $resultMkcertRun = Mkcert::run();

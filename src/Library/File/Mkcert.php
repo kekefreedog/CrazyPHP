@@ -99,4 +99,18 @@ class Mkcert {
 
     }
 
+    /**
+     * Run
+     * 
+     * run creation of certificate
+     * 
+     * @return void
+     */
+    public static function remove():void {
+
+        # Install
+        Command::exec("mkcert", "-uninstall", true);
+
+    }
+
 }

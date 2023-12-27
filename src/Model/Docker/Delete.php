@@ -219,11 +219,14 @@ class Delete extends CrazyModel implements CrazyCommand {
         # Check mkcert is intalled
         if(Mkcert::isInstalled()){
 
+            # Echo alert
+            echo "ℹ️  Root or admin password will be ask for remove certificates".PHP_EOL;
+
             # Remove mkcert
             Mkcert::remove();
 
             # Echo
-            echo "✅ Mkcert well removed";
+            echo "✅ Mkcert well removed".PHP_EOL;
 
         }else{
 
