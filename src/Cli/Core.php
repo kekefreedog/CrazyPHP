@@ -28,6 +28,7 @@ use CrazyPHP\Model\App\Delete;
 use League\CLImate\CLImate;
 use splitbrain\phpcli\CLI;
 use CrazyPHP\Cli\Form;
+use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\Migration\Migration;
 
 /**
@@ -249,8 +250,21 @@ class Core extends CLI {
                     "cmd"   =>  $options->getCmd()
                 ];
 
-                # Execute action and pass input data
-                $this->{$methodName}($input);
+                # Try
+                try{
+
+                    # Execute action and pass input data
+                    $this->{$methodName}($input);
+
+                }catch(CrazyException $e){
+
+                    # New climate
+                    $climate = new CLImate();
+
+                    # Return error message
+                    echo $climate->red("🔴 ".$e->getMessage());
+
+                }
 
             }
 
@@ -624,7 +638,7 @@ class Core extends CLI {
             $climate
                 ->lightBlue()
                 ->bold()
-                ->out("👋 First we need informations about your new ".$inputs['args'][0]." 👋");
+                ->out("👋 First we need informations about your new Docker Compose 👋");
             ;
         
             # Display form
@@ -640,17 +654,17 @@ class Core extends CLI {
             $formResult = (new Validate($formResult))->getResult();
 
             # fill result
-            $result[$router['parameter']] = $formResult;
+            $result[$router['parameter'] ?? "input"] = $formResult;
 
             # Prepare display value
-            $summary[$router['parameter']] = Validate::getResultSummary($formResult);
+            $summary[$router['parameter'] ?? "input"] = Validate::getResultSummary($formResult);
             
             # Message
             $climate
                 ->br()
                 ->lightBlue()
                 ->bold()
-                ->out("📝 Summary about the creation of your new ".$inputs['args'][0]." 📝")
+                ->out("📝 Summary about the creation of your new Docker config 📝")
                 ->br()
             ;
 
@@ -852,6 +866,19 @@ class Core extends CLI {
         # Get port
         $port = Docker::getLocalHostPort();
 
+        # Get server name
+        $servername = Config::getValue("App.server.name");
+
+        # Check server name
+        if($servername !== null && $servername)
+
+            # Message about port
+            $climate
+                ->br()
+                ->out("ℹ️  Open your browser and navigate to \"<bold><underline>http://$servername/</underline></black>\". If everything is working, you'll see a welcome page.")
+            ;
+
+        else
         # Check port
         if($port)
 

@@ -2,6 +2,14 @@
 
 My crazy framework for creating ultra-fast webapps.
 
+## Installation
+
+Install via composer :
+
+```
+composer require kzarshenas/crazyphp
+```
+
 ## Project
 
 New project :

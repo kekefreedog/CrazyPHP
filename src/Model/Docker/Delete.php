@@ -25,6 +25,7 @@ use CrazyPHP\Interface\CrazyCommand;
 use CrazyPHP\Library\Cli\Command;
 use CrazyPHP\Library\File\Docker;
 use CrazyPHP\Library\File\File;
+use CrazyPHP\Library\File\Mkcert;
 use CrazyPHP\Model\Config;
 
 /**
@@ -112,13 +113,19 @@ class Delete extends CrazyModel implements CrazyCommand {
          * Remove docker-compose container
          * 1. Remove docker compose
          */
-        $this->runDockeComposeRemove();
+        $this->runDockerComposeRemove();
 
         /**
          * Run Update Database Config
          * 1. Unset docker service name in config of databases
          */
         $this->runUpdateDatabaseConfig();
+
+        /**
+         * Run Remove Mkcert
+         * 1. Remove mkcert files created
+         */
+        $this->runRemoveMkcert();
 
         /**
          * Remove structure folder
@@ -159,7 +166,7 @@ class Delete extends CrazyModel implements CrazyCommand {
      * 
      * @return self
      */
-    public function runDockeComposeRemove():self {
+    public function runDockerComposeRemove():self {
         
         # Command
         $command = "docker-compose rm -f -s -v";
@@ -201,6 +208,39 @@ class Delete extends CrazyModel implements CrazyCommand {
     }
 
     /**
+     * Run Remove Mkcert
+     * 
+     * Remove mkcert files created
+     * 
+     * @return self
+     */
+    public function runRemoveMkcert():self {
+
+        # Check mkcert is intalled
+        if(Mkcert::isInstalled()){
+
+            # Echo alert
+            echo "ℹ️  Root or admin password will be ask for remove certificates".PHP_EOL;
+
+            # Remove mkcert
+            Mkcert::remove();
+
+            # Echo
+            echo "✅ Mkcert well removed".PHP_EOL;
+
+        }else{
+
+            # Message
+            echo "ℹ️  Step disabled".PHP_EOL;
+
+        }
+
+        # Return instance
+        return $this;
+
+    }
+
+    /**
      * Run Structure Folder
      * 
      * Steps : 
@@ -233,6 +273,18 @@ class Delete extends CrazyModel implements CrazyCommand {
 
 
         }
+
+        # Iteration of extra folders to remove
+        foreach([
+            "@app_root/docker/certbot",
+            "@app_root/docker/mkcert",
+        ] as $folder)
+
+            # Check Certbote
+            if(File::exists($folder))
+
+                # Remove folder
+                File::removeAll($folder);
 
         # Run creation of docker structure
         Structure::remove($structurePath);

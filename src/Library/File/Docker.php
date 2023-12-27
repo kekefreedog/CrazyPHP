@@ -84,6 +84,30 @@ class Docker{
 
     }
 
+    /**
+     * up
+     * 
+     * Run Docker Compose
+     * 
+     * @param bool $detach Run container in background and print container ID
+     * @return
+     */
+    public static function run(string $argument = "") {
+
+        # Set result
+        $result = "";
+
+        # Prepare command shell
+        $command = trim(self::DOCKER_COMMAND." compose run ".trim($argument));
+
+        # Exec command
+        $result = Command::exec($command);
+
+        # Return result
+        return $result;
+
+    }
+
     /** Public static method | docker compose
      ******************************************************
      */
@@ -99,7 +123,7 @@ class Docker{
     public static function getLocalHostPort($source = 80):int|null {
 
         # Declare result
-        $result = null;
+        $result = $source;
 
         # Open docker compose
         $dockerCompose = Yaml::open(File::path(self::DOCKER_COMPOSE_PATH));
@@ -155,6 +179,9 @@ class Docker{
 
     /** @const string DOCKER_COMPOSE_COMMAND */
     public const DOCKER_COMPOSE_COMMAND = "docker-compose";
+
+    /** @const string DOCKER_COMPOSE_COMMAND */
+    public const DOCKER_COMMAND = "docker";
 
     /** @const array NAME_TO_SERVICE Name to services */
     public const NAME_TO_SERVICE = [

@@ -797,6 +797,35 @@ class Process {
     }
 
     /**
+     * Alphanumeric
+     * 
+     * @param string
+     * @param bool lowerCase
+     * @return string
+     */
+    public static function alphanumeric(string $input, bool $lowerCase = false):string {
+
+        # Set result
+        $result = $input;
+
+        # Check lower case
+        if($lowerCase)
+
+            # Convert the string to lowercase
+            $result = strtolower($result);
+            
+        # Replace spaces with an empty string (or another character if you prefer)
+        $result = str_replace(" ", "", $result);
+        
+        # Remove unwanted characters, only allow alphanumeric characters
+        $result = preg_replace('/[^a-z0-9]/', '', $result);
+        
+        # Return result
+        return $result;
+
+    }
+
+    /**
      * Wash
      * 
      * Wash items by condtions

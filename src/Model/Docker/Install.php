@@ -18,11 +18,14 @@ namespace CrazyPHP\Model\Docker;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Interface\CrazyCommand;
 use CrazyPHP\Library\File\Structure;
+use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\File\Docker;
+use CrazyPHP\Library\File\Mkcert;
 use CrazyPHP\Library\Cli\Command;
 use CrazyPHP\Library\System\Os;
 use CrazyPHP\Library\File\File;
+use League\CLImate\CLImate;
 use CrazyPHP\Model\Env;
 
 /**
@@ -36,6 +39,26 @@ use CrazyPHP\Model\Env;
  */
 class Install implements CrazyCommand {
 
+    /** Public constants
+     ******************************************************
+     */
+
+    public const REQUIRED_VALUES = [
+        # Configuration
+        [
+            "name"          =>  "configuration",
+            "description"   =>  "Type of configuration to set up on your crazy docker",
+            "type"          =>  "ARRAY",
+            "default"       =>  "https",
+            "multiple"      =>  true,
+            "select"        =>  [
+                "http"          =>  "Http",
+                "https-online"  =>  "Https (Online using Certbot)",
+                "https-local"   =>  "Https (Local using Mkcert)"
+            ],
+        ],
+    ];
+
     /** Private Parameters
      ******************************************************
      */
@@ -44,6 +67,11 @@ class Install implements CrazyCommand {
      * Inputs
      */
     private $inputs = [];
+
+    /**
+     * Server Name
+     */
+    private $serverName = null;
 
     /**
      * Constructor
@@ -62,12 +90,6 @@ class Install implements CrazyCommand {
         Env::set(["cache_driver"=>"Files"]);
 
     }
-
-    /** Public constants
-     ******************************************************
-     */
-
-    public const REQUIRED_VALUES = [];
 
     /** Public static methods
      ******************************************************
@@ -142,10 +164,29 @@ class Install implements CrazyCommand {
     public function run():self {
 
         /**
+         * Run Check Vhost
+         * 1. Run Check and Set if needed vhost depending of the OS
+         */
+        $this->runCheckVhost();
+
+        /**
+         * Run Mkcert setup
+         * 1. Prepare cert for htttps on local
+         */
+        $this->runMkcertSetup();
+
+        /**
          * Run Structure Folder
          * 1. Prepare folder structure
          */
         $this->runStructureFolder();
+
+        /**
+         * Run Certbot Dry Run
+         * 1. Run Certbot Dry Run to check everything is working well regarding Certbot :
+         * `docker compose run --rm  certbot certonly --webroot --webroot-path /var/www/certbot/ --dry-run -d localhost`
+         */
+        $this->runCertbotDryRun();
 
         /**
          * Run Update Database Config
@@ -158,6 +199,190 @@ class Install implements CrazyCommand {
          * 1. Build docker-compose container
          */
         $this->runDockerComposeBuild();
+
+        # Return instance
+        return $this;
+
+    }
+
+    /**
+     * Run Check Vhost
+     * 
+     * Run Check and Set if needed vhost depending of the OS
+     * 
+     * @return self
+     */
+    public function runCheckVhost():self {
+
+        # Get data
+        $data = $this->_getData(true);
+
+        # Check https in configuration
+        if(in_array("https-online", $data["configuration"]) || in_array("https-local", $data["configuration"])){
+            
+            # Check website value
+            if(Config::has("App.server.name")){
+
+                # Get servername
+                $serverName = Config::getValue("App.server.name");
+
+                # Check servername
+                if(!$serverName)
+
+                    # New error
+                    throw new CrazyException(
+                        "Server name (App.server.name) in config/App.yml is empty, please fill it and retry.", 
+                        500,
+                        [
+                            "custom_code"   =>  "install-docker-001",
+                        ]
+                    );
+
+                # Get host
+                $host = Config::getValue("App.server.host") ?: "127.0.0.1";
+
+            }else{
+
+                # Get app name
+                $appName = Config::getValue("App.name");
+
+                # Check app name
+                if(!$appName || !is_string($appName))
+
+                    # New error
+                    throw new CrazyException(
+                        "App name (App.name) in config/App.yml is empty, please fill it and retry.", 
+                        500,
+                        [
+                            "custom_code"   =>  "install-docker-002",
+                        ]
+                    );
+
+                # Keep last part
+                $exploded = explode("/", $appName);
+
+                # Clean appname
+                $appName = Process::alphanumeric(end($exploded));
+
+                # Set server name
+                $serverName = "$appName.com";
+
+                # Set servername
+                Config::setValue("App.server.name", $serverName);
+
+                # Set host
+                $host = "127.0.0.1";
+
+                # Set ip
+                Config::setValue("App.server.host", $host);
+
+            }
+
+            # Check if is in hosts path
+            if(Os::isInHostsFile($host, $serverName)){
+
+                # Message
+                echo "✅ $serverName well set on the hosts file of your ".Os::getOs().PHP_EOL;;
+
+            }else{
+
+                # Echo alert
+                echo "ℹ️  Root or admin password will be ask for update the hosts file".PHP_EOL;
+
+                if(Os::appendToHostsFile($host, $serverName)){
+
+                    # Echo
+                    echo "✅ Server name successfully appended to the hosts file.".PHP_EOL;
+                
+                }else{
+
+                    # New error
+                    throw new CrazyException(
+                        "Failed to append `$host $serverName` to the hosts file `".Os::getHostPath()."`. Please add it manually and retry.", 
+                        500,
+                        [
+                            "custom_code"   =>  "install-docker-003",
+                        ]
+                    );
+                
+                }
+
+            }
+            
+        }else{
+
+            # Message
+            echo "ℹ️  Step disabled".PHP_EOL;
+
+        }
+
+        # Return instance
+        return $this;
+
+    }
+
+    /**
+     * Run Mkcert setup
+     * 
+     * Prepare cert for htttps on local
+     * 
+     * @return self
+     */
+    public function runMkcertSetup():self {
+
+        # Get data
+        $data = $this->_getData(true);
+
+        # Check https in configuration
+        if(in_array("https-local", $data["configuration"])){
+
+            # Check mkcert is installed
+            if(!Mkcert::isInstalled()){
+
+                # Echo
+                echo "🔴 Ensure mkcert is installed on your system".PHP_EOL;
+                
+                # Check os
+                if(Os::isMac()){
+
+                    # Echo
+                    echo 'Install with homebrew :'.PHP_EOL;
+                    echo '- Command `brew install mkcert`'.PHP_EOL;
+                    echo '- Command `brew install nss # if you use Firefox`'.PHP_EOL;
+                    echo 'Install with MacPorts :'.PHP_EOL;
+                    echo '- Command `sudo port selfupdate`'.PHP_EOL;
+                    echo '- Command `sudo port install mkcert`'.PHP_EOL;
+                    echo '- Command `sudo port install nss # if you use Firefox`'.PHP_EOL;
+
+                }else{
+
+                    # Echo
+                    echo 'Visit page https://github.com/FiloSottile/mkcert#installation for more information'.PHP_EOL;
+
+                }
+
+                # Stop method
+                exit;
+            
+            }else{
+
+                # Echo
+                echo "✅ Mkcert is well installed".PHP_EOL;
+
+                # Echo alert
+                echo "ℹ️  Root or admin password will be ask for install certificates".PHP_EOL;
+
+                # Run mkcert setup
+                $resultMkcertRun = Mkcert::run();
+
+            }
+            
+        }else{
+
+            # Message
+            echo "ℹ️  Step disabled".PHP_EOL;
+
+        }
 
         # Return instance
         return $this;
@@ -181,6 +406,56 @@ class Install implements CrazyCommand {
 
         # Run creation of docker structure
         Structure::create($structurePath, $data);
+
+        # Return instance
+        return $this;
+
+    }
+
+    /**
+     * Run Certbot Dry Run
+     * 
+     * Run Certbot Dry Run to check everything is working well regarding Certbot :
+     * `docker compose run --rm  certbot certonly --webroot --webroot-path /var/www/certbot/ --dry-run -d localhost`
+     * 
+     * @return self
+     */
+    public function runCertbotDryRun():self {
+
+        # Get data
+        $data = $this->_getData(true);
+
+        # Check https in configuration
+        if(in_array("https-online", $data["configuration"])){
+
+            # Set serverName
+            $serverName = Config::getValue("App.server.name");
+
+            # Check server name
+            if(!is_string($serverName) || !$serverName || strpos($serverName, ".") === false)
+
+                # New error
+                throw new CrazyException(
+                    "Server name (App.server.name) in config/App.yml is empty, please fill it and retry.", 
+                    500,
+                    [
+                        "custom_code"   =>  "install-docker-003Ò",
+                    ]
+                );
+
+            # Exec command
+            $result = Docker::run("--rm certbot certonly --webroot --webroot-path /var/www/certbot/ --dry-run -d ".$serverName);
+
+            # Echo
+            echo "🔴 Feature not fully implemented yet !";
+            exit;
+
+        }else{
+
+            # Message
+            echo "ℹ️  Step disabled".PHP_EOL;
+
+        }
 
         # Return instance
         return $this;
@@ -244,40 +519,55 @@ class Install implements CrazyCommand {
      * 
      * Get all data needed for template engine
      * 
+     * @param bool $onlyInput Return only input
      * @return array
      */
-    private function _getData():array {
+    private function _getData(bool $onlyInput = false):array {
 
         # Set result
         $result = [];
 
-        # Set config
-        $config = Config::get([
-            "App", "Database"
-        ]);
+        # Check onlyInput
+        if(!$onlyInput){
 
-        # Push config in result
-        $result['_config'] = $config;
+            # Set config
+            $config = Config::get([
+                "App", "Database"
+            ]);
 
-        # Check if windows
-        if(Os::isWindows()){
+            # Push config in result
+            $result['_config'] = $config;
 
-            # Update _config.App.root
-            $value = $config['_config']['App']['root'];
-            
-            # Change \ or \\ by /
-            $value = str_replace(["\\", "\\\\"], "/", $value);
+            # Check if windows
+            if(Os::isWindows()){
 
-            # Split by : of disk
-            $explodedValue = explode(":", $value, 2);
+                # Update _config.App.root
+                $value = $config['_config']['App']['root'];
+                
+                # Change \ or \\ by /
+                $value = str_replace(["\\", "\\\\"], "/", $value);
 
-            # Set new value
-            $value = "/mnt/".strtolower($explodedValue[0]).$explodedValue[1];
+                # Split by : of disk
+                $explodedValue = explode(":", $value, 2);
 
-            # Set $value = _config.App.root
-            $result['_config']['App']['root'] = $value;
+                # Set new value
+                $value = "/mnt/".strtolower($explodedValue[0]).$explodedValue[1];
 
+                # Set $value = _config.App.root
+                $result['_config']['App']['root'] = $value;
+
+            }
+        
         }
+
+        # Check inputs
+        if(isset($this->inputs[array_key_first($this->inputs)]) && !empty($this->inputs[array_key_first($this->inputs)]))
+
+            # Iterations of inputs
+            foreach($this->inputs[array_key_first($this->inputs)] as $input)
+
+                # Set key => value
+                $result[$input["name"]] = $input["value"];
 
         # Return result
         return $result;
