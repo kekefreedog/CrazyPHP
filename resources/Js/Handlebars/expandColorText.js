@@ -37,7 +37,7 @@ module.exports = (color, type = "", options = {}) => {
         options = type;
 
         // Set type
-        type = "":
+        type = "";
 
     }
 

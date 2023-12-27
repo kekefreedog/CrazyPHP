@@ -40,6 +40,8 @@ Open a terminal and go on the directory where you want create your project (Exem
         ]
     }
     ```
+    > If you are using Docker, do not forget to add `- '/etc/CrazyPHP:/etc/CrazyPHP'` on you docker compose config as volume for the service php-fpm
+
     And then execute the command below in the terminal :
     ```sh
     composer update
