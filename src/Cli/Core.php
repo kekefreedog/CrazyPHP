@@ -816,6 +816,9 @@ class Core extends CLI {
         # Iteration storyline
         foreach($storyline as $action){
 
+            # Check if runIsPortTaken and restart
+            if($relaunch && $action == "runIsPortTaken") continue;
+
             # Message start
             $climate
                 ->br()
