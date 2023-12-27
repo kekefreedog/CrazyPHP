@@ -22,6 +22,28 @@ Open a terminal and go on the directory where you want create your project (Exem
     composer require kzarshenas/crazyphp
     ````
     > For work on development mode, visit this [link](Misc/CrazyDevelopment.md)
+
+- [ ] **(Optional)** Link to local CrazyPHP repo (for development & debug), update the `composer.json` with the content below :
+    ```json
+    {
+        "require": {
+            "kzarshenas/crazyphp": "@dev"
+        },
+        "repositories": [
+            {
+                "type": "path",
+                "url": "./../../CrazyProject/CrazyPHP", // Path of your CrazyPHP installation
+                "options": {
+                    "symlink": true
+                }
+            }
+        ]
+    }
+    ```
+    And then execute the command below in the terminal :
+    ```sh
+    composer update
+    ```
 - [ ] Execute the new project cli command by using :
     ```sh
     php vendor/kzarshenas/crazyphp/bin/CrazyCommand new project
