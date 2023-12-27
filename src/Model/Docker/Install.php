@@ -218,7 +218,7 @@ class Install implements CrazyCommand {
         $data = $this->_getData(true);
 
         # Check https in configuration
-        if(in_array("https-online", $data["configuration"])){
+        if(in_array("https-online", $data["configuration"]) || in_array("https-local", $data["configuration"])){
             
             # Check website value
             if(Config::has("App.server.name")){
@@ -446,8 +446,8 @@ class Install implements CrazyCommand {
             # Exec command
             $result = Docker::run("--rm certbot certonly --webroot --webroot-path /var/www/certbot/ --dry-run -d ".$serverName);
 
-            # 
-            print_r($result);
+            # Echo
+            echo "🔴 Feature not fully implemented yet !";
             exit;
 
         }else{
