@@ -123,7 +123,7 @@ class Docker{
     public static function getLocalHostPort($source = 80):int|null {
 
         # Declare result
-        $result = null;
+        $result = $source;
 
         # Open docker compose
         $dockerCompose = Yaml::open(File::path(self::DOCKER_COMPOSE_PATH));
