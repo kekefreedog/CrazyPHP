@@ -11,6 +11,7 @@
 /**
  * Dependances
  */
+import {default as UtilityProcess} from "./Process";
 
 /**
  * Runner
@@ -23,12 +24,31 @@
  */
 export default class Runner {
 
+    /**
+     * Constructor
+     */
+    public constructor() {
+
+        // Set options
+        this._options = {
+            _info: {
+                status: "Waiting",
+                run: {
+                    total: 0,
+                    current: 0,
+                    name: []
+                }
+            }
+        }
+        
+    }
+
     /** Parameters
      ******************************************************
      */
 
     /** @param _options */
-    private _options = {};
+    private _options:RunnerOption;
 
     /** Public methods
      ******************************************************
@@ -41,12 +61,10 @@ export default class Runner {
      * 
      * @returns 
      */
-    public execute = ():Promise<any> => {
+    public execute = ():Promise<RunnerOption> => {
 
-        // Get all method names starting with 'run'
-        const runMethods = Object.getOwnPropertyNames(Object.getPrototypeOf(this))
-            .filter(method => method.startsWith('run') && typeof this[method] === 'function')
-        ;
+        // Get run methods
+        let runMethods = this.getAllMethodsStartingByRun();
 
         // Load Options
         let options = this._loadOptions();
@@ -56,19 +74,50 @@ export default class Runner {
 
         // Initial setup before any methods
         chain = chain.then(
-           this.setUpBeforeClass
+            options => {
+
+                // Set info
+                options._info.run.total = runMethods.length;
+                
+                // Set current
+                options._info.run.current = 0;
+
+                // Set options > status
+                options._info.status = "Ready";
+
+                // Iteration methods
+                for(let method of runMethods)
+
+                    // Push info
+                    options._info.run.name.push({
+                        method: method,
+                        label: UtilityProcess.spaceBeforeCapital(method)
+                    });
+
+                // Return "abstract" class
+                return this.setUpBeforeClass(options);
+
+            }
         );
 
         // Run each methods
         runMethods.forEach(method => {
             chain = chain
-                .then(this.setUpBeforeMethod)
+                .then(options => {
+                    options._info.run.current++;
+                    if(options._info.run.current>0)
+                        options._info.status = "In Progress";
+                    return this.setUpBeforeMethod(options)
+                })
                 .then(this[method])
                 .then(this.tearDownAfterMethod);
         });
 
         // Final teardown after all methods
-        chain = chain.then(this.tearDownAfterClass);
+        chain = chain.then(options => {
+            options._info.status = "Complete";
+            return this.tearDownAfterClass(options)
+        });
 
         // Catch any errors
         chain.catch(error => {
@@ -90,9 +139,9 @@ export default class Runner {
      * 
      * Method call at the very begin of the runner
      * 
-     * @return {Promise<Object>}
+     * @return {Promise<RunnerOption>}
      */
-    public setUpBeforeClass = async (options:Object):Promise<Object> => {
+    public setUpBeforeClass = async (options:RunnerOption):Promise<RunnerOption> => {
 
         // Return object
         return options;
@@ -104,9 +153,9 @@ export default class Runner {
      * 
      * Method call before every method
      * 
-     * @return {Promise<Object>}
+     * @return {Promise<RunnerOption>}
      */
-    public setUpBeforeMethod = async (options:Object):Promise<Object> => {
+    public setUpBeforeMethod = async (options:RunnerOption):Promise<RunnerOption> => {
 
         // Return object
         return options;
@@ -118,9 +167,9 @@ export default class Runner {
      * 
      * Class call at the end of the runner
      * 
-     * @return {Promise<Object>}
+     * @return {Promise<RunnerOption>}
      */
-    public tearDownAfterMethod = async (options:Object):Promise<Object> => {
+    public tearDownAfterMethod = async (options:RunnerOption):Promise<RunnerOption> => {
 
         // Return object
         return options;
@@ -134,7 +183,7 @@ export default class Runner {
      * 
      * @return {Promise<Object>}
      */
-    public tearDownAfterClass = async (options:Object):Promise<Object> => {
+    public tearDownAfterClass = async (options:RunnerOption):Promise<RunnerOption> => {
 
         // Return object
         return options;
@@ -148,10 +197,10 @@ export default class Runner {
     /**
      * Register Options
      * 
-     * @param {Object}
+     * @param {RunnerOption}
      * @returns {void}
      */
-    public registerOptions = (options:Object):void => {
+    public registerOptions = (options:RunnerOption):void => {
 
         // Set options
         this._options = options;
@@ -165,11 +214,38 @@ export default class Runner {
     /**
      * Load Options
      * 
-     * @returns {Object}
+     * @returns {RunnerOption}
      */
-    private _loadOptions = ():Object => {
+    private _loadOptions = ():RunnerOption => {
 
         return this._options;
+
+    }
+
+    /** Private methods | Utilities
+     ******************************************************
+     */
+
+    /**
+     * Get All Methods Starting By Run
+     * 
+     * @source https://stackoverflow.com/questions/31054910/get-functions-methods-of-a-class
+     * 
+     * @returns {Array<string>}
+     */
+    private function getAllMethodsStartingByRun = ():Array<string> => {
+
+        const props = [];
+        let obj = this;
+        do {
+            // @ts-expect-error
+            props.push(...Object.getOwnPropertyNames(obj));
+        } while (obj = Object.getPrototypeOf(obj));
+        
+        return props.sort().filter((e, i, arr) => { 
+            // @ts-expect-error
+            if (e!=arr[i+1] && typeof this[e] == 'function' && e.startsWith('run')) return true;
+        });
 
     }
 

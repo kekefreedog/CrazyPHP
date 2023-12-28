@@ -16,6 +16,7 @@ import Crazypage from "./../Library/Crazypage";
  */
 export {default as Componentregister} from "./../Library/Componentregister";
 export {default as ColorSchema} from "./../Library/Utility/ColorSchema";
+export {default as UtilityProcess} from "./../Library/Utility/Process";
 export {default as Crazycomponent} from "./../Library/Crazycomponent";
 export {default as Crazynavigator} from "./../Library/Crazynavigator";
 export {default as UtilityArrays} from "./../Library/Utility/Arrays";
@@ -235,10 +236,63 @@ declare global {
     /**
      * Page History Item
      */
-    interface HistoryPageItem  {
+    interface HistoryPageItem {
         href:string,
         state?:?Object,
         loader:LoaderPageOptions
     }
+
+    /** Interface | Utilities
+     ******************************************************
+     */
+
+    /**
+     * Runner Option
+     */
+    interface RunnerOption {
+        errors?:?Array<CrazyError>,
+        result?:Object|Array<any>|string|null,
+        _info:{
+            status:"Waiting"|"Ready"|"In Progress"|"Error"|"Complete",
+            run:{
+                total:number,
+                current:number,
+                name:Array<{
+                    method:string,
+                    label:string
+                }>
+            }
+        },
+        _user_interface?:Object
+    }
+
+    /** Interface | Error
+     ******************************************************
+     */
+
+    /**
+     * Crazy Error Option
+     */
+    interface CrazyError {
+        code:number,
+        type?:?string
+        detail?:?string,
+        _run?:?Object,
+        _status_code?:?{
+            title?:?string,
+            style?:{
+                color?:{
+                    text?:string,
+                    fill?:string
+                },
+                icon?:{
+                    class?:string,
+                    text?:string
+                }
+            }
+        }
+    }
+
+    
 
 }
