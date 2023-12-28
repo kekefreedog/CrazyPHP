@@ -67,10 +67,6 @@ export default class Page {
                 Page.loadContent
             )
             .then(
-                // Scan Partials
-                Page.scanPartials
-            )
-            .then(
                 // Load Content
                 Page.registerInHistory
             )
@@ -80,6 +76,10 @@ export default class Page {
                     if(document.readyState !== 'loading') {
                         // Load Content
                         Page.loadOnReadyScript(options)
+                            .then(
+                                // Scan Partials
+                                Page.scanPartials
+                            )
                             .then(
                                 // Load Post Action
                                 Page.loadPostAction
@@ -91,6 +91,10 @@ export default class Page {
                         document.addEventListener('DOMContentLoaded', () => {
                             // Load Content
                             Page.loadOnReadyScript(options)
+                                .then(
+                                    // Scan Partials
+                                    Page.scanPartials
+                                )
                                 .then(
                                     // Load Post Action
                                     Page.loadPostAction
@@ -496,7 +500,7 @@ export default class Page {
             for(let partial in options.partials){
 
                 // Run partial script
-                new options.partials[partial].callable(options.partials[partial]);
+                options.partials[partial].scriptRunning = new options.partials[partial].callable(options.partials[partial]);
 
             }
 

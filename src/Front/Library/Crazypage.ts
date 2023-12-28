@@ -14,6 +14,7 @@
 import Pageregister from "./Pageregister";
 import Crazyrequest from "./Crazyrequest";
 import { Crazyobject } from "../Types";
+import Arrays from "./Utility/Arrays";
 
 /**
  * Crazy Page
@@ -35,6 +36,7 @@ export default abstract class Crazypage {
      */
     private pageRegister:Pageregister|null = null;
 
+
     /** 
      * @param className:string 
      * Duplicate of the class name because build change name of class
@@ -54,9 +56,19 @@ export default abstract class Crazypage {
     public static readonly css:null|Object = null;
 
     /**
+     * @param options:LoaderPageOptions
+     */
+    private options:LoaderPageOptions|null;
+
+    /**
      * Constructor
      */
-    public constructor(){
+    public constructor(options:LoaderPageOptions|null = null){
+
+        /**
+         * Set Options
+         */
+        this.options = options;
 
         /**
          * Set Current Page
@@ -227,6 +239,63 @@ export default abstract class Crazypage {
 
             // New url
             result = new URL(path);
+
+        // Return result
+        return result;
+
+    }
+
+    /** Public methods partial
+     ******************************************************
+     */
+
+    /**
+     * Get All Partials
+     * 
+     * @returns {Array<Object>}
+     */
+    public getAllPartials = ():Array<Object> => {
+
+        // Declare result
+        let result:Array<Object> = [];
+
+        // Check partials
+        if(Array.isArray(this.options?.partials))
+
+            // Fill result
+            result = this.options?.partials as Array<Object>
+
+        // Return result
+        return result;
+
+    }
+
+    /**
+     * Get Partial By Name
+     * 
+     * @returns {Object|null}
+     */
+    public getPartial = (name:string):Object|null => {
+
+        // Prepare result
+        let result:Object|null = null;
+
+        // Check name
+        if(name){
+
+            // Get partials
+            let partials = this.getAllPartials();
+
+            // Filter
+            let filtered = Arrays.filterByKey(partials, "name", name);
+
+            // Check filtered
+            if(Array.isArray(filtered) && filtered.length)
+
+                // Get first element found
+                result = filtered.shift();
+
+        }
 
         // Return result
         return result;
