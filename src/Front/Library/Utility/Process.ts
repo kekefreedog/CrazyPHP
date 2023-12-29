@@ -50,4 +50,20 @@ export default class Process {
 
     }
 
+    /**
+     * Capitalize
+     * 
+     * @param input
+     * @return {string}
+     */
+    public static capitalize = (input:string):string => {
+        
+        // Capitalize    
+        return input 
+            ? input[0].toUpperCase() + input.slice(1)
+            : input
+        ;
+    
+    }
+
 }

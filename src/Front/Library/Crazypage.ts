@@ -254,16 +254,16 @@ export default abstract class Crazypage {
      * 
      * @returns {Array<Object>}
      */
-    public getAllPartials = ():Array<Object> => {
+    public getAllPartials = ():Array<RegisterPartialScanned> => {
 
         // Declare result
-        let result:Array<Object> = [];
+        let result:Array<RegisterPartialScanned> = [];
 
         // Check partials
         if(Array.isArray(this.options?.partials))
 
             // Fill result
-            result = this.options?.partials as Array<Object>
+            result = this.options?.partials as Array<RegisterPartialScanned>
 
         // Return result
         return result;
@@ -275,10 +275,10 @@ export default abstract class Crazypage {
      * 
      * @returns {Object|null}
      */
-    public getPartial = (name:string):Object|null => {
+    public getPartial = (name:string):RegisterPartialScanned|null => {
 
         // Prepare result
-        let result:Object|null = null;
+        let result:RegisterPartialScanned|null = null;
 
         // Check name
         if(name){

@@ -31,6 +31,7 @@ export default class Runner {
 
         // Set options
         this._options = {
+            result: null,
             _info: {
                 status: "Waiting",
                 run: {
@@ -91,7 +92,7 @@ export default class Runner {
                     // Push info
                     options._info.run.name.push({
                         method: method,
-                        label: UtilityProcess.spaceBeforeCapital(method)
+                        label: UtilityProcess.capitalize(UtilityProcess.spaceBeforeCapital(method))
                     });
 
                 // Return "abstract" class
@@ -231,21 +232,27 @@ export default class Runner {
      * 
      * @source https://stackoverflow.com/questions/31054910/get-functions-methods-of-a-class
      * 
-     * @returns {Array<string>}
+     * @returns
      */
-    private function getAllMethodsStartingByRun = ():Array<string> => {
+    private getAllMethodsStartingByRun = ():Array<string> => {
 
         const props = [];
         let obj = this;
-        do {
+        do{
+            const properties = Object.getOwnPropertyNames(obj);
             // @ts-expect-error
-            props.push(...Object.getOwnPropertyNames(obj));
-        } while (obj = Object.getPrototypeOf(obj));
+            props.push(...properties);
+            obj = Object.getPrototypeOf(obj);
+        }while(obj)
+
+        let propsAlt = Object.keys(this);
         
-        return props.sort().filter((e, i, arr) => { 
+        let result = props.filter((e, i, arr) => { 
             // @ts-expect-error
             if (e!=arr[i+1] && typeof this[e] == 'function' && e.startsWith('run')) return true;
         });
+
+        return result;
 
     }
 

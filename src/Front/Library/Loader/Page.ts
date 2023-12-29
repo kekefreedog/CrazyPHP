@@ -75,10 +75,10 @@ export default class Page {
                     // Check ready state
                     if(document.readyState !== 'loading') {
                         // Load Content
-                        Page.loadOnReadyScript(options)
+                        Page.scanPartials(options)
                             .then(
                                 // Scan Partials
-                                Page.scanPartials
+                                Page.loadOnReadyScript
                             )
                             .then(
                                 // Load Post Action
@@ -90,10 +90,10 @@ export default class Page {
                         // Event listener
                         document.addEventListener('DOMContentLoaded', () => {
                             // Load Content
-                            Page.loadOnReadyScript(options)
+                            Page.scanPartials(options)
                                 .then(
                                     // Scan Partials
-                                    Page.scanPartials
+                                    Page.loadOnReadyScript
                                 )
                                 .then(
                                     // Load Post Action
@@ -500,7 +500,10 @@ export default class Page {
             for(let partial in options.partials){
 
                 // Run partial script
-                options.partials[partial].scriptRunning = new options.partials[partial].callable(options.partials[partial]);
+                let instance = new options.partials[partial].callable(options.partials[partial]);
+
+                // Push instance in options
+                options.partials[partial].scriptRunning = instance;
 
             }
 

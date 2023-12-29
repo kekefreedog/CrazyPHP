@@ -1,0 +1,36 @@
+/// /// ///
+/// Typography
+///
+/// Typography scss stylesheet
+///
+/// @package    kzarshenas/crazyphp
+/// @author     kekefreedog <kevin.zarshenas@gmail.com>
+/// @copyright  2022-2023 Kévin Zarshenas
+/// /// ///
+
+// Font weight (font-weight-100, font-weight-200...) 
+@for $i from 1 through 9 {
+    .font-weight-#{calc($i * 100)} {
+        font-weight: $i * 100;
+    }
+}
+
+// Font weight normal
+.font-weight-normal {
+    font-weight: normal;
+}
+
+// Font weight bold
+.font-weight-bold {
+    font-weight: bold;
+}
+
+// Font weight lighter
+.font-weight-lighter {
+    font-weight: lighter;
+}
+
+// Font weight bolder
+.font-weight-bolder {
+    font-weight: bolder;
+}

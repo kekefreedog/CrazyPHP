@@ -216,8 +216,9 @@ declare global {
     interface RegisterPartialScanned {
         name:string,
         target:Element
-        callable:Crazypartial
-        id:number
+        callable:Crazypartial,
+        id:number,
+        scriptRunning?:Crazypartial
     }
 
     /** Interface | History
@@ -251,7 +252,7 @@ declare global {
      */
     interface RunnerOption {
         errors?:?Array<CrazyError>,
-        result?:Object|Array<any>|string|null,
+        result:Object|Array<any>|string|null,
         _info:{
             status:"Waiting"|"Ready"|"In Progress"|"Error"|"Complete",
             run:{
