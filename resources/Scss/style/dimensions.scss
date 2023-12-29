@@ -98,3 +98,46 @@
     display: flex;
 
 }
+
+//// Object fit
+
+// Object fit cover
+.object-fit-cover {
+
+    // Dimension
+    object-fit: cover;
+
+}
+
+// Object fit cover
+.object-fit-fill {
+
+    // Dimension
+    object-fit: fill;
+
+}
+
+/// Padding & Margin
+///////////////////////////////////////////////////////
+///
+
+/* Steps */
+$steps: (
+    0: Opx,
+    1: 0.25rem,
+    2: 0.5rem,
+    3: 0.75rem,
+    4: 1rem,
+    5: 1.5rem,
+    6: 3rem
+);
+
+// Iteration of cursor
+@each $name, $value in $steps {
+    .padding-#{$name} {
+        padding: $value!important;
+    }
+    .margin-#{$name} {
+        margin: $value!important;
+    }
+}

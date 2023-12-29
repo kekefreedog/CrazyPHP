@@ -160,6 +160,8 @@ Structure:
                         source: "@crazyphp_root/resources/Scss/style/color_gradient_collection.scss"
                       dimensions.scss:
                         source: "@crazyphp_root/resources/Scss/style/dimensions.scss"
+                      cursors.scss:
+                        source: "@crazyphp_root/resources/Scss/style/cursors.scss"
                       typography.scss:
                         source: "@crazyphp_root/resources/Scss/style/typography.scss"
                       index.scss:
