@@ -279,6 +279,12 @@ class Schema {
         # Iteration values
         foreach($values as $value){
 
+            # Check flatten
+            if($this->options["flatten"])
+
+                # Flat value
+                $value = Arrays::flatten($value);
+
             # Prepare item
             $items = $this->collection;
 
@@ -430,7 +436,16 @@ class Schema {
                     $currentResult = (new Validate($currentResult))->getResult();
 
                     # Summarize result
-                    $result[] = Validate::getResultSummary($currentResult, false);
+                    $resultTemp = Validate::getResultSummary($currentResult, false, $this->options["flatten"] ? true : false);
+
+                    # Check flatten
+                    if($this->options["flatten"])
+            
+                        # Unflatten result
+                        $resultTemp = Arrays::unflatten($resultTemp);
+
+                    # Push result temp in result
+                    $result[] = $resultTemp;
             
                 }
 
@@ -604,7 +619,11 @@ class Schema {
     /** @const array DEFAULT_OPTIONS Options by default */
     private const DEFAULT_OPTIONS = [
         # Define the root of the schema in given array
-        "array_root"    =>  ""
+        "array_root"    =>  "",
+        # Flatten value array received
+        "flatten"       =>  false,
+        # Isolate specific schema for test / debug
+        "phpunit_test"  =>  false,
     ];
 
     /** @const array DEFAULT_VALUES_OPTIONS Options by default */

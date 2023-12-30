@@ -670,6 +670,14 @@ class Arrays{
 		return $subject;
 	}
 
+	/**
+	 * Convert Strings to Integers
+	 * 
+	 * Concert all string compose only of integer to integer variable
+	 * 
+	 * @param array $array
+	 * @return array
+	 */
 	public static function convertStringsToIntegers(array $array = []):array {
 
 		# Check array
@@ -691,6 +699,96 @@ class Arrays{
 
 		# Return array
 		return $array;
+
+	}
+
+	/**
+	 * Flatten
+	 * 
+	 * Convert nested structure to a flat structure with separator
+	 * 
+	 * @param array $array to flatten
+	 * @param string $prefix if needed
+	 * @param string $separator by default "."
+	 * @return array
+	 */
+	public static function flatten(array $array = [], string $prefix = '', string $separator = "."):array {
+		
+		# Prepare result
+		$result = [];
+
+		# Check array
+		if(!empty($array))
+
+			# Iteration array
+			foreach ($array as $key => $value) {
+
+				# New key
+				$new_key = $prefix . (empty($prefix) ? '' : $separator) . $key;
+
+				# Check if array
+				if (is_array($value))
+
+					# Recursively flatten the array
+					$result = array_merge($result, static::flatten($value, $new_key, $separator));
+
+				else
+					
+					# Set result
+					$result[$new_key] = $value;
+					
+			}
+
+		# Return result
+		return $result;
+	}
+
+	/**
+	 * Unflatten
+	 * 
+	 * Unflatten array
+	 * 
+	 * @param array $array
+	 * @param string $separator
+	 * @return array
+	 */
+	public static function unflatten(array $array = [], string $separator = '.'):array {
+
+		# Declare result;
+		$result = [];
+	
+		# Check array
+		if(!empty($array))
+
+			# Iteration array
+			foreach($array as $key => $value) {
+
+				# Split the key based on the separator
+				$parts = explode($separator, $key);
+		
+				# Start from the root of the result array
+				$temp = &$result;
+		
+				# Iterate over each part of the key except the last
+				foreach ($parts as $part){
+
+					# If the part isn't set, or isn't an array, initialize it as an array
+					if (!isset($temp[$part]) || !is_array($temp[$part]))
+
+						# Prepare temp
+						$temp[$part] = [];
+		
+					# Move deeper into the result array
+					$temp = &$temp[$part];
+
+				}
+		
+				# Set the value at the deepest level
+				$temp = $value;
+			}
+	
+		# Return result
+		return $result;
 
 	}
 

@@ -15,6 +15,7 @@ namespace  CrazyPHP\Core;
 /**
  * Dependances
  */
+use CrazyPHP\Library\State\Api as ApiState;
 use CrazyPHP\Library\State\Page as State;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Html\Structure;
@@ -64,12 +65,13 @@ class Controller {
      * 
      * Return Model Instance
      * 
+     * @param string $entity
      * @return Model
      */
-    public static function Model():Model {
+    public static function Model(string $entity = ""):Model {
 
         # New structure
-        $result = new Model();
+        $result = new Model($entity);
 
         # Return result
         return $result;
@@ -87,6 +89,23 @@ class Controller {
 
         # New structure
         $result = new State();
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Api State
+     * 
+     * Return api state instance
+     * 
+     * @return ApiState
+     */
+    public static function ApiState():ApiState {
+
+        # New structure
+        $result = new ApiState();
 
         # Return result
         return $result;
@@ -219,6 +238,14 @@ class Controller {
 
                 # Set result
                 $result = $_POST;
+
+                # Check result
+                if(empty($result)){
+                    
+                    # Try to get data
+                    $result = json_decode(file_get_contents('php://input'), true);
+
+                }
                 
                 # Break
                 break;

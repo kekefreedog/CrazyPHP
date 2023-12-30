@@ -389,4 +389,83 @@ class ArraysTest extends TestCase{
 
     }
 
+    /**
+     * Test Flatten
+     * 
+     * @return void
+     */
+    public function testFlatten():void {
+
+        # Input
+        $input = [
+            'type'          =>  'Project',
+            'attributes'    =>  [
+                'name'              =>  'test',
+                'image'             =>  "",
+                'sg_release_title'  =>  'test2',
+            ],
+            'relationships' =>  [],
+            'id'            =>  1111,
+            'links'         =>  [
+                'self'              =>  '/api/v1/entity/projects/1111',
+            ],
+        ];
+
+        # Output
+        $output = [
+            "type"                          =>  "Project",
+            "attributes.name"               =>  "test",
+            "attributes.image"              =>  "",
+            "attributes.sg_release_title"   =>  "test2",
+            "id"                            =>  "1111",
+            "links.self"                    =>  "/api/v1/entity/projects/1111",
+        ];
+
+        # Flatten
+        $result = Arrays::flatten($input);
+
+        # Assert 
+        $this->assertEquals($output, $result);
+
+    }
+
+    /**
+     * Test Unflatten
+     * 
+     * @return void
+     */
+    public function testUnflatten():void {
+
+        # Input
+        $input = [
+            'type'                          =>  'Project',
+            'attributes.name'               =>  'test',
+            'attributes.image'              =>  '',
+            'attributes.sg_release_title'   =>  'test2',
+            'id'                            =>  1111,
+            'links.self'                    =>  '/api/v1/entity/projects/1111',
+        ];
+
+        # Output
+        $output = [
+            'type'          =>  'Project',
+            'attributes'    =>  [
+                'name'              =>  'test',
+                'image'             =>  "",
+                'sg_release_title'  =>  'test2',
+            ],
+            'id'            =>  1111,
+            'links'         =>  [
+                'self'              =>  '/api/v1/entity/projects/1111',
+            ],
+        ];
+
+        # Flatten
+        $result = Arrays::unflatten($input);
+
+        # Assert 
+        $this->assertEquals($output, $result);
+
+    }
+
 }

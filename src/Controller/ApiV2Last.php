@@ -46,15 +46,19 @@ class ApiV2Last extends Controller {
         # New model
         $model = new Model();
 
+        # New options
+        if(isset($_GET["options"]) || isset($_GET["option"])) $options = $_GET["options"] ?? $_GET["option"];
+
+        # Set limit
+        $options["limit"] = intval(Context::getParameters("count"));
+
         # Declare content
         $content = $model
             ->readWithFilters(
                 [],
                 "DESC",
                 null,
-                [
-                    "limit" =>  intval(Context::getParameters("count"))
-                ]
+                $options
             )
         ;
 

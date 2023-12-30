@@ -408,10 +408,11 @@ class Validate {
      * Return a result summary as {<parameter>:<value>}
      * 
      * @param array $input
-     * @param bool upperCaseOnName Define if name will be process with upper case
+     * @param bool $upperCaseOnName Define if name will be process with upper case
+     * @param bool $rawName Keep name as is
      * @return array
      */
-    public static function getResultSummary(array $inputs = [], bool $upperCaseOnName = true):array {
+    public static function getResultSummary(array $inputs = [], bool $upperCaseOnName = true, bool $rawName = false):array {
 
         # Declare result
         $result = [];
@@ -426,18 +427,29 @@ class Validate {
             # Check name of input
             if($input['name'] ?? false){
 
-                # Prepare name
-                $name = str_replace(
-                    "_",
-                    " ",
-                    Process::camelToSnake($input['name'])
-                );
+                # Check raw name
+                if($rawName)
 
-                # Check upper case
-                if($upperCaseOnName)
+                    # Set name
+                    $name = $input["name"];
 
-                    # Uppper cas on name
-                    $name = ucwords($name);
+                # Beautify the name
+                else{
+
+                    # Prepare name
+                    $name = str_replace(
+                        "_",
+                        " ",
+                        Process::camelToSnake($input['name'])
+                    );
+
+                    # Check upper case
+                    if($upperCaseOnName)
+
+                        # Uppper cas on name
+                        $name = ucwords($name);
+
+                }
 
                 # Check value is a password
                 if($input['type'] === "PASSWORD")

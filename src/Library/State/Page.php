@@ -108,6 +108,40 @@ class Page {
     }
 
     /**
+     * Push Results
+     * 
+     * Push results in content
+     * 
+     * @param mixed $results
+     * @param string $entity
+     * @return Page
+     */
+    public function pushResults(mixed $result = [], ?string $entity = null):Page {
+
+        # Declare result
+        $resultTemp = [];
+
+        # Check entity
+        if($entity !== null && $entity)
+
+            # Push result
+            $resultTemp["results"][$entity] = $result;
+
+        # If no entity
+        else
+
+            # Push result
+            $resultTemp["results"] = $result;
+
+        # Merge to result
+        $this->result = Arrays::mergeMultidimensionalArraysBis(true, $this->result, $resultTemp);
+
+        # Return self
+        return $this;
+
+    }
+
+    /**
      * Push Form
      * 
      * Push form in content
@@ -115,7 +149,7 @@ class Page {
      * @param array $form Form parameters
      * @return Page
      */
-    public function pushForm(array $form = []):Page {
+    public function pushForm(array $form = []):self {
 
         # Form
         $form = new Form($form);
@@ -160,7 +194,7 @@ class Page {
      * @param bool $trigger
      * @return Page
      */
-    public function pushContext(bool $trigger = true):Page {
+    public function pushContext(bool $trigger = true):self {
 
         # Swith value in options
         $this->options["context"] = $trigger;
@@ -178,7 +212,7 @@ class Page {
      * @param bool $trigger
      * @return Page
      */
-    public function pushCookie(bool $trigger = true):Page {
+    public function pushCookie(bool $trigger = true):self {
 
         # Swith value in options
         $this->options["cookie"] = $trigger;
@@ -196,7 +230,7 @@ class Page {
      * @param bool|string|array $configs
      * @return Page
      */
-    public function pushConfig(bool|string|array $configs = true):Page {
+    public function pushConfig(bool|string|array $configs = true):self {
 
         # Check if string
         if(is_string($configs))

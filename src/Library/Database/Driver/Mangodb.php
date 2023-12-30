@@ -759,9 +759,16 @@ class Mangodb implements CrazyDatabaseDriver {
     public static function convertToMongoSchema(array $schema = []):array {
 
         # Declare result
-        $result = [];
+        $result = [
+            "validator" =>  [
+                '$jsonSchema'   =>  static::_recursiveMongoSchemaConvertor($schema)
+            ]
+        ];
 
-        # Check schema
+        # Return result
+        return $result;
+
+        /* # Check schema
         if(empty($schema))
 
             # Return result
@@ -833,11 +840,13 @@ class Mangodb implements CrazyDatabaseDriver {
             # Check properties
             if(!empty($required))
     
+                # Check required
                 $result["validator"]['$jsonSchema']["required"] = $required;
 
         }
     
-        return $result;
+        # Return result
+        return $result; */
 
     }
 
@@ -865,6 +874,192 @@ class Mangodb implements CrazyDatabaseDriver {
 
         # Create config user
         $driver->createUserFromConfig();
+
+    }
+
+    /** Private static methods
+     ******************************************************
+     */
+
+    /**
+     * Recursive Mongo Schema convertor
+     * 
+     * @param array $schema
+     * @param string $prefix = ""
+     * @return array ["bsonType", "properties", "required"]
+     */
+    private static function _recursiveMongoSchemaConvertor(array $schema = [], string $prefix = ""):array {
+
+        # Set result
+        $result = [
+            "bsonType"      =>  "object",
+        ];
+
+        # Declare required
+        $required = [];
+
+        # Declare properties
+        $properties = [];
+
+        # Check schema
+        if(!empty($schema))
+
+            # Iteration schema
+            foreach($schema as $item){
+
+                # Check prefix
+                if($prefix)
+
+                    # Check current item in child
+                    if(strpos($item["name"], "$prefix.") !== false)
+
+                        # Remove prefix from name
+                        $item["name"] = str_replace("$prefix.", "", $item["name"]);
+
+                    # Else continue loop
+                    else
+
+                        # Continue iteration
+                        continue;
+
+                # Check dot on name
+                if(strpos($item["name"], ".") !== false){
+
+                    # Set name
+                    $name = explode(".", $item["name"])[0];
+
+                    # Set description
+                    $description = null;
+
+                    # Recursive
+                    $recursiveResult = static::_recursiveMongoSchemaConvertor($schema, $name);
+
+                    # Set bson type
+                    $bsonType = $recursiveResult["bsonType"] ?? "object";
+
+                    # Set properties
+                    $childProperties = $recursiveResult["properties"] ?? null;
+
+                    # Set required
+                    $childRequired = $recursiveResult["required"] ?? null;
+
+                    # check if requierd
+                    if($item["required"] ?? false)
+
+                        # Push name in required
+                        $required[] = $name;
+
+                }else
+                # Check if type VARCHAR
+                if($item["type"] == "VARCHAR"){
+
+                    # Set bson type
+                    $bsonType = "string";
+
+                    # Set Name
+                    $name = $item["name"];
+
+                    # Set description
+                    $description = ($item['label'] ?? $name)." must be a \"$bsonType\"";
+
+                    # check if requierd
+                    if($item["required"] ?? false)
+
+                        # Push name in required
+                        $required[] = $name;
+
+                    # Set properties
+                    $childProperties = null;
+
+                    # Set required
+                    $childRequired = null;
+
+                }else
+                # Check if type VARCHAR
+                if($item["type"] == "INT"){
+
+                    # Set bson type
+                    $bsonType = "int";
+
+                    # Set Name
+                    $name = $item["name"];
+
+                    # Set description
+                    $description = ($item['label'] ?? $name)." must be a \"$bsonType\"";
+
+                    # check if requierd
+                    if($item["required"] ?? false)
+
+                        # Push name in required
+                        $required[] = $name;
+
+                    # Set properties
+                    $childProperties = null;
+
+                    # Set required
+                    $childRequired = null;
+
+                }else{
+
+                    # Set bson type
+                    $bsonType = "string";
+
+                    # Set Name
+                    $name = $item["name"];
+
+                    # Set description
+                    $description = ($item['label'] ?? $name)." should be a \"$bsonType\"";
+
+                    # check if requierd
+                    if($item["required"] ?? false)
+
+                        # Push name in required
+                        $required[] = $name;
+
+                    # Set properties
+                    $childProperties = null;
+
+                    # Set required
+                    $childRequired = null;
+
+                }
+
+                # Push bson type in properties
+                $properties[$name]["bsonType"] = $bsonType;
+
+                # Check description
+                if($description !== null)
+
+                    # Push description in properties
+                    $properties[$name]["description"] = $description;
+
+                # Check properties
+                if($childProperties !== null)
+
+                    # Push description in properties
+                    $properties[$name]["properties"] = $childProperties;
+
+                # Check properties
+                if($childRequired !== null)
+
+                    # Push description in properties
+                    $properties[$name]["required"] = $childRequired;
+
+
+
+            }
+
+        # Fill result properties
+        $result["properties"] = $properties;
+
+        # Check required
+        if(!empty($required))
+
+            # Fill result properties
+            $result["required"] = $required;
+
+        # Return result
+        return $result;
 
     }
 

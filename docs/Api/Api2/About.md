@@ -1,3 +1,9 @@
+---
+runme:
+  id: 01HJV2BAQD3M1QJXQ36XPBZNSY
+  version: v2.0
+---
+
 # Api2
 
 ## About
@@ -13,6 +19,8 @@ List all entities available
 ## Get All
 
 Return all items of entity
+
+Exemple : `/api/v2/${entity}/all`
 
 ### List of parameters allowed
 
@@ -35,6 +43,8 @@ Return number of items of entity
 ### Get Last
 
 Return last items of entity
+
+Exemple : `/api/v2/${entity}/last/${number}`
 
 ### Get New From
 

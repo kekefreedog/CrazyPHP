@@ -417,6 +417,28 @@ class Config implements CrazyDriverModel {
 
     }
 
+    /** Private methods | Process
+     ******************************************************
+     */
+
+    /**
+     * Page State Process
+     * 
+     * Process result (input) for Page State by adding _metadata info...
+     * 
+     * @param array $input
+     * @return array
+     */
+    public function _pageStateProcess(array $input):array {
+
+        # Set result
+        $result = $input;
+
+        # Return result
+        return $result;
+
+    }
+
     /** Private methods
      ******************************************************
      */

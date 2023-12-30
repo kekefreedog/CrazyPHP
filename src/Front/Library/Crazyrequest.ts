@@ -369,7 +369,7 @@ export default class Crazyrequest{
             if(["POST", "post"].includes(this.requestOptions.method ?? "")){
 
                 // Declare body content
-                let bodyContent:FormData|null = null;
+                let bodyContent:FormData|Object|null = null;
 
                 // Check if formdata
                 if(body instanceof FormData){
@@ -385,6 +385,22 @@ export default class Crazyrequest{
 
                     // Fill headers
                     this.requestOptions.headers.append('Content-Type', 'multipart/form-data'); */
+
+                }else
+                // Push object
+                if(typeof body === "object"){
+
+                    // Fill body content
+                    bodyContent = JSON.stringify(body);
+
+                    // Check header is defined
+                    if(!(this.requestOptions.headers instanceof Headers))
+
+                        // Init headers
+                        this.requestOptions.headers = new Headers();
+
+                    // Fill headers
+                    this.requestOptions.headers.set('Content-Type', 'application/json');
 
                 }
     

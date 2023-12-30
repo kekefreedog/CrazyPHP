@@ -20,6 +20,7 @@ use CrazyPHP\Library\Database\Driver\Mangodb;
 use CrazyPHP\Interface\CrazyDriverModel;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Array\Arrays;
+use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\Router\Router;
 use CrazyPHP\Library\Model\Schema;
 use CrazyPHP\Library\Form\Query;
@@ -58,6 +59,9 @@ class Mongo implements CrazyDriverModel {
 
     /** @var array find options */
     private $findOptions = [];
+
+    /** @var array|null $field to retrieve */
+    private $_fields = null;
 
     /** Private parameters
      ******************************************************
@@ -112,6 +116,10 @@ class Mongo implements CrazyDriverModel {
      */
     public function parseId(string|int $id, ?array $options = null):self {
 
+        # Ingest options
+        $this->_ingestFields($options);
+        $this->_ingestPageStateProcess($options);
+
         # Set id
         $this->id = $id;
 
@@ -128,6 +136,10 @@ class Mongo implements CrazyDriverModel {
      * @return self
      */
     public function parseFilter(?array $filters, ?array $options = null):self {
+
+        # Ingest options
+        $this->_ingestFields($options);
+        $this->_ingestPageStateProcess($options);
 
         # Check limit in options
         if($options["limit"] ?? false && is_numeric($options["limit"])){
@@ -150,6 +162,10 @@ class Mongo implements CrazyDriverModel {
      * @return self
      */
     public function parseSort(null|array|string $sort, ?array $options = null):self {
+
+        # Ingest options
+        $this->_ingestFields($options);
+        $this->_ingestPageStateProcess($options);
 
         # Check sort
         if($sort == "ASC"){
@@ -179,6 +195,10 @@ class Mongo implements CrazyDriverModel {
      */
     public function parseGroup(?array $group, ?array $options = null):self {
 
+        # Ingest options
+        $this->_ingestFields($options);
+        $this->_ingestPageStateProcess($options);
+
         # Return self
         return $this;
 
@@ -192,6 +212,10 @@ class Mongo implements CrazyDriverModel {
      * @return self
      */
     public function parseSql(string $sql, ?array $options = null):self {
+
+        # Ingest options
+        $this->_ingestFields($options);
+        $this->_ingestPageStateProcess($options);
 
         # Return self
         return $this;
@@ -214,7 +238,9 @@ class Mongo implements CrazyDriverModel {
     public function ingestData(array $data, ?array $options = null):self {
 
         # New schema
-        $schema = new Schema($this->arguments["schema"], [$data]);
+        $schema = new Schema($this->arguments["schema"], [$data], [
+            "flatten"   =>  true,
+        ]);
 
         # Push schema in classe schema
         $this->schema = $schema;
@@ -322,6 +348,9 @@ class Mongo implements CrazyDriverModel {
                         # Push in data
                         $data[$item["name"]] = $item["value"];
 
+                    # Unflatten result
+                    $data = Arrays::unflatten($data);
+
                     # Get validator
                     $validator = Mangodb::convertToMongoSchema($this->arguments["schema"]);
 
@@ -336,6 +365,51 @@ class Mongo implements CrazyDriverModel {
 
             # Find
             $result = $this->mongodb->find($this->arguments["collection"], $this->arguments["database"], $this->findOptions);
+
+            ## Fields filter | start
+
+            # Check result
+            if(!empty($result) && !empty($this->_fields)){
+
+                # Declare key to unset
+                $keyToUnset = [];
+
+                # Iteration result
+                foreach($result as &$bson){
+
+                    # Iteration parameters
+                    foreach($bson as $key => $value)
+
+                        # Check key is in fields
+                        if(!in_array($key, $this->_fields) && !in_array($key, $keyToUnset))
+
+                            # Unset value
+                            $keyToUnset[] = $key;
+
+                    # Check key to unset
+                    if(!empty($keyToUnset))
+
+                        # Iteration
+                        foreach($keyToUnset as $key)
+
+                            # Unset it on document
+                            unset($bson->$key);
+
+                }
+
+            }
+
+            ## Fields filter | end
+
+            ## Process For Page State | Start
+
+            # check arguments
+            if($this->arguments["pageStateProcess"])
+
+                # Process value
+                $result = $this->_pageStateProcess($result);
+
+            ## Process For Page State | End
 
         }
 
@@ -377,6 +451,33 @@ class Mongo implements CrazyDriverModel {
 
         # Return self
         return $this;
+
+    }
+
+    /** Private methods | Process
+     ******************************************************
+     */
+
+    /**
+     * Page State Process
+     * 
+     * Process result (input) for Page State by adding _metadata info...
+     * 
+     * @param array $input
+     * @return array
+     */
+    public function _pageStateProcess(array $input):array {
+
+        # Set result
+        $result = [
+            "records"   =>  $input
+        ];
+
+        # Prepare metadata
+        $result["_metadata"]["records_total"] = count($input);
+
+        # Return result
+        return $result;
 
     }
 
@@ -461,15 +562,68 @@ class Mongo implements CrazyDriverModel {
 
     }
 
+    /** Private methods | Options
+     ******************************************************
+     */
+
+    /**
+     * Ingest Fields
+     * 
+     * @param ?array $options
+     * @return void
+     */
+    private function _ingestFields(?array $options = null):void {
+
+        # Check options
+        if($options !== null && isset($options["fields"]) && !empty($options["fields"]))
+
+            # check if string
+            if(is_string($options["fields"]) && ($this->_fields === null || !in_array($options["fields"], $this->_fields)))
+
+                # Push in fileds
+                $this->_fields[] = $options["fields"];
+
+            else
+            # Check if array
+            if(is_array($options["fields"]))
+
+                # Iteration values
+                foreach($options["fields"] as $field)
+
+                    # If not already on fields
+                    if(!in_array($field, $this->_fields))
+
+                        # Push in fields
+                        $this->_fields[] = $field;
+
+    }
+
+    /**
+     * Ingest pageStateProcess
+     * 
+     * @param ?array $options
+     * @return void
+     */
+    private function _ingestPageStateProcess(?array $options = null):void {
+
+        # Check options
+        if($options !== null && isset($options["pageStateProcess"]) && Process::bool($options["pageStateProcess"]) == true)
+
+            # Switch value in arguments
+            $this->arguments["pageStateProcess"] = true;
+
+    }
+
     /** Public constants
      ******************************************************
      */
 
     /** @const array */
     public const ARGUMENTS = [
-        "collection"    =>  "",
-        "schema"        =>  [],
-        "database"      =>  []
+        "collection"        =>  "",
+        "schema"            =>  [],
+        "database"          =>  [],
+        "pageStateProcess" =>  false,
     ];
     
 }
