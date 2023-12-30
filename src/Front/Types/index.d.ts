@@ -152,7 +152,7 @@ declare global {
         preAction?:?CallableFunction = null,
         postAction?:?CallableFunction = null,
         status?:?LoadPageOptionsStatus = null,
-        state?:Array<any> = null,
+        state?:Array<any>|Object = null,
         partials?:Object = null,
         scriptLoaded?:?typeof Crazypage = null,
         scriptRunning?:?new () => typeof Crazypage = null,

@@ -51,6 +51,36 @@ export default class Crazyurl{
     }
 
     /**
+     * Get 
+     * 
+     * Get current url
+     * 
+     * @param clearParameters Clear get parameters
+     * @return {string}
+     */
+    public static get = (clearParameters:boolean = false):string => {
+
+        // Prepare result
+        let result:string = window.location.href;
+
+        // Check if clear parameters
+        if(clearParameters){
+
+            // New url object
+            const urlObj = new URL(result);
+
+            // Set result
+            result = urlObj.origin + urlObj.pathname;
+
+        }
+        
+        // Return result
+        return result;
+        
+    }
+
+
+    /**
      * Add Query Parameters
      * 
      * Add Query Parameters

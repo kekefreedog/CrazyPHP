@@ -328,7 +328,8 @@ export default class Page {
                     }
                     
                 }else{
-
+                    
+                    // Error
                     throw new Error(`No page corresponding to "${options.name}" in the router collection`);
 
                 }

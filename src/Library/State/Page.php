@@ -24,6 +24,7 @@ use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Library\Form\Query;
+use CrazyPHP\Core\ApiResponse;
 use CrazyPHP\Model\Context;
 use CrazyPHP\Model\Env;
 use Exception;
@@ -503,10 +504,30 @@ class Page {
     private function _catchState(array $result = []):void {
 
         # Check env
-        if(Env::has(static::ENV_CATCH_STATE) && Env::get(static::ENV_CATCH_STATE)){
+        if(
+            Env::has(static::ENV_CATCH_STATE) && 
+            Env::get(static::ENV_CATCH_STATE)
+        )
 
             # New exception
             throw new CatchState("", 0, $result);
+
+        else
+        # Return state if env ?catch_state=true
+        if(
+            isset($_GET["catch_state"]) && 
+            $_GET["catch_state"]
+        ){
+
+            # Set response
+            (new ApiResponse())
+                ->setStatusCode(200)
+                ->pushContent("", $result)
+                ->pushContext()
+                ->send();
+
+            # Stop script
+            exit;
 
         }
 

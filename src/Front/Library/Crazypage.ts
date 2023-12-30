@@ -15,6 +15,7 @@ import Pageregister from "./Pageregister";
 import Crazyrequest from "./Crazyrequest";
 import { Crazyobject } from "../Types";
 import Arrays from "./Utility/Arrays";
+import Crazyurl from './Crazyurl';
 
 /**
  * Crazy Page
@@ -407,6 +408,82 @@ export default abstract class Crazypage {
             }
 
         });
+
+    }
+
+    /** Public methods | State
+     ******************************************************
+     */
+
+    /**
+     * Get Page State
+     * 
+     * Load current page state
+     * 
+     * @param forceRefresh:boolean
+     * @return Promise(Object|Array<any>)
+     */
+    public getPageState = async (forceRefresh:boolean = false):Promise<Object|Array<any>> => {
+
+        // Set result
+        let result:Object = {};
+
+        // Check if state in options
+        if(
+            forceRefresh ||
+            this.options === null ||
+            this.options.state === undefined
+        ){      
+            
+            // Get current url
+            let url = Crazyurl.get(true);
+
+            // New query
+            let query = new Crazyrequest(
+                `${url}?catch_state=true`,
+                {
+                    method: "get",
+                    cache: false,
+                    responseType: "json",
+                    from: "internal"
+                }
+            );
+    
+            // Rerurn result
+            result = query.fetch()
+                .then(
+                    (data) => {
+
+                        // Check options
+                        if(this.options && this.options.status){
+            
+                            // Set state
+                            this.options.state = data;
+            
+                            // Set state status
+                            this.options.status.hasState = true;
+
+                            // Return result
+                            return this.options.state;
+            
+                        }
+
+                        // Else return data
+                        return data
+
+                    }
+                );
+
+        }else{
+
+            // Set result
+            // @ts-ignore
+            result = this.options.state as object;
+
+        }
+
+        // Return result
+        return result;
 
     }
 
