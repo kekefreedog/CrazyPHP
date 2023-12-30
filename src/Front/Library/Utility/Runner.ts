@@ -26,11 +26,13 @@ export default class Runner {
 
     /**
      * Constructor
+     * 
+     * @param extra
      */
-    public constructor() {
+    public constructor(extra:any = null) {
 
         // Set options
-        this._options = {
+        let options:RunnerOption = {
             result: null,
             _info: {
                 status: "Waiting",
@@ -41,6 +43,14 @@ export default class Runner {
                 }
             }
         }
+
+        // Check extra
+        if(extra && extra !== null)
+
+            options.extra = extra;
+
+        // Push options
+        this._options = options;
         
     }
 

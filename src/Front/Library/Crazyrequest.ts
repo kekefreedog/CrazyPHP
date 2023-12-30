@@ -408,6 +408,7 @@ export default class Crazyrequest{
                 if(bodyContent !== null)
 
                     // Set body
+                    // @ts-ignore
                     this.requestOptions.body = bodyContent;
 
             }else

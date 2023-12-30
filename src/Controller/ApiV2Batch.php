@@ -74,9 +74,6 @@ class ApiV2Batch extends Controller {
 
                     }catch(Exception $e){
 
-                        print_r($e);
-                        exit;
-
                         # Push error in state
                         $state->pushException($e);
 

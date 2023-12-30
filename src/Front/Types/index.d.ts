@@ -264,7 +264,8 @@ declare global {
                 }>
             }
         },
-        _user_interface?:Object
+        _user_interface?:Object,
+        extra?:any
     }
 
     /** Interface | Error
