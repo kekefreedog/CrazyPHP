@@ -836,6 +836,15 @@ class Core extends CLI {
                 # Check code
                 if($e->getCode() == 255){
 
+                    # Get Message
+                    $message = $e->getMessage();
+
+                    # check message
+                    if($message)
+
+                        # Echo message
+                        $climate->out($message);
+
                     # Message end
                     $climate
                         ->green("🟡 Relaunch ".strtolower(Process::spaceBeforeCapital(str_replace("run", "", $action)))."...")

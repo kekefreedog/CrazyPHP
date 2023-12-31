@@ -126,13 +126,13 @@ class Page {
         if($entity !== null && $entity)
 
             # Push result
-            $resultTemp["results"][$entity] = $result;
+            $resultTemp[$entity] = $result;
 
         # If no entity
         else
 
             # Push result
-            $resultTemp["results"] = $result;
+            $resultTemp = $result;
 
         # Merge to result
         $this->result = Arrays::mergeMultidimensionalArraysBis(true, $this->result, $resultTemp);

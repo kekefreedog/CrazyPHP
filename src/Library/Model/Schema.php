@@ -289,11 +289,21 @@ class Schema {
             $items = $this->collection;
 
             # Iteration of item
-            foreach($items as &$item){
+            foreach($items as $key => &$item){
 
                 # Set value of item
                 if(!isset($value[$item["name"]])){
 
+                    # Check skipEmptyValue
+                    if($this->options["skipEmptyValue"]){
+
+                        # Remove current item
+                        unset($items[$key]);
+    
+                        # Skip and continue iteration
+                        continue;
+
+                    }else
                     # Check if value is requierd
                     if($item["required"] ?? false){
             
@@ -622,6 +632,8 @@ class Schema {
         "array_root"    =>  "",
         # Flatten value array received
         "flatten"       =>  false,
+        # Skip empty values
+        "skipEmptyValue"=>  false,
         # Isolate specific schema for test / debug
         "phpunit_test"  =>  false,
     ];

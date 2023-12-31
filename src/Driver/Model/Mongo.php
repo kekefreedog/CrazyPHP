@@ -239,7 +239,8 @@ class Mongo implements CrazyDriverModel {
 
         # New schema
         $schema = new Schema($this->arguments["schema"], [$data], [
-            "flatten"   =>  true,
+            "flatten"           =>  true,
+            "skipEmptyValue"    =>  $this->isUpdate()
         ]);
 
         # Push schema in classe schema
@@ -296,7 +297,8 @@ class Mongo implements CrazyDriverModel {
 
         }else
         # Update with id
-        if($this->schema !== null && $this->id !== null){
+        # if($this->schema !== null && $this->id !== null){
+        if($this->isUpdateById()){
 
             # Check collection
             $schemaResult = $this->schema->getResult();
@@ -565,6 +567,28 @@ class Mongo implements CrazyDriverModel {
     /** Private methods | Options
      ******************************************************
      */
+
+    /**
+     * Is Update
+     * 
+     * @return bool
+     */
+    private function isUpdate():bool {
+
+        return $this->id !== null;
+
+    }
+
+    /**
+     * Is Update By Id
+     * 
+     * @return bool
+     */
+    private function isUpdateById():bool {
+
+        return $this->schema !== null && $this->id !== null;
+
+    }
 
     /**
      * Ingest Fields

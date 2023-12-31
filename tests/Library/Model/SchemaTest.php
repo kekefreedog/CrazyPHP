@@ -60,7 +60,7 @@ class SchemaTest extends TestCase {
         [
             'name' => 'attributes.image',
             'label' => 'Image of the show',
-            'type' => 'FILE',
+            'type' => 'VARCHAR',
         ],
         [
             'name' => 'links.self',
@@ -84,6 +84,13 @@ class SchemaTest extends TestCase {
         ],
     ];
 
+    /** @const array ITEM_FILTERED */
+    public const ITEM_FILTERED = [
+        'attributes' => [
+            'image' => 'toto',
+        ]
+    ];
+
     /** @cont array EXPECTED */
     public const EXPECTED = [
         [
@@ -96,6 +103,15 @@ class SchemaTest extends TestCase {
             ],
             'links' => [
                 'self' => '/api/v1/entity/projects/1111',
+            ],
+        ],
+    ];
+
+    /** @cont array EXPECTED_FILTERED */
+    public const EXPECTED_FILTERED = [
+        [
+            'attributes' => [
+                'image' => 'toto',
             ],
         ],
     ];
@@ -117,7 +133,6 @@ class SchemaTest extends TestCase {
         Env::set([
             # App root for composer class
             "crazyphp_root"     =>  getcwd(),
-            "phpunit_test"      =>  true,
             "config_location"   =>  "@crazyphp_root/resources/Yml"
         ]);
 
@@ -154,7 +169,6 @@ class SchemaTest extends TestCase {
         # New schema
         $schema = new Schema(self::SCHEMA, [self::ITEM], [
             "flatten"       =>  true,
-            "phpunit_test"  =>  true
         ]);
 
         # Get result
@@ -162,6 +176,30 @@ class SchemaTest extends TestCase {
 
         # Assert
         $this->assertEquals(self::EXPECTED, $result);
+
+    }
+
+    /**
+     * Test Skip Empty Value
+     * 
+     * Test envAndConfigValues function
+     * 
+     * @return void
+     */
+    public function testSkipEmptyValue():void {
+
+        # New schema
+        $schema = new Schema(self::SCHEMA, [self::ITEM_FILTERED], [
+            "flatten"       =>  true,
+            "phpunit_test"  =>  true,
+            "skipEmptyValue"=>  true
+        ]);
+
+        # Get result
+        $result = $schema->getResultSummary();
+
+        # Assert
+        $this->assertEquals(self::EXPECTED_FILTERED, $result);
 
     }
 

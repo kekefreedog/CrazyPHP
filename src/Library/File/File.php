@@ -835,6 +835,70 @@ class File {
 
     }
 
+    /**
+     * Download file online to tmp
+     * 
+     * Downloads an image from a given URL and saves it to a temporary file.
+     * 
+     * @param string $url The URL of the image to download.
+     * @param string $tempFileName The prefix for the temporary file name.
+     * @return string The path to the saved temporary file or an error message.
+     */
+    public static function downloadToTmp(string $url = "", string $tempFileName = "tmp"):string {
+
+        # Set result
+        $result = "";
+
+        # Fetch the image content from the URL
+        $content = file_get_contents($url);
+
+        # Check content
+        if($content === false)
+
+            # New Exception
+            throw new CrazyException(
+                "Could not download the image from the URL: $url",
+                500,
+                [
+                    "custom_code"   =>  "file-002",
+                ]
+            );
+
+        # Create a temporary file in the system's temp directory
+        $tempFile = tempnam(sys_get_temp_dir(), "__".($tempFileName ? $tempFileName : "tmp"));
+
+        # Check tempfile
+        if($tempFile === false)
+
+            # New Exception
+            throw new CrazyException(
+                "Could not create a temporary file.",
+                500,
+                [
+                    "custom_code"   =>  "file-003",
+                ]
+            );
+
+        # Write the image content to the temporary file
+        $result = file_put_contents($tempFile, $content);
+
+        # Check file created
+        if($result === false)
+
+            # New Exception
+            throw new CrazyException(
+                "Could not write to the temporary file: $tempFile",
+                500,
+                [
+                    "custom_code"   =>  "file-003",
+                ]
+            );
+
+        # Return the path to the temporary file
+        return $tempFile;
+
+    }
+
 
     /** Public constant
      ******************************************************
@@ -864,6 +928,11 @@ class File {
         "zip"   =>  "application/zip",
         # Js
         "js"    =>  "application/javascript",
+        ## Media
+        # Jpg
+        "jpg"   =>  "image/jpeg",
+        # Jpeg
+        "jpeg"  =>  "image/jpeg",
         # TBC ...
     ];
 
