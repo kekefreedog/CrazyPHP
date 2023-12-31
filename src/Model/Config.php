@@ -17,12 +17,12 @@ namespace CrazyPHP\Model;
  */
 use CrazyPHP\Exception\CrazyException;
 use Symfony\Component\Finder\Finder;
-use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\File\Composer;
+use CrazyPHP\Library\Form\Process;
+use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\File\Header;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Library\File\Yaml;
-use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Model\Env;
 
 /**
@@ -365,10 +365,17 @@ class Config{
             true,
             $composerContent,
             [
-                "root"      =>  Process::reducePath(File::path("@app_root")),
+                "root"          =>  Process::reducePath(File::path("@app_root")),
                 # To delete for production
-                "framework" =>  $frameworkContent,
-                "public"    =>  "public"
+                "framework"     =>  $frameworkContent,
+                "public"        =>  "public",
+                "dependencies"  =>  [
+                    "php"   =>  [
+                        "packages"   =>  [
+                            "git"
+                        ]
+                    ]
+                ]
             ]
         );
 

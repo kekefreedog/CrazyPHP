@@ -545,6 +545,16 @@ class Create extends CrazyModel implements CrazyCommand {
         # Check if mongo set in current app
         if(in_array('mongodb', $databaseValues)){
 
+            # Get package
+            $packages = FileConfig::getValue("App.dependencies.php.packages");
+
+            # check
+            $key = (is_array($packages)) ? count($packages) : 0;
+
+            # Push app dependances
+            FileConfig::setValue("App.dependencies.php.packages.$key", "php8.2-mongodb");
+
+            # Compose requiere
             Composer::requirePackage("mongodb/mongodb", true, false);
 
         }

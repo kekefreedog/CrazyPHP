@@ -498,12 +498,9 @@ class Install implements CrazyCommand {
      * @return self
      */
     public function runDockerComposeBuild():self {
-        
-        # Command
-        $command = "docker-compose build";
 
         # Exec command
-        Command::exec($command);
+        Command::exec("docker-compose", "build", true);
 
         # Return self
         return $this;
@@ -537,6 +534,23 @@ class Install implements CrazyCommand {
 
             # Push config in result
             $result['_config'] = $config;
+
+            # Add ";" at the end of the last package
+            $packages = $result["_config"]["App"]["dependencies"]["php"]["packages"];
+
+            # Check packages
+            if(is_array($packages) && !empty($packages)){
+
+                # Extract last package
+                $lastPackage = array_pop($packages);
+
+                # Push it
+                $packages[] = "$lastPackage;";
+
+                # Push packages
+                $result["_config"]["App"]["dependencies"]["php"]["packages"] = $packages;
+
+            }
 
             # Check if windows
             if(Os::isWindows()){
