@@ -187,16 +187,41 @@ class Controller {
         # Set result
         $result = null;
 
-        # Check name
-        if(!$name)
+        # Check env http_request_data_override
+        if(Env::has("parameters_url_override") && is_array(Env::get("parameters_url_override"))){
 
-            # Get value from context
-            $result = Context::get("routes.current.parameters");
+            # New parameters
+            $parameters = Env::get("parameters_url_override");
 
-        else
+            # Check name
+            if(!$name){
 
-            # Get value from context
-            $result = Context::get("routes.current.parameters.$name");
+                # Get value from context
+                $result = $parameters;
+
+            }else{
+
+                # Get value from parameters
+                $result = $parameters[$name] ?? null;
+
+            }
+
+        }else{
+
+            # Check name
+            if(!$name){
+
+                # Get value from context
+                $result = Context::get("routes.current.parameters");
+
+            }else{
+
+                # Get value from context
+                $result = Context::get("routes.current.parameters.$name");
+
+            }
+
+        }
 
         # Check if result is array
         if(is_array($result))

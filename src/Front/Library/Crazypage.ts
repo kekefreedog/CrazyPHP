@@ -527,4 +527,36 @@ export default abstract class Crazypage {
 
     }
 
+    /**
+     * Load Page State
+     * 
+     * Load current page state
+     * 
+     * @param url:string
+     * @return Promise(Object|Array<any>)
+     */
+    public static loadPageState = async (url:string = ""):Promise<Object|Array<any>> => { 
+            
+        // Check url
+        if(!url)
+
+            // Get current url
+            url = Crazyurl.get(true);
+
+        // New query
+        let query = new Crazyrequest(
+            `${url}?catch_state=true`,
+            {
+                method: "get",
+                cache: false,
+                responseType: "json",
+                from: "internal"
+            }
+        );
+
+        // Rerurn result
+        return query.fetch();
+
+    }
+
 }

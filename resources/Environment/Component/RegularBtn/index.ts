@@ -13,8 +13,8 @@
  */
 const TemplateCompilated:CallableFunction = require("./template.hbs");
 const StyleCompilated:CrazyelementStyle = require("!!css-loader!sass-loader!./style.scss");
+import { Crazycomponent, Crazyurl } from "crazyphp";
 import tippy, {animateFill} from 'tippy.js';
-import { Crazycomponent } from "crazyphp";
 
 /**
  * Regular Button
@@ -70,6 +70,10 @@ export default class RegularBtn extends Crazycomponent {
          value: "add",
          type: "string",
       },
+      "icon-image": {
+         value: "",
+         type: "string",
+      },
       "icon-position": {
          value: "right",
          type: "string",
@@ -82,14 +86,23 @@ export default class RegularBtn extends Crazycomponent {
       "color-secondary": {
          value: "blue lighten-5",
          type: "string",
-      }
+      },
+      "href": {
+         value: "",
+         type: "string"
+      },
+      "target": {
+         value: "_self",
+         type: "string",
+         select: ["_blank", "_self"]
+      },
    };
 
    /**
     * Observable Attributes
     */
    static get observedAttributes() { 
-      return Object.keys(["type", "depth", "shape", "size", "wave", "label", "icon-class", "icon-text", "icon-position", "color-primary", "color-secondary"]); 
+      return Object.keys(["type", "depth", "shape", "size", "wave", "label", "icon-class", "icon-text", "icon-image", "icon-position", "color-primary", "color-secondary"]); 
    }
 
    /**
@@ -138,6 +151,38 @@ export default class RegularBtn extends Crazycomponent {
          }
 
       }
+
+      // Check href
+      /* if(this.hasCurrentAttribute("href") && this.hasCurrentAttribute("target") && this.getCurrentAttribute("target") == "_self"){
+
+         // Catch click
+         let childEl = this.children[0] as HTMLElement;
+
+         // Catch click event
+         childEl.addEventListener(
+            "click",
+            e => {
+
+               // Prevent default action
+               e.preventDefault();
+
+               // Get target el
+               let target = e.currentTarget as HTMLAnchorElement;
+
+               // Get href
+               let href = target.href;
+
+               // Check if same domain
+               if(Crazyurl.isSameDomain(href)){
+
+                  console.log(href);
+
+               }
+
+            }
+         )
+
+      } */
 
    }
 

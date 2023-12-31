@@ -55,8 +55,22 @@
         {{#is attributes.type "extended"}}
             icon-{{@root.attributes.icon-position}}
         {{/is}}
+        {{!-- Text color if label --}}
+        {{#if @root.attributes.label}}
+            {{#if attributes.color-secondary}}
+                {{colorSuffix attributes.color-secondary "text"}}
+            {{/if}}
+        {{/if}}
     "
->
+    {{!-- Href --}}
+    {{#if attributes.href}}
+    href="{{attributes.href}}"
+    {{!-- Href --}}
+    {{#if attributes.target}}target="{{attributes.target}}"{{/if}}
+    {{/if}}
+>{{#if attributes.icon-image}}
+    <img alt="btn-image" src="{{attributes.icon-image}}" />
+{{else}}
     <i 
         class="
             {{attributes.icon-class}}
@@ -73,4 +87,4 @@
     {{#is attributes.type "extended"}}
         {{{@root.attributes.label}}}
     {{/is}}
-</a>
+{{/if}}</a>

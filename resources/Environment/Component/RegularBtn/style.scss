@@ -1,12 +1,22 @@
 /* A */
 a {
 
+    /* Img */
+    img {
+
+        /* Dimension */
+        width: inherit;
+        height: inherit;
+        object-fit: contain;
+        
+    }
+
     /* Depth */
     &.btn-outlined {
 
         /* Border */
-        outline: 1px solid;
-        outline-color: black;
+        border: 1px solid;
+        border-color: black;
 
     }
 

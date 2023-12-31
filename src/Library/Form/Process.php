@@ -1118,9 +1118,10 @@ class Process {
      * 
      * @param mixed $valueRequired Default Value
      * @param array $arguments Argument to pass in case the default value is callable
+     * @param array $items Current items exisitng
      * @return mixed
      */
-    public static function setDefault(mixed $valueRequired = null, array $arguments = []):mixed {
+    public static function setDefault(mixed $valueRequired = null, array $arguments = [], array $currentItems = []):mixed {
 
         # Set result
         $result = null;
@@ -1134,7 +1135,7 @@ class Process {
         # Check id the string is value
         if(is_callable($valueRequired)){
 
-            $result = $valueRequired($arguments);
+            $result = $valueRequired($arguments, $currentItems);
 
         }else{
 

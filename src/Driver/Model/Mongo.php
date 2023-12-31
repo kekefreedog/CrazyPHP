@@ -141,6 +141,12 @@ class Mongo implements CrazyDriverModel {
         $this->_ingestFields($options);
         $this->_ingestPageStateProcess($options);
 
+        # Check filters
+        if(isset($filters) && is_array($filters))
+
+            # Push filters in filters
+            $this->findOptions["filters"] = $filters;
+
         # Check limit in options
         if($options["limit"] ?? false && is_numeric($options["limit"])){
 

@@ -76,8 +76,11 @@ class File {
         # Declare result
         $result = false;
 
+        # Check input
+        $input = static::path($input);
+
         # Check input is valid
-        if($input && file_exists($input))
+        if($input && static::exists($input))
 
             # Get Mime
             $result = mime_content_type($input);
@@ -933,6 +936,8 @@ class File {
         "jpg"   =>  "image/jpeg",
         # Jpeg
         "jpeg"  =>  "image/jpeg",
+        # Png
+        "png"   =>  "image/png",
         # TBC ...
     ];
 

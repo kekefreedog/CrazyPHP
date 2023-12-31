@@ -611,6 +611,9 @@ class Mangodb implements CrazyDatabaseDriver {
      * 
      * @param string $collectionName
      * @param string $database
+     * @param array $options = [
+     *      "filters":array
+     * ]
      */
     public function find(string $collectionName, string $database, array $options = []):array|null {
 
@@ -629,8 +632,14 @@ class Mangodb implements CrazyDatabaseDriver {
         # Connect to the collection
         $collection = $database->$collectionName;
 
+        # Set filters
+        $filters = isset($options["filters"]) && is_array($options["filters"])
+            ? $options["filters"]
+            : []
+        ;
+
         # Last result
-        $documents = $collection->find([], $options);
+        $documents = $collection->find($filters, $options);
 
         # Iteration documents found
         foreach($documents as $document)

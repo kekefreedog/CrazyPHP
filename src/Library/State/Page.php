@@ -25,6 +25,7 @@ use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Library\Form\Query;
 use CrazyPHP\Core\ApiResponse;
+use CrazyPHP\Core\Controller;
 use CrazyPHP\Model\Context;
 use CrazyPHP\Model\Env;
 use Exception;
@@ -545,7 +546,7 @@ class Page {
      * @param array $options Option
      * @return array
      */
-    public static function getState(array $options = []):array {
+    public static function getState(array $options = [], array $currentItems = []):array {
 
         # Set result
         $result = [];
@@ -557,13 +558,20 @@ class Page {
         if(
             $classname &&
             method_exists("App\Controller\App\\".$classname, "get")
-        )
+        ){
 
             # Try
             try{
+
+                # Current request data
+                $currentRequestData = Controller::getHttpRequestData();
  
                 # Set env to catch state
-                Env::set([static::ENV_CATCH_STATE => true]);
+                Env::set([
+                    static::ENV_CATCH_STATE         =>  true,
+                    # "http_request_data_override"    =>  $currentRequestData["options"]["arguments"] ?? []
+                    "parameters_url_override"       =>  $currentRequestData["options"]["arguments"] ?? []
+                ]);
 
                 # Prepare method string
                 $method = "App\Controller\App\\$classname::get";
@@ -571,13 +579,21 @@ class Page {
                 # Execute method
                 $method([]);
 
+                # Clean env
+                Env::remove("parameters_url_override");
+
             # Catch state
             }catch(CatchState $e){
 
                 # Set result
                 $result = $e->getState();
 
+                # Clean env
+                Env::remove("parameters_url_override");
+
             }
+
+        }
 
         # Return result
         return $result;

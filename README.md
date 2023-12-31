@@ -115,6 +115,7 @@ php vendor/phpunit/phpunit/phpunit
 | ROUTER_TYPE_PATH       | @router_type_path       | \<string> | Determine the path of the back end router type           |
 | TRASH_PATH             | @trash_path             | \<string> | Determine the path of the trash                          |
 | TRASH_DISABLE          | @trash_disable          | \<string> | Determine if the trash is disable                        |
+| PARAMETERS_URL_OVERRIDE| @parameters_url_override| \<object> | Override parameters passed by url                        |
 
 # Documentation
 

@@ -449,11 +449,36 @@ export default class Page {
             // Stop function
             return options;
 
+        // Declare state
+        let stateObject:Object = {};
+
         // Prepare stateObject
-        let stateObject = options.status?.hasState
-            ? options.state
-            : {}
-        ;
+        if(options.status?.hasState){
+
+            // Set state
+            stateObject = options.state as object;
+
+        }else
+        // Check options.scriptLoaded
+        if(options.scriptLoaded && options.scriptLoaded !== null){
+            
+            // Get state
+            stateObject = await options.scriptLoaded.loadPageState();
+
+            // check options status
+            if(options.status && options.status === null){
+
+                // Set options status
+                options.status = {};
+
+                // Set status
+                options.status.hasState = true;
+
+            }
+
+        }
+
+        console.log(stateObject);
 
         // Check content
         if("content" in options && typeof options.content === "function"){
