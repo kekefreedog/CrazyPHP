@@ -20,10 +20,10 @@ use Mezon\Router\Types\BaseType as VendorBaseType;
 use Mezon\Router\Router as VendorRouter;
 use CrazyPHP\Interface\CrazyRouterType;
 use CrazyPHP\Exception\CrazyException;
-use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\Cache\Cache;
 use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\File\File;
+use CrazyPHP\Library\File\Json;
 use CrazyPHP\Model\Context;
 
 /**
@@ -249,30 +249,17 @@ class Router extends VendorRouter {
                 ]
             );
 
-        # Create temp file
-        $folderCachePath = File::path(self::CACHE_PATH);
-        $fileCachePath = File::path(self::CACHE_PATH.time());
-
-        # Check folder
-        if(!File::exists($folderCachePath))
-
-            # Create folder
-            File::createDirectory($folderCachePath);
+        # Tmp file Path
+        $tmpFilePath = tempnam(sys_get_temp_dir(), 'routerDump');
 
         # Create file cache
-        $this->dumpOnDisk($fileCachePath);
+        $this->dumpOnDisk($tmpFilePath);
 
         # Get content of cache
-        $data = file_get_contents($fileCachePath);
-        
+        $data = file_get_contents($tmpFilePath);
+
         # Put on Cache
         $this->cache->set($key, $data);
-
-        # Check if file exists
-        if(file_exists($fileCachePath))
-
-            # Remove cache
-            unlink($fileCachePath);
 
     }
 
@@ -313,27 +300,14 @@ class Router extends VendorRouter {
                 ]
             );
 
-        # Create temp file
-        $folderCachePath = File::path(self::CACHE_PATH);
-        $fileCachePath = File::path(self::CACHE_PATH.time());
-
-        # Check folder
-        if(!is_dir($folderCachePath))
-
-            # Create folder
-            mkdir($folderCachePath);
+        # Tmp file Path
+        $tmpFilePath = tempnam(sys_get_temp_dir(), 'routerDump');
 
         # Get content of cache
-        $data = file_put_contents($fileCachePath, $data);
+        $data = file_put_contents($tmpFilePath, $data);
 
         # Load cache
-        $this->loadFromDisk($fileCachePath);
-
-        # Check if file exists
-        if(file_exists($fileCachePath))
-
-            # Remove cache
-            unlink($fileCachePath);
+        $this->loadFromDisk($tmpFilePath);
 
     }
 
