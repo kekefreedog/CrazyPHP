@@ -191,4 +191,36 @@ export default class Crazyurl{
 
     }
 
+    /**
+     * To Query String
+     * 
+     * Convert multidimensional object to query string
+     * 
+     * @source https://stackoverflow.com/questions/26084733/convert-multidimensional-object-to-query-string
+     * @param obj 
+     * @param prefix 
+     * @returns {string}
+     */
+    public static toQueryString = (obj:object, prefix:string = ""):string => {
+
+        var str = [], k, v;
+        for(var p in obj) {
+            if (!obj.hasOwnProperty(p)) {continue;} // skip things from the prototype
+            if (~p.indexOf('[')) {
+                k = prefix ? prefix + "[" + p.substring(0, p.indexOf('[')) + "]" + p.substring(p.indexOf('[')) : p;
+            // only put whatever is before the bracket into new brackets; append the rest
+            } else {
+                k = prefix ? prefix + "[" + p + "]" : p;
+            }
+            v = obj[p];
+            // @ts-ignore
+            str.push(typeof v == "object" ?
+              Crazyurl.toQueryString(v, k) :
+              encodeURI(k) + "=" + encodeURIComponent(v)
+            );
+        }
+        return str.join("&");
+
+    }
+
 }

@@ -11,6 +11,7 @@
 /**
  * Dependances
  */
+import {default as NavigatorClient} from "./../Navigator/Client";
 import {default as UtilityProcess} from "./Process";
 
 /**
@@ -61,6 +62,9 @@ export default class Runner {
     /** @param _options */
     private _options:RunnerOption;
 
+    /** @param _navigatorClient */
+    private _navigatorClient:NavigatorClient;
+
     /** Public methods
      ******************************************************
      */
@@ -82,6 +86,9 @@ export default class Runner {
 
         // Chain the methods in sequence using Promises
         let chain = Promise.resolve(options);
+
+        // New navigator client
+        this._navigatorClient = new NavigatorClient();
 
         // Initial setup before any methods
         chain = chain.then(
@@ -105,6 +112,9 @@ export default class Runner {
                         label: UtilityProcess.capitalize(UtilityProcess.spaceBeforeCapital(method))
                     });
 
+                // Start prevent close
+                this._navigatorClient.preventClose();
+
                 // Return "abstract" class
                 return this.setUpBeforeClass(options);
 
@@ -115,13 +125,32 @@ export default class Runner {
         runMethods.forEach(method => {
             chain = chain
                 .then(options => {
+
+                    // Increment current
                     options._info.run.current++;
+
+                    // Set in progress
                     if(options._info.run.current>0)
                         options._info.status = "In Progress";
+
+                    // Run setup
                     return this.setUpBeforeMethod(options)
                 })
                 .then(this[method])
-                .then(this.tearDownAfterMethod);
+                .then(
+                    options => {
+
+                        // Return last method
+                        let result = this.tearDownAfterMethod(options);
+
+                        // Close prevent close
+                        this._navigatorClient.disablePreventClose();
+
+                        // Return result
+                        return result;
+
+                    }
+                );
         });
 
         // Final teardown after all methods

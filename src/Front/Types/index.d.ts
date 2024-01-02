@@ -15,6 +15,7 @@ import Crazypage from "./../Library/Crazypage";
  * Dependances
  */
 export {default as Componentregister} from "./../Library/Componentregister";
+export {default as NavigatorClient} from "./../Library/Navigator/Client";
 export {default as ColorSchema} from "./../Library/Utility/ColorSchema";
 export {default as UtilityProcess} from "./../Library/Utility/Process";
 export {default as Crazycomponent} from "./../Library/Crazycomponent";

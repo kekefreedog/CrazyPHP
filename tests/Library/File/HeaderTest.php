@@ -129,7 +129,7 @@ class HeaderTest extends TestCase{
         $headerPhp = Header::get("php");
 
         # Check result is equal to header generated
-        $this->assertEquals(html_entity_decode($headerPhp), self::RESULT);
+        $this->assertEquals(html_entity_decode($headerPhp), str_replace("2023", date("Y"), self::RESULT));
             
         # Remove cache folder
         $this->cache->deleteMultiple(["test-string", "test-array", "test-template"]);

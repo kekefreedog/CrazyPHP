@@ -17,11 +17,11 @@ namespace CrazyPHP\Library\Template;
  */
 use CrazyPHP\Library\Template\Handlebars\Helpers;
 use CrazyPHP\Exception\CrazyException;
+use Symfony\Component\Finder\Finder;
 use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\Cache\Cache;
 use CrazyPHP\Library\File\File;
 use LightnCandy\LightnCandy;
-use Symfony\Component\Finder\Finder;
 
 /**
  * Handlebars
