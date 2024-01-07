@@ -300,7 +300,7 @@ export default class Crazyrequest{
         if(this.options.from === "external"){
 
             // Set mode
-            this.requestOptions.mode = "cors";
+            this.requestOptions.mode = "no-cors";
 
         }
 
