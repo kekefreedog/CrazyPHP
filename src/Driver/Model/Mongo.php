@@ -438,6 +438,12 @@ class Mongo implements CrazyDriverModel {
         # Set result
         $result = 0;
 
+        # Find
+        $findResult = $this->mongodb->find($this->arguments["collection"], $this->arguments["database"], $this->findOptions);
+
+        # Count result
+        $result = count($findResult);
+
         # Return self
         return $result;
 
