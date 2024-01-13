@@ -70,6 +70,16 @@ class MongodbTest extends TestCase {
         ],
     ];
 
+    /** @const array SCHEMA */
+    public const SCHEMA_BIS = [
+        [
+            'name'  => 'attributes.sg_department_1.Department.sg_division',
+            'label' => 'Entity type',
+            'type' => 'VARCHAR',
+            # 'required' => true,
+        ],
+    ];
+
     /** @cont array EXPECTED */
     public const EXPECTED = [
         'validator' => [
@@ -113,6 +123,36 @@ class MongodbTest extends TestCase {
                     ],
                 ],
                 'required' => ['type', 'attributes'],
+            ],
+        ],
+    ];
+
+    /** @cont array EXPECTED */
+    public const EXPECTED_BIS = [
+        'validator' => [
+            '$jsonSchema' => [
+                'bsonType' => 'object',
+                'properties' => [
+                    'attributes' => [
+                        'bsonType' => 'object',
+                        'properties' => [
+                            'sg_department_1' => [
+                                'bsonType' => 'object',
+                                'properties' => [
+                                    'Department' => [
+                                        'bsonType' => 'object',
+                                        'properties' => [
+                                            'sg_division' => [
+                                                'bsonType' => 'string',
+                                                'description' => 'Entity type must be a "string"',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
             ],
         ],
     ];
@@ -174,6 +214,23 @@ class MongodbTest extends TestCase {
 
         # Assert
         $this->assertEquals(self::EXPECTED, $mongoSchema);
+
+    }
+
+    /**
+     * Test Page State
+     * 
+     * Test envAndConfigValues function
+     * 
+     * @return void
+     */
+    public function testPageStateBis():void {
+
+        # New schema
+        $mongoSchema = Mangodb::convertToMongoSchema(static::SCHEMA_BIS);
+
+        # Assert
+        $this->assertEquals(self::EXPECTED_BIS, $mongoSchema);
 
     }
 

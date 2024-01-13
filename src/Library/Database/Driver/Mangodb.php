@@ -777,86 +777,6 @@ class Mangodb implements CrazyDatabaseDriver {
         # Return result
         return $result;
 
-        /* # Check schema
-        if(empty($schema))
-
-            # Return result
-            return $result;
-
-        # Declare properties
-        $properties = [];
-
-        # Declare required
-        $required = [];
-    
-        # Iteration schema
-        foreach($schema as $attribute){
-
-            # Get type
-            $type = $attribute['type'];
-    
-            # Convert SQL data types to BSON data types
-            switch($type){
-
-                # Case varchar
-                case 'VARCHAR':
-
-                    # Set bson type
-                    $bsonType = 'string';
-
-                    # Break
-                    break;
-
-                # Set default
-                default:
-
-                    # Set bson type
-                    $bsonType = 'string';
-
-            }
-    
-            # Fill properties
-            $properties[$attribute['name']] = [
-                'bsonType' => $bsonType,
-                'description' => ($attribute['label'] ?? $attribute['name'])." must be a \”$bsonType\”"
-            ];
-
-            # Check required
-            if($attribute["required"] ?? false)
-
-                # Fill required
-                $required[] = $attribute['name'];
-
-        }
-
-        # Check properties and required
-        if(!empty($properties) || !empty($required)){
-
-            # Prepare result
-            $result = [
-                'validator' => [
-                    '$jsonSchema' => [
-                        'bsonType' => 'object'
-                    ]
-                ]
-            ];
-
-            # Check properties
-            if(!empty($properties))
-
-                $result["validator"]['$jsonSchema']["properties"] = $properties;
-
-            # Check properties
-            if(!empty($required))
-    
-                # Check required
-                $result["validator"]['$jsonSchema']["required"] = $required;
-
-        }
-    
-        # Return result
-        return $result; */
-
     }
 
     /** Public Static Methods
@@ -941,7 +861,12 @@ class Mangodb implements CrazyDatabaseDriver {
                     $description = null;
 
                     # Recursive
-                    $recursiveResult = static::_recursiveMongoSchemaConvertor($schema, $name);
+                    $recursiveResult = static::_recursiveMongoSchemaConvertor(
+                        $schema, 
+                        $prefix 
+                            ? "$prefix.$name"
+                            : $name
+                    );
 
                     # Set bson type
                     $bsonType = $recursiveResult["bsonType"] ?? "object";
