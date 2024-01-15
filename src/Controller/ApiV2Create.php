@@ -39,7 +39,7 @@ class ApiV2Create extends Controller {
 
         # Declare content
         $content = self::Model()
-            ->create($_POST ?? [])
+            ->create(Controller::getHttpRequestData())
         ;
 
         # Set response

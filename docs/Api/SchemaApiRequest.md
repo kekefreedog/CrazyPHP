@@ -1,7 +1,7 @@
 ---
 runme:
   id: 01HJTNJC60GAMR6TQV7XXB1C5Z
-  version: v2.0
+  version: v2.2
 ---
 
 # ___Api___ __Schema of request__
@@ -26,6 +26,7 @@ let body = {
     filters: [
         name: "Home"
     ],
+    data: object|Array<any>
     sort: "asc",
     options: [
         limit: 1 // Limit number of item by one,
@@ -44,8 +45,9 @@ Batching allow you to send multiple requests as a single transaction.
 
 By default, supported request are : `create`, `delete`, `update`
 
-Exemple : 
-```json
+Exemple :
+
+```json {"id":"01HM7MGZ911E1CACD7M8SVYH1Z"}
 {
     "requests": [
         {
