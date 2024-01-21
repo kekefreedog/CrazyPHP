@@ -596,4 +596,27 @@ class Helpers {
         
     }
 
+    /**
+     * Round
+     * 
+     * Returns the length of the given string or array.
+     * 
+     * @param mixed $value
+     * @param mixed options
+     */
+    public static function round($value) {
+
+        # Check if array
+        if(is_int($value) || is_float($value) || ctype_digit($value))
+
+            # Return round value
+            return round(intval($value));
+
+        else
+
+            # Return value
+            return $value;
+        
+    }
+
 }

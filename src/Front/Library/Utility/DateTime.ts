@@ -71,4 +71,37 @@ export default class DateTime {
 
     }
 
+    /**
+     * Get Next Day
+     * 
+     * Return in format YYYY/MM/DD
+     * 
+     * @param weekday
+     * @returns string
+     */
+    public static getNextDay = (weekday:1|2|3|4|5|6|7) => {
+
+        // Check week day
+        if (weekday < 1 || weekday > 7)
+
+            // New error
+            throw new Error("Invalid weekday number. Please enter a number between 1 (Monday) and 7 (Sunday).");
+    
+        // New date
+        const today = new Date();
+        const todayDayOfWeek = today.getUTCDay(); // Sunday - 0, Monday - 1, etc.
+        const daysUntilNext = (weekday - todayDayOfWeek + 7) % 7; // Calculate days until the next desired weekday
+    
+        // Set the date to the next desired weekday
+        today.setUTCDate(today.getUTCDate() + daysUntilNext);
+    
+        // Format the date as YYYY/MM/DD
+        const year = today.getUTCFullYear();
+        const month = (today.getUTCMonth() + 1).toString().padStart(2, '0'); // Months are zero-indexed
+        const day = today.getUTCDate().toString().padStart(2, '0');
+    
+        // Return date
+        return `${year}/${month}/${day}`;
+    }
+
 }

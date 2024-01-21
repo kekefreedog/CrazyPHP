@@ -938,6 +938,8 @@ class File {
         "jpeg"  =>  "image/jpeg",
         # Png
         "png"   =>  "image/png",
+        # WebP
+        "webp"  =>  "image/webp",
         # TBC ...
     ];
 
