@@ -557,6 +557,9 @@ class Create extends CrazyModel implements CrazyCommand {
             # Compose requiere
             Composer::requirePackage("mongodb/mongodb", true, false);
 
+            # Php fast cache extension for mongo
+            Composer::requirePackage("phpfastcache/mongodb-extension", true, false);
+
         }
                 
         # Return instance
