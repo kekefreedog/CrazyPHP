@@ -47,6 +47,10 @@ export default class Page {
                 Page.loadUrl
             )
             .then(
+                // Open New Tab (if needed)
+                Page.openNewTab
+            )
+            .then(
                 // Load Script
                 Page.loadScript
             )
@@ -342,6 +346,32 @@ export default class Page {
 
         // Return options
         return options;
+
+    } 
+    
+    /**
+     * Open New Tab
+     * 
+     * Open new tab if needed
+     * 
+     * @param options:LoaderPageOptions Options with all page details
+     * @return Promise<LoaderPageOptions>
+     */
+    public static openNewTab = async(options:LoaderPageOptions):Promise<LoaderPageOptions> =>  {
+
+        // Check openInNewTab
+        if("openInNewTab" in options && options.openInNewTab && options.status?.urlLoaded && "url" in options && typeof options.url === "string" && options.url){
+
+            // Open 
+            window.open(options.url, "_blank");
+
+            // Stop promise chain
+            throw 'Page open in new tab.';
+
+        }
+
+        // Return options
+        return options; 
 
     }
 

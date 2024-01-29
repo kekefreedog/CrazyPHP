@@ -25,6 +25,7 @@ use Phpfastcache\Config\ConfigurationOptionInterface;
 use Phpfastcache\Config\ConfigurationOption;
 use Phpfastcache\Drivers\Mongodb\Driver;
 use CrazyPHP\Exception\CrazyException;
+use CrazyPHP\Library\File\Composer;
 use Phpfastcache\Helper\Psr16Adapter;
 use Psr\SimpleCache\CacheInterface;
 use CrazyPHP\Library\Time\DateTime;
@@ -85,6 +86,14 @@ class Cache extends Psr16Adapter {
         }else
         ## Mongodb
         if($configuration["driver"] == "Mongodb"){
+
+            # Check MemcachedConfig exists
+            if(!class_exists("Phpfastcache\Drivers\Mongodb\Config")){
+
+                # Install mongo extension of php fast cache
+                Composer::requirePackage("phpfastcache/mongodb-extension");
+
+            }
 
             # Set config
             $config = new MemcachedConfig();

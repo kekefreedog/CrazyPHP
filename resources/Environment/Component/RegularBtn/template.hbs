@@ -71,7 +71,7 @@
 >{{#if attributes.icon-image}}
     <img alt="btn-image" src="{{attributes.icon-image}}" />
 {{else}}
-    <i 
+    <{{#if attributes.icon-class}}i{{else}}span{{/if}}
         class="
             {{attributes.icon-class}}
             {{#if attributes.color-secondary}}
@@ -83,7 +83,7 @@
         "
     >
         {{attributes.icon-text}}
-    </i>
+    </{{#if attributes.icon-class}}i{{else}}span{{/if}}>
     {{#is attributes.type "extended"}}
         {{{@root.attributes.label}}}
     {{/is}}

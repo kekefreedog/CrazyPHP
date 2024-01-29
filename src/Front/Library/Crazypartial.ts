@@ -25,6 +25,23 @@ import { Crazyobject } from "../Types";
  * @copyright  2022-2023 Kévin Zarshenas
  */
 export default abstract class Crazypartial {
-    
+
+    /** Parameters
+     ******************************************************
+     */
+
+    public input:RegisterPartialScanned;
+
+    /**
+     * Constructor
+     * 
+     * @param input
+     */
+    public constructor(input:RegisterPartialScanned){
+
+        // Set input
+        this.input = input;
+
+    }
 
 }

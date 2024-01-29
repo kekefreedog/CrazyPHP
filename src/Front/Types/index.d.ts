@@ -161,7 +161,8 @@ declare global {
         scriptRunning?:?new () => typeof Crazypage = null,
         hash?:?string = null,
         eventsRegistered?:?Array<Object> = null,
-        componentsRegistered?:?Array<Object> = null
+        componentsRegistered?:?Array<Object> = null,
+        openInNewTab?:boolean = false;
     }
 
     /**
