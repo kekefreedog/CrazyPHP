@@ -119,4 +119,34 @@ export default class DateTime {
         return `${year}${month}${day}`;
     }
 
+    /**
+     * Convert Date Fromat
+     * 
+     * To D/M/YYYY
+     * 
+     * @param dateStr 
+     * @returns 
+     */
+    public static convertDateFormat = (dateStr:string):string => {
+
+        // Set result
+        let result = "";
+
+        // Check date
+        if(!dateStr)
+
+            // Return result
+            return result;
+
+        // Parse the input string into a Date object
+        const date = new Date(dateStr);
+    
+        // Format the date as D/M/YYYY
+        // Note: getMonth() returns 0 for January, 1 for February, etc., so we add 1.
+        result = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
+        
+        // Return result
+        return result;
+    }
+
 }
