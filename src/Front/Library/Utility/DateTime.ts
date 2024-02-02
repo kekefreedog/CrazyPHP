@@ -28,6 +28,7 @@ export default class DateTime {
      */
 
     /**
+     * Get Utc string
      * 
      * @param date 
      * @returns {string}
@@ -49,6 +50,7 @@ export default class DateTime {
     }
 
     /**
+     * To Iso String
      * 
      * @param date 
      * @returns {string}
@@ -102,6 +104,19 @@ export default class DateTime {
     
         // Return date
         return `${year}/${month}/${day}`;
+    }
+
+    /**
+     * Get Today Date YYMMDD
+     * 
+     * @returns 
+     */
+    public static getTodayDateYYMMDD = ():string => {
+        const date = new Date();
+        const year = date.getFullYear().toString().slice(-2); // Get last two digits of the year
+        const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-indexed, pad with zero
+        const day = date.getDate().toString().padStart(2, '0'); // Pad with zero if needed
+        return `${year}${month}${day}`;
     }
 
 }

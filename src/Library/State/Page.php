@@ -144,6 +144,30 @@ class Page {
     }
 
     /**
+     * Get Results
+     * 
+     * @param string $key
+     * @return mixed
+     */
+    public function getResults(string $key = "*"):mixed {
+
+        # Check key
+        if($key === "*" || !$key)
+
+            # Set result
+            $result = $this->result;
+
+        else
+
+            # Set result
+            $result = Arrays::getKey($this->result, $key);
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
      * Push Form
      * 
      * Push form in content

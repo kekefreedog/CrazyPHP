@@ -59,7 +59,7 @@ export default abstract class Crazypage {
     /**
      * @param options:LoaderPageOptions
      */
-    private options:LoaderPageOptions|null;
+    public options:LoaderPageOptions|null;
 
     /**
      * Constructor
