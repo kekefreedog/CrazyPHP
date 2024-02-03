@@ -149,4 +149,18 @@ export default class DateTime {
         return result;
     }
 
+    /**
+     * 
+     */
+    public static getTodayDate = ():string => {
+
+        const today = new Date();
+        const year = today.getFullYear(); // Gets the full year (e.g., 2024)
+        const month = (today.getMonth() + 1).toString().padStart(2, '0'); // Month is 0-indexed, add 1 to get 1-12
+        const day = today.getDate().toString().padStart(2, '0'); // Day of the month
+    
+        return `${year}-${month}-${day}`;
+
+    }
+
 }
