@@ -619,4 +619,75 @@ class Helpers {
         
     }
 
+    /**
+     * Uppercase
+     * 
+     * Returns the string in uppercase
+     * 
+     * @param mixed $value
+     * @param mixed options
+     */
+    public static function uppercase($value) {
+
+        # Set result
+        $result = $value;
+
+        # Check if string
+        if(is_string($value))
+
+            # Set result
+            $result = mb_strtoupper($result, 'UTF-8');
+
+        else
+        # check if array
+        if(is_array($result))
+
+            # Iteration value
+            foreach($result as &$v)
+
+                # Check if is string
+                if(is_string($v))
+
+                    # Uppercase
+                    $v = mb_strtoupper($v);
+
+        # Return result
+        return $result;
+        
+    }
+
+    /**
+     * Join
+     * 
+     * Join all elements of array into a string, optionally using a
+     * given separator.
+     *
+     * ```handlebars
+     * <!-- array: ['a', 'b', 'c'] -->
+     * {{join array}}
+     * <!-- results in: 'a, b, c' -->
+     *
+     * {{join array '-'}}
+     * <!-- results in: 'a-b-c' -->
+     * ```
+     * @param mixed $array `array`
+     * @param string $separator The separator to use. Defaults to `, `.
+     * @return string
+     */
+    public static function join(mixed $array, mixed $separator = ", "):string {
+
+        # Check is is string
+        if(is_string($array)) return $array;
+
+        # Check if 
+        if(!is_array($array)) return "";
+
+        # Check separator
+        $separator = is_string($separator) ? $separator : ', ';
+
+        # Return
+        return implode($separator, $array);
+
+    }
+
 }
