@@ -497,6 +497,12 @@ class Model implements CrazyModel {
             # Push schema schema in arguments
             $arguments["attributes"] = $this->current["attributes"];
 
+            # Check name
+            if($this->name ?? false) 
+
+                # Push entity
+                $arguments["entity"] = $this->name;
+
             # Check driver class exists in Driver Model
             if(class_exists($className)){
 

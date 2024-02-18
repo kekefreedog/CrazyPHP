@@ -74,6 +74,30 @@ export default class DateTime {
     }
 
     /**
+     * To YYYYMMDD format
+     * 
+     * To YYYY/MM/DD format
+     * 
+     * @param date
+     * @returns 
+     */
+    public static toYYYYMMDDFormat = (date:Date):string => {
+
+        // Gets the full year (e.g., 2024)
+        const year = date.getFullYear();
+
+        // Months are 0-indexed; pad with leading zero
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        
+        // Pad with leading zero if necessary
+        const day = String(date.getDate()).padStart(2, '0'); 
+    
+        // Return result
+        return `${year}/${month}/${day}`;
+        
+    }
+
+    /**
      * Get Next Day
      * 
      * Return in format YYYY/MM/DD
