@@ -94,7 +94,7 @@ export default class DateTime {
     
         // Return result
         return `${year}/${month}/${day}`;
-        
+
     }
 
     /**
@@ -174,16 +174,21 @@ export default class DateTime {
     }
 
     /**
+     * Get Today Date 
      * 
+     * As YYYY-MM-DD
+     * 
+     * @param separator By default "-"
+     * @returns {string}
      */
-    public static getTodayDate = ():string => {
+    public static getTodayDate = (separator:string = "-"):string => {
 
         const today = new Date();
         const year = today.getFullYear(); // Gets the full year (e.g., 2024)
         const month = (today.getMonth() + 1).toString().padStart(2, '0'); // Month is 0-indexed, add 1 to get 1-12
         const day = today.getDate().toString().padStart(2, '0'); // Day of the month
     
-        return `${year}-${month}-${day}`;
+        return `${year}${separator}${month}${separator}${day}`;
 
     }
 
