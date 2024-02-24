@@ -15,4 +15,3 @@ jobs:
           php_version: 8.2
           bootstrap: vendor/autoload.php
           configuration: phpunit.xml
-          args: --coverage-text
