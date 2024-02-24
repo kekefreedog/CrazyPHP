@@ -25,6 +25,8 @@
     sudo port install php83-mbstring
     # Openssl
     sudo port install php83-openssl
+    # Curl
+    sudo port install php83-curl
     ```
 
 And voilà 🎉

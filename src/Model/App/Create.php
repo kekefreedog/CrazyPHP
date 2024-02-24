@@ -552,7 +552,7 @@ class Create extends CrazyModel implements CrazyCommand {
             $key = (is_array($packages)) ? count($packages) : 0;
 
             # Push app dependances
-            FileConfig::setValue("App.dependencies.php.packages.$key", "php8.2-mongodb");
+            FileConfig::setValue("App.dependencies.php.packages.$key", "php8.3-mongodb");
 
             # Compose requiere
             Composer::requirePackage("mongodb/mongodb", true, false);

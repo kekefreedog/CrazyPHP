@@ -1,4 +1,4 @@
-FROM phpdockerio/php:8.2-fpm
+FROM phpdockerio/php:8.3-fpm
 WORKDIR ${PWD}
 RUN apt-get update; \
     apt-get -y --no-install-recommends install \ {{#if _config.App.dependencies.php.packages}}{{#each _config.App.dependencies.php.packages}}

@@ -261,8 +261,11 @@ class Core extends CLI {
                     # New climate
                     $climate = new CLImate();
 
+                    # Get message
+                    $message = $e->getMessage();
+
                     # Return error message
-                    echo $climate->red("🔴 ".$e->getMessage());
+                    $climate->red("🔴 $message");
 
                 }
 
