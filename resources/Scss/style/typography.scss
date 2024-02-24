@@ -11,26 +11,37 @@
 // Font weight (font-weight-100, font-weight-200...) 
 @for $i from 1 through 9 {
     .font-weight-#{calc($i * 100)} {
-        font-weight: $i * 100;
+        font-weight: calc($i * 100)!important;
     }
 }
 
 // Font weight normal
 .font-weight-normal {
-    font-weight: normal;
+    font-weight: normal!important;
 }
 
 // Font weight bold
 .font-weight-bold {
-    font-weight: bold;
+    font-weight: bold!important;
 }
 
 // Font weight lighter
 .font-weight-lighter {
-    font-weight: lighter;
+    font-weight: lighter!important;
 }
 
 // Font weight bolder
 .font-weight-bolder {
-    font-weight: bolder;
+    font-weight: bolder!important;
+}
+
+
+/// Material icons
+///////////////////////////////////////////////////////
+///
+
+// Interligne
+.line-height-normal {
+    /* Type */
+    line-height: normal;
 }

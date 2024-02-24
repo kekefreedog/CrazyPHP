@@ -151,6 +151,10 @@ Structure:
                             source: "@crazyphp_root/resources/Scss/style/component/_crazy_content.scss"
                           _navigation_rail.scss:
                             source: "@crazyphp_root/resources/Scss/style/component/_navigation_rail.scss"
+                      enhancement:
+                        files:
+                          jspreadsheet_materializecss.scss:
+                            source: "@crazyphp_root/resources/Scss/style/enhancement/jspreadsheet_materializecss.scss"
                     files:
                       color_class.scss:
                         source: "@crazyphp_root/resources/Scss/style/color_class.scss"
@@ -160,6 +164,8 @@ Structure:
                         source: "@crazyphp_root/resources/Scss/style/color_gradient_collection.scss"
                       dimensions.scss:
                         source: "@crazyphp_root/resources/Scss/style/dimensions.scss"
+                      component_enhance.scss:
+                        source: "@crazyphp_root/resources/Scss/style/component_enhance.scss"
                       cursors.scss:
                         source: "@crazyphp_root/resources/Scss/style/cursors.scss"
                       typography.scss:

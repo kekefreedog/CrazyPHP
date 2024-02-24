@@ -17,4 +17,14 @@
     sudo port select --set php php83
     ```
 
+4. Install modules
+    ```sh
+    # Iconv
+    sudo port install php83-iconv
+    # Mbstring
+    sudo port install php83-mbstring
+    # Openssl
+    sudo port install php83-openssl
+    ```
+
 And voilà 🎉

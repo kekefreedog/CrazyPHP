@@ -1,0 +1,271 @@
+/// /// ///
+/// Dimnensions
+///
+/// Dimensions specific scss stylesheet
+///
+/// @package    kzarshenas/crazyphp
+/// @author     kekefreedog <kevin.zarshenas@gmail.com>
+/// @copyright  2022-2023 Kévin Zarshenas
+/// /// ///
+
+/// Material icons
+///////////////////////////////////////////////////////
+///
+
+/* Material icons */
+i.material-icons {
+
+    /* Selectable */
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+}
+
+/* Fix icon on card title */
+h4.card-title i.material-icons {
+
+    /* Position */
+    line-height: normal;
+    vertical-align: text-bottom;
+    margin-right: 6px;
+
+}
+
+/* Icon in blockquote */
+blockquote i.material-icons {
+    /* Font */
+    font-size: inherit;
+    /* Position */
+    vertical-align: sub;
+}
+
+/// List collapsible
+///////////////////////////////////////////////////////
+///
+
+/* List collapsible */
+ul.collapsible {
+
+    /* Border */
+    border-radius: 12px;
+
+    /* First */
+    li:first-child .collapsible-header {
+
+        /* Border */
+        border-radius: 12px 12px 0 0;
+
+    }
+
+    /* First */
+    li:last-child {
+
+        /* Not active */
+        &:not(.active) .collapsible-header {
+
+            /* Border */
+            border-radius: 0 0 12px 12px;
+            transition-delay: 250ms;
+            transition-property: border-radius;
+    
+        }
+
+        /* Active */
+        &.active .collapsible-body {
+
+            /* Border */
+            border-radius: 0 0 12px 12px;
+
+        }
+
+    }
+
+}
+
+/// Text Inputs
+///////////////////////////////////////////////////////
+///
+
+.input-field .suffix {
+
+    /* Dimension */
+    padding: 7px;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+
+    /* Positin */
+    top: 8px;
+
+    /* Color */
+    background-color: #0b0c0d;
+
+}
+
+
+/// Project card
+///////////////////////////////////////////////////////
+///
+
+/* Project card  */
+.card.project-card {
+
+    /* Children */
+    .card-image {
+
+        /* Children */
+        img {
+
+            /* Dimension */
+            height: 12rem;;
+
+        }
+
+    }
+    .card-content {
+
+        /* Children */
+        p {
+
+            /* Children */
+            i.material-icons {
+
+                /* Dimension */
+                font-size: 16px!important;
+
+                /* Position */
+                vertical-align: bottom!important;
+
+            }
+
+        }
+
+    }
+
+    /* Card action */
+    .card-action {
+
+        /* Children */
+        a.btn-floating {
+
+            /* Dimension */
+            padding: initial!important;
+
+        }
+
+    }
+
+}
+
+/// Swal
+///////////////////////////////////////////////////////
+///
+
+/* Container */
+.swal2-container {
+
+    /* Popup */
+    .swal2-popup {
+
+        /* Position */
+        display: flex!important;
+        flex-direction: column!important;
+
+        /* Html Container */
+        .swal2-html-container {
+
+            /* Dimension */
+            min-height: inherit;
+            flex-grow: 1;
+
+        }
+
+        /* close btn */
+        .swal2-close {
+
+            // Position
+            position: absolute;
+            right: 0;
+
+        }
+
+    }
+
+}
+
+/// Quill Js
+///////////////////////////////////////////////////////
+///
+
+/* Toolbar */
+.ql-toolbar {
+
+    // Border radius
+    border-radius: 4px 4px 0px 0px;
+
+}
+
+/* Editor */
+.quill-editor, .ql-editor {
+
+    // Border radius
+    border-radius: 0px 0px 4px 4px;
+
+}
+
+// Light Mode
+@media (prefers-color-scheme: light) {
+
+    // Toolbar
+    .ql-toolbar, .ql-editor {
+
+        // Color
+        background-color: #fcfcff;
+        color: rgb(65, 71, 77);
+
+    }
+    .ql-toolbar span, .ql-toolbar svg {
+
+        // Color
+        color: rgb(65, 71, 77);
+
+    }
+
+    // Text Input Suffix
+    .input-field .suffix {
+
+        // Color
+        background-color: white;
+
+    }
+
+}
+
+// Dark mode
+@media (prefers-color-scheme: dark) {
+
+    // Toolbar
+    .ql-toolbar, .ql-editor {
+
+        // Color
+        background-color: #1a1c1e;
+        color: rgb(193, 199, 206);
+
+    }
+    .ql-toolbar span, .ql-toolbar svg {
+
+        // Color
+        color: rgb(193, 199, 206);
+
+    }
+
+    // Text Input Suffix
+    .input-field .suffix {
+
+        // Color
+        background-color: #19191a;
+
+    }
+
+}

@@ -8,3 +8,22 @@
 /// @copyright  2022-2023 Kévin Zarshenas
 /// /// ///
 
+/* Import Muli fonts */
+@import url(https://fonts.googleapis.com/css?family=Muli:300,300i,400,400i,500,600);
+
+/* Html */
+html, button, input, optgroup, select, textarea {
+    
+    /* Font */
+    font-family:Muli,sans-serif;
+
+}
+
+/* Code / Pre */
+code, kbd, pre, samp {
+    
+    /* Font */
+    font-family:monospace,monospace;
+    font-size:1em
+
+}

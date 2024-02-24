@@ -49,8 +49,7 @@ $cursor-types: (
 
 // Iteration of cursor
 @each $name, $value in $cursor-types {
-  /* Cursor */
-  .cursor-#{$name} {
-    cursor: $value;
-  }
+    .cursor-#{$name} {
+        cursor: $value;
+    }
 }

@@ -20,6 +20,9 @@
 @import '/node_modules/tippy.js/dist/backdrop.css';
 @import '/node_modules/tippy.js/animations/shift-away.css';
 
+// Component enhance
+@import './component_enhance.scss';
+
 // Import color
 @import './color_collection.scss', './color_gradient_collection.scss', './color_class.scss';
 
@@ -31,6 +34,9 @@
 
 // Import cursor
 @import './cursors.scss';
+
+// Partials
+// @import './partial/XXX';
 
 // Import global
 @import './global.scss';

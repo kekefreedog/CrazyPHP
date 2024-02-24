@@ -1,0 +1,190 @@
+/// /// ///
+/// Enhancement - Crazy Content
+///
+/// Jspreadsheet ft. Materialize
+///
+/// @package    kzarshenas/crazyphp
+/// @author     kekefreedog <kevin.zarshenas@gmail.com>
+/// @copyright  2022-2023 Kévin Zarshenas
+/// /// /// 
+
+/// Parameters
+///////////////////////////////////////////////////////
+///
+
+/* Variable for repeated values */
+$font-size-default: 13px;
+$font-color-default: #444;
+$border-radius-default: 6px;
+$shadow-default: 0 4px 5px 0 rgba(0, 0, 0, .14), 0 1px 10px 0 rgba(0, 0, 0, .12), 0 2px 4px -1px rgba(0, 0, 0, .3);
+
+/// Styles
+///////////////////////////////////////////////////////
+///
+
+.jexcelXLSX jexcel_container td {
+    text-align: center;
+    overflow: hidden;
+}
+
+.jexcel_card {
+    width: 100%;
+    overflow-x: scroll;
+}
+.jexcel {
+    border-radius: 6px 0 6px 0!important;
+    font-size: 13px!important;
+
+    /* Color */
+    color: $font-color-default;
+
+}
+.jexcel_content {
+    border-radius: 6px 0 6px 0 !important;
+}
+.jexcel_content td input {
+    color: #000!important;
+}
+.jexcel td input {
+    font-size: 13px!important;
+}
+.jexcel_selectall {
+    border-top-left-radius: 6px!important;
+}
+.jexcel td {
+    border-radius: 0px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.swal2-close {
+    z-index: 1!important;
+}
+
+.jexcel_filter {
+    display: inline;
+}
+.jexcel_filter > div {
+    padding: 0px;
+}
+.jexcel > thead > tr > td {
+    border-bottom: 1px solid #ccc;
+}
+.jexcel > tbody > tr:first-child > td {
+    border-top: 0px solid transparent!important;
+}
+.jexcel_search {
+    width: 94% !important;
+    margin-bottom: 15px !important;
+    border: 1px solid rgba(0,0,0,0.1) !important;
+    border-radius: 3rem !important;
+    box-shadow: 2px 2px 12px -5px rgba(0,0,0,0.7) !important;
+    padding-left: 2% !important;
+    padding-right: 2% !important;
+    margin-left: 1%!important;
+}
+.jexcel_overflow{
+    width: 100%;
+}
+.jexcel_overflow .jexcel_content{
+    width: 100%;
+}
+.jexcel_pagination div:last-child{
+    margin-right: 35px;
+}
+.jexcel_pagination div.jexcel_page{
+    border-radius: 50%;
+    border: 0;
+}
+.jexcel_pagination div.jexcel_page.jexcel_page_selected{
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .14), 0 3px 1px -2px rgba(0, 0, 0, .12), 0 1px 5px 0 rgba(0, 0, 0, .2);
+}
+
+.jexcel_content table thead tr td {
+
+    /* Color */
+    color: $font-color-default;
+
+    i.material-icons{
+        vertical-align: -6px;
+        font-size: 20px;
+    }
+}
+
+.min-width-td td {
+    min-width: 150px!important;
+}
+
+/*Image Profile*/
+.jexcel > tbody > tr > td > img.jexcel_fill{
+    max-width: unset!important;
+    width: 100%;
+}
+
+/*Position de la fleche des cellules dropdown*/
+.jexcel > tbody > tr > td.jexcel_dropdown {
+    background-position: top 100% right 0px;
+}
+.jdropdown-header {
+    background-position: top 100% right 8px;
+}
+
+/*Hover dropdown*/
+.jdropdown-default .jdropdown-item:hover {
+    background-color: #2196f3!important;
+    color: white!important;
+}
+.jdropdown-default .jdropdown-item.jdropdown-selected:hover {
+    background-color: #2196f3!important;
+    color: black!important;
+}
+.jdropdown-default .jdropdown-item.jdropdown-selected {
+    background-color: #bbdefb!important;
+    color: #000!important;   
+}
+
+/*groupe*/
+.jdropdown-default .jdropdown-group-name{
+    padding-top: 10px;
+    padding-bottom: 5px;
+}
+.jdropdown-default .jdropdown-group-name:hover{
+    cursor: default!important;
+}
+
+/*Dropdown*/
+.jdropdown-container {
+    border-radius: 4px;
+    box-shadow: 0 4px 5px 0 rgba(0, 0, 0, .14), 0 1px 10px 0 rgba(0, 0, 0, .12), 0 2px 4px -1px rgba(0, 0, 0, .3);
+    overflow: hidden;
+}
+.jdropdown-default .jdropdown-content {
+    border: unset;
+}
+
+/*Icon dans le colonne Dropdown*/
+.jdropdown-icon{
+    width: 20px;
+}
+
+/*Jexcel Context menu*/
+.jexcel_contextmenu, .jcontextmenu{
+    border-radius: 6px;
+    box-shadow: rgba(0, 0, 0, 0.14) 0px 4px 5px 0px, rgba(0, 0, 0, 0.12) 0px 1px 10px 0px, rgba(0, 0, 0, 0.3) 0px 2px 4px -1px;
+    overflow: hidden;
+    border: 0px none;
+}
+
+.jcontextmenu > div a {
+    color: #757575 !important;
+    font-size: 16px!important;
+    line-height: 22px!important;
+    cursor: pointer;
+    font-family: "Muli", sans-serif;
+}
+
+/*Label with color*/
+label[for=statut]{
+    /*position*/
+    top: -31px!important;
+}

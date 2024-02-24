@@ -21,7 +21,8 @@ $crazy-content-height: 100vh;
 
     // Dimension
     height: $crazy-content-height;
-    
+    width: min-content;
+
     // Overflow
     overflow: auto;
 

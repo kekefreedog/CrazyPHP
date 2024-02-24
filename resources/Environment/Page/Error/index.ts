@@ -32,7 +32,7 @@ export default class Home extends Crazypage {
      * @param className:string 
      * Duplicate of the class name because build change name of class
      */
-    public static readonly className:string = "Home";
+    public static readonly className:string = "Error";
 
     /** 
      * @param html:string 
