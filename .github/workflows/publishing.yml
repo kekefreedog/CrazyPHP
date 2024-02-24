@@ -16,7 +16,7 @@ jobs:
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '7.4'  # Adjust as needed
+        php-version: '8.3'  # Adjust as needed
 
     - name: Run custom script to update versions
       run: php ./.github/workflows/scripts/update-versions.php "${{ github.event.release.tag_name }}"
