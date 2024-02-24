@@ -69,10 +69,13 @@ module.exports = {
                 test: /\.(handlebars|hbs)$/,
                 loader: "handlebars-loader",
                 options: {
+                    partialDirs: [
+                        path.resolve(__dirname, "./assets/Hbs/partials/"),
+                    ],
                     helperDirs: [
                         path.resolve(__dirname, "./vendor/kzarshenas/crazyphp/resources/Js/Handlebars"),
                     ],
-                }
+                },
             },
             {
                 test: /\.(woff|woff2|eot|ttf)$/,
@@ -84,6 +87,9 @@ module.exports = {
             {
                 test: /\.svg$/,
                 loader: 'svg-inline-loader'
+                /* generator: {
+                    filename: 'svg/[name].svg',
+                }, */
             },
         ],
     },

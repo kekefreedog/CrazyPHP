@@ -10,6 +10,12 @@
 # @copyright  2022-2023 Kévin Zarshenas
 # #
 
+# Force php83
+# AddHandler application/x-httpd-alt-php83 .php .php5
+
+# Timezone
+# php_value date.timezone 'Europe/Paris'
+
 # Enable rewrite
 RewriteEngine on
 
@@ -17,3 +23,14 @@ RewriteEngine on
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ index.php?root=$1 [QSA,L]
+
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+    Header set Access-Control-Allow-Methods "POST, GET, OPTIONS"
+    Header set Access-Control-Allow-Headers "Content-Type, Authorization"
+    Header set Access-Control-Allow-Credentials "true"
+</IfModule>
+
+# Respond with 200 OK for OPTIONS preflight requests
+RewriteCond %{REQUEST_METHOD} OPTIONS
+RewriteRule ^(.*)$ $1 [R=200,L]

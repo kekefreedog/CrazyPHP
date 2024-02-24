@@ -11,6 +11,7 @@
         "noImplicitAny": false,
         "typeRoots": ["./node_modules/@types", "./app/Front/types"],
         "strictPropertyInitialization": false,
+        "allowSyntheticDefaultImports": true,
         "paths": {
             "tslib" : ["./node_modules/tslib/tslib.d.ts"]
         }

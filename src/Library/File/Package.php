@@ -120,18 +120,21 @@ class Package{
     /** @const array DEFAULT_DEPENDENCIES */
     public const DEFAULT_DEV_DEPENDENCIES = [
         # Front
-        "@fortawesome/fontawesome-free"             =>  "^6.2.1",
-        "@materializecss/materialize"               =>  "1.1.0",
+        "@fortawesome/fontawesome-free"             =>  "^6.5.1",
+        "@materializecss/materialize"               =>  "^2.0.3-alpha",
         "clipboard"                                 =>  "*",
         "handlebars"                                =>  "*",
         "handlebars-helpers"                        =>  "^0.9.8",
         "handlebars-utils"                          =>  "^1.0.6",
         "sweetalert2"                               =>  "*",
+        "@sweetalert2/theme-dark"                   =>  "*",
+        "@types/quill"                              =>  "*",
         "tippy.js"                                  =>  "*",
         "material-symbols"                          =>  "*",
         "material-icons"                            =>  "*",
         "@material-design-icons/font"               =>  "^0.14.2",
         "i18next"                                   =>  "^22.0.8",
+        "material-dynamic-colors"                   =>  "*",
         # Cache
         "localforage"                               =>  "^1.10.0",
         "object-hash"                               =>  "^3.0.0",
@@ -141,6 +144,7 @@ class Package{
         "webpack-dev-server"                        =>  "*",
         "url-loader"                                =>  "*",
         "file-loader"                               =>  "*",
+        "html-loader"                               =>  "*",
         "style-loader"                              =>  "*",
         "css-loader"                                =>  "*",
         "sass-loader"                               =>  "*",
@@ -148,6 +152,7 @@ class Package{
         "yaml-loader"                               =>  "*",
         "handlebars-loader"                         =>  "*",
         "svg-inline-loader"                         =>  "*",
+        "svg-loader"                                =>  "*",
         # Custom file
         "js-yaml"                                   =>  "*",
         "repair"                                    =>  "*",

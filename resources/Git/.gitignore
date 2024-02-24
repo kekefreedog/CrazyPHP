@@ -3,6 +3,9 @@
 .database
 .trash
 docs/crazyphp
+config/Front.yml
+public
+logs
 
 # Composer dependances (PHP)
 /vendor/

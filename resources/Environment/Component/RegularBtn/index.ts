@@ -113,6 +113,9 @@ export default class RegularBtn extends Crazycomponent {
       // Call parent constructor
       super();
 
+      // Set display
+      /* this.style.display = "inline-block"; */
+
       // Set Content
       this.setHtmlAndCss(
          TemplateCompilated,
