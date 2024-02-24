@@ -1,6 +1,6 @@
 {
     "name": "kzarshenas/crazyphp",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "description": "My crazy framework for creating ultra-fast webapps.",
     "type": "library",
     "autoload": {
