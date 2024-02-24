@@ -15,6 +15,7 @@ namespace Tests\Library\File;
 /**
  * Dependances
  */
+use PHPUnit\Framework\Attributes\Depends;
 use CrazyPHP\Library\File\Structure;
 use CrazyPHP\Library\File\Yaml;
 use CrazyPHP\Library\File\File;
@@ -110,7 +111,7 @@ class StructureTest extends TestCase{
      * 
      * @return void
      */
-    public function deprecared_testTreeFolderGeneratorCreate():void {
+    public function deprecated_testTreeFolderGeneratorCreate():void {
 
         # Check tmp directory already exists
         if(!is_dir(self::RELATIVE_ROOT_PATH))
@@ -143,11 +144,10 @@ class StructureTest extends TestCase{
      * 
      * @deprecated
      * 
-     * @depends testTreeFolderGeneratorCreate
-     * 
      * @return void
      */
-    public function deprecared_testTreeFolderGeneratorDelete():void {
+    #[Depends('deprecated_testTreeFolderGeneratorCreate')]
+    public function deprecated_testTreeFolderGeneratorDelete():void {
 
         # Check tmp directory already exists
         if(!is_dir(self::RELATIVE_ROOT_PATH))
@@ -200,8 +200,9 @@ class StructureTest extends TestCase{
     /**
      * Test structure check
      * 
-     * @depends testStructureCreate
+     * @return void
      */
+    #[Depends('testStructureCreate')]
     public function testStructureCheck():void {
 
         # We supposed env are already set
@@ -220,8 +221,9 @@ class StructureTest extends TestCase{
     /**
      * Test structure check
      * 
-     * @depends testStructureCheck
+     * @return void
      */
+    #[Depends('testStructureCheck')]
     public function testStructureDelete():void {
 
         # We supposed env are already set

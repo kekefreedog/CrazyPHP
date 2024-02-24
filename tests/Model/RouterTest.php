@@ -15,6 +15,7 @@ namespace Tests\Core;
 /**
  * Dependances
  */
+use PHPUnit\Framework\Attributes\Depends;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Model\Router\Delete;
@@ -205,9 +206,9 @@ class RouterTest extends TestCase {
      * 
      * Create a simple router and check result
      * 
-     * @depends testCreateRouterSimple
      * @return void
      */
+    #[Depends('testCreateRouterSimple')]
     public function testCreateRouterComplex():void {
 
         # Set input
@@ -298,9 +299,9 @@ class RouterTest extends TestCase {
      * 
      * Create a simple router and check result
      * 
-     * @depends testCreateRouterSimple
      * @return void
      */
+    #[Depends('testCreateRouterSimple')]
     public function testDeleteRouterSimple():void {
 
         # Set input
@@ -357,9 +358,9 @@ class RouterTest extends TestCase {
      * 
      * Create a simple router and check result
      * 
-     * @depends testCreateRouterComplex
      * @return void
      */
+    #[Depends('testCreateRouterComplex')]
     public function testDeleteRouterComplex():void {
 
         # Set input
