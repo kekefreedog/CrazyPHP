@@ -72,6 +72,28 @@ class Query {
     }
 
     /**
+     * Get For Filters From Array
+     * 
+     * Get query parameters for controller filters from array given
+     * 
+     * @return array
+     */
+    public static function getForFiltersFromArray(array $array = []):array {
+
+        # Set result
+        $result = [
+            0   =>  $array["filters"] ?? $array["filter"] ?? null,    # Filters
+            1   =>  $array["sort"] ?? $array["sorting"] ?? "asc",     # Sort
+            2   =>  $array["group"] ?? $array["grouping"] ?? null,    # Group
+            3   =>  $array["option"] ?? $array["options"] ?? null,    # Option
+        ];
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
      * Get Arguments
      * 
      * Get specific arguments for Router... request
