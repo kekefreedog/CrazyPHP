@@ -690,4 +690,104 @@ class Helpers {
 
     }
 
+    /**
+     * Replace
+     * 
+     * Replace all occurrences of substring `a` with substring `b`.
+     *
+     * @param mixed $str
+     * @param mixed $a
+     * @param mixed $b
+     * @return string
+     */
+    public static function replace(mixed $str, mixed $a, mixed $b):string {
+
+        # Check is is string
+        return is_string($str) && is_string($a) && is_string($b)
+            ? str_replace($a, $b, $str)
+            : $str
+        ;
+
+    }
+
+    /**
+     * Gt
+     * 
+     * Block helper that renders a block if a is greater than b.
+     * If an inverse block is specified it will be rendered when falsy. You may optionally use the compare="" hash argument for the second value.
+     * 
+     * @param a Value to compare
+     * @param b Value to compare with
+     * 
+     * @return boolean
+     */
+    public static function gt($a, $b, $option) {
+
+        # Check arguments are equivalent
+        return $a > $b ? $option["fn"]() : $option["inverse"]();
+
+    }
+
+    /**
+     * Gte
+     * 
+     * Block helper that renders a block if `a` is **greater than or
+     * equal to** `b`.
+     * If an inverse block is specified it will be rendered when falsy.
+     * You may optionally use the `compare=""` hash argument for the
+     * second value. 
+     * 
+     * @param a Value to compare
+     * @param b Value to compare with
+     * 
+     * @return boolean
+     */
+    public static function gte($a, $b, $option) {
+
+        # Check arguments are equivalent
+        return $a >= $b ? $option["fn"]() : $option["inverse"]();
+
+    }
+
+    /**
+     * Lt
+     * 
+     * Block helper that renders a block if `a` is **less than** `b`.
+     * If an inverse block is specified it will be rendered when falsy.
+     * You may optionally use the `compare=""` hash argument for the
+     * second value.
+     * 
+     * @param a Value to compare
+     * @param b Value to compare with
+     * 
+     * @return boolean
+     */
+    public static function lt($a, $b, $option) {
+
+        # Check arguments are equivalent
+        return $a < $b ? $option["fn"]() : $option["inverse"]();
+
+    }
+
+    /**
+     * Lte
+     * 
+     * Block helper that renders a block if `a` is **less than or
+     * equal to** `b`.
+     * If an inverse block is specified it will be rendered when falsy.
+     * You may optionally use the `compare=""` hash argument for the
+     * second value.
+     * 
+     * @param a Value to compare
+     * @param b Value to compare with
+     * 
+     * @return boolean
+     */
+    public static function lte($a, $b, $option) {
+
+        # Check arguments are equivalent
+        return $a <= $b ? $option["fn"]() : $option["inverse"]();
+
+    }
+
 }

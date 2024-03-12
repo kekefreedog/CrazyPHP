@@ -694,7 +694,7 @@ class Arrays{
 
 				else 
 				# Check if string
-				if (is_string($value) && ctype_digit($value))
+				if ((is_string($value) && ctype_digit($value)) || (is_string($value) && preg_match('/^-\d+/', $value)))
 					$array[$key] = (int) $value;
 
 		# Return array
