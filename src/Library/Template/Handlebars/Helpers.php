@@ -657,6 +657,43 @@ class Helpers {
     }
 
     /**
+     * Capitalize
+     * 
+     * Returns the string in capitalize
+     * 
+     * @param mixed $value
+     * @param mixed options
+     */
+    public static function capitalize($value) {
+
+        # Set result
+        $result = $value;
+
+        # Check if string
+        if(is_string($value))
+
+            # Set result
+            $result = ucfirst($result);
+
+        /* else
+        # check if array
+        if(is_array($result))
+
+            # Iteration value
+            foreach($result as &$v)
+
+                # Check if is string
+                if(is_string($v))
+
+                    # Uppercase
+                    $v = mb_strtoupper($v); */
+
+        # Return result
+        return $result;
+        
+    }
+
+    /**
      * Join
      * 
      * Join all elements of array into a string, optionally using a
@@ -787,6 +824,35 @@ class Helpers {
 
         # Check arguments are equivalent
         return $a <= $b ? $option["fn"]() : $option["inverse"]();
+
+    }
+
+    /**
+     * Add
+     * 
+     * Return the sum of `a` plus `b`.
+     * 
+     * @param a Value to compare
+     * @param b Value to compare with
+     * 
+     * @return mixed
+     */
+    public static function add($a, $b, $option) {
+
+        # Check if both are numbers
+        if (is_numeric($a) && is_numeric($b))
+
+            # Return sum, casting to numbers explicitly
+            return (float)$a + (float)$b;
+
+        # Check if both are strings
+        if (is_string($a) && is_string($b))
+
+            # Return concatenated string
+            return $a . $b;
+
+        # Return empty string
+        return '';
 
     }
 
