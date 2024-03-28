@@ -9,24 +9,31 @@
  */
 
 /**
- * Length
+ * Add
  * 
- * Returns the length of the given string or array.
+ * Return the sum of `a` plus `b`.
  *
- * @param any value
+ * @param a value
+ * @param b value
  * @param Object options
  * 
  * @return number
  */
-module.exports = (value, options) => {
+module.exports = (a, b, options) => {
 
-    // Check if array or string
-    if(typeof value === 'number')
+    // Check if number
+    if(isNumber(a) && isNumber(b))
 
-        // Return lenght
-        return Math.round(value);
-    
-    // Return 0
-    return value;
+        // Return sum 
+        return Number(a) + Number(b);
+
+    // Check if string
+    if(typeof a === 'string' && typeof b === 'string')
+        
+        // Return sum
+        return a + b;
+
+    // Return empty
+    return '';
 
 }

@@ -499,8 +499,11 @@ class Install implements CrazyCommand {
      */
     public function runDockerComposeBuild():self {
 
+        # Set env file
+        $envFile = Docker::ENV_FILE;
+
         # Exec command
-        Command::exec("docker-compose", "build", true);
+        Command::exec("docker-compose", (($envFile && File::exists($envFile)) ? " --env-file '".$envFile."' " : "")."build", true);
 
         # Return self
         return $this;

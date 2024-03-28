@@ -321,8 +321,12 @@ class Up implements CrazyCommand {
      */
     public function runGetServices():self {
         
+        # Set env
+        $envFile = Docker::ENV_FILE;
+
         # Command
-        $command = "docker-compose ps --format json";
+        # "docker-compose --env-file './docker/variables.env' ps --format json";
+        $command = "docker-compose".(($envFile && File::exists($envFile)) ? " --env-file '".$envFile."' " : "")." ps --format json";
 
         # Exec command
         $result = Command::exec($command);

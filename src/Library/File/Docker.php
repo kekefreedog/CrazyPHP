@@ -45,13 +45,13 @@ class Docker{
      * @param bool $detach Run container in background and print container ID
      * @return
      */
-    public static function up(bool $detach = true) {
+    public static function up(bool $detach = true, string $loadEnvFile = self::ENV_FILE) {
 
         # Set result
         $result = "";
 
         # Prepare command shell
-        $command = self::DOCKER_COMPOSE_COMMAND." up".($detach ? " -d --no-color" : "");
+        $command = self::DOCKER_COMPOSE_COMMAND.($loadEnvFile ? " --env-file '".$loadEnvFile."'" : "")." up".($detach ? " -d --no-color" : "");
 
         # Exec command
         $result = Command::exec($command);
@@ -68,13 +68,13 @@ class Docker{
      * 
      * @return
      */
-    public static function down() {
+    public static function down(string $loadEnvFile = self::ENV_FILE) {
 
         # Set result
         $result = "";
 
         # Prepare command shell
-        $command = self::DOCKER_COMPOSE_COMMAND." down";
+        $command = self::DOCKER_COMPOSE_COMMAND.($loadEnvFile ? " --env-file '".$loadEnvFile."'" : "")." down";
 
         # Exec command
         exec($command, $empty, $result);
@@ -92,7 +92,7 @@ class Docker{
      * @param bool $detach Run container in background and print container ID
      * @return
      */
-    public static function run(string $argument = "") {
+    public static function run(string $argument = "", string $loadEnvFile = self::ENV_FILE) {
 
         # Set result
         $result = "";
@@ -156,7 +156,8 @@ class Docker{
                 continue;
 
             # Update result
-            $result = intval($currentSource[0]);
+            # $result = intval($currentSource[0]);
+            $result = intval($currentSource[1]);
 
         }
 
@@ -201,5 +202,8 @@ class Docker{
         "mariadb"   =>  "mariadb",
         "postgresql"=>  "postgresql",
     ];
+
+    /** @const string ENV_FILE */
+    public const ENV_FILE = "./docker/variables.env";
 
 }
