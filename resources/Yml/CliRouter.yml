@@ -1,0 +1,67 @@
+# #
+# CLI Routers
+#
+# Define routers available in the routers
+#
+# YAML version 1.2
+#
+# @package    kzarshenas/crazyphp
+# @author     kekefreedog <kevin.zarshenas@gmail.com>
+# @copyright  2022-2024 Kévin Zarshenas
+# #
+CrazyCommand:
+  # Command new
+  new:
+    # Command
+    command:
+      # Project
+      project:
+        class: \CrazyPHP\Model\App\Create
+        parameter: "application"
+      # Router
+      router:
+        class: \CrazyPHP\Model\Router\Create
+        parameter: "router"
+      # Router
+      routerType:
+        class: \|CrazyPHP\Model\RouterType\Create
+        parameter: "router"
+  # Command delete
+  delete:
+    # Command
+    command:
+      # Project
+      project:
+        class: \CrazyPHP\Model\App\Delete
+      # Router
+      router:
+        class: \CrazyPHP\Model\Router\Delete
+        parameter: "routers"
+      # Router
+      routerType:
+        class: \CrazyPHP\Model\RouterType\Delete
+        parameter: "router"
+      # Trash
+      trash:
+        class: \CrazyPHP\Model\Trash\Delete
+CrazyDocker:
+  # Command new
+  new:
+    class: \CrazyPHP\Model\Docker\Install
+  # Command delete
+  delete:
+    class: \CrazyPHP\Model\Docker\Delete
+  # Command run
+  up:
+    class: \CrazyPHP\Model\Docker\Up
+  # Command down
+  down:
+    class: \CrazyPHP\Model\Docker\Down
+CrazyAsset:
+  # Command register
+  register:
+    function: \CrazyPHP\Model\Asset::registerConfig
+CrazyFront:
+  # Command run
+  run:
+    class: \CrazyPHP\Model\Webpack\Run

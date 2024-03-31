@@ -8,7 +8,7 @@
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2023 Kévin Zarshenas
+ * @copyright  2022-2024 Kévin Zarshenas
  */
 namespace CrazyPHP\Library\Time;
 
@@ -24,7 +24,7 @@ use \DateTime as LegacyDateTime;
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2023 Kévin Zarshenas
+ * @copyright  2022-2024 Kévin Zarshenas
  */
 class DateTime extends LegacyDateTime {
 

@@ -5,7 +5,7 @@
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2023 Kévin Zarshenas
+ * @copyright  2022-2024 Kévin Zarshenas
  */
 
 /**
@@ -24,7 +24,7 @@ require("./style.scss");
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2023 Kévin Zarshenas
+ * @copyright  2022-2024 Kévin Zarshenas
  */
 export default class Home extends Crazypage {
 

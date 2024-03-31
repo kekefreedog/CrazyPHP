@@ -8,7 +8,7 @@
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2023 Kévin Zarshenas
+ * @copyright  2022-2024 Kévin Zarshenas
  */
 namespace  CrazyPHP\Core;
 
@@ -29,7 +29,7 @@ use CrazyPHP\Model\Context;
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2023 Kévin Zarshenas
+ * @copyright  2022-2024 Kévin Zarshenas
  */
 class Model implements CrazyModel {
 

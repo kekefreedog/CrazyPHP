@@ -8,7 +8,7 @@
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2023 Kévin Zarshenas
+ * @copyright  2022-2024 Kévin Zarshenas
  */
 namespace CrazyPHP\Controller;
 
@@ -26,7 +26,7 @@ use CrazyPHP\Core\Model;
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2023 Kévin Zarshenas
+ * @copyright  2022-2024 Kévin Zarshenas
  */
 class ApiV2Create extends Controller {
     

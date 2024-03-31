@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 /**
- * Test State
+ * Test Cli
  *
  * Test State Classes
  *
@@ -15,33 +15,28 @@ namespace Tests\Library\File;
 /**
  * Dependances
  */
-
-use CrazyPHP\Library\File\Config;
-use CrazyPHP\Library\State\Page;
+use CrazyPHP\Library\File\File;
 use PHPUnit\Framework\TestCase;
 use CrazyPHP\Model\Env;
+use CrazyPHP\Cli\Core;
 
 /**
- * Page Test
+ * Core Cli
  *
- * Methods for test page state
+ * Methods for test core of cli
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2024 Kévin Zarshenas
  */
-class PageTest extends TestCase{
+class CoreTest extends TestCase{
     
     /** Public constants
      ******************************************************
      */
 
     /** @const array INPUT */
-    public const INPUT = [
-        "context"   =>  true,
-        "cookie"    =>  true,
-        "config"    =>  ["Middleware"]
-    ];
+    public const INPUT = [];
 
     /** @const array RESULT */
     public const RESULT = [];
@@ -95,23 +90,16 @@ class PageTest extends TestCase{
      * 
      * @return void
      */
-    public function testPageState():void {
+    public function testGetRouters():void {
 
         # Set page state instance
-        $pageState = new Page(static::INPUT);
+        $routersFirst = Core::getRouters();
 
-        # Get result
-        $result = $pageState->render();
+        # Get config from file
+        $routersFromConfig = File::open("@crazyphp_root/resources/Yml/CliRouter.yml");
 
-        # Prepare result await
-        $resultAwait = [
-            "_context"  =>  [],
-            "_cookies"  =>  [],
-            "_config"   =>  Config::get(static::INPUT["config"])
-        ];
-
-        # Assert
-        $this->assertEquals($result, $resultAwait);
+        # Check routers match
+        $this->assertEquals($routersFirst, $routersFromConfig);
 
     }
 

@@ -8,7 +8,7 @@
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2023 Kévin Zarshenas
+ * @copyright  2022-2024 Kévin Zarshenas
  */
 namespace App\Controller\App;
 
@@ -25,7 +25,7 @@ use CrazyPHP\Core\Controller;
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2023 Kévin Zarshenas
+ * @copyright  2022-2024 Kévin Zarshenas
  */
 class Error extends Controller {
 

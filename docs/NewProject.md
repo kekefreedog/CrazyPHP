@@ -1,9 +1,3 @@
----
-runme:
-  id: 01HQDDF3C07BXVQ0PTJYKKZ5Y2
-  version: v3
----
-
 # New CrazyPHP project
 
 Open a terminal and go on the directory where you want create your project (Exemple : `/mnt/data/projects/MyCrazyProject`)

@@ -14,7 +14,7 @@
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2023 Kévin Zarshenas
+ * @copyright  2022-2024 Kévin Zarshenas
  */
 ```
 
@@ -36,7 +36,7 @@
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2023 Kévin Zarshenas
+ * @copyright  2022-2024 Kévin Zarshenas
  */
 class Toto{}
 ```
@@ -79,7 +79,7 @@ class Toto{
 #
 # @package    kzarshenas/crazyphp
 # @author     kekefreedog <kevin.zarshenas@gmail.com>
-# @copyright  2022-2023 Kévin Zarshenas
+# @copyright  2022-2024 Kévin Zarshenas
 # #
 ```
 
@@ -95,7 +95,7 @@ class Toto{
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2023 Kévin Zarshenas
+ * @copyright  2022-2024 Kévin Zarshenas
  */
 ```
 
@@ -117,7 +117,7 @@ class Toto{
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2023 Kévin Zarshenas
+ * @copyright  2022-2024 Kévin Zarshenas
  */
 namespace Toto {}
 
@@ -131,7 +131,7 @@ namespace Toto {}
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2023 Kévin Zarshenas
+ * @copyright  2022-2024 Kévin Zarshenas
  */
 class Toto {}
 ```
@@ -177,7 +177,7 @@ class Toto {
   !
   ! @package    kzarshenas/crazyphp
   ! @author     kekefreedog <kevin.zarshenas@gmail.com>
-  ! @copyright  2022-2023 Kévin Zarshenas
+  ! @copyright  2022-2024 Kévin Zarshenas
   !--}}
 ```
 
@@ -193,7 +193,7 @@ class Toto {
 ///
 /// @package    kzarshenas/crazyphp
 /// @author     kekefreedog <kevin.zarshenas@gmail.com>
-/// @copyright  2022-2023 Kévin Zarshenas
+/// @copyright  2022-2024 Kévin Zarshenas
 /// /// ///
 ```
 

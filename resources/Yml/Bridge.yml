@@ -7,7 +7,7 @@
 #
 # @package    kzarshenas/crazyphp
 # @author     kekefreedog <kevin.zarshenas@gmail.com>
-# @copyright  2022-2023 Kévin Zarshenas
+# @copyright  2022-2024 Kévin Zarshenas
 # #
 Bridge:
   # Google Api
@@ -26,10 +26,11 @@ Bridge:
   shotgrid:
     - name: null
       host: null
-      auth: null
+      auth:
         client_id: null
         client_secret: null
         grant_type: null
+        tokken: null
   # RocketChat Api
   rocketchat:
     - url: null

@@ -8,13 +8,14 @@
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2023 Kévin Zarshenas
+ * @copyright  2022-2024 Kévin Zarshenas
  */
 namespace  CrazyPHP\Cli;
 
 /**
  * Dependances
  */
+use CrazyPHP\Library\Migration\Migration;
 use CrazyPHP\Exception\MongodbException;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Form\Validate;
@@ -22,14 +23,12 @@ use CrazyPHP\Library\File\Composer;
 use CrazyPHP\Library\File\Package;
 use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\File\Docker;
+use CrazyPHP\Library\File\Config;
+use CrazyPHP\Library\File\File;
 use splitbrain\phpcli\Options;
-use CrazyPHP\Model\App\Create;
-use CrazyPHP\Model\App\Delete;
 use League\CLImate\CLImate;
 use splitbrain\phpcli\CLI;
 use CrazyPHP\Cli\Form;
-use CrazyPHP\Library\File\Config;
-use CrazyPHP\Library\Migration\Migration;
 
 /**
  * Core
@@ -38,7 +37,7 @@ use CrazyPHP\Library\Migration\Migration;
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2023 Kévin Zarshenas
+ * @copyright  2022-2024 Kévin Zarshenas
  */
 class Core extends CLI {
 
@@ -334,7 +333,7 @@ class Core extends CLI {
         $this->_checkInRouter($inputs);
 
         # Get router
-        $router = self::ROUTERS[$this->scriptName][$inputs['cmd']]["command"][$inputs['args'][0]];
+        $router = self::getRouters()[$this->scriptName][$inputs['cmd']]["command"][$inputs['args'][0]];
 
         # Get class
         $class = $router["class"];
@@ -483,7 +482,7 @@ class Core extends CLI {
         $this->_checkInRouter($inputs);
 
         # Get router
-        $router = self::ROUTERS[$this->scriptName][$inputs['cmd']]["command"][$inputs['args'][0]];
+        $router = self::getRouters()[$this->scriptName][$inputs['cmd']]["command"][$inputs['args'][0]];
 
         # Get class
         $class = $router["class"];
@@ -626,7 +625,7 @@ class Core extends CLI {
         $this->_checkInRouter($inputs);
 
         # Get router
-        $router = self::ROUTERS[$this->scriptName][$inputs['cmd']];
+        $router = self::getRouters()[$this->scriptName][$inputs['cmd']];
 
         # Get class
         $class = $router["class"];
@@ -776,7 +775,7 @@ class Core extends CLI {
         $this->_checkInRouter($inputs);
 
         # Get router
-        $router = self::ROUTERS[$this->scriptName][$inputs['cmd']];
+        $router = self::getRouters()[$this->scriptName][$inputs['cmd']];
 
         # Get class
         $class = $router["class"];
@@ -924,9 +923,6 @@ class Core extends CLI {
      */
     protected function actionCrazyDockerDown(array $inputs = []):void {
 
-        # Declare result
-        $result = [];
-
         # New climate
         $climate = new CLImate();
 
@@ -943,7 +939,7 @@ class Core extends CLI {
         $this->_checkInRouter($inputs);
 
         # Get router
-        $router = self::ROUTERS[$this->scriptName][$inputs['cmd']];
+        $router = self::getRouters()[$this->scriptName][$inputs['cmd']];
 
         # Get class
         $class = $router["class"];
@@ -1035,7 +1031,7 @@ class Core extends CLI {
         $this->_checkInRouter($inputs);
 
         # Get router
-        $router = self::ROUTERS[$this->scriptName][$inputs['cmd']];
+        $router = $router = self::getRouters()[$this->scriptName][$inputs['cmd']];
 
         # Get class
         $class = $router["class"];
@@ -1117,9 +1113,6 @@ class Core extends CLI {
      */
     protected function actionCrazyAssetRegister(array $inputs = []):void {
 
-        # Declare result
-        $result = [];
-
         # New climate
         $climate = new CLImate();
 
@@ -1136,7 +1129,7 @@ class Core extends CLI {
         $this->_checkInRouter($inputs);
 
         # Get router
-        $router = self::ROUTERS[$this->scriptName][$inputs['cmd']];
+        $router = self::getRouters()[$this->scriptName][$inputs['cmd']];
 
         # Get function
         $function = $router["function"];
@@ -1219,7 +1212,7 @@ class Core extends CLI {
         $this->_checkInRouter($inputs);
 
         # Get router
-        $router = self::ROUTERS[$this->scriptName][$inputs['cmd']];
+        $router = self::getRouters()[$this->scriptName][$inputs['cmd']];
 
         # Check script name
         if(!isset($inputs["args"][0]) || empty($inputs["args"][0]))
@@ -1504,7 +1497,7 @@ class Core extends CLI {
 
         # Check inputs
         if(
-            isset(self::ROUTERS[$this->scriptName][$inputs['cmd']]["command"]) && 
+            isset(self::getRouters()[$this->scriptName][$inputs['cmd']]["command"]) && 
             (
                 !isset($inputs['cmd']) || 
                 !isset($inputs['args'][0]) ||
@@ -1518,21 +1511,56 @@ class Core extends CLI {
                 "Please fill a valid command and valid arguments", 
                 500,
                 [
-                    "custom_code"   =>  "core-003",
+                    "custom_code"   =>  "core-004",
                 ]
             );
 
+        # Get routers
+        $routers = self::getRouters();
+
         # Check command given is in router
-        if(isset(self::ROUTERS[$this->scriptName][$inputs['cmd']]["command"]) && !isset(self::ROUTERS[$this->scriptName][$inputs['cmd']]["command"][$inputs['args'][0]]))
+        if(isset($routers[$this->scriptName][$inputs['cmd']]["command"]) && !isset($routers[$this->scriptName][$inputs['cmd']]["command"][$inputs['args'][0]]))
             
             # New error
             throw new CrazyException(
                 "Please write a valid command and valid arguments", 
                 500,
                 [
-                    "custom_code"   =>  "core-004",
+                    "custom_code"   =>  "core-005",
                 ]
             );  
+
+    }
+
+    /** Public static methods
+     ******************************************************
+     */
+
+    public static function getRouters():array {
+
+        # Set result
+        $result = [];
+
+        # Check file exists
+        if(File::exists(static::ROUTERS_PATH))
+
+            # Get content of the file
+            $result = File::open(static::ROUTERS_PATH);
+
+        # Check result
+        if(!is_array($result))
+            
+            # New error
+            throw new CrazyException(
+                "Can't open routers config for CLI commands, please check the file \"".str_replace("@crazyphp_root", "", static::ROUTERS_PATH)."\"", 
+                500,
+                [
+                    "custom_code"   =>  "core-006",
+                ]
+            );
+
+        # Return result
+        return $result;
 
     }
 
@@ -1550,84 +1578,6 @@ class Core extends CLI {
     /**
      * Router Collection
      */
-    public const ROUTERS = [
-        "CrazyCommand"  =>  [
-            # Command new
-            "new"   =>  [
-                # Command
-                "command"   =>  [
-                    # Project
-                    "project"   =>  [
-                        "class"     =>  "\CrazyPHP\Model\App\Create",
-                        "parameter" =>  "application",
-                    ],
-                    # Router
-                    "router"   =>  [
-                        "class"     =>  "\CrazyPHP\Model\Router\Create",
-                        "parameter" =>  "router",
-                    ],
-                    # Router
-                    "routerType"   =>  [
-                        "class"     =>  "\CrazyPHP\Model\RouterType\Create",
-                        "parameter" =>  "router",
-                    ],
-                ],
-            ],
-            # Command delete
-            "delete"   =>  [
-                # Command
-                "command"   =>  [
-                    # Project
-                    "project"   =>  [
-                        "class"     =>  "\CrazyPHP\Model\App\Delete",
-                    ],
-                    # Router
-                    "router"    =>  [
-                        "class"     =>  "\CrazyPHP\Model\Router\Delete",
-                        "parameter" =>  "routers",
-                    ],
-                    # Router
-                    "routerType"   =>  [
-                        "class"     =>  "\CrazyPHP\Model\RouterType\Delete",
-                        "parameter" =>  "router",
-                    ],
-                    # Trash
-                    "trash"     =>  [
-                        "class"     =>  "\CrazyPHP\Model\Trash\Delete",
-                    ],
-                ],
-            ],
-        ],
-        "CrazyDocker"   =>  [
-            # Command new
-            "new"   =>  [
-                "class"     =>  "\CrazyPHP\Model\Docker\Install",
-            ],
-            # Command delete
-            "delete"=>  [
-                "class"     =>  "\CrazyPHP\Model\Docker\Delete",
-            ],
-            # Command run
-            "up"   =>  [
-                "class"     =>  "\CrazyPHP\Model\Docker\Up",
-            ],
-            # Command down
-            "down"  =>  [
-                "class"     =>  "\CrazyPHP\Model\Docker\Down",
-            ]
-        ],
-        "CrazyAsset"    =>  [
-            # Command register
-            "register"  =>  [
-                "function"  =>  "\CrazyPHP\Model\Asset::registerConfig",
-            ]
-        ],
-        "CrazyFront"    =>  [
-            # Command run
-            "run"       =>  [
-                "class"     =>  "\CrazyPHP\Model\Webpack\Run",
-            ]
-        ]
-    ];
+    public const ROUTERS_PATH = "@crazyphp_root/resources/Yml/CliRouter.yml";
 
 }
