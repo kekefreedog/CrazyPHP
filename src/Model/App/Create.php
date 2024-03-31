@@ -182,7 +182,7 @@ class Create extends CrazyModel implements CrazyCommand {
     /**
      * Run creation of project
      *
-     * @return Create
+     * @return self
      */
     public function run():self {
 
@@ -290,7 +290,7 @@ class Create extends CrazyModel implements CrazyCommand {
      * 
      * @return Create
      */
-    public function runBackupComposer():Create {
+    public function runBackupComposer():self {
         
         # Composer path
         $composerPath = "@app_root/composer.json";
@@ -328,7 +328,7 @@ class Create extends CrazyModel implements CrazyCommand {
      * 
      * @return Create
      */
-    public function runComposer():Create {
+    public function runComposer():self {
 
         # Check input > application is set and not empty
         if(empty($this->inputs['application'] ?? []))
@@ -387,7 +387,7 @@ class Create extends CrazyModel implements CrazyCommand {
      * 
      * @return Create
      */
-    public function runStructureFolder():Create {
+    public function runStructureFolder():self {
 
         # Get path of structure
         $structurePath = File::path(Structure::DEFAULT_TEMPLATE);
@@ -411,9 +411,9 @@ class Create extends CrazyModel implements CrazyCommand {
      * 1. Fill config files
      * 2. Create app routes
      * 
-     * @return Create
+     * @return self
      */
-    public function runConfig():Create {
+    public function runConfig():self {
 
         # Set config
         Config::setup();
@@ -431,9 +431,9 @@ class Create extends CrazyModel implements CrazyCommand {
      * 1. Fill package.json
      * 2. Run npm install
      * 
-     * @return Create
+     * @return self
      */
-    public function runNpm():Create {
+    public function runNpm():self {
 
         # Check input > application is set and not empty
         if(empty($this->inputs['application'] ?? []))
@@ -502,9 +502,9 @@ class Create extends CrazyModel implements CrazyCommand {
      * 1. Create basic components
      * 2. Prepare basic assets
      * 
-     * @return Create
+     * @return self
      */
-    public function runUserInterface():Create {
+    public function runUserInterface():self {
 
         # Return instance
         return $this;
@@ -521,9 +521,9 @@ class Create extends CrazyModel implements CrazyCommand {
      * 3. Create auth tables
      * 4. Create app tables
      * 
-     * @return Create
+     * @return self
      */
-    public function runDatabase():Create {
+    public function runDatabase():self {
 
         # Get database from inputs
         $database = Arrays::filterByKey($this->inputs['application'], "name", "database");
@@ -573,9 +573,9 @@ class Create extends CrazyModel implements CrazyCommand {
      * Steps :
      * 0. Create permissions
      * 1. Create default users
-     * @return Create
+     * @return self
      */
-    public function runUsers():Create {
+    public function runUsers():self {
 
         # Return instance
         return $this;
@@ -622,9 +622,9 @@ class Create extends CrazyModel implements CrazyCommand {
      * 
      * 1. Prepare webpack config
      * 
-     * @return Create
+     * @return self
      */
-    public function runWebpack():Create {
+    public function runWebpack():self {
 
         # Check NPM local installation
         if(Command::exists("npm")){
@@ -662,9 +662,9 @@ class Create extends CrazyModel implements CrazyCommand {
      * Steps :
      * 1. Check permission of some directories
      * 
-     * @return Create
+     * @return self
      */
-    public function runCheckPermissionNodeModules():Create {
+    public function runCheckPermissionNodeModules():self {
 
         # Folder to check permission
         $folders = ["@app_root/node_modules/.bin/webpack"];
@@ -722,9 +722,9 @@ class Create extends CrazyModel implements CrazyCommand {
     /** 
      * Run First Compilation
      * 
-     * @return Create
+     * @return self
      */
-    public function runFirstCompilation():Create {
+    public function runFirstCompilation():self {
 
         # Check if npm installed in local
         if(!$this->npm_local)

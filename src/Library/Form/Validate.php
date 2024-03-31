@@ -57,7 +57,8 @@ class Validate {
         "VARCHAR"   =>  [
             "isEmail",
             "isIpAddress",
-            "isValidUrl"
+            "isValidUrl",
+            "isSemanticVersioning"
         ],
         "ARRAY"     =>  [
         ], 
@@ -825,6 +826,35 @@ class Validate {
         }
     
         # Return result
+        return $result;
+
+    }
+
+    /**
+     * Is Semantic Versioning
+     * 
+     * @param string $version
+     * @return bool
+     */
+    public static function isSemanticVersioning(string $version):bool {
+
+        # Set result
+        $result = false;
+
+        # Set regex
+        $regex = 
+            '/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)' .
+            '(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?' .
+            '(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/'
+        ;
+
+        # Check regex 
+        if(preg_match($regex, $version) > 0)
+
+            # Set result
+            $result = true;
+
+        # Return regex
         return $result;
 
     }

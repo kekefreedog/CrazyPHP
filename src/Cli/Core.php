@@ -446,10 +446,134 @@ class Core extends CLI {
     /** Update project
      * 
      */
-    protected function actionCrazyCommandUpdate(){
+    protected function actionCrazyCommandUpdate(array $inputs = []):void {
 
-        # Display result
-        $this->info("update");
+        # Declare result
+        $result = [];
+
+        # New climate
+        $climate = new CLImate();
+
+        # Add asci folder
+        $climate->addArt(self::ASCII_ART["crazyphp"]);
+        
+        # Draw crazy php logo
+        $climate->draw('crazyphp');
+
+        # Title of current action
+        $climate->backgroundGreen()->out("🍿 Run ".$inputs['cmd']." ".$inputs['args'][0])->br();
+          
+        # Check command is in router
+        $this->_checkInRouter($inputs);
+
+        # Get router
+        $router = self::getRouters()[$this->scriptName][$inputs['cmd']]["command"][$inputs['args'][0]];
+
+        # Get class
+        $class = $router["class"];
+
+        # Get required values
+        $requiredValues = $class::getRequiredValues();
+
+        # Check required values
+        if(!empty($requiredValues)){
+            
+            # Message
+            $climate
+                ->lightBlue()
+                ->bold()
+                ->out("👋 First we need informations about your new ".$inputs['args'][0]." 👋");
+            ;
+        
+            # Display form
+            $form = new Form($requiredValues);
+
+            # Get form result
+            $formResult = $form->getResult();
+
+            # Process value
+            $formResult = (new Process($formResult))->getResult();
+
+            # Validate value
+            $formResult = (new Validate($formResult))->getResult();
+
+            # fill result
+            $result[$router['parameter']] = $formResult;
+
+            # Prepare display value
+            $summary[$router['parameter']] = Validate::getResultSummary($formResult);
+            
+            # Message
+            $climate
+                ->br()
+                ->lightBlue()
+                ->bold()
+                ->out("📝 Summary about the creation of your new ".$inputs['args'][0]." 📝")
+                ->br()
+            ;
+
+            # Summary
+            @$climate->table($summary);
+
+        }
+            
+        # Message
+        $input = $climate
+            ->br()
+            ->lightBlue()
+            ->bold()
+            ->confirm('✅ Do you confirm your new '.$inputs['args'][0].' ? ✅')
+        ;
+
+        # Check action confirmed
+        if (!$input->confirmed()){
+
+            # Stop message
+            $climate
+                ->br()
+                ->bold()
+                ->red("✋ Action canceled ✋")
+                ->br()
+            ;
+
+            # Stop action
+            return;
+
+        }
+
+        # New instance of class
+        $instance = new $class($result);
+
+        # Get story line
+        $storyline = $instance->getStoryline();
+
+        # Iteration storyline
+        foreach($storyline as $action){
+
+            # Message start
+            $climate
+                ->br()
+                ->yellow("🟠 Run ".strtolower(Process::spaceBeforeCapital(str_replace("run", "", $action))))
+            ;
+
+            # Execute
+            $instance->{$action}();
+
+            # Message end
+            $climate
+                ->green("🟢 ".ucfirst(strtolower(Process::spaceBeforeCapital(str_replace("run", "", $action))))." ran with success")
+            ;
+
+        }
+
+        # Success message
+        $climate
+            ->br()
+            ->lightGreen()
+            ->bold()
+            ->out("🎉 ".ucfirst($inputs['args'][0])." updated with success 🎉")
+            ->br()
+        ;
 
     }
 

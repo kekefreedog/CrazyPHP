@@ -1,0 +1,22 @@
+# #
+# Shotgrid
+#
+# Properties of the shotgrid extension
+#
+# YAML version 1.2
+#
+# @package    kzarshenas/crazyphp
+# @author     kekefreedog <kevin.zarshenas@gmail.com>
+# @copyright  2022-2024 Kévin Zarshenas
+# #
+Shotgrid:
+  name: Shotgrid
+  description: Modal extension for communicate with Shotgrid
+  version: 1.0.0
+  scripts:
+    Shotgrid.php:
+      source: "@crazyphp_root/resources/Extensions/Shotgrid/scripts/Shotgrid.php"
+      destination: "@app_root/app/Driver/Model/Shotgrid.php"
+  dependencies:
+    composer:
+      guzzlehttp/guzzle: ^7.8

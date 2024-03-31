@@ -18,6 +18,10 @@ CrazyCommand:
       project:
         class: \CrazyPHP\Model\App\Create
         parameter: "application"
+      # Extension
+      extension:
+        class: \CrazyPHP\Model\Extension\Create
+        parameter: "extension"
       # Router
       router:
         class: \CrazyPHP\Model\Router\Create
@@ -33,6 +37,10 @@ CrazyCommand:
       # Project
       project:
         class: \CrazyPHP\Model\App\Delete
+      # Extension
+      extension:
+        class: \CrazyPHP\Model\Extension\Delete
+        parameter: "extension"
       # Router
       router:
         class: \CrazyPHP\Model\Router\Delete
@@ -44,6 +52,14 @@ CrazyCommand:
       # Trash
       trash:
         class: \CrazyPHP\Model\Trash\Delete
+  # Command update
+  update:
+    # Command
+    command:
+      # Extension
+      extension:
+        class: \CrazyPHP\Model\Extension\Update
+        parameter: "extension"
 CrazyDocker:
   # Command new
   new:
