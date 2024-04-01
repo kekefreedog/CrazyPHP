@@ -55,6 +55,8 @@ Structure:
             source: "@crazyphp_root/resources/Yml/Api.yml"
           Database.yml:
             source: "@crazyphp_root/resources/Yml/Database.yml"
+          Extension.yml:
+            source: "@crazyphp_root/resources/Yml/Extension.yml"
           Firewall.yml:
             source: "@crazyphp_root/resources/Yml/Firewall.yml"
           Front.yml:

@@ -16,9 +16,12 @@ namespace CrazyPHP\Model\Extension;
  * Dependances
  */
 use CrazyPHP\Library\File\Config as FileConfig;
+use CrazyPHP\Library\Extension\Extension;
 use CrazyPHP\Library\Model\CrazyModel;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Interface\CrazyCommand;
+use CrazyPHP\Library\File\Composer;
+use CrazyPHP\Library\Array\Arrays;
 
 /**
  * Delete Extension
@@ -43,7 +46,8 @@ class Delete extends CrazyModel implements CrazyCommand {
             "description"   =>  "Name of your crazy extension",
             "type"          =>  "ARRAY",
             "required"      =>  true,
-            "select"        =>  "CrazyPHP\Library\Extension\Extension::getAllAvailable"
+            "select"        =>  "CrazyPHP\Library\Extension\Extension::getAllInstalled",
+            "multiple"      =>  true
         ],
     ];
 
@@ -55,6 +59,16 @@ class Delete extends CrazyModel implements CrazyCommand {
      * Inputs
      */
     private $inputs = [];
+
+    /**
+     * Data
+     */
+    private $data = [
+        "toRemove" =>  [],
+        "managers"  =>  [
+            "composer"  =>  false
+        ]
+    ];
 
     /**
      * Constructor
@@ -104,6 +118,19 @@ class Delete extends CrazyModel implements CrazyCommand {
     public function run():self {
 
         /**
+         * Run Get Extension
+         * - Search extension
+         * - Load properties of the extension
+         */
+        $this->runGetExtension();
+
+        /**
+         * Run Remove Extension From Config
+         * - Remove Extension From Config
+         */
+        $this->runRemoveExtensionFromConfig();
+
+        /**
          * Run Backup Scripts
          * - Copy php script into the crazy app backup folder
          */
@@ -121,6 +148,12 @@ class Delete extends CrazyModel implements CrazyCommand {
          */
         $this->runRemoveDependances();
 
+        /**
+         * Run Update Composer
+         * - Update composer dependances
+         */
+        $this->runUpdateComposer();
+
         # Return this
         return $this;
 
@@ -129,6 +162,59 @@ class Delete extends CrazyModel implements CrazyCommand {
     /** Public methods | Run
      ******************************************************
      */
+
+    /**
+     * Run Get Extension
+     * 
+     * Search extension & load properties of the extension
+     * 
+     * @return self
+     */
+    public function runGetExtension():self {
+
+        # Check name
+        $inputName = Arrays::filterByKey($this->inputs["extension"], "name", "name");
+
+        # Get values of names
+        $names = $inputName[array_key_first($inputName)]["value"] ?? [];
+
+        # Iterations of names
+        foreach($names as $name){
+
+            # Load available extension by name
+            $currentExtension = Extension::getInstalledByName($name);
+
+            # Check current extension
+            if($currentExtension === null)
+
+                # Continue
+                continue;
+
+            # Push current extension in data
+            $this->data["toRemove"][$name] = $currentExtension;
+
+        }
+
+        # Return instance
+        return $this;
+
+    }
+
+    /**
+     * Run Remove Extension From Config
+     * 
+     * Remove Extension From Config
+     * 
+     * @return self
+     */
+    public function runRemoveExtensionFromConfig():self {
+
+        print_r($this->data);
+
+        # Return instance
+        return $this;
+
+    }
 
     /**
      * Run Backup Scripts
@@ -167,6 +253,28 @@ class Delete extends CrazyModel implements CrazyCommand {
      */
     public function runRemoveDependances():self {
         
+        # Return instance
+        return $this;
+
+    }
+
+    /**
+     * Run Update Dependances
+     * 
+     * Update composer dependances
+     * 
+     * @return self
+     */
+    public function runUpdateComposer():self {
+
+        # Check managers composer
+        if($this->data["managers"]["composer"] === true){
+
+            # Composer Updatex
+            Composer::exec("update", "", false);
+
+        }
+
         # Return instance
         return $this;
 

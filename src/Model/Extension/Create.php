@@ -16,9 +16,13 @@ namespace CrazyPHP\Model\Extension;
  * Dependances
  */
 use CrazyPHP\Library\File\Config as FileConfig;
+use CrazyPHP\Library\Extension\Extension;
 use CrazyPHP\Library\Model\CrazyModel;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Interface\CrazyCommand;
+use CrazyPHP\Library\File\Composer;
+use CrazyPHP\Library\Array\Arrays;
+use CrazyPHP\Library\File\File;
 
 /**
  * Create Extension
@@ -43,7 +47,8 @@ class Create extends CrazyModel implements CrazyCommand {
             "description"   =>  "Name of your crazy extension",
             "type"          =>  "ARRAY",
             "required"      =>  true,
-            "select"        =>  "CrazyPHP\Library\Extension\Extension::getAllAvailable"
+            "select"        =>  "CrazyPHP\Library\Extension\Extension::getAllAvailable",
+            "multiple"      =>  true
         ],
     ];
 
@@ -55,6 +60,16 @@ class Create extends CrazyModel implements CrazyCommand {
      * Inputs
      */
     private $inputs = [];
+
+    /**
+     * Data
+     */
+    private $data = [
+        "toInstall" =>  [],
+        "managers"  =>  [
+            "composer"  =>  false
+        ]
+    ];
 
     /**
      * Constructor
@@ -104,10 +119,23 @@ class Create extends CrazyModel implements CrazyCommand {
     public function run():self {
 
         /**
+         * Run Get Extension
+         * - Search extension
+         * - Load properties of the extension
+         */
+        $this->runGetExtension();
+
+        /**
          * Run Check Potential Conflict
          * - Copy php script into the crazy app
          */
         $this->runCheckPotentialConflict();
+
+        /**
+         * Run Install Dependances
+         * - Install composer dependances
+         */
+        $this->runInstallDependances();
 
         /**
          * Run Install Scripts
@@ -116,10 +144,10 @@ class Create extends CrazyModel implements CrazyCommand {
         $this->runInstallScripts();
 
         /**
-         * Run Install Dependances
-         * - Install composer dependances
+         * Run Append Extension Into Config
+         * - Add extension property into my config
          */
-        $this->runInstallDependances();
+        $this->runAppendExtensionIntoConfig();
 
         /**
          * Run Update Composer
@@ -137,6 +165,43 @@ class Create extends CrazyModel implements CrazyCommand {
      */
 
     /**
+     * Run Get Extension
+     * 
+     * Search extension & load properties of the extension
+     * 
+     * @return self
+     */
+    public function runGetExtension():self {
+
+        # Check name
+        $inputName = Arrays::filterByKey($this->inputs["extension"], "name", "name");
+
+        # Get values of names
+        $names = $inputName[array_key_first($inputName)]["value"] ?? [];
+
+        # Iterations of names
+        foreach($names as $name){
+
+            # Load available extension by name
+            $currentExtension = Extension::getAvailableByName($name);
+
+            # Check current extension
+            if($currentExtension === null)
+
+                # Continue
+                continue;
+
+            # Push current extension in data
+            $this->data["toInstall"] = $currentExtension;
+
+        }
+
+        # Return instance
+        return $this;
+
+    }
+
+    /**
      * Run Check Potential Conflict
      * 
      * Install php script
@@ -145,19 +210,58 @@ class Create extends CrazyModel implements CrazyCommand {
      */
     public function runCheckPotentialConflict():self {
 
-        # Return instance
-        return $this;
+        # Set conflict
+        $conflicts = [];
 
-    }
+        # Get extensions installed
+        $extensionInstalled = FileConfig::getValue('Extension.installed') ?: [];
 
-    /**
-     * Run Install Scripts
-     * 
-     * Install php script
-     * 
-     * @return self
-     */
-    public function runInstallScripts():self {
+        # Check extension to install
+        if(!empty($this->data["toInstall"]))
+
+            # Iteration extensions to install
+            foreach($this->data["toInstall"] as $extensionName => $extension)
+
+                # Check extension not officially installed
+                if(!array_key_exists($extensionName, $extensionInstalled)){
+
+                    # Check scripts
+                    if(isset($extension['scripts']) && !empty($extension['scripts']))
+
+                        # Iteration of scripts
+                        foreach($extension['scripts'] as $script)
+
+                            # Check destination
+                            if(isset($script["destination"]) && File::exists($script["destination"]))
+
+                                # Push file in conflict
+                                $conflicts[] = [
+                                    "extension" =>  $extensionName,
+                                    "script"    =>  $script["destination"]
+                                ];
+
+                }else
+
+                    # Extension already installed
+                    throw new CrazyException(
+                        "Extension $extensionName is already installed",
+                        500,
+                        [
+                            "custom_code"   =>  "extension-create-002"
+                        ]
+                    );
+
+        # Check conflict
+        if(!empty($conflicts))
+
+            # New error
+            throw new CrazyException(
+                "Script conflict detected",
+                500,
+                [
+                    "custom_code"   =>  "extension-create-003"
+                ]
+            );
 
         # Return instance
         return $this;
@@ -173,6 +277,123 @@ class Create extends CrazyModel implements CrazyCommand {
      */
     public function runInstallDependances():self {
 
+        # Check extension to install
+        if(!empty($this->data["toInstall"]))
+
+            # Iteration extensions to install
+            foreach($this->data["toInstall"] as $extension)
+
+                # Check scripts
+                if(isset($extension['dependencies']) && !empty($extension['dependencies']))
+
+                    # Iteration of scripts
+                    foreach($extension['dependencies'] as $manager => $packages)
+
+                        # Check package
+                        if(!empty($packages))
+
+                            # Iteration packages
+                            foreach($packages as $package => $version)
+
+                                # Check manager
+                                if($manager === "composer"){
+
+                                    # Append package
+                                    Composer::requirePackageWithSpecificVersion(
+                                        $package,
+                                        $version,
+                                        true,
+                                        false
+                                    );
+
+                                    # Set manager true
+                                    $this->data["managers"]["composer"] = true;
+
+                                }
+
+
+
+        # Return instance
+        return $this;
+
+    }
+
+    /**
+     * Run Install Scripts
+     * 
+     * Install php script
+     * 
+     * @return self
+     */
+    public function runInstallScripts():self {
+
+        # Check extension to install
+        if(!empty($this->data["toInstall"]))
+
+            # Iteration extensions to install
+            foreach($this->data["toInstall"] as $extension)
+
+                # Check scripts
+                if(isset($extension['scripts']) && !empty($extension['scripts']))
+
+                    # Iteration of scripts
+                    foreach($extension['scripts'] as $script){
+
+                        # Check and get source
+                        $source = isset($script["source"]) && File::exists($script["source"])
+                            ? $script["source"] 
+                            : ""
+                        ;
+                        
+                        # Get destination
+                        $destination = isset($script["destination"])
+                            ? $script["destination"] 
+                            : ""
+                        ;
+
+                        # Check source and destination
+                        if($source && $destination)
+
+                            # Start copy
+                            if(!File::copy($source, $destination))
+
+                                # New error
+                                throw new CrazyException(
+                                    "Failed the copy of the file '".File::path($source)."'",
+                                    500,
+                                    [
+                                        "custom_code"   =>  "extension-create-001"
+                                    ]
+                                );
+
+                    }
+
+        # Return instance
+        return $this;
+
+    }
+
+    /**
+     * Run Append Extension Into Config
+     * 
+     * Add extension property into my config
+     */
+    public function runAppendExtensionIntoConfig():self {
+
+        # Check extensions to installed
+        if(isset($this->data["toInstall"]) && !empty($this->data["toInstall"])){
+
+            # Get extensions installed
+            $extensionsInstalled = FileConfig::getValue("Extension.installed");
+
+            # Merge with new extensions
+            $extensionsInstalled = Arrays::mergeMultidimensionalArraysBis(true, $extensionsInstalled, $this->data["toInstall"]);
+
+            # Push value into config
+            FileConfig::setValue("Extension.installed", $extensionsInstalled);
+
+        }
+
         # Return instance
         return $this;
 
@@ -186,6 +407,14 @@ class Create extends CrazyModel implements CrazyCommand {
      * @return self
      */
     public function runUpdateComposer():self {
+
+        # Check managers composer
+        if($this->data["managers"]["composer"] === true){
+
+            # Composer Updatex
+            Composer::exec("update", "", false);
+
+        }
 
         # Return instance
         return $this;
