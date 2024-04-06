@@ -32,7 +32,7 @@ use CrazyPHP\Model\Config;
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2024 Kévin Zarshenas
  */
-class Composer{
+class Composer {
 
     /** Constants
      ******************************************************
@@ -461,6 +461,96 @@ class Composer{
     }
 
     /**
+     * Remove value
+     * 
+     * Set Value in composer file
+     * 
+     * @param string $key Parameter of config to set
+     * @param string $path Path of the config
+     * @return void
+     */
+    public static function removeValue(string $key = "", string $file = "composer.json"):void {
+
+        # Check if file exists into PATH
+        if(array_key_exists($file, self::PATH))
+
+            # Set file
+            $file = self::PATH[$file];
+
+        # Get mime type
+        $fileData = Json::open($file);
+
+        # Parse key
+        $key = str_replace(self::SEPARATOR, "___", $key);
+
+        # Explode keys 
+        $keys = explode("___", $key);
+
+        # Check config file
+        if(!$file || empty($keys))
+
+            # Stop script
+            return;
+
+        # Check if is array
+        if(!is_array($fileData))
+
+            # New Exception
+            throw new CrazyException(
+                "Config \"".$keys[0]."\" isn't valid... Array waited !", 
+                500,
+                [
+                    "custom_code"   =>  "composer-011",
+                ]
+            );
+
+        # Declare cursor
+        $cursor = &$fileData;
+        $parentCursor = null;
+
+        # Iteration filedata
+        $i=0;while(isset($keys[$i])){
+
+            # Check cursor.key isset
+            if(!isset($cursor[$keys[$i]]))
+
+                    # Exit
+                    return;
+
+            # Check if the last cursor
+            $j = $i+1;
+            if(!isset($keys[$j]))
+
+                # Parent Cursor 
+                $parentCursor = &$cursor;
+
+            else
+
+                # Update the cursor
+                $cursor = &$cursor[$keys[$i]];
+
+        $i++;}
+
+        # Check parent cursor
+        if($parentCursor){
+
+            # Last valid key
+            $i--;
+
+            # Unset value
+            unset($parentCursor[$keys[$i]]);
+
+        }
+
+        # Set last resultCursor
+        $result = $fileData;
+
+        # Set result
+        Json::set($file, $result, false, false);
+
+    }
+
+    /**
      * Process value
      * 
      * Process value for composer.json
@@ -588,7 +678,7 @@ class Composer{
         ];
 
         # Add package in json in composer.json
-        self::set($arrayToMerge);
+        self::set($arrayToMerge, $file);
 
         # Check update Composer
         if($updateComposer)
@@ -596,7 +686,7 @@ class Composer{
             # Composer Update
             Composer::exec("update", "", false);
 
-    } 
+    }
 
     /**
      * Require Package With Specific Version
@@ -649,7 +739,7 @@ class Composer{
         ];
 
         # Add package in json in composer.json
-        self::set($arrayToMerge);
+        self::set($arrayToMerge, $file);
 
         # Check update Composer
         if($updateComposer)
@@ -658,6 +748,56 @@ class Composer{
             Composer::exec("update", "", false);
 
     } 
+
+    /**
+     * Remove Package
+     * 
+     * Remove package in composer config file
+     * 
+     * @param string $package Package to remove in composer
+     * @param bool $updateComposer Update composer
+     * @param string $file Composer file
+     * @return void
+     */
+    public static function removePackage(string|array $package = "", bool $updateComposer = true, string $file = "composer.json"):void {
+
+        # Check package name
+        if(!$package || empty($package))
+                    
+            # New error
+            throw new CrazyException(
+                "Composer package name \"".(is_string($package) ? $package : json_encode($package))."\” you want require looks strange, please respect \"vendor/package\" format !", 
+                500,
+                [
+                    "custom_code"   =>  "composer-004",
+                ]
+            );
+
+        # Array to merge
+        $require = self::get("require", $file);
+
+        # check package
+        if(is_string($package))
+
+            # Set package
+            $package = [$package];
+
+        # Iteration of package
+        foreach($package as $v)
+
+            # Check if in require
+            if(array_key_exists($v, $require))
+
+                # Remove package from require
+                self::removeValue("require.$v", $file);
+
+        # Check update Composer
+        if($updateComposer)
+
+            # Composer Update
+            Composer::exec("update", "", false);
+
+    }
 
     /**
      * Check Package Exists
@@ -733,5 +873,12 @@ class Composer{
         return $result;
 
     }
+    
+    /** Public constants
+     ******************************************************
+     */
+
+    /** @const separator */
+    public const SEPARATOR = [".", "___"];
 
 }

@@ -15,6 +15,7 @@ namespace  CrazyPHP\Cli;
 /**
  * Dependances
  */
+use CrazyPHP\Exception\CrazyException;
 use League\CLImate\CLImate;
 
 /**
@@ -63,10 +64,24 @@ class Form {
             foreach($valueCollection as $value){
 
                 # Check select is callable
-                if(isset($value['select']) && is_callable($value['select']))
+                if(isset($value['select']) && is_callable($value['select'])){
 
                     # Set select
                     $value['select'] = $value['select']();
+
+                    # Check if empty
+                    if(empty($value['select']))
+
+                        # New error
+                        throw new CrazyException(
+                            "No items found",
+                            500,
+                            [
+                                "custom_code"   =>  "form-001"
+                            ]
+                        );
+
+                }
 
                 # Check select is callable
                 if(isset($value['default']) && is_callable($value['default']))

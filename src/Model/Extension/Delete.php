@@ -22,6 +22,8 @@ use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Interface\CrazyCommand;
 use CrazyPHP\Library\File\Composer;
 use CrazyPHP\Library\Array\Arrays;
+use CrazyPHP\Library\File\Trash;
+use CrazyPHP\Library\File\File;
 
 /**
  * Delete Extension
@@ -209,7 +211,22 @@ class Delete extends CrazyModel implements CrazyCommand {
      */
     public function runRemoveExtensionFromConfig():self {
 
-        print_r($this->data);
+        # Check extensions to remove
+        if(isset($this->data["toRemove"]) && !empty($this->data["toRemove"])){
+
+            # Get extensions installed
+            $extensionsInstalled = FileConfig::getValue("Extension.installed");
+
+            # Iteration of extension to remove
+            foreach($this->data["toRemove"] as $extensionName => $extension)
+
+                # Check if in extensionsInstalled
+                if(array_key_exists($extensionName, $extensionsInstalled))
+
+                    # Remove extension
+                    FileConfig::removeValue("Extension.installed.$extensionName");
+        
+        }
 
         # Return instance
         return $this;
@@ -225,6 +242,29 @@ class Delete extends CrazyModel implements CrazyCommand {
      */
     public function runBackupScripts():self {
 
+        # Check extensions to remove
+        if(isset($this->data["toRemove"]) && !empty($this->data["toRemove"]))
+
+            # Iteration of extension to remove
+            foreach($this->data["toRemove"] as $extensionName => $extension)
+
+                # Check script
+                if(isset($extension["scripts"]) && !empty($extension["scripts"]))
+
+                    # Iteration scripts
+                    foreach($extension["scripts"] as $script)
+
+                        # Check destination
+                        if(isset($script["destination"]) && File::exists($script["destination"])){
+
+                            # Set key
+                            $hierarchy = "Extension/$extensionName";
+
+                            # Send to trash
+                            Trash::send($script["destination"], $hierarchy, false);
+
+                        }
+
         # Return instance
         return $this;
 
@@ -238,6 +278,24 @@ class Delete extends CrazyModel implements CrazyCommand {
      * @return self
      */
     public function runRemoveScripts():self {
+
+        # Check extensions to remove
+        if(isset($this->data["toRemove"]) && !empty($this->data["toRemove"]))
+
+            # Iteration of extension to remove
+            foreach($this->data["toRemove"] as $extension)
+
+                # Check script
+                if(isset($extension["scripts"]) && !empty($extension["scripts"]))
+
+                    # Iteration scripts
+                    foreach($extension["scripts"] as $script)
+
+                        # Check destination
+                        if(isset($script["destination"]) && File::exists($script["destination"]))
+
+                            # Remove file
+                            File::remove($script["destination"]);
         
         # Return instance
         return $this;
@@ -252,6 +310,35 @@ class Delete extends CrazyModel implements CrazyCommand {
      * @return self
      */
     public function runRemoveDependances():self {
+
+        # Check extensions to remove
+        if(isset($this->data["toRemove"]) && !empty($this->data["toRemove"]))
+
+            # Iteration of extension to remove
+            foreach($this->data["toRemove"] as $extensionName => $extension)
+
+                # Check script
+                if(isset($extension["dependencies"]) && !empty($extension["dependencies"]))
+
+                    # Iteration of scripts
+                    foreach($extension['dependencies'] as $manager => $packages)
+
+                        # Check package
+                        if(!empty($packages))
+
+                            # Iteration packages
+                            foreach($packages as $package => $version)
+
+                                # Check manager
+                                if($manager === "composer"){
+
+                                    # Append package
+                                    Composer::removePackage($package, false);
+
+                                    # Set manager true
+                                    $this->data["managers"]["composer"] = true;
+
+                                }
         
         # Return instance
         return $this;

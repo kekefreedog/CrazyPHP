@@ -56,6 +56,26 @@ Delete router type
 php vendor/kzarshenas/crazyphp/bin/CrazyCommand delete routerType
 ```
 
+## Extension
+
+New router type
+
+```sh
+php vendor/kzarshenas/crazyphp/bin/CrazyCommand new extension
+```
+
+Update extension
+
+```sh
+php vendor/kzarshenas/crazyphp/bin/CrazyCommand update extension
+```
+
+Delete router type
+
+```sh
+php vendor/kzarshenas/crazyphp/bin/CrazyCommand delete extension
+```
+
 ## Trash
 
 Clean trash
