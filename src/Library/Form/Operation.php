@@ -50,16 +50,6 @@ class Operation {
            "operation" => "!=",
            "regex" => "/^!=(.*)$/"
         ],
-        "<" => [ 
-           "name" => "smaller",
-           "operation" => "<",
-           "regex" => "/^<(.*)$/"
-        ],
-        ">" => [ 
-           "name" => "greater",
-           "operation" => ">",
-           "regex" => "/^>(.*)$/"
-        ],
         "<=" => [ 
            "name" => "lessThanOrEqual",
            "operation" => "<=",
@@ -69,6 +59,16 @@ class Operation {
            "name" => "greaterThanOrEqual",
            "operation" => ">=",
            "regex" => "/^>=(.*)$/"
+        ],
+        "<" => [ 
+           "name" => "smaller",
+           "operation" => "<",
+           "regex" => "/^<(.*)$/"
+        ],
+        ">" => [ 
+           "name" => "greater",
+           "operation" => ">",
+           "regex" => "/^>(.*)$/"
         ],
         "*" => [ 
            "name" => "like",
@@ -249,7 +249,43 @@ class Operation {
         # Iteration of current operation
         if(!empty($input) && !empty($this->_currentOperations)){
 
+            # Iterations inputs
+            foreach($input as $v)
 
+                # Iteration of current operations
+                foreach($this->_currentOperations as $operation)
+
+                    # Check regex
+                    if(
+                        isset($operation["name"]) && 
+                        $operation["name"] && 
+                        isset($operation["regex"]) && 
+                        Validate::isRegex($operation["regex"]) && 
+                        preg_match($operation["regex"], $v, $matches)
+                    ){
+
+                        # Set method name
+                        $methodName = "parse".ucfirst($operation["name"]);
+
+                        # Check if method exists
+                        if(method_exists($this, $methodName))
+
+                            # Check if isString
+                            if($isString)
+
+                                # Run method found
+                                $result = $this->{$methodName}($matches, $operation);
+
+                            else
+
+                                # Run method found
+                                $result[] = $this->{$methodName}($matches, $operation);
+
+                        # Continue
+                        continue 2;
+
+                    }
+            
         }else
         # check is string
         if($isString){
@@ -280,11 +316,11 @@ class Operation {
      * Exemple : `=value`
      * Description : Checks if a value is equal to `value`
      * 
-     * @param string $input 
+     * @param string|array $input 
      * @param array $operation
      * @return mixed
      */
-    public function parseEqual(string $input, array $operation):mixed {
+    public function parseEqual(string|array $input, array $operation):mixed {
 
         # Push input in operations
         $operation["value"] = $input;
@@ -300,51 +336,11 @@ class Operation {
      * Exemple : `!=value`
      * Description : Checks if a value is not equal to `value`
      * 
-     * @param string $input 
+     * @param string|array $input 
      * @param array $operation
      * @return mixed
      */
-    public function parseNotEqual(string $input, array $operation):mixed {
-
-        # Push input in operations
-        $operation["value"] = $input;
-
-        # Return input
-        return $operation;
-
-    }
-
-    /**
-     * Smaller
-     * 
-     * Exemple : `<10`
-     * Description : Checks if a value is smaller than 10.
-     * 
-     * @param string $input 
-     * @param array $operation
-     * @return mixed
-     */
-    public function parseSmaller(string $input, array $operation):mixed {
-
-        # Push input in operations
-        $operation["value"] = $input;
-
-        # Return input
-        return $operation;
-
-    }
-
-    /**
-     * Greater
-     * 
-     * Exemple : `>10`
-     * Description : Checks if a value is greater than 10
-     * 
-     * @param string $input 
-     * @param array $operation
-     * @return mixed
-     */
-    public function parseGreater(string $input, array $operation):mixed {
+    public function parseNotEqual(string|array $input, array $operation):mixed {
 
         # Push input in operations
         $operation["value"] = $input;
@@ -360,11 +356,11 @@ class Operation {
      * Exemple : `<=10`
      * Description : Checks if a value is less than or equal to 10
      * 
-     * @param string $input 
+     * @param string|array $input 
      * @param array $operation
      * @return mixed
      */
-    public function parseLessThanOrEqual(string $input, array $operation):mixed {
+    public function parseLessThanOrEqual(string|array $input, array $operation):mixed {
 
         # Push input in operations
         $operation["value"] = $input;
@@ -380,11 +376,51 @@ class Operation {
      * Exemple : `>=10`
      * Description : Checks if a value is greater than or equal to 10
      * 
-     * @param string $input 
+     * @param string|array $input 
      * @param array $operation
      * @return mixed
      */
-    public function parseGreaterThanOrEqual(string $input, array $operation):mixed {
+    public function parseGreaterThanOrEqual(string|array $input, array $operation):mixed {
+
+        # Push input in operations
+        $operation["value"] = $input;
+
+        # Return input
+        return $operation;
+
+    }
+
+    /**
+     * Smaller
+     * 
+     * Exemple : `<10`
+     * Description : Checks if a value is smaller than 10.
+     * 
+     * @param string|array $input 
+     * @param array $operation
+     * @return mixed
+     */
+    public function parseSmaller(string|array $input, array $operation):mixed {
+
+        # Push input in operations
+        $operation["value"] = $input;
+
+        # Return input
+        return $operation;
+
+    }
+
+    /**
+     * Greater
+     * 
+     * Exemple : `>10`
+     * Description : Checks if a value is greater than 10
+     * 
+     * @param string|array $input 
+     * @param array $operation
+     * @return mixed
+     */
+    public function parseGreater(string|array $input, array $operation):mixed {
 
         # Push input in operations
         $operation["value"] = $input;
@@ -400,31 +436,31 @@ class Operation {
      * Exemple : `*value`
      * Description : Performs a pattern match (like SQL's LIKE)
      * 
-     * @param string $input 
+     * @param string|array $input 
      * @param array $operation
      * @return mixed
      */
-    public function parseLike(string $input, array $operation):mixed {
+    public function parseLike(string|array $input, array $operation):mixed {
 
         # Push input in operations
         $operation["value"] = $input;
 
         # Check at start
-        if($operation["matches"][1] === '' && !empty($matches[2]))
+        if(($operation["matches"][1] ?? false) === '' && !empty($matches[2] ?? false))
 
             # Set position
             $operation["position"] = "start";
 
         else
         # Check at the end
-        if(!empty($operation["matches"][1]) && $operation["matches"][2] === '')
+        if(!empty($operation["matches"][1] ?? false) && ($operation["matches"][2] ?? false) === '')
 
             # Set position
             $operation["position"] = "end";
         
         else
         # Check in the end
-        if(!empty($operation["matches"][1]) && !empty($operation["matches"][2]))
+        if(!empty($operation["matches"][1] ?? false) && !empty($operation["matches"][2] ?? false))
             
             # Set position
             $operation["position"] = "middle";
@@ -446,11 +482,11 @@ class Operation {
      * Exemple : `~*Value`
      * Description : Performs a case-insensitive pattern match
      * 
-     * @param string $input 
+     * @param string|array $input 
      * @param array $operation
      * @return mixed
      */
-    public function parseCaseInsensitiveLike(string $input, array $operation):mixed {
+    public function parseCaseInsensitiveLike(string|array $input, array $operation):mixed {
 
         # Push input in operations
         $operation["value"] = $input;
@@ -466,11 +502,11 @@ class Operation {
      * Exemple : `[1,10]`
      * Description : Checks if a value is between 1 and 10 (inclusive)
      * 
-     * @param string $input 
+     * @param string|array $input 
      * @param array $operation
      * @return mixed
      */
-    public function parseBetween(string $input, array $operation):mixed {
+    public function parseBetween(string|array $input, array $operation):mixed {
 
         # Push input in operations
         $operation["value"] = $input;
@@ -486,11 +522,11 @@ class Operation {
      * Exemple : `![1,10]`
      * Description : Checks if a value is not between 1 and 10
      * 
-     * @param string $input 
+     * @param string|array $input 
      * @param array $operation
      * @return mixed
      */
-    public function parseNotBetween(string $input, array $operation):mixed {
+    public function parseNotBetween(string|array $input, array $operation):mixed {
 
         # Push input in operations
         $operation["value"] = $input;
@@ -506,11 +542,11 @@ class Operation {
      * Exemple : `@>value`
      * Description : Checks if an array or set contains `value`
      * 
-     * @param string $input 
+     * @param string|array $input 
      * @param array $operation
      * @return mixed
      */
-    public function parseContains(string $input, array $operation):mixed {
+    public function parseContains(string|array $input, array $operation):mixed {
 
         # Push input in operations
         $operation["value"] = $input;
@@ -526,11 +562,11 @@ class Operation {
      * Exemple : `<@value`
      * Description : Checks if a value is contained by an array or set
      * 
-     * @param string $input 
+     * @param string|array $input 
      * @param array $operation
      * @return mixed
      */
-    public function parseContainedBy(string $input, array $operation):mixed {
+    public function parseContainedBy(string|array $input, array $operation):mixed {
 
         # Push input in operations
         $operation["value"] = $input;
@@ -545,11 +581,11 @@ class Operation {
      * 
      * Description : No operations found
      * 
-     * @param string $input 
+     * @param string|array $input 
      * @param array $operation
      * @return mixed
      */
-    public function parseDefault(string $input):mixed {
+    public function parseDefault(string|array $input):mixed {
 
         # Push input in operations
         $operation = [

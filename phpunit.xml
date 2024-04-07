@@ -1,5 +1,11 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<phpunit bootstrap="vendor/autoload.php">
+<?xml version="1.0" encoding="utf-8"?>
+<phpunit 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  bootstrap="vendor/autoload.php" 
+  xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.0/phpunit.xsd" 
+  cacheDirectory=".cache/phpunit"
+  displayDetailsOnTestsThatTriggerWarnings="true"
+>
   <testsuites>
     <testsuite name="Crazy PHP | Library tests">
       <directory>tests</directory>

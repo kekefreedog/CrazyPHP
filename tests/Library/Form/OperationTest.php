@@ -149,4 +149,162 @@ class OperationTest extends TestCase{
 
     }
 
+    /**
+     * Test Operation Equal
+     * 
+     * @return void
+     */
+    public function testOperationEqual():void {
+
+        # New instance
+        $instance = new Operation();
+
+        # Run empty
+        $result = $instance->run("=hello");
+
+        # Check result
+        $this->assertEquals([
+            "=hello",
+            "hello"
+        ] , $result["value"] ?? []);
+
+    }
+
+    /**
+     * Test Operation Not Equal
+     * 
+     * @return void
+     */
+    public function testOperationNotEqual():void {
+
+        # New instance
+        $instance = new Operation();
+
+        # Run empty
+        $result = $instance->run("!=hello");
+
+        # Check result
+        $this->assertEquals([
+            "!=hello",
+            "hello"
+        ] , $result["value"] ?? []);
+
+    }
+
+    /**
+     * Test Operation Smaller
+     * 
+     * @return void
+     */
+    public function testOperationSmaller():void {
+
+        # New instance
+        $instance = new Operation();
+
+        # Run empty
+        $result = $instance->run("<10");
+
+        # Check result
+        $this->assertEquals([
+            "<10",
+            "10"
+        ] , $result["value"] ?? []);
+
+    }
+
+    /**
+     * Test Operation Greater
+     * 
+     * @return void
+     */
+    public function testOperationGreater():void {
+
+        # New instance
+        $instance = new Operation();
+
+        # Run empty
+        $result = $instance->run(">10");
+
+        # Check result
+        $this->assertEquals([
+            ">10",
+            "10"
+        ] , $result["value"] ?? []);
+
+    }
+
+    /**
+     * Test Operation Less Than Or Greater
+     * 
+     * @return void
+     */
+    public function testOperationLessThanOrEqual():void {
+
+        # New instance
+        $instance = new Operation();
+
+        # Run empty
+        $result = $instance->run("<=10");
+
+        # Check result
+        $this->assertEquals([
+            "<=10",
+            "10",
+        ] , $result["value"] ?? []);
+
+    }
+
+    /**
+     * Test Operation Greater Than Or Greater
+     * 
+     * @return void
+     */
+    public function testOperationGreaterThanOrEqual():void {
+
+        # New instance
+        $instance = new Operation();
+
+        # Run empty
+        $result = $instance->run(">=10");
+
+        # Check result
+        $this->assertEquals([
+            ">=10",
+            "10",
+        ] , $result["value"] ?? []);
+
+    }
+
+    /**
+     * Test Operation Greater Than Or Greater
+     * 
+     * @return void
+     */
+    public function testOperationLike():void {
+
+        # New instance
+        $instance = new Operation();
+
+        # Run empty
+        $result = $instance->run("*value");
+
+        # Check result
+        $this->assertEquals([
+            "*value",
+            "",
+            "value",
+        ] , $result["value"] ?? []);
+
+        # Run empty
+        $result = $instance->run("value*");
+
+        # Check result
+        $this->assertEquals([
+            "value*",
+            "value",
+            "",
+        ] , $result["value"] ?? []);
+
+    }
+
 }
