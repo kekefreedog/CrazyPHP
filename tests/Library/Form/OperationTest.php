@@ -99,7 +99,7 @@ class OperationTest extends TestCase{
         $this->assertEquals(Operation::LIST, $instance->get());
 
         # Value A
-        $valueA = "@>";
+        $valueA = ">";
 
         # Update instance
         $instance->set($valueA);
@@ -108,7 +108,7 @@ class OperationTest extends TestCase{
         $this->assertEquals([$valueA => Operation::LIST[$valueA]], $instance->get());
 
         # Set value b
-        $valueB = ["~*", "*", $valueA];
+        $valueB = ["[]", "*", $valueA];
 
         # Update instance
         $instance->set($valueB);
@@ -116,7 +116,7 @@ class OperationTest extends TestCase{
         # Check operations
         $this->assertEquals([
             $valueA => Operation::LIST[$valueA],
-            "~*" => Operation::LIST["~*"],
+            "[]" => Operation::LIST["[]"],
             "*" => Operation::LIST["*"],
         ], $instance->get());
 
@@ -276,7 +276,7 @@ class OperationTest extends TestCase{
     }
 
     /**
-     * Test Operation Greater Than Or Greater
+     * Test Operation Like
      * 
      * @return void
      */
@@ -291,9 +291,11 @@ class OperationTest extends TestCase{
         # Check result
         $this->assertEquals([
             "*value",
-            "",
             "value",
         ] , $result["value"] ?? []);
+
+        # check position
+        $this->assertEquals("start", $result["position"]);
 
         # Run empty
         $result = $instance->run("value*");
@@ -302,7 +304,65 @@ class OperationTest extends TestCase{
         $this->assertEquals([
             "value*",
             "value",
-            "",
+        ] , $result["value"] ?? []);
+
+        # check position
+        $this->assertEquals("end", $result["position"]);
+
+        # Run empty
+        $result = $instance->run("*value*");
+
+        # Check result
+        $this->assertEquals([
+            "*value*",
+            "value",
+        ] , $result["value"] ?? []);
+
+        # check position
+        $this->assertEquals("start,end", $result["position"]);
+
+    }
+
+    /**
+     * Test Operation Between
+     * 
+     * @return void
+     */
+    public function testOperationBetween():void {
+
+        # New instance
+        $instance = new Operation();
+
+        # Run empty
+        $result = $instance->run("[1:10]");
+
+        # Check result
+        $this->assertEquals([
+            "[1:10]",
+            "1",
+            "10",
+        ] , $result["value"] ?? []);
+
+    }
+
+    /**
+     * Test Operation Not Between
+     * 
+     * @return void
+     */
+    public function testOperationNotBetween():void {
+
+        # New instance
+        $instance = new Operation();
+
+        # Run empty
+        $result = $instance->run("![1:10]");
+
+        # Check result
+        $this->assertEquals([
+            "![1:10]",
+            "1",
+            "10",
         ] , $result["value"] ?? []);
 
     }

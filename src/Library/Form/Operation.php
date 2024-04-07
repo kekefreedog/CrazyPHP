@@ -70,35 +70,21 @@ class Operation {
            "operation" => ">",
            "regex" => "/^>(.*)$/"
         ],
-        "*" => [ 
-           "name" => "like",
-           "operation" => "*",
-           "regex" => "/^(.*)\*(.*)$/"
-        ],
-        "~*" => [ 
-           "name" => "caseInsensitiveLike",
-           "operation" => "~*",
-           "regex" => "/^~\*(.*)$/"
-        ],
+        # [1:10]
         "[]" => [ 
            "name" => "between",
            "operation" => "[]",
-           "regex" => "/^\[\s*(.+?),\s*(.+?)\s*\]$/"
+           "regex" => '/^\[\s*(\d+)\s*:\s*(\d+)\s*\]$/'
         ],
         "![]" => [ 
            "name" => "notBetween",
            "operation" => "![]",
-           "regex" => "/^!\[\s*(.+?),\s*(.+?)\s*\]$/"
+           "regex" => "/^!\[\s*(.+?):\s*(.+?)\s*\]$/"
         ],
-        "@>" => [ 
-           "name" => "contains",
-           "operation" => "@>",
-           "regex" => "/^@>(.*)$/"
-        ],
-        "<@" => [ 
-           "name" => "containedBy",
-           "operation" => "<@",
-           "regex" => "/^<@(.*)$/"
+        "*" => [ 
+           "name" => "like",
+           "operation" => "*",
+           "regex" => "/^(\*)?(.*?)(\*)?$/"
         ],
     ];
 
@@ -274,12 +260,12 @@ class Operation {
                             if($isString)
 
                                 # Run method found
-                                $result = $this->{$methodName}($matches, $operation);
+                                $result = $this->_processResult($this->{$methodName}($matches, $operation));
 
                             else
 
                                 # Run method found
-                                $result[] = $this->{$methodName}($matches, $operation);
+                                $result[] = $this->_processResult($this->{$methodName}($matches, $operation));
 
                         # Continue
                         continue 2;
@@ -300,6 +286,61 @@ class Operation {
 
                 # Set result
                 $result[] = $this->parseDefault($v);
+
+        # Return result
+        return $result;
+
+    }
+
+    /** Private methods
+     ******************************************************
+     */
+
+    /**
+     * Process Result
+     * 
+     * Method to filter some specific anomaly produced by regex
+     */
+    private function _processResult(array $input = []):array {
+
+        # Set result
+        $result = $input;
+
+        ## Like
+
+        # Check like and remove "*" if in second value
+        if(($input["name"] ?? false) == "like" && ($input["value"][1] ?? false) == "*"){
+
+            # Remove first key of value
+            unset($result["value"][1]);
+
+            # Result keys
+            $result["value"] = array_values($result["value"]);
+
+        }else
+        # Other like issue
+        if(($input["name"] ?? false) == "like" && ($input["value"][1] ?? false) == "" && ($input["value"][3] ?? false) == "*"){
+
+            # Remove first key of value
+            unset($result["value"][1]);
+
+            # Remove first key of value
+            unset($result["value"][3]);
+
+            # Result keys
+            $result["value"] = array_values($result["value"]);
+
+        }
+        # Check like and remove "*" if in second value
+        if(($result["name"] ?? false) == "like" && ($result["value"][2] ?? false) == "*"){
+
+            # Remove first key of value
+            unset($result["value"][2]);
+
+            # Result keys
+            $result["value"] = array_values($result["value"]);
+
+        }
 
         # Return result
         return $result;
@@ -431,72 +472,6 @@ class Operation {
     }
 
     /**
-     * Like
-     * 
-     * Exemple : `*value`
-     * Description : Performs a pattern match (like SQL's LIKE)
-     * 
-     * @param string|array $input 
-     * @param array $operation
-     * @return mixed
-     */
-    public function parseLike(string|array $input, array $operation):mixed {
-
-        # Push input in operations
-        $operation["value"] = $input;
-
-        # Check at start
-        if(($operation["matches"][1] ?? false) === '' && !empty($matches[2] ?? false))
-
-            # Set position
-            $operation["position"] = "start";
-
-        else
-        # Check at the end
-        if(!empty($operation["matches"][1] ?? false) && ($operation["matches"][2] ?? false) === '')
-
-            # Set position
-            $operation["position"] = "end";
-        
-        else
-        # Check in the end
-        if(!empty($operation["matches"][1] ?? false) && !empty($operation["matches"][2] ?? false))
-            
-            # Set position
-            $operation["position"] = "middle";
-
-        # If not found
-        else
-
-            # Set position
-            $operation["position"] = null;
-
-        # Return input
-        return $operation;
-
-    }
-
-    /**
-     * Case-Insensitive Like
-     * 
-     * Exemple : `~*Value`
-     * Description : Performs a case-insensitive pattern match
-     * 
-     * @param string|array $input 
-     * @param array $operation
-     * @return mixed
-     */
-    public function parseCaseInsensitiveLike(string|array $input, array $operation):mixed {
-
-        # Push input in operations
-        $operation["value"] = $input;
-
-        # Return input
-        return $operation;
-
-    }
-
-    /**
      * Between
      * 
      * Exemple : `[1,10]`
@@ -537,46 +512,6 @@ class Operation {
     }
 
     /**
-     * Contains
-     * 
-     * Exemple : `@>value`
-     * Description : Checks if an array or set contains `value`
-     * 
-     * @param string|array $input 
-     * @param array $operation
-     * @return mixed
-     */
-    public function parseContains(string|array $input, array $operation):mixed {
-
-        # Push input in operations
-        $operation["value"] = $input;
-
-        # Return input
-        return $operation;
-
-    }
-
-    /**
-     * Contained By
-     * 
-     * Exemple : `<@value`
-     * Description : Checks if a value is contained by an array or set
-     * 
-     * @param string|array $input 
-     * @param array $operation
-     * @return mixed
-     */
-    public function parseContainedBy(string|array $input, array $operation):mixed {
-
-        # Push input in operations
-        $operation["value"] = $input;
-
-        # Return input
-        return $operation;
-
-    }
-
-    /**
      * Parse Default
      * 
      * Description : No operations found
@@ -592,6 +527,71 @@ class Operation {
             "name"  =>  "default",
             "value" =>  $input
         ];
+
+        # Return input
+        return $operation;
+
+    }
+
+    /**
+     * Like
+     * 
+     * Exemple : `*value`
+     * Description : Performs a pattern match (like SQL's LIKE)
+     * 
+     * @param string|array $input 
+     * @param array $operation
+     * @return mixed
+     */
+    public function parseLike(string|array $input, array $operation):mixed {
+
+        # Set start
+        $start = false;
+
+        # Set end
+        $end = false;
+
+        # Push input in operations
+        $operation["value"] = $input;
+
+        # Check * at the start
+        if(strpos($operation["value"][0], '*') === 0)
+
+            # Set start
+            $start = true;
+
+        if(strrpos($operation["value"][0], '*') === strlen($operation["value"][0]) - 1)
+            
+            $end = true;
+
+        # Check at start
+        if($start && !$end)
+
+            # Set position
+            $operation["position"] = "start";
+
+        else
+        # Check at the end
+        if(!$start && $end)
+
+            # Set position
+            $operation["position"] = "end";
+        
+        else
+        # Check in the end
+        if($start && $end)
+            
+            # Set position
+            $operation["position"] = "start,end";
+
+        # If not found
+        else
+
+            # Set position
+            $operation["position"] = null;
+
+        # Set case sensitive
+        $operation["case_sensitive"] = false;
 
         # Return input
         return $operation;
