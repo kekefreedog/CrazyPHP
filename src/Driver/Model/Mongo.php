@@ -15,14 +15,15 @@ namespace  CrazyPHP\Driver\Model;
 /**
  * Dependances
  */
+use CrazyPHP\Library\Database\Operation\MangodbOperation;
 use CrazyPHP\Library\File\Config as FileConfig;
 use CrazyPHP\Library\Database\Driver\Mangodb;
 use CrazyPHP\Interface\CrazyDriverModel;
 use CrazyPHP\Exception\CrazyException;
-use CrazyPHP\Library\Array\Arrays;
-use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\Router\Router;
 use CrazyPHP\Library\Model\Schema;
+use CrazyPHP\Library\Array\Arrays;
+use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\Form\Query;
 use CrazyPHP\Model\Context;
 use MongoDB\Client;
@@ -142,10 +143,15 @@ class Mongo implements CrazyDriverModel {
         $this->_ingestPageStateProcess($options);
 
         # Check filters
-        if(isset($filters) && is_array($filters))
+        if(isset($filters) && is_array($filters)){
+
+            # Process Operations In Filters
+            $filters = $this->_processOperationsInFilters($filters);
 
             # Push filters in filters
             $this->findOptions["filters"] = $filters;
+
+        }
 
         # Check limit in options
         if($options["limit"] ?? false && is_numeric($options["limit"])){
@@ -489,6 +495,41 @@ class Mongo implements CrazyDriverModel {
 
         # Prepare metadata
         $result["_metadata"]["records_total"] = count($input);
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Process Operations In Filters
+     * 
+     * @param array $input
+     * @return array
+     */
+    private function _processOperationsInFilters(array $filters = []):array {
+
+        # Set result
+        $result = $filters;
+
+        # Check filters
+        if(!empty($result)){
+
+            # New operations
+            $operation = new MangodbOperation();
+
+            # Iteration filters
+            foreach($result as &$value)
+
+                # Check if value is string
+                if(is_string($value) && strpos($value, "*") !== false){
+
+                    # Run operation
+                    $value = $operation->run($value);
+
+                }
+
+        }
 
         # Return result
         return $result;

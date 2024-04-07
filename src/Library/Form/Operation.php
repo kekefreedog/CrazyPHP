@@ -100,10 +100,10 @@ class Operation {
      * 
      * Construct and prepare instance
      * 
-     * @param string|array $Operation Exemple ["=", "[]"] or ["contains", "between"] or "@>" or "contains" or "*" (for all operations)
+     * @param string|array $Operation Exemple ["=", "[]"] or ["contains", "between"] or "@>" or "contains" or "@all" (for all operations)
      * @return self
      */
-    public function __construct(string|array $operations = "*"){
+    public function __construct(string|array $operations = "@all"){
 
         # Set operations
         $this->set($operations);
@@ -122,13 +122,13 @@ class Operation {
      * @param string|array $operations
      * @return void
      */
-    final public function set(string|array $operations = "*"):void {
+    final public function set(string|array $operations = "@all"):void {
 
         # Reset current operations
         $this->_currentOperations = [];
 
         # Check if empty
-        if($operations == "*"){
+        if($operations == "@all"){
 
             # Set operation
             $this->_currentOperations = self::LIST;
@@ -253,6 +253,9 @@ class Operation {
                         # Set method name
                         $methodName = "parse".ucfirst($operation["name"]);
 
+                        # Process matches
+                        $matches = $this->_processMatches($matches, $operation);
+
                         # Check if method exists
                         if(method_exists($this, $methodName))
 
@@ -260,12 +263,12 @@ class Operation {
                             if($isString)
 
                                 # Run method found
-                                $result = $this->_processResult($this->{$methodName}($matches, $operation));
+                                $result = $this->{$methodName}($matches, $operation);
 
                             else
 
                                 # Run method found
-                                $result[] = $this->_processResult($this->{$methodName}($matches, $operation));
+                                $result[] = $this->{$methodName}($matches, $operation);
 
                         # Continue
                         continue 2;
@@ -300,45 +303,29 @@ class Operation {
      * Process Result
      * 
      * Method to filter some specific anomaly produced by regex
+     * 
+     * @param array $matches
+     * @param array $operation
+     * @return array
      */
-    private function _processResult(array $input = []):array {
+    private function _processMatches(array $matches, array $operation):array {
 
         # Set result
-        $result = $input;
+        $result = $matches;
 
-        ## Like
+        # Check if like
+        if(($operation["name"] ?? false) == "like" && !empty($matches ?? [])){
 
-        # Check like and remove "*" if in second value
-        if(($input["name"] ?? false) == "like" && ($input["value"][1] ?? false) == "*"){
+            # Iteration value
+            foreach($result as $key => $value)
 
-            # Remove first key of value
-            unset($result["value"][1]);
+                # Check value
+                if($value == '*' || $value == "")
 
-            # Result keys
-            $result["value"] = array_values($result["value"]);
+                    # Unset value
+                    unset($result[$key]);
 
-        }else
-        # Other like issue
-        if(($input["name"] ?? false) == "like" && ($input["value"][1] ?? false) == "" && ($input["value"][3] ?? false) == "*"){
-
-            # Remove first key of value
-            unset($result["value"][1]);
-
-            # Remove first key of value
-            unset($result["value"][3]);
-
-            # Result keys
-            $result["value"] = array_values($result["value"]);
-
-        }
-        # Check like and remove "*" if in second value
-        if(($result["name"] ?? false) == "like" && ($result["value"][2] ?? false) == "*"){
-
-            # Remove first key of value
-            unset($result["value"][2]);
-
-            # Result keys
-            $result["value"] = array_values($result["value"]);
+            $result = array_values($result);
 
         }
 
@@ -545,14 +532,20 @@ class Operation {
      */
     public function parseLike(string|array $input, array $operation):mixed {
 
+        # Push input in operations
+        $operation["value"] = $input;
+
+       /*  # Check if *
+        if(strpos($operation["value"][0], "*") === false)
+
+            # Stop method
+            return $this->parseDefault($input); */
+
         # Set start
         $start = false;
 
         # Set end
         $end = false;
-
-        # Push input in operations
-        $operation["value"] = $input;
 
         # Check * at the start
         if(strpos($operation["value"][0], '*') === 0)

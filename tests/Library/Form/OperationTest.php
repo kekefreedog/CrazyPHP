@@ -287,7 +287,7 @@ class OperationTest extends TestCase{
 
         # Run empty
         $result = $instance->run("*value");
-
+        
         # Check result
         $this->assertEquals([
             "*value",

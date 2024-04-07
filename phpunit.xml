@@ -5,6 +5,7 @@
   xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.0/phpunit.xsd" 
   cacheDirectory=".cache/phpunit"
   displayDetailsOnTestsThatTriggerWarnings="true"
+  displayDetailsOnTestsThatTriggerDeprecations="true"
 >
   <testsuites>
     <testsuite name="Crazy PHP | Library tests">
