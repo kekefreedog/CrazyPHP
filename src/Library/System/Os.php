@@ -52,20 +52,28 @@ class Os {
         # Get win dir
         $win_dir = getenv("WINDIR");
 
+        # Get os env
+        $os = getenv("OS");
+
         # Check user agent and win dir
         if(!$win_dir && !$user_agent)
 
             # Return result
-            return $result;
+            $result = false;
 
+        else
         # Set result
-        if(strpos($user_agent, "Win") !== false) 
+        if($os == "Windows_NT" || (is_string($user_agent) && strpos($user_agent, "Win") !== false)) 
             
             # Set result
             $result = true;
 
+        else
         # Set result
-        if(!$result && $win_dir) $result = true;
+        if(!$result && $win_dir) 
+
+            # Set result
+            $result = true;
 
         # Return result
         return $result;

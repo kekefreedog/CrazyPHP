@@ -27,6 +27,7 @@ use CrazyPHP\Library\File\Package;
 use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\Cli\Command;
+use CrazyPHP\Library\System\Os;
 use CrazyPHP\Model\Webpack\Run;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Library\File\Json;
@@ -802,6 +803,15 @@ class Create extends CrazyModel implements CrazyCommand {
                 $result = $composerName;
 
             else
+            # If windows
+            if(Os::isWindows()){
+
+                # Extract name from app path
+                $result = Strings::getLastString(trim($appPath, "\\"), "\\");
+
+
+            # If mac, linux...
+            }else
 
                 # Extract name from app path
                 $result = Strings::getLastString(trim($appPath, "/"), "/");
