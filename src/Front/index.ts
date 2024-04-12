@@ -24,6 +24,7 @@ export {default as UtilityRunner} from "./Library/Utility/Runner";
 export {default as UtilityArrays} from "./Library/Utility/Arrays";
 export {default as Crazylanguage} from "./Library/Crazylanguage";
 export {default as RegisterPage} from "./Library/Register/Page";
+export {default as UtilityMoney} from "./Library/Utility/Money";
 export {default as Crazyconsole} from "./Library/Crazyconsole";
 export {default as Crazyrequest} from "./Library/Crazyrequest";
 export {default as Crazypartial} from "./Library/Crazypartial";

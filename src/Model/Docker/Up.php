@@ -264,7 +264,7 @@ class Up implements CrazyCommand {
             );
 
         # Check if port is available
-        if(Port::isTaken("localhost", $port))
+        /* if(Port::isTaken("localhost", $port))
 
             # New error
             throw new CrazyException(
@@ -273,7 +273,7 @@ class Up implements CrazyCommand {
                 [
                     "custom_code"   =>  "up-010",
                 ]
-            );
+            );*/
 
         # Echo successfull message
         echo "✅ Port $port is available".PHP_EOL;
