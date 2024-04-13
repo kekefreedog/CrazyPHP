@@ -90,7 +90,7 @@ class Create extends CrazyModel implements CrazyCommand {
             "name"          =>  "type",
             "description"   =>  "Type of your crazy project",
             "type"          =>  "VARCHAR",
-            "default"       =>  "project",
+            "default"       =>  "application",
             "select"        =>  [
                 "application"   =>  "Application",
                 "website"       =>  "Website",
@@ -112,7 +112,7 @@ class Create extends CrazyModel implements CrazyCommand {
             "name"          =>  "database",
             "description"   =>  "Type of database used by your crazy project",
             "type"          =>  "ARRAY",
-            "default"       =>  "None",
+            "default"       =>  "",
             "multiple"      =>  true,
             "select"        =>  [
                 "mongodb"       =>  "MongoDB",
