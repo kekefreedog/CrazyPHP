@@ -856,4 +856,31 @@ class Helpers {
 
     }
 
+    /**
+     * Is Last
+     * 
+     * Block helper that renders a block if index gien is the last of the list given
+     * 
+     * @param $index Value to compare
+     * @param $list Value to compare with
+     * 
+     * @return boolean
+     */
+    public static function isLast($index, $list, $option) {
+
+        # Set result
+        $result = (
+            is_numeric($index) && 
+            is_array($list) && 
+            $index === (count($list) - 1)
+        )
+            ? $option['fn']()
+            : $option['inverse']()
+        ;
+
+        # Return result
+        return $result;
+
+    }
+
 }
