@@ -11,12 +11,10 @@
 /**
  * Is
  * 
- * Block helper that renders a block if a is equal to b. 
- * If an inverse block is specified it will be rendered when falsy. 
- * Similar to eq but does not do strict equality.
+ * Block helper that renders a block if index gien is the last of the list given
  * 
- * @param a Value to compare
- * @param v Value to compare with
+ * @param index Value to compare
+ * @param list Value to compare with
  * 
  * @return boolean
  */
