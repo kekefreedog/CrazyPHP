@@ -940,6 +940,8 @@ class File {
         "png"   =>  "image/png",
         # WebP
         "webp"  =>  "image/webp",
+        # Env
+        "env"   =>  "text/plain",
         # TBC ...
     ];
 

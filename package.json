@@ -3,9 +3,9 @@
     "version": "0.1.2",
     "description": "My crazy framework for creating ultra-fast webapps.",
     "main": "src/Front/index.ts",
-    "types": "src/Front/Types/index.d.ts",
+    "types": "./src/Front/Types/index.d.ts",
     "files": [
-        "src/Front/"
+        "./src/Front/"
     ],
     "repository": {
         "type": "git",

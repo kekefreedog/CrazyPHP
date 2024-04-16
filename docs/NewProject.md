@@ -30,6 +30,8 @@ composer require kzarshenas/crazyphp
 
 - [ ] **(Optional)** Link to local CrazyPHP repo (for development & debug), update the `composer.json` with the content below :
 
+> If you are using OS Windows, make sure to execute `npm i` into the CrazyPHP folder
+
 ```json {"id":"01HQDDF3C07BXVQ0PTJS0562AD"}
 {
     "require": {

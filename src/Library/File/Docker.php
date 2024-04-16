@@ -21,6 +21,7 @@ use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\Cli\Command;
 use CrazyPHP\Library\File\Yaml;
 use CrazyPHP\Library\File\File;
+use CrazyPHP\Library\System\Os;
 
 /**
  * Docker
@@ -50,11 +51,40 @@ class Docker{
         # Set result
         $result = "";
 
+        # Set pre command
+        $preCommand = "";
+
+        # Check os
+        if(Os::isWindows()){
+
+            # Set pwd
+            $preCommand .= "set PWD=%CD% & ";
+
+            # Set env
+            $envFileContent = parse_ini_file(File::path($loadEnvFile));
+
+            # Check env file
+            if(!empty($envFileContent)) 
+
+                # Iteration
+                foreach($envFileContent as $k => $value)
+
+                    # Check if is int or string
+                    if($k && (is_string($value) || is_int($value)))
+
+                        # Append in pre command
+                        $preCommand .= "set $k=".(is_int($value) ? $value : '"'.str_replace('"', '\\"', $value).'"')." & ";
+
+            # Clean env file
+            $loadEnvFile = "";
+
+        }
+
         # Prepare command shell
         $command = self::DOCKER_COMPOSE_COMMAND.($loadEnvFile ? " --env-file '".$loadEnvFile."'" : "")." up".($detach ? " -d --no-color" : "");
 
         # Exec command
-        $result = Command::exec($command);
+        $result = Command::exec($preCommand.$command);
 
         # Return result
         return $result;
@@ -73,11 +103,40 @@ class Docker{
         # Set result
         $result = "";
 
+        # Set pre command
+        $preCommand = "";
+
+        # Check os
+        if(Os::isWindows()){
+
+            # Set pwd
+            $preCommand .= "set PWD=%CD% & ";
+
+            # Set env
+            $envFileContent = parse_ini_file(File::path($loadEnvFile));
+
+            # Check env file
+            if(!empty($envFileContent)) 
+
+                # Iteration
+                foreach($envFileContent as $k => $value)
+
+                    # Check if is int or string
+                    if($k && (is_string($value) || is_int($value)))
+
+                        # Append in pre command
+                        $preCommand .= "set $k=".(is_int($value) ? $value : '"'.str_replace('"', '\\"', $value).'"')." & ";
+
+            # Clean env file
+            $loadEnvFile = "";
+
+        }
+
         # Prepare command shell
         $command = self::DOCKER_COMPOSE_COMMAND.($loadEnvFile ? " --env-file '".$loadEnvFile."'" : "")." down";
 
         # Exec command
-        exec($command, $empty, $result);
+        exec($preCommand.$command, $empty, $result);
 
         # Return result
         return $result;

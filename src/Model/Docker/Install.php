@@ -502,8 +502,37 @@ class Install implements CrazyCommand {
         # Set env file
         $envFile = Docker::ENV_FILE;
 
+        # Set pre command
+        $preCommand = "";
+
+        # Check os
+        if(Os::isWindows()){
+
+            # Set pwd
+            $preCommand .= "set PWD=%CD% & ";
+
+            # Set env
+            $envFileContent = parse_ini_file(File::path($envFile));
+
+            # Check env file
+            if(!empty($envFileContent)) 
+
+                # Iteration
+                foreach($envFileContent as $k => $value)
+
+                    # Check if is int or string
+                    if($k && (is_string($value) || is_int($value)))
+
+                        # Append in pre command
+                        $preCommand .= "set $k=".(is_int($value) ? $value : '"'.str_replace('"', '\\"', $value).'"')." & ";
+
+            # Clean env file
+            $envFile = "";
+
+        }
+
         # Exec command
-        Command::exec("docker-compose", (($envFile && File::exists($envFile)) ? " --env-file '".$envFile."' " : "")."build", true);
+        Command::exec($preCommand."docker-compose", (($envFile && File::exists($envFile)) ? " --env-file '".$envFile."' " : "")."build", true);
 
         # Return self
         return $this;
@@ -559,7 +588,10 @@ class Install implements CrazyCommand {
             if(Os::isWindows()){
 
                 # Update _config.App.root
-                $value = $config['_config']['App']['root'];
+                $value = $result['_config']['App']['root'];
+
+                # Resolve path
+                $value = File::resolve($value);
                 
                 # Change \ or \\ by /
                 $value = str_replace(["\\", "\\\\"], "/", $value);

@@ -18,9 +18,9 @@ services:
             - './docker/mkcert/localhost.pem:/etc/nginx/certs/localhost.pem'
             - './docker/mkcert/localhost-key.pem:/etc/nginx/certs/localhost-key.pem'{{/inArray}}
         ports:{{#is (length configuration) "0"}} []{{/is}}{{#inArray configuration "http"}}
-            - '${CRAZY_HTTP_PORT}:80'{{/inArray}}{{#inArray configuration "https-online"}}
-            - '${CRAZY_HTTPS_PORT}:443'{{/inArray}}{{#inArray configuration "https-local"}}
-            - '${CRAZY_HTTPS_PORT}:443'{{/inArray}}
+            - '${CRAZY_HTTP_PORT:-80}:80'{{/inArray}}{{#inArray configuration "https-online"}}
+            - '${CRAZY_HTTPS_PORT:-443}:443'{{/inArray}}{{#inArray configuration "https-local"}}
+            - '${CRAZY_HTTPS_PORT:-443}:443'{{/inArray}}
         networks:
             - backend
 
