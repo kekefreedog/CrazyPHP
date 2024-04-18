@@ -22,6 +22,7 @@ use CrazyPHP\Library\Cli\Command;
 use CrazyPHP\Library\File\Yaml;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Library\System\Os;
+use CrazyPHP\Library\System\Terminal;
 
 /**
  * Docker
@@ -57,23 +58,67 @@ class Docker{
         # Check os
         if(Os::isWindows()){
 
-            # Set pwd
-            $preCommand .= "set PWD=%CD% & ";
+            # Check power shell
+            if(Terminal::isWindowsPowerShell()){
 
-            # Set env
-            $envFileContent = parse_ini_file(File::path($loadEnvFile));
+                # Set pwd
+                $preCommand .= '$env:PWD = Get-Location;';
 
-            # Check env file
-            if(!empty($envFileContent)) 
+                # Set env
+                $envFileContent = parse_ini_file(File::path($loadEnvFile));
 
-                # Iteration
-                foreach($envFileContent as $k => $value)
+                # Check env file
+                if(!empty($envFileContent)) 
 
-                    # Check if is int or string
-                    if($k && (is_string($value) || is_int($value)))
+                    # Iteration
+                    foreach($envFileContent as $k => $value)
 
-                        # Append in pre command
-                        $preCommand .= "set $k=".(is_int($value) ? $value : '"'.str_replace('"', '\\"', $value).'"')." & ";
+                        # Check if is string
+                        if($k && is_numeric($value))
+
+                            # Append in pre command
+                            $preCommand .= ' $env:'."$k = \"".str_replace('"', '\\"', $value).'"; ';
+
+                        else
+                        # check if number is int
+                        if($k && is_string($value))
+
+                            # Append in pre command
+                 $preCommand .= ' $env:'."$k = \"".str_replace('"', '\\"', $value).'"; ';
+
+            }else
+            # check if class terminal
+            if(Terminal::isWindowsCommandPrompt()){
+
+                # Set pwd
+                $preCommand .= "set PWD=%CD% | ";
+
+                # Set env
+                $envFileContent = parse_ini_file(File::path($loadEnvFile));
+
+                # Check env file
+                if(!empty($envFileContent)) 
+
+                    # Iteration
+                    foreach($envFileContent as $k => $value)
+
+                        # Check if is string
+                        if($k && is_numeric($value))
+
+                            # Append in pre command
+                            $preCommand .= "set $k=$value | ";
+
+                        else
+                        # check if number is int
+                        if($k && is_string($value))
+
+                            # Append in pre command
+                            $preCommand .= 'set '.$k.'="'.str_replace('"', '\\"', $value).'" | ';
+
+            }else
+
+                throw new CrazyException("Windows terminal used unknown, use power shell instead.");
+
 
             # Clean env file
             $loadEnvFile = "";
@@ -109,23 +154,67 @@ class Docker{
         # Check os
         if(Os::isWindows()){
 
-            # Set pwd
-            $preCommand .= "set PWD=%CD% & ";
+            # Check power shell
+            if(Terminal::isWindowsPowerShell()){
 
-            # Set env
-            $envFileContent = parse_ini_file(File::path($loadEnvFile));
+                # Set pwd
+                $preCommand .= '$env:PWD = Get-Location;';
 
-            # Check env file
-            if(!empty($envFileContent)) 
+                # Set env
+                $envFileContent = parse_ini_file(File::path($loadEnvFile));
 
-                # Iteration
-                foreach($envFileContent as $k => $value)
+                # Check env file
+                if(!empty($envFileContent)) 
 
-                    # Check if is int or string
-                    if($k && (is_string($value) || is_int($value)))
+                    # Iteration
+                    foreach($envFileContent as $k => $value)
 
-                        # Append in pre command
-                        $preCommand .= "set $k=".(is_int($value) ? $value : '"'.str_replace('"', '\\"', $value).'"')." & ";
+                        # Check if is string
+                        if($k && is_numeric($value))
+
+                            # Append in pre command
+                            $preCommand .= ' $env:'."$k = \"".str_replace('"', '\\"', $value).'"; ';
+
+                        else
+                        # check if number is int
+                        if($k && is_string($value))
+
+                            # Append in pre command
+                 $preCommand .= ' $env:'."$k = \"".str_replace('"', '\\"', $value).'"; ';
+
+            }else
+            # check if class terminal
+            if(Terminal::isWindowsCommandPrompt()){
+
+                # Set pwd
+                $preCommand .= "set PWD=%CD% | ";
+
+                # Set env
+                $envFileContent = parse_ini_file(File::path($loadEnvFile));
+
+                # Check env file
+                if(!empty($envFileContent)) 
+
+                    # Iteration
+                    foreach($envFileContent as $k => $value)
+
+                        # Check if is string
+                        if($k && is_numeric($value))
+
+                            # Append in pre command
+                            $preCommand .= "set $k=$value | ";
+
+                        else
+                        # check if number is int
+                        if($k && is_string($value))
+
+                            # Append in pre command
+                            $preCommand .= 'set '.$k.'="'.str_replace('"', '\\"', $value).'" | ';
+
+            }else
+
+                throw new CrazyException("Windows terminal used unknown, use power shell instead.");
+
 
             # Clean env file
             $loadEnvFile = "";

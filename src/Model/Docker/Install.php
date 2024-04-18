@@ -25,8 +25,10 @@ use CrazyPHP\Library\File\Mkcert;
 use CrazyPHP\Library\Cli\Command;
 use CrazyPHP\Library\System\Os;
 use CrazyPHP\Library\File\File;
+use CrazyPHP\Library\System\Terminal;
 use League\CLImate\CLImate;
 use CrazyPHP\Model\Env;
+use Exception;
 
 /**
  * Create new Application
@@ -49,7 +51,7 @@ class Install implements CrazyCommand {
             "name"          =>  "configuration",
             "description"   =>  "Type of configuration to set up on your crazy docker",
             "type"          =>  "ARRAY",
-            "default"       =>  "https",
+            "default"       =>  "http",
             "multiple"      =>  true,
             "select"        =>  [
                 "http"          =>  "Http",
@@ -57,6 +59,14 @@ class Install implements CrazyCommand {
                 "https-local"   =>  "Https (Local using Mkcert)"
             ],
         ],
+        # Port
+        [
+            "name"          =>  "http_port",
+            "description"   =>  "Port of http by default",
+            "type"          =>  "INT",
+            "default"       =>  80,
+            # "accept"        =>  "range(0,10000)",
+        ]
     ];
 
     /** Private Parameters
@@ -508,23 +518,67 @@ class Install implements CrazyCommand {
         # Check os
         if(Os::isWindows()){
 
-            # Set pwd
-            $preCommand .= "set PWD=%CD% & ";
+            # Check power shell
+            if(Terminal::isWindowsPowerShell()){
 
-            # Set env
-            $envFileContent = parse_ini_file(File::path($envFile));
+                # Set pwd
+                $preCommand .= '$env:PWD = Get-Location;';
 
-            # Check env file
-            if(!empty($envFileContent)) 
+                # Set env
+                $envFileContent = parse_ini_file(File::path($envFile));
 
-                # Iteration
-                foreach($envFileContent as $k => $value)
+                # Check env file
+                if(!empty($envFileContent)) 
 
-                    # Check if is int or string
-                    if($k && (is_string($value) || is_int($value)))
+                    # Iteration
+                    foreach($envFileContent as $k => $value)
 
-                        # Append in pre command
-                        $preCommand .= "set $k=".(is_int($value) ? $value : '"'.str_replace('"', '\\"', $value).'"')." & ";
+                        # Check if is string
+                        if($k && is_numeric($value))
+
+                            # Append in pre command
+                            $preCommand .= ' $env:'."$k = \"".str_replace('"', '\\"', $value).'"; ';
+
+                        else
+                        # check if number is int
+                        if($k && is_string($value))
+
+                            # Append in pre command
+                            $preCommand .= ' $env:'."$k = \"".str_replace('"', '\\"', $value).'"; ';
+
+            }else
+            # check if class terminal
+            if(Terminal::isWindowsCommandPrompt()){
+
+                # Set pwd
+                $preCommand .= "set PWD=%CD% | ";
+
+                # Set env
+                $envFileContent = parse_ini_file(File::path($envFile));
+
+                # Check env file
+                if(!empty($envFileContent)) 
+
+                    # Iteration
+                    foreach($envFileContent as $k => $value)
+
+                        # Check if is string
+                        if($k && is_numeric($value))
+
+                            # Append in pre command
+                            $preCommand .= "set $k=$value | ";
+
+                        else
+                        # check if number is int
+                        if($k && is_string($value))
+
+                            # Append in pre command
+                            $preCommand .= 'set '.$k.'="'.str_replace('"', '\\"', $value).'" | ';
+
+            }else
+
+                throw new CrazyException("Windows terminal used unknown, use power shell instead.");
+
 
             # Clean env file
             $envFile = "";
@@ -532,7 +586,7 @@ class Install implements CrazyCommand {
         }
 
         # Exec command
-        Command::exec($preCommand."docker-compose", (($envFile && File::exists($envFile)) ? " --env-file '".$envFile."' " : "")."build", true);
+        Command::exec($preCommand."docker-compose", (($envFile && File::exists($envFile) && !Os::isWindows()) ? " --env-file '".$envFile."' " : "")."build", true);
 
         # Return self
         return $this;

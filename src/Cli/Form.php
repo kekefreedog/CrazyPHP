@@ -316,6 +316,40 @@ class Form {
                         $climate->password($question) :
                             $climate->input($question);
 
+                    # Accept
+                    if(!empty($value["accept"] ?? [])){
+    
+                        # Accept
+                        $accept = null;
+    
+                        # Check if aray
+                        if(is_array($accept))
+    
+                            $input->accept($accept, true);
+    
+                        else
+                        # Check if is string and match with pattern 
+                        if(is_string($value["accept"]) && preg_match('/^range\((\d+),(\d+)\)$/', $value["accept"], $matches) && ($value['type'] ?? false) == "INT"){
+    
+                            # Get value 1
+                            $value1 = $matches[1] ?? 0;    
+
+                            # Get value 2
+                            $value2 = $matches[2] ?? 0;
+
+                            # Get accept
+                            $accept = range($value1 < $value2 ? $value1 : $value2, $value2 > $value1 ? $value2 : $value1);
+    
+                            # Check accept
+                            if(!empty($accept))
+
+                                # Set accept
+                                $input->accept($accept, true);
+    
+                        }
+    
+                    }
+
                     # Check if default
                     if($value['default'] ?? false){
 

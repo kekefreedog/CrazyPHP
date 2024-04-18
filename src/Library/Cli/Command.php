@@ -12,6 +12,9 @@
  */
 namespace CrazyPHP\Library\Cli;
 
+use CrazyPHP\Library\System\Os;
+use CrazyPHP\Library\System\Terminal;
+
 /** Dependances
  * 
  */
@@ -86,8 +89,16 @@ class Command{
             # Return
             return null;
 
-        # Prepare command
-        $command = $command.($argument ? " $argument" : "");
+        // Prepare command depending on the shell environment
+        if(Os::isWindows() && Terminal::isWindowsPowerShell()){
+
+            # PowerShell requires different syntax, especially if arguments are involved
+            $command = 'powershell.exe -NonInteractive -NoProfile -Command "& {' . $command . ($argument ? " " . escapeshellarg($argument) : "") . '}"';
+
+        }else
+
+            # Prepare command
+            $command = $command.($argument ? " $argument" : "");
 
         # Check if live result enable
         if($liveResult){
