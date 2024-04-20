@@ -28,7 +28,7 @@ use CrazyPHP\Library\System\Terminal;
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2024 Kévin Zarshenas
  */
-class Command{
+class Command {
 
     /** Public static function
      ******************************************************
