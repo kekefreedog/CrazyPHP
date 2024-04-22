@@ -1,0 +1,27 @@
+# #
+# Crazy Auth
+#
+# Properties of the crazy auth extension
+#
+# YAML version 1.2
+#
+# @package    kzarshenas/crazyphp
+# @author     kekefreedog <kevin.zarshenas@gmail.com>
+# @copyright  2022-2024 Kévin Zarshenas
+# #
+CrazyAuth:
+  name: CrazyAuth
+  description: Core extension for manage authentification and user on your crazy app
+  version: 1.0.0
+  scripts:
+    AuthInterface.php:
+      source: "@crazyphp_root/resources/Extensions/CrazyAuth/Scripts/Interface/AuthInterface.php"
+      destination: "@app_root/app/Library/CrazyAuth/Interface/AuthInterface.php"
+    CredentialInterface.php:
+      source: "@crazyphp_root/resources/Extensions/CrazyAuth/Scripts/Interface/CredentialInterface.php"
+      destination: "@app_root/app/Library/CrazyAuth/Interface/CredentialInterface.php"
+    UserInterface.php:
+      source: "@crazyphp_root/resources/Extensions/CrazyAuth/Scripts/Interface/UserInterface.php"
+      destination: "@app_root/app/Library/CrazyAuth/Interface/UserInterface.php"
+  dependencies:
+    composer: []

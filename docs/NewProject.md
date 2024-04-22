@@ -6,14 +6,14 @@ Open a terminal and go on the directory where you want create your project (Exem
 
 - [ ] Check [PHP](https://www.php.net/) version is >= 8.2 by using :
 
-```sh {"id":"01HQDDF3C07BXVQ0PTJKW5NSWW"}
+```sh
 php -v
 # PHP 8.3.0RC3 (cli) (built: Oct  2 2023 09:38:17) (NTS)
 ```
 
 - [ ] Check [Composer](https://getcomposer.org/) version is >= 2.5.8 by using :
 
-```sh {"id":"01HQDDF3C07BXVQ0PTJMHR6M50"}
+```sh
 composer -V
 # Composer version 2.5.8 2023-05-24 15:00:39
 ```
@@ -22,7 +22,7 @@ composer -V
 
 - [ ] Install last version of [CrazyPHP](https://github.com/kekefreedog/CrazyPHP) by using :
 
-```sh {"id":"01HQDDF3C07BXVQ0PTJP6NNGWV"}
+```sh
 composer require kzarshenas/crazyphp
 ```
 
@@ -32,7 +32,7 @@ composer require kzarshenas/crazyphp
 
 > If you are using OS Windows, make sure to execute `npm i` into the CrazyPHP folder
 
-```json {"id":"01HQDDF3C07BXVQ0PTJS0562AD"}
+```json
 {
     "require": {
         "kzarshenas/crazyphp": "@dev"
@@ -53,13 +53,13 @@ composer require kzarshenas/crazyphp
 
 And then execute the command below in the terminal :
 
-```sh {"id":"01HQDDF3C07BXVQ0PTJWJD40WV"}
+```sh
 composer update
 ```
 
 - [ ] Execute the new project cli command by using :
 
-```sh {"id":"01HQDDF3C07BXVQ0PTJXFK2VNA"}
+```sh
 php vendor/kzarshenas/crazyphp/bin/CrazyCommand new project
 # 🎉 New project created with success 🎉
 ```

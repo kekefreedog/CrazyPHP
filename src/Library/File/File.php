@@ -625,6 +625,83 @@ class File {
     }
 
     /**
+     * Symelink
+     * 
+     * Symelink of folders or file based on its path
+     * 
+     * @param string $source Source to copy
+     * @param string $target Target where copy
+     * @param bool $replace Replace symlink if it exists
+     * @return bool
+     */
+    public static function symlink(string $source = "", string $target = "", bool $replace = true):bool {
+
+        # Declare result
+        $result = false;
+
+        # Path source
+        $path_source = self::path($source);
+
+        # Path target
+        $path_target = self::path($target);
+
+        # Path target parent folder
+        $path_folder = dirname($path_target);
+
+        # Check folder target exists
+        if(!is_dir($path_folder))
+
+            # Create folder
+            mkdir($path_folder, 0777, true);
+
+        # Check if path_source is dir
+        /* if(is_dir($path_source)){
+
+        }else */
+
+        # Check if source file and target folder
+        if(is_file($path_source) && is_dir($path_target))
+
+            # New Exception
+            throw new CrazyException(
+                "Can't link file to directory.",
+                500,
+                [
+                    "custom_code"   =>  "file-005",
+                ]
+            );
+
+        # Check is link
+        if(is_link($path_target)){
+
+            # Check replace
+            if($replace)
+
+                # Unlink
+                unlink($path_target);
+
+            else
+
+                # New Exception
+                throw new CrazyException(
+                    "Symlink already exists",
+                    500,
+                    [
+                        "custom_code"   =>  "file-004",
+                    ]
+                );
+                
+        }
+
+        # Set result
+        $result = symlink($path_source, $path_target);
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
      * Copy
      * 
      * Copy with check of folder and check of path
@@ -767,6 +844,32 @@ class File {
 
         # Check folder is empty
         $result = !(new \FilesystemIterator($path))->valid();
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Is Symlink
+     * 
+     * Check if path given is symlink
+     * 
+     * @param string $path Path to process
+     * @return bool
+     */
+    public static function isSymlink(string $path = ""):bool {
+
+        # Set result
+        $result = false;
+
+        # Get real path
+        $path = self::path($path);
+
+        # Check folder exists
+        if(self::exists($path) && is_link($path))
+
+            $result = true;
 
         # Return result
         return $result;

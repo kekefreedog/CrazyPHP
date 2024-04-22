@@ -21,8 +21,10 @@ use CrazyPHP\Library\Model\CrazyModel;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Interface\CrazyCommand;
 use CrazyPHP\Library\File\Composer;
+use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\File\File;
+use CrazyPHP\Library\System\Os;
 
 /**
  * Create Extension
@@ -49,6 +51,19 @@ class Create extends CrazyModel implements CrazyCommand {
             "required"      =>  true,
             "select"        =>  "CrazyPHP\Library\Extension\Extension::getAllAvailable",
             "multiple"      =>  true
+        ],
+        # Symlink
+        [
+            "name"          =>  "symlink",
+            "description"   =>  "Symlinks for script files",
+            "type"          =>  "BOOL",
+            "required"      =>  true,
+            "default"       =>  false,
+            "select"        =>  [
+                false   =>  "False",
+                true    =>  "True"
+            ],
+            "process"   =>  ["bool"]
         ],
     ];
 
@@ -119,6 +134,12 @@ class Create extends CrazyModel implements CrazyCommand {
     public function run():self {
 
         /**
+         * Run Check Os
+         * - Check OS and symlink compatibility
+         */
+        $this->runCheckOs();
+
+        /**
          * Run Get Extension
          * - Search extension
          * - Load properties of the extension
@@ -163,6 +184,38 @@ class Create extends CrazyModel implements CrazyCommand {
     /** Public methods | Run
      ******************************************************
      */
+
+    /**
+     * Run Check Os
+     * 
+     * Check OS and symlink compatibility
+     * 
+     * @return self
+     */
+    public function runCheckOs():self {
+
+        # Check symlink
+        $inputSymlink = Arrays::filterByKey($this->inputs["extension"], "name", "symlink");
+
+        # Get values of names
+        $symlink = $inputSymlink[array_key_first($inputSymlink)]["value"] ?? [];
+
+        # Check symlink and is windows
+        if($symlink && Os::isWindows())
+
+            # Extension already installed
+            throw new CrazyException(
+                "Symlink with Windows OS isn't supported yet.",
+                500,
+                [
+                    "custom_code"   =>  "extension-create-001"
+                ]
+            );
+
+        # Return instance
+        return $this;
+
+    }
 
     /**
      * Run Get Extension
@@ -327,6 +380,12 @@ class Create extends CrazyModel implements CrazyCommand {
      */
     public function runInstallScripts():self {
 
+        # Check symlink
+        $inputSymlink = Arrays::filterByKey($this->inputs["extension"], "name", "symlink");
+
+        # Get values of names
+        $symlink = $inputSymlink[array_key_first($inputSymlink)]["value"] ?? [];
+
         # Check extension to install
         if(!empty($this->data["toInstall"]))
 
@@ -341,7 +400,7 @@ class Create extends CrazyModel implements CrazyCommand {
 
                         # Check and get source
                         $source = isset($script["source"]) && File::exists($script["source"])
-                            ? $script["source"] 
+                            ? $script["source"]
                             : ""
                         ;
                         
@@ -352,19 +411,39 @@ class Create extends CrazyModel implements CrazyCommand {
                         ;
 
                         # Check source and destination
-                        if($source && $destination)
+                        if($source && $destination){
 
+                            # Check symlink
+                            if($symlink){
+                                
+                                # Process symlink
+                                if(!File::symlink($source, $destination)){
+
+                                    # New error
+                                    throw new CrazyException(
+                                        "Failed to create symlink of the file '".File::path($source)."'",
+                                        500,
+                                        [
+                                            "custom_code"   =>  "extension-create-002"
+                                        ]
+                                    );
+
+                                }
+
+                            }else
                             # Start copy
                             if(!File::copy($source, $destination))
 
                                 # New error
                                 throw new CrazyException(
-                                    "Failed the copy of the file '".File::path($source)."'",
+                                    "Failed to copy the file '".File::path($source)."'",
                                     500,
                                     [
-                                        "custom_code"   =>  "extension-create-001"
+                                        "custom_code"   =>  "extension-create-003"
                                     ]
                                 );
+
+                        }
 
                     }
 
@@ -380,8 +459,23 @@ class Create extends CrazyModel implements CrazyCommand {
      */
     public function runAppendExtensionIntoConfig():self {
 
+        # Check symlink
+        $inputSymlink = Arrays::filterByKey($this->inputs["extension"], "name", "symlink");
+
+        # Get values of names
+        $symlink = $inputSymlink[array_key_first($inputSymlink)]["value"] ?? [];
+
         # Check extensions to installed
         if(isset($this->data["toInstall"]) && !empty($this->data["toInstall"])){
+
+            # Iteration to install
+            foreach($this->data["toInstall"] as &$extension)
+
+                # Check symlink
+                if($symlink)
+
+                    # Set symlink into extension property
+                    $extension["symlink"] = true;
 
             # Get extensions installed
             $extensionsInstalled = FileConfig::getValue("Extension.installed");

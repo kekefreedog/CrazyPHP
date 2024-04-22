@@ -154,7 +154,7 @@ class ExtensionTest extends TestCase {
             $key = array_key_first($properties);
 
             # Check key
-            $this->assertEquals($extensionName, $key);
+            $this->assertEquals($extensionName, $key, "Check key in extension property is the extension name");
 
             # Iteration of content
             foreach($properties[$key] as $k => $v){
