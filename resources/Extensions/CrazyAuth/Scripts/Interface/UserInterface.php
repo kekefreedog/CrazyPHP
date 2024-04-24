@@ -8,7 +8,7 @@
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2024 Kévin Zarshenas
  */
-namespace App\Core;
+namespace CrazyAuth\Interface;
 
 /**
  * Dependances
@@ -70,11 +70,52 @@ interface UserInterface {
     public function getPassword():string;
 
     /**
-     * Set Lock
+     * Get Lock
      * 
-     * @return string
+     * @return bool
      */
-    public function setLock():string;
+    public function getLock():bool;
+
+    /**
+     * Get Scopes
+     * 
+     * @return array
+     */
+    public function getScopes():array;
+
+    /**
+     * Get Scope By Name
+     * 
+     * @return ?ScopeInterface
+     */
+    public function getScopeByName():?ScopeInterface;
+
+    /**
+     * Get Scope By Id
+     * 
+     * @return ?ScopeInterface
+     */
+    public function getScopeById():?ScopeInterface;
+
+    /** Public method |Has
+     ******************************************************
+     */
+
+    /**
+     * Has Scope
+     * 
+     * @param int|string
+     * @return bool
+     */
+    public function hasScope(int|string $input):bool;
+
+    /**
+     * Has Scopes
+     * 
+     * @param array
+     * @return bool
+     */
+    public function hasScopes(array $inputs):bool;
 
     /** Public method | Set
      ******************************************************
@@ -105,10 +146,29 @@ interface UserInterface {
     public function setRoles(array $roles):self;
 
     /**
-     * Get Lock
+     * Set Lock
      * 
+     * @param bool $lock
      * @return string
      */
-    public function getLock():string;
+    public function setLock(bool $lock = true):self;
+
+    /**
+     * Set Scope
+     * 
+     * @param string $input
+     * @param array $options
+     * @return self
+     */
+    public function setScope(string $input, array $options = []):self;
+
+    /**
+     * Set Scopes
+     * 
+     * @param array $inputs
+     * @param array $options
+     * @return array
+     */
+    public function setScopes(array $inputs):self;
 
 }

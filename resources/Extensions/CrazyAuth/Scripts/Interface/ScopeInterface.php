@@ -14,39 +14,55 @@ namespace CrazyAuth\Interface;
  * Dependances
  */
 use CrazyPHP\Library\Exception\ExceptionResponse;
-use App\Core\UserInterface;
 
 /**
- * Credential Interface
+ * Scope Interface
  *
- * Interface for credential
+ * Interface for scope
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2024 Kévin Zarshenas
  */
-interface CredentialInterface {
+interface ScopeInterface {
 
     /**
      * Constructor
      * 
-     * @param array $form
      * @param array $options
      * @param self
      */
-    public function __construct(array $form, array $options = []);
+    public function __construct(array $options = []);
 
-    /** Public method | Validator
+    /** Public method
      ******************************************************
      */
 
     /**
-     * Is Email Taken
+     * Get Name
      * 
-     * Check if email is already given
+     * Get name of the scope
      * 
-     * @return bool
+     * @return string
      */
-    public function isEmailTaken():bool;
+    public function getName():string;
+
+    /**
+     * Get Description
+     * 
+     * Get description of the scope
+     * 
+     * @return string
+     */
+    public function getDescription():string;
+
+    /**
+     * Get Id
+     * 
+     * Get Id of the scope
+     * 
+     * @return int
+     */
+    public function getId():int;
 
 }

@@ -8,24 +8,24 @@
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2024 Kévin Zarshenas
  */
-namespace CrazyAuth\Interface;
+namespace CrazyAuth;
 
 /**
  * Dependances
  */
 use CrazyPHP\Library\Exception\ExceptionResponse;
-use App\Core\UserInterface;
+use CrazyAuth\Interface\CredentialInterface;
 
 /**
- * Credential Interface
+ * Credential
  *
- * Interface for credential
+ * Methods for manipulate credential
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2024 Kévin Zarshenas
  */
-interface CredentialInterface {
+class Credential implements CredentialInterface {
 
     /**
      * Constructor
@@ -34,7 +34,11 @@ interface CredentialInterface {
      * @param array $options
      * @param self
      */
-    public function __construct(array $form, array $options = []);
+    public function __construct(array $form, array $options = []) {
+
+
+
+    }
 
     /** Public method | Validator
      ******************************************************
@@ -47,6 +51,14 @@ interface CredentialInterface {
      * 
      * @return bool
      */
-    public function isEmailTaken():bool;
+    public function isEmailTaken():bool {
+
+        # Set result
+        $result = false;
+
+        # Return result
+        return $result;
+
+    }
 
 }

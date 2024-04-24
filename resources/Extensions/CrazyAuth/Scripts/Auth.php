@@ -8,12 +8,13 @@
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2024 Kévin Zarshenas
  */
-namespace CrazyAuth\Interface;
+namespace CrazyAuth;
 
 /**
  * Dependances
  */
 use CrazyPHP\Library\Exception\ExceptionResponse;
+use CrazyAuth\Interface\AuthInterface;
 
 /**
  * Auth Interface
@@ -26,7 +27,7 @@ use CrazyPHP\Library\Exception\ExceptionResponse;
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2024 Kévin Zarshenas
  */
-interface AuthInterface {
+class Auth implements AuthInterface {
 
     /**
      * Constructor
@@ -36,7 +37,11 @@ interface AuthInterface {
      * @param array $options
      * @param self
      */
-    public function __construct(CredentialInterface $credentials, ?UserInterface $user = null, array $options = []);
+    public function __construct(Credential $credentials, ?User $user = null, array $options = []) {
+
+
+
+    }
 
     /** Public method | Action
      ******************************************************
@@ -49,7 +54,12 @@ interface AuthInterface {
      * 
      * @return self
      */
-    public function register():self;
+    public function register():self {
+
+        # Return self
+        return $this;
+
+    }
 
     /**
      * Login 
@@ -58,7 +68,12 @@ interface AuthInterface {
      * 
      * @return self
      */
-    public function login():self;
+    public function login():self {
+
+        # Return self
+        return $this;
+
+    }
 
     /**
      * Logout 
@@ -67,7 +82,12 @@ interface AuthInterface {
      * 
      * @return self
      */
-    public function logout():self;
+    public function logout():self {
+
+        # Return self
+        return $this;
+
+    }
 
     /**
      * Logout 
@@ -76,7 +96,12 @@ interface AuthInterface {
      * 
      * @return self
      */
-    public function logoutAll():self;
+    public function logoutAll():self {
+
+        # Return self
+        return $this;
+
+    }
     
     /**
      * Activate 
@@ -85,7 +110,12 @@ interface AuthInterface {
      * 
      * @return self
      */
-    public function activate():self;
+    public function activate():self {
+
+        # Return self
+        return $this;
+
+    }
 
     /**
      * Delete 
@@ -94,7 +124,12 @@ interface AuthInterface {
      * 
      * @return self
      */
-    public function delete():self;
+    public function delete():self {
+
+        # Return self
+        return $this;
+
+    }
 
     /**
      * Change Email 
@@ -103,7 +138,12 @@ interface AuthInterface {
      * 
      * @return self
      */
-    public function changeEmail();
+    public function changeEmail() {
+
+        # Return self
+        return $this;
+
+    }
 
     /**
      * Change Password 
@@ -112,7 +152,12 @@ interface AuthInterface {
      * 
      * @return self
      */
-    public function changePassword();
+    public function changePassword() {
+
+        # Return self
+        return $this;
+
+    }
     
 
     /** Public method | Validator
@@ -126,7 +171,15 @@ interface AuthInterface {
      * 
      * @return bool
      */
-    public function isUserConnected():bool;
+    public function isUserConnected():bool {
+
+        # Set result
+        $result = false;
+
+        # Return result
+        return $result;
+
+    }
 
     /**
      * Is User Valid
@@ -135,7 +188,15 @@ interface AuthInterface {
      * 
      * @return bool
      */
-    public function isUserValid():bool;
+    public function isUserValid():bool {
+
+        # Set result
+        $result = false;
+
+        # Return result
+        return $result;
+
+    }
 
     /**
      * Is User Locked
@@ -144,7 +205,15 @@ interface AuthInterface {
      * 
      * @return bool
      */
-    public function isUserLocked():bool;
+    public function isUserLocked():bool {
+
+        # Set result
+        $result = false;
+
+        # Return result
+        return $result;
+
+    }
 
     /** Public method | Get
      ******************************************************
@@ -155,13 +224,29 @@ interface AuthInterface {
      * 
      * Get unique ID of the auth
      */
-    public function getUID():int;
+    public function getUID():int {
+
+        # Set result
+        $result = 0;
+
+        # Return result
+        return $result;
+
+    }
 
     /**
      * Get user
      * 
      * @return ?UserInterface
      */
-    public function getUser():?UserInterface;
+    public function getUser():?User {
+
+        # Set result
+        $result = new User();
+
+        # Return result
+        return $result;
+
+    }
 
 }

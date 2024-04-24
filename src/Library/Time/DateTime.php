@@ -33,6 +33,23 @@ class DateTime extends LegacyDateTime {
      */
 
     /**
+     * Get Current
+     * 
+     * Get current date time
+     * 
+     * @return static
+     */
+    public static function getCurrent():int {
+
+        # Set result
+        $result = hrtime(true);
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
      * Last Update File
      * 
      * Get last update from file

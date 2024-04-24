@@ -1,0 +1,110 @@
+Model:
+  - name: CrazyUser
+    driver: 
+      name: Mongo
+      arguments:
+        collection: CrazyUser
+    attributes: 
+      - name: id
+        label: Id
+        description: ID of the crazy user
+        type: INT
+      - name: email
+        label: Email
+        description: Email of the crazy user
+        type: VARCHAR
+        validate:
+          - isEmail
+        required: true
+      - name: password
+        label: Password
+        description: password of the crazy user
+        type: VARCHAR
+        required: true
+      - name: active
+        label: Active
+        description: Is crazy user acive
+        type: BOOL
+        default: false
+      - name: lock
+        label: Lock
+        description: Is crazy user lock
+        type: BOOL
+        default: false
+      - name: date_created
+        label: Date Created
+        description: Date of creation of the crazy user
+        type: DATETIME
+        default: CrazyPHP\\Library\\Time\\DateTime::getCurrent
+      - name: date_updated
+        label: Date Updated
+        description: Last update date of the crazy user
+        type: DATETIME
+        default: CrazyPHP\\Library\\Time\\DateTime::getCurrent
+  - name: CrazySession
+    driver: 
+      name: Mongo
+      arguments:
+        collection: CrazySessions
+    attributes: 
+      - name: id
+        label: ID
+        description: ID of the crazy session
+        type: INT
+      - name: uid
+        label: User ID
+        description: ID of the user linked to the crazy session
+        type: VARCHAR
+        required: true
+      - name: hash
+        label: Hash
+        description: Hash of the crazy session
+        type: VARCHAR
+        required: true
+      - name: expire
+        label: Expire Date
+        description: Date of expiration of the crazy session
+        type: DATETIME
+      - name: ip
+        label: Ip
+        description: IP linked to the crazy session
+        type: VARCHAR
+        validate:
+          - isIpAddress
+      - name: did
+        label: Device Id
+        description: ID of the device linked to the crazy session
+        type: VARCHAR
+      - name: agent
+        label: Agent
+        description: Agent of the device linked to the crazy session
+        type: VARCHAR
+      - name: date_created
+        label: Date Created
+        description: Date of creation of the crazy session
+        type: DATETIME
+        default: CrazyPHP\\Library\\Time\\DateTime::getCurrent
+      - name: date_updated
+        label: Date Updated
+        description: Last update date of the crazy session
+        type: DATETIME
+        default: CrazyPHP\\Library\\Time\\DateTime::getCurrent
+  - name: CrazyScope
+    driver: 
+      name: Mongo
+      arguments:
+        collection: CrazyScope
+    attributes: 
+      - name: id
+        label: ID
+        description: ID of the crazy scope
+        type: INT
+      - name: name
+        label: Name
+        description: Name of the crazy scope
+        type: VARCHAR
+        required: true
+      - name: description
+        label: Description
+        description: Description of the crazy scope
+        type: VARCHAR

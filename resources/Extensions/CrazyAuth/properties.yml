@@ -25,3 +25,6 @@ CrazyAuth:
       destination: "@app_root/app/Library/CrazyAuth/Interface/UserInterface.php"
   dependencies:
     composer: []
+  autoload:
+    psr-4:
+      "CrazyAuth\\": "app/Library/CrazyAuth/"
