@@ -157,6 +157,19 @@ export default class DateTime {
     }
 
     /**
+     * Get Today Date YYYY-MM-DD
+     * 
+     * @returns 
+     */
+    public static getTodayDateYYYY_MM_DD = ():string => {
+        const date = new Date();
+        const year = date.getFullYear().toString(); // Get last two digits of the year
+        const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-indexed, pad with zero
+        const day = date.getDate().toString().padStart(2, '0'); // Pad with zero if needed
+        return `${year}-${month}-${day}`;
+    }
+
+    /**
      * Convert Date Fromat
      * 
      * To D/M/YYYY
