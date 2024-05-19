@@ -653,6 +653,57 @@ class Mangodb implements CrazyDatabaseDriver {
     }
 
     /**
+     * Find One
+     * 
+     * Find value
+     * 
+     * @param string $collectionName
+     * @param string $database
+     * @param array $options = [
+     *      "filters":array
+     * ]
+     */
+    public function findOne(string $collectionName, string $database, array $options = []):array|null {
+
+        # Set result
+        $result = null;
+
+        # Check input
+        if(!$collectionName || !$database)
+
+            # Return result
+            return $result;
+
+        # Connect to database
+        $database = $this->client->$database;
+
+        # Connect to the collection
+        $collection = $database->$collectionName;
+
+        # Set filters
+        $filters = isset($options["filters"]) && is_array($options["filters"])
+            ? $options["filters"]
+            : []
+        ;
+
+        # Iteration filters
+        foreach($filters as $key => &$filter)
+
+            # Check if _id
+            if($key === "_id")
+
+                # Convert string
+                $filter = new ObjectId($filter);
+
+        # Last result
+        $result = [$collection->findOne($filters, $options)];
+
+        # Return result
+        return $result === null ? [] : $result;
+
+    }
+
+    /**
      * Find Last One
      * 
      * Find last value of collection

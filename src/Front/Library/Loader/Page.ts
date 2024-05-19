@@ -417,6 +417,15 @@ export default class Page {
             // Stop function
             return options;
 
+        // Declare new title
+        let titleNew = options.name;
+
+        // Check titleNew
+        if(titleNew)
+
+            // Set title
+            document.title = titleNew;
+
         // Return options
         return options;        
 

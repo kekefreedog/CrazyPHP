@@ -369,11 +369,33 @@ class Mongo implements CrazyDriverModel {
                     $validator = Mangodb::convertToMongoSchema($this->arguments["schema"]);
 
                     # Get result
-                    $result[] = $this->mongodb->insertToCollection($this->arguments["collection"], $data, $this->arguments["database"], true, $validator);
+                    $currentResult = $this->mongodb->insertToCollection($this->arguments["collection"], $data, $this->arguments["database"], true, $validator);
+
+                    $result[] = [
+                        "MongoDB\InsertOneResult"   =>  $currentResult,
+                        "_id"                       =>  $currentResult->getInsertedId(),
+                        "id"                        =>  (string) $currentResult->getInsertedId(),
+                        "count"                     =>  $currentResult->getInsertedCount(),
+                        "acknowledged"              =>  $currentResult->isAcknowledged(),
+                    ];
 
                 }
 
             }
+
+        }else
+        # Find One by Id
+        if($this->id !== null && $this->id){
+
+            # Prepare $this->findOptions
+            $this->findOptions = [
+                "filters"   =>  [
+                    "_id"       =>  $this->id,
+                ]
+            ];
+
+            # Find value
+            $result = $this->mongodb->findOne($this->arguments["collection"], $this->arguments["database"], $this->findOptions);
         
         }else{
 

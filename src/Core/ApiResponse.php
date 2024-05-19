@@ -100,10 +100,10 @@ class ApiResponse extends Response {
      * Push Content on Api Response
      * 
      * @param string $where Where put content in content
-     * @param string|bool|array|int|null $content to push
+     * @param mixed $content to push
      * @return self
      */
-    public function pushContent(string $where = "", string|bool|array|int|null $content = null):self {
+    public function pushContent(string $where = "", mixed $content = null):self {
 
         # Check where
         if(!$where)
