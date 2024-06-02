@@ -137,6 +137,8 @@ class Json{
 
         # Check filename
         if(!$filename)
+
+            # Return result
             return $result;
 
         # Check tokken in filename
