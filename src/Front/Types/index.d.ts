@@ -261,6 +261,7 @@ declare global {
         result:Object|Array<any>|string|null,
         _info:{
             status:"Waiting"|"Ready"|"In Progress"|"Error"|"Complete",
+            name:string,
             run:{
                 total:number,
                 current:number,

@@ -25,18 +25,25 @@ import {default as UtilityProcess} from "./Process";
  */
 export default class Runner {
 
+    /** Public parameter
+     ******************************************************
+     */
+
+    public viewer:object|null = null;
+
     /**
      * Constructor
      * 
      * @param extra
      */
-    public constructor(extra:any = null) {
+    public constructor(extra:any = null, viewer:object|null = null) {
 
         // Set options
         let options:RunnerOption = {
             result: null,
             _info: {
                 status: "Waiting",
+                name: "",
                 run: {
                     total: 0,
                     current: 0,
@@ -44,6 +51,16 @@ export default class Runner {
                 }
             }
         }
+
+        // Set viewer
+        this.viewer = viewer;
+
+        // Check viewer
+        if(this.viewer !== null)
+
+            // Setup viewer
+            // @ts-ignore
+            this.viewer = new viewer();
 
         // Check extra
         if(extra && extra !== null)
@@ -53,6 +70,24 @@ export default class Runner {
         // Push options
         this._options = options;
         
+    }
+
+    /** Public methods | Runner Info
+     ******************************************************
+     */
+
+    /**
+     * Set Name
+     * 
+     * Set the name of the runner
+     * 
+     * @param name Name
+     */
+    public setName = (name:string):void => {
+
+        // Set name
+        this._options._info.name = name;
+
     }
 
     /** Parameters
@@ -115,6 +150,18 @@ export default class Runner {
                 // Start prevent close
                 this._navigatorClient.preventClose();
 
+                // Check viewer
+                if(this.viewer){
+
+                    // Open viewer
+                    // @ts-ignore
+                    this.viewer.open({
+                        progression: `${options._info.run.current}/${options._info.run.total}`,
+                        text: `Starting ${options._info.name.toLowerCase()}`
+                    });
+
+                }
+
                 // Return "abstract" class
                 return this.setUpBeforeClass(options);
 
@@ -133,8 +180,23 @@ export default class Runner {
                     if(options._info.run.current>0)
                         options._info.status = "In Progress";
 
+                    // Check viewer
+                    if(this.viewer){
+            
+                        // Open viewer
+                        // @ts-ignore
+                        this.viewer.update({
+                            progression: `${options._info.run.current}/${options._info.run.total}`,
+                            text: `${options._info.run.name[options._info.run.current-1]?options._info.run.name[options._info.run.current-1].label:"Oups"}`
+                        });
+            
+                    }
+
+                    // Let result
+                    let result = this.setUpBeforeMethod(options);
+
                     // Run setup
-                    return this.setUpBeforeMethod(options)
+                    return result
                 })
                 .then(this[method])
                 .then(
@@ -155,8 +217,22 @@ export default class Runner {
 
         // Final teardown after all methods
         chain = chain.then(options => {
+
+            // Check viewer
+            if(this.viewer){
+    
+                // Open viewer
+                // @ts-ignore
+                this.viewer.close();
+    
+            }
+
+            // Set status
             options._info.status = "Complete";
+
+            // Return custom last method
             return this.tearDownAfterClass(options)
+
         });
 
         // Catch any errors
