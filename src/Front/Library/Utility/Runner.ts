@@ -12,7 +12,7 @@
  * Dependances
  */
 import {default as NavigatorClient} from "./../Navigator/Client";
-import {default as UtilityProcess} from "./Process";
+import {default as UtilityProcess} from "./Process"
 
 /**
  * Runner
@@ -300,6 +300,32 @@ export default class Runner {
      * @return {Promise<Object>}
      */
     public tearDownAfterClass = async (options:RunnerOption):Promise<RunnerOption> => {
+
+        // Return object
+        return options;
+
+    }
+
+    /** Public methods | Errors
+     ******************************************************
+     */
+
+    public checkQueryError = async (data:any, options:RunnerOption):Promise<RunnerOption> => {
+
+        // Check data
+        if(typeof data === "object" && "errors" in data && Object.keys(data.errors).length){
+
+            // Check viewer
+            if(this.viewer)
+
+                // Share error with viewer 
+                // @ts-ignore
+                this.viewer.errors(data.errors);
+
+            // Reject the promise chain
+            throw 'Runner failed';
+
+        }
 
         // Return object
         return options;

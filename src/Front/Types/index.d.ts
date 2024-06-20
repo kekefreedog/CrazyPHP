@@ -72,7 +72,7 @@ declare global {
         method?: "get"|"GET"|"post"|"POST"|"put"|"PUT"|"delete"|"DELETE",
         header?: object,
         cache?: "local"|"session"|boolean,
-        responseType?: "arraybuffer"|"document"|"json"|"text"|"stream"|boolean,
+        responseType?: "arraybuffer"|"document"|"json"|"text"|"stream"|false|"*",
         responseEncoding?: "utf8",
         from?: "internal"|"external",
         ignoreHash?: boolean
@@ -301,6 +301,61 @@ declare global {
             }
         }
     }
+
+    /** Interface | Crazy Runner Viewer
+     ******************************************************
+     */
+
+    /**
+     * Crazy Runner Viewer
+     */
+    interface CrazyRunnerViewer {
+
+        /** Public methods
+         ******************************************************
+        */
+
+        /**
+         * Open Viewer
+         * 
+         * @param data:string
+         * @returns {void}
+         */
+        public open(data?:CrazyRunnerViewerOptions):void;
+
+        /**
+         * Close Viewer
+         * 
+         * @param data:string
+         * @returns {void}
+         */
+        public close(data?:CrazyRunnerViewerOptions):void;
+
+        /**
+         * Update Viewer
+         * 
+         * @param data:string
+         * @returns {void}
+         */
+        public update(data?:CrazyRunnerViewerOptions):void;
+
+        /**
+         * Errors
+         * 
+         * @param errors:string
+         * @param data:string
+         * @returns {void}
+         */
+        public errors(errors:Array<object>, data?:CrazyRunnerViewerOptions):void;
+
+    }
+
+    /**
+     * Crazy Runner Viewer Options
+     */
+    interface CrazyRunnerViewerOptions {
+
+    };
 
     
 

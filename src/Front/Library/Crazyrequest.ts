@@ -44,7 +44,7 @@ export default class Crazyrequest{
         method: "get",
         header: {},
         cache: false,
-        responseType: "json",
+        responseType: "*",
         responseEncoding: "utf8",
         from: "internal"
     };
@@ -301,6 +301,33 @@ export default class Crazyrequest{
 
             // Set mode
             this.requestOptions.mode = "no-cors";
+
+        }
+
+        // Check responseType
+        if(this.options.responseType && typeof this.options.responseType === "string"){
+
+            // Set accept header
+            let acceptHeaderValues = "";
+
+            // Check if all
+            if(this.options.responseType === "*")
+
+                // Set accept
+                acceptHeaderValues = "*/*";
+
+            else
+            // Check if json
+            if(this.options.responseType === "json")
+
+                // Set accept
+                acceptHeaderValues = "application/json";
+
+            // Check acceptHeaderValues
+            if(acceptHeaderValues)
+
+                // Push into header
+                this.requestOptions.headers.set("Accept", acceptHeaderValues);
 
         }
 
