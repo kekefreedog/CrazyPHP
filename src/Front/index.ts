@@ -17,6 +17,7 @@ export {default as UtilityDateTime} from "./Library/Utility/DateTime";
 export {default as ColorSchema} from "./Library/Utility/ColorSchema";
 export {default as UtilityProcess} from "./Library/Utility/Process";
 export {default as UtilityObjects} from "./Library/Utility/Objects";
+export {default as UtilityStrings} from "./Library/Utility/Strings";
 export {default as Crazycomponent} from "./Library/Crazycomponent";
 export {default as Crazynavigator} from "./Library/Crazynavigator";
 export {default as UtilityEvents} from "./Library/Utility/Events";
