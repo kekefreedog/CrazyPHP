@@ -52,10 +52,13 @@ class ApiV2Last extends Controller {
         # Set limit
         $options["limit"] = intval(Context::getParameters("count"));
 
+        # Set filters
+        $filter = $_GET["filters"] ?? $_GET["filter"] ?? [];
+
         # Declare content
         $content = $model
             ->readWithFilters(
-                [],
+                $filter,
                 "DESC",
                 null,
                 $options
