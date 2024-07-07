@@ -436,7 +436,7 @@ export default abstract class Crazycomponent extends HTMLElement {
      */
     public attributeChangedCallback(name:string, oldValue:string, newValue:string):void {
 
-        console.log(newValue + " >> " + oldValue);
+        /* console.log(newValue + " >> " + oldValue); */
 
         // Check new value isn't the old value
         if(newValue != oldValue && this.isConnected){
@@ -598,7 +598,25 @@ class CrazycomponentAction {
         // Push value in current attributes
         this.attributesCurrent[name] = currentValue;
 
-    }        
+    }
+    
+    /**
+     * Attribute Changed Callback
+     * 
+     * Update attribute on current element event
+     * 
+     * @param name
+     * @param value
+     * @return Check if update is a success
+     */
+    attributeChangedCallback = (name:string, oldValue:string, newValue:string) => {
+
+        console.log("-- attributeChangedCallback --");
+
+        // Update attribute
+        this.updateAttribute(name, newValue);
+
+    }
     
     /**
     * Update Attribute

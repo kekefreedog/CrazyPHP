@@ -5,7 +5,7 @@
 ///
 /// @package    kzarshenas/crazyphp
 /// @author     kekefreedog <kevin.zarshenas@gmail.com>
-/// @copyright  2022-2024 Kévin Zarshenas
+/// @copyright  2022-2023 Kévin Zarshenas
 /// /// ///
 
 /// Material icons
@@ -103,6 +103,44 @@ ul.collapsible {
 
 }
 
+/// Text Inputs
+///////////////////////////////////////////////////////
+///
+
+/**
+ * Iframe Suffix
+ */
+.iframe-suffix {
+
+    // Position
+    position: absolute;
+    right: 41px;
+
+    // Flex
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    // Color
+    background-color: #19191a;
+
+    // Dimension
+    width: 35px;
+    height: 35px;
+
+    // Border
+    border-radius: 50%;
+
+    // Children
+    &.suffix-bis {
+
+        // Position
+        right: 86px;
+
+    }
+
+}
+
 
 /// Project card
 ///////////////////////////////////////////////////////
@@ -127,9 +165,6 @@ ul.collapsible {
 
         /* Children */
         p {
-
-            /* Font */
-            word-break: break-all!important;
 
             /* Children */
             i.material-icons {

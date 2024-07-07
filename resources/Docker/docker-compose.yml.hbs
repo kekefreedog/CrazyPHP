@@ -108,9 +108,9 @@ services:
             - MYSQL_USER={{_config.Database.collection.mariadb.users.[0].login}}
             - MYSQL_DATABASE={{_config.Database.collection.mariadb.database.[0]}}
         ports:
-           - {{_config.Database.collection.mysql.port}}:3306
+           - {{_config.Database.collection.mariadb.port}}:3306
         volumes:
-            - '{{_config.App.root}}/.database/mariadb:/var/lib/mysql'
+            - '{{_config.App.root}}/.database/mariadb:/var/lib/mariadb'
         networks:
             - backend
 {{/if}}

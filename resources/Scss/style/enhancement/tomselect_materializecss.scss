@@ -1,0 +1,43 @@
+/// /// ///
+/// Enhancement - Crazy Content
+///
+/// Tom Select ft. Materialize
+///
+/// @package    kzarshenas/crazyphp
+/// @author     kekefreedog <kevin.zarshenas@gmail.com>
+/// @copyright  2022-2024 Kévin Zarshenas
+/// /// /// 
+
+// Input search
+.ts-wrapper .ts-control input {
+
+    // Dimension
+    width: initial!important;
+    height: initial!important;
+
+    // Font
+    font-size: inherit!important;
+
+    // Color
+    color: inherit!important;
+
+}
+
+// Label
+select.tomselected + div.ts-wrapper + label {
+
+    /* color: white; */
+    /* background-color: red; */
+
+    // Font
+    text-align: left!important;
+
+    // Position
+    position: absolute!important;
+    top: -17px!important;
+    left: 5px!important;
+
+    // Dimension
+    transform: scale(.75);
+
+}

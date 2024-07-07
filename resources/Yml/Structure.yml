@@ -252,6 +252,10 @@ Structure:
                         source: "@crazyphp_root/resources/Environment/Page/Index/index.ts"
                       template.hbs:
                         source: "@crazyphp_root/resources/Environment/Page/Index/template.hbs"
+              Partials:
+                files:
+                  Hello.ts:
+                    source: "@crazyphp_root/resources/Environment/Partials/Hello.ts"
               Structure:
                 folders:
                   Navigation: null

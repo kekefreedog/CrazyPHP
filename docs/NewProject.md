@@ -8,7 +8,7 @@ Open a terminal and go on the directory where you want create your project (Exem
 
 ```sh
 php -v
-# PHP 8.3.0RC3 (cli) (built: Oct  2 2023 09:38:17) (NTS)
+# PHP 8.3.4 (cli) (built: Mar 16 2024 12:05:08) (NTS
 ```
 
 - [ ] Check [Composer](https://getcomposer.org/) version is >= 2.5.8 by using :
