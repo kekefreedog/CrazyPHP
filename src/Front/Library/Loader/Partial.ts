@@ -309,8 +309,6 @@ export default class Partial {
                     // Convert content to dom
                     let node = new DOMParser().parseFromString(options.content(options.state), "text/html");
 
-                    console.log(options.state);
-
                     // Check node.body.firstChild
                     if(node.body.firstChild)
 
@@ -418,7 +416,7 @@ export default class Partial {
     private static setStatus(options:LoaderPartialOptions, key:keyof LoadPartialOptionsStatus, value:boolean):LoaderPartialOptions {
 
         // Check status is defined in options
-        if(!("status" in options) || options.status === null || !options.status)
+        if( (typeof options == "object" &&  !("status" in options)) || options.status === null || !options.status)
 
             // Set status
             options.status = {};

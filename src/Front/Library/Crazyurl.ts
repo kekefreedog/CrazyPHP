@@ -22,7 +22,7 @@ import Crazyrequest from "./Crazyrequest";
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2024 Kévin Zarshenas
  */
-export default class Crazyurl{
+export default class Crazyurl {
 
     /** Public methods
      ******************************************************
