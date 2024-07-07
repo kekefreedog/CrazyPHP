@@ -50,4 +50,22 @@ export default abstract class Crazypartial {
 
     }
 
+    /** Public methods
+     ******************************************************
+     */
+
+    /**
+     * Enable
+     */
+    public enable = () => {
+
+    }
+
+    /**
+     * Enable
+     */
+    public disable = () => {
+
+    }
+
 }
