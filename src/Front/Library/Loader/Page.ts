@@ -87,6 +87,10 @@ export default class Page {
                             .then(
                                 // Load Post Action
                                 Page.loadPostAction
+                            )
+                            .then(
+                                // Set current page
+                                Page.setCurrentPage
                             ).catch(
                                 Page.catchError
                             );
@@ -102,6 +106,10 @@ export default class Page {
                                 .then(
                                     // Load Post Action
                                     Page.loadPostAction
+                                )
+                                .then(
+                                    // Set current page
+                                    Page.setCurrentPage
                                 ).catch(
                                     Page.catchError
                                 );
@@ -667,6 +675,27 @@ export default class Page {
 
         // Set options is loaded
         options = Page.setStatus(options, "postActionExecuted", true);
+
+        // Return options
+        return options;
+        
+    }
+
+    /**
+     * set Current Page
+     * 
+     * Set current page
+     * 
+     * @param options:LoaderPageOptions Options with all page details
+     * @return Promise<LoaderPageOptions>
+     */
+    public static setCurrentPage = async(options:LoaderPageOptions):Promise<LoaderPageOptions> =>  {
+
+        // Check status
+        if(options.status?.onReadyExecuted === true)
+
+            // Set curret page
+            window.Crazyobject.currentPage.set(options);
 
         // Return options
         return options;

@@ -79,6 +79,22 @@
 
     }
 
+    // Place element in the horizontal center only
+    &.screen-direction-y-asc {
+
+        // Position
+        flex-direction: column;
+
+    }
+
+    // Place element in the horizontal center only
+    &.screen-direction-y-desc {
+
+        // Position
+        flex-direction: column-reverse;
+
+    }
+
     /* Children */
 
     // Grow of flex child

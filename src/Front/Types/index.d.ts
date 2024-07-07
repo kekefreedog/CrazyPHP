@@ -10,6 +10,7 @@
 
 import Crazyobject from "./../Core/Crazyobject";
 import Crazypage from "./../Library/Crazypage";
+import Crazypartial from "./../Library/Crazypartial";
 
 /**
  * Dependances
@@ -26,6 +27,7 @@ export {default as Crazynavigator} from "./../Library/Crazynavigator";
 export {default as UtilityArrays} from "./../Library/Utility/Arrays";
 export {default as UtilityEvents} from "./../Library/Utility/Events";
 export {default as UtilityRunner} from "./../Library/Utility/Runner";
+export {default as LoaderPartial} from "./../Library/Loader/Partial";
 export {default as Crazylanguage} from "./../Library/Crazylanguage";
 export {default as UtilityMoney} from "./../Library/Utility/Money";
 export {default as RegisterPage} from "./../Library/Register/Page";
@@ -200,6 +202,44 @@ declare global {
         postActionExecuted?:boolean = false,
         // Partials Scanned
         partialsScanned?:boolean = false,
+    }
+
+    /**
+     * Interface LoaderPageOptions
+     */
+    interface LoaderPartialOptions {
+        name?:?string = null,
+        instance?:?object = null,
+        content?:?CallableFunction|string = null,
+        preAction?:?CallableFunction = null,
+        postAction?:?CallableFunction = null,
+        status?:?LoadPartialOptionsStatus = null,
+        state?:Array<any>|Object = null,
+        domTarget?:?string = null,
+        page?:Object = null,
+        scriptLoaded?:?Crazypartial = null,
+        scriptRunning?:?new () => typeof Crazypartial = null,
+        hash?:?string = null,
+    }
+
+    /**
+     * Interface LoadPageOptionsStatus
+     */
+    interface LoadPartialOptionsStatus {
+        /* Status of the partial */
+        // Has state
+        hasState?:boolean = false,
+        // JS script file registered
+        scriptRegistered?:boolean = false,
+        /* Action when page is loaded */
+        // Pre Action Executed
+        preActionExecuted?:boolean = false,
+        // Content loaded
+        contentLoaded?:boolean = false,
+        // Partials Pushed To Dom
+        contentPushedToDom?:boolean = false,
+        // Post Action Executed
+        postActionExecuted?:boolean = false,
     }
 
     /** Interface | Register

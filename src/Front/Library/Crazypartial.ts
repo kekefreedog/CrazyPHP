@@ -32,6 +32,12 @@ export default abstract class Crazypartial {
 
     public input:RegisterPartialScanned;
 
+    /** 
+     * @param html:string 
+     * Duplicate of the class name because build change name of class
+     */
+    public static readonly html:string|null|CallableFunction = null;
+
     /**
      * Constructor
      * 

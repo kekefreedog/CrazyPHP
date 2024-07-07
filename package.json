@@ -18,6 +18,8 @@
     },
     "homepage": "https://github.com/kekefreedog/CrazyPHP#readme",
     "devDependencies": {
+        "@types/node": "^20.14.10",
+        "handlebars": "^4.7.8",
         "localforage": "^1.10.0",
         "object-hash": "^3.0.0",
         "tslib": "^2.4.1"

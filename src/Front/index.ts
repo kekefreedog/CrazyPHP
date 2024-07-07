@@ -23,6 +23,7 @@ export {default as Crazynavigator} from "./Library/Crazynavigator";
 export {default as UtilityEvents} from "./Library/Utility/Events";
 export {default as UtilityRunner} from "./Library/Utility/Runner";
 export {default as UtilityArrays} from "./Library/Utility/Arrays";
+export {default as LoaderPartial} from "./Library/Loader/Partial";
 export {default as Crazylanguage} from "./Library/Crazylanguage";
 export {default as RegisterPage} from "./Library/Register/Page";
 export {default as UtilityMoney} from "./Library/Utility/Money";

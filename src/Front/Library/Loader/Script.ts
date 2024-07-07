@@ -34,6 +34,7 @@ export default class Script {
      *
      * @param url:string Url to load
      * @param async
+     * @param target
      */
     public static load = (url:string, id:string = "", async:boolean = true, type:string = "text/javascript", target:"body"|"head" = "body"): Promise<any> => {
         
@@ -86,7 +87,6 @@ export default class Script {
                     });
 
                 });
-
 
                 // Add script in body of head
                 document[target].appendChild(scriptEle);

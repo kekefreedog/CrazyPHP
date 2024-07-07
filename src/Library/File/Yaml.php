@@ -146,6 +146,9 @@ class Yaml{
         # Check filename
         if(!$filename)
             return $result;
+
+        # Convert filename
+        $filename = File::path($filename);
         
         # Check if file exist
         if(!file_exists($filename))
