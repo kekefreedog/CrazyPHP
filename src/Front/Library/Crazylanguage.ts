@@ -62,7 +62,24 @@ export default class Crazylanguage {
             longLanguage = window.navigator.language;
 
             // Set short langLanguage
-            shortLanguage = longLanguage.split("-").shift() ?? "";
+            shortLanguage = longLanguage.split("-").at(0) ?? "";
+
+        }else
+        if("language" in window.navigator && window.navigator.language){
+
+            // Get current language
+            longLanguage = window.navigator.language;
+
+            // Set short langLanguage
+            shortLanguage = longLanguage.split("-").at(0) ?? "";
+
+        }else{
+
+            // Get current language
+            longLanguage = "en-US";
+            
+            // Set short langLanguage
+            shortLanguage = "en";
 
         }
 
