@@ -88,6 +88,14 @@
     }
 
     // Place element in the horizontal center only
+    &.screen-center-space-x {
+
+        // Position
+        justify-content: space-around;
+
+    }
+
+    // Place element in the horizontal center only
     &.screen-direction-y-asc {
 
         // Position
