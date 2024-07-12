@@ -111,6 +111,22 @@
 
     }
 
+    // Place element in the horizontal center only
+    &.screen-direction-x-asc {
+
+        // Position
+        flex-direction: row;
+
+    }
+
+    // Place element in the horizontal center only
+    &.screen-direction-x-desc {
+
+        // Position
+        flex-direction: row-reverse;
+
+    }
+
     /* Children */
 
     // Grow of flex child
