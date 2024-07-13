@@ -15,7 +15,12 @@ namespace CrazyPHP\Library\Database\Driver;
 /**
  * Dependances
  */
+use CrazyPHP\Library\File\Config as FileConfig;
 use CrazyPHP\Interface\CrazyDatabaseDriver;
+use CrazyPHP\Exception\CrazyException;
+use Envms\FluentPDO\Query;
+use PDOException;
+use PDO;
 
 /**
  * Mariadb
@@ -39,6 +44,11 @@ class Mariadb implements CrazyDatabaseDriver {
     public $client = null;
 
     /**
+     * @var $manager Manager of current database
+     */
+    public $manager = null;
+
+    /**
      * Constructor
      * 
      * Get current database config
@@ -47,7 +57,8 @@ class Mariadb implements CrazyDatabaseDriver {
      */
     public function __construct() {
 
-
+        # Get current conffig
+        $this->config = FileConfig::getValue(self::CONFIG_KEY);
 
     }
 
@@ -63,9 +74,78 @@ class Mariadb implements CrazyDatabaseDriver {
      * @param string|int $user from option in Config > Database
      * @return self
      */
-    public function newClient(string|int $user = ""):self {
+    public function newClient(string|int $user = 0):self {
 
-        # Return result
+        # Connection
+        $connection = [];
+
+        # Check if root
+        if($user === "root"){
+
+            # Set login
+            $connection["login"] = $this->config["root"]["login"];
+
+            # Set passord
+            $connection["password"] = $this->config["root"]["password"];
+
+        }else
+        # Check user
+        if($user === "" || !array_key_exists($user, $this->config["users"]))
+
+            # New Exception
+            throw new CrazyException(
+                "User \"$user\" can't be found...",
+                500,
+                [
+                    "custom_code"   =>  "mongodb-001",
+                ]
+            );
+
+        else
+        # Check if key
+        if(isset($this->config["users"][$user]) && !empty($this->config["users"][$user])){
+
+            # Set login
+            $connection["login"] = $this->config["users"][$user]["login"];
+
+            # Set passord
+            $connection["password"] = $this->config["users"][$user]["password"];
+
+        }else
+
+            # New Exception
+            throw new CrazyException(
+                "User \"$user\" don't exists...",
+                500,
+                [
+                    "custom_code"   =>  "mongodb-002",
+                ]
+            );
+
+        # Get host
+        $connection["host"] = $this->config["host"];
+
+        # Datanbase name
+        $connection["database"] = $user === "root" ?
+            "admin" :
+                $this->config["database"][0];
+        
+
+            # Set database
+
+        # Get port
+        $connection["port"] = $this->config["port"];
+
+        # Get connection string
+        $connectionArray = self::getConnectionArray($connection);
+
+        # Set client
+        $this->client = new PDO(...$connectionArray);
+
+        # Set manager
+        $this->manager = new Query($this->client);
+
+        # Return self
         return $this;
 
     }
@@ -87,6 +167,99 @@ class Mariadb implements CrazyDatabaseDriver {
      */
     public function createUser(string $user = "", string $password = "", string|array $databases = [], string|array $options = []):self {
 
+        # Check client
+        if(!$this->manager)
+
+            # New Exception
+            throw new CrazyException(
+                "Please execute \"newClient\" method before \"".__METHOD__."\" method...",
+                500,
+                [
+                    "custom_code"   =>  "mongodb-003",
+                ]
+            );
+
+        # Check user
+        if(!$user)
+
+            # New Exception
+            throw new CrazyException(
+                "User parameter is empty...",
+                500,
+                [
+                    "custom_code"   =>  "mongodb-004",
+                ]
+            );
+
+        # Prepare query
+        $query = "CREATE USER :user IDENTIFIED BY :password";
+
+        # Prepate statment
+        $statment = $this->client->prepare($query);
+
+        # Set user
+        $statment->bindParam(':user', $user);
+
+        # Set password
+        $statment->bindParam(':password', $password);
+
+        try {
+
+            # Execute statment
+            $statment->execute();
+
+        } catch (PDOException $e) {
+
+            throw new CrazyException(
+                "Error creating user: " . $e->getMessage(),
+                500,
+                [
+                    "custom_code"   =>  "mariadb-001",
+                ]
+            );
+
+        }
+
+        # Check database
+        if(is_string($databases))
+
+            # Convert to array
+            $databases = [$databases];
+
+        # Iteration databases
+        foreach ($databases as $database) {
+
+            # Prepare query
+            $query = "GRANT ALL PRIVILEGES ON $database.* TO :user";
+
+            # Prepare statment
+            $statment = $this->client->prepare($query);
+
+            # Set user
+            $statment->bindParam(':user', $user);
+
+            try {
+
+                # Execute the grant statement
+                $statment->execute();
+                
+            } catch (PDOException $e) {
+
+                # New exception
+                throw new CrazyException(
+                    "Error granting privileges: " . $e->getMessage(),
+                    500,
+                    [
+                        "custom_code"   =>  "mariadb-002",
+                    ]
+                );
+
+            }
+        }
+
+        // Flush privileges
+        $this->client->exec("FLUSH PRIVILEGES");
+
         # Return result
         return $this;
 
@@ -101,8 +274,599 @@ class Mariadb implements CrazyDatabaseDriver {
      */
     public function createUserFromConfig():self {
 
+        # Check client
+        if(!$this->client)
+
+            # New Exception
+            throw new CrazyException(
+                "Please execute \"newClient\" method before \"".__METHOD__."\" method...",
+                500,
+                [
+                    "custom_code"   =>  "mariadb-003",
+                ]
+            );
+
+        # Set users
+        $users = $this->config["users"] ?? null;
+
+        # Check users
+        if(!empty($users))
+
+            # Iteration of users
+            foreach($users as $user)
+
+                # Create user
+                $this->createUser($user["login"], $user["password"]);
+
         # Return result
         return $this;
+
+    }
+
+    /** Public Methods | Database
+     ******************************************************
+     */
+
+    /**
+     * Create Database
+     * 
+     * @param string $options
+     * @return void
+     */
+    public function createDatabase(string $option = "CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"):void {
+
+        # Check client
+        if(!$this->client)
+
+            # New Exception
+            throw new CrazyException(
+                "Please execute \"newClient\" method before \"".__METHOD__."\" method...",
+                500,
+                [
+                    "custom_code"   =>  "mariadb-004",
+                ]
+            );
+
+        # Switch to database
+        $database = $this->client->{$this->config["database"][0]};
+
+        # Prepare query
+        $query = "CREATE DATABASE IF NOT EXISTS $database";
+
+        # Check option
+        if (!empty($options))
+
+            # Append option to query
+            $query .= " $options";
+
+        try {
+
+            $this->client->exec($query);
+
+        } catch (PDOException $e) {
+
+            throw new CrazyException(
+                "Error creating database: " . $e->getMessage(),
+                500,
+                [
+                    "custom_code"   =>  "mariadb-005",
+                ]
+            );
+
+        }
+
+    }
+
+    /**
+     * Create Table
+     * 
+     * @param $table
+     * @param $schema
+     * @return mixed
+     */
+    public function createTable($table, $value) {
+
+        
+
+    }
+
+    /**
+     * Get All Tables
+     * 
+     * Retrieve a list of all tables in a given database
+     * 
+     * @param string $database Name of the database (by default take the first one in config file)
+     * @return array
+     */
+    public function getAllTables(string $database = ""):array {
+
+        # Check database
+        if(!$database)
+
+            # Get main database
+            $database = $this->_getDefaultDatabase();
+
+        # Set result
+        $result = [];
+
+        try {
+
+            # Switch to the specified database
+            $this->client->exec("USE " . $database);
+
+            # Execute the SHOW TABLES command
+            $statment = $this->client->query("SHOW TABLES");
+
+            # Fetch all table
+            $result = $statment->fetchAll(PDO::FETCH_COLUMN);
+
+        } catch (PDOException $e) {
+
+            throw new CrazyException(
+                "Error retrieving tables: " . $e->getMessage(),
+                500,
+                [
+                    "custom_code"   =>  "mariadb-006",
+                ]
+            );
+
+        }
+
+        # Return result
+        return $result;
+
+    }
+
+
+    /**
+     * Has Table
+     * 
+     * Check if a specific table exists in a given database
+     * 
+     * @param string $database Name of the database
+     * @param string $table Name of the table
+     * @return bool
+     */
+    public function hasTable(string $table = "", string $database = ""): bool {
+
+        # Set result
+        $result = false;
+
+        # Check collection
+        if(!$table)
+
+            # Return result
+            return $result;
+
+        # Check database
+        if(!$database)
+
+            # Get main database
+            $database = $this->_getDefaultDatabase();
+
+        try {
+
+            # Preapre statment
+            $stmt = $this->client->prepare("
+                SELECT COUNT(*)
+                FROM INFORMATION_SCHEMA.TABLES
+                WHERE TABLE_SCHEMA = :database AND TABLE_NAME = :table
+            ");
+
+            # Set database
+            $stmt->bindParam(':database', $database);
+
+            # Set table
+            $stmt->bindParam(':table', $table);
+
+            # Execute
+            $stmt->execute();
+
+            # Get count
+            $count = $stmt->fetchColumn();
+
+            # Set result
+            $result = $count > 0;
+
+        } catch (PDOException $e) {
+
+            throw new CrazyException(
+                "Error checking table existence: " . $e->getMessage(),
+                500,
+                [
+                    "custom_code"   =>  "mariadb-007",
+                ]
+            );
+
+        }
+
+        # Return result
+        return $result;
+    }
+
+    /**
+     * Insert To Table
+     * 
+     * Insert values to table
+     * 
+     * @param string $table
+     * @param array $value
+     * @param string $database
+     * @param bool $createIfNotExists
+     * @param array $validator
+     */
+    public function insertToTable(string $table, array $value, string $database = "", bool $createIfNotExists = false, array $validator = []) {
+
+        # Set result
+        $result = null;
+
+        # Check input
+        if(!$table || empty($value) || !$database)
+
+            # Return result
+            return $result;
+
+        # Check database
+        if(!$database)
+
+            # Get main database
+            $database = $this->_getDefaultDatabase();
+
+        # Use database
+        $this->client->exec("USE " . $database);
+
+        # Check has
+        if(!$this->hasTable($table, $database)){
+
+            # Check if create
+            if(!$createIfNotExists)
+
+                # Stop
+                return $result;
+
+            # Create table
+            $this->createTable($table, $value);
+            
+
+        }
+        try {
+        
+            // Insert chain
+            $result = $this->manager
+                ->insertInto($table)
+                ->values($value)
+                ->execute()
+            ;
+        
+        } catch (PDOException $e) {
+
+            # New exception
+            throw new CrazyException(
+                "An error occurred: " . $e->getMessage(),
+                500,
+                [
+                    "custom_code"   =>  "mariadb-008",
+                ]
+            );
+        }
+
+        # Return result
+        return $result;
+
+    }    
+    
+    /**
+     * Update One To Table
+     * 
+     * Update one value into table
+     * 
+     * @param string $table
+     * @param array $value
+     * @param int $id
+     * @param string $database
+     */
+    public function updateOneToTable(string $table, array $value, int $id, string $database = "") {
+
+        # Set result
+        $result = null;
+
+        # Check input
+        if(!$table || empty($value) || !$database)
+
+            # Return result
+            return $result;
+
+        # Check database
+        if(!$database)
+
+            # Get main database
+            $database = $this->_getDefaultDatabase();
+
+        # Use database
+        $this->client->exec("USE " . $database);
+
+        try {
+
+            # Update table
+            $result = $this->manager
+                ->update($table)
+                ->set($value)
+                ->where('id', $id)
+                ->execute()
+            ;
+
+        } catch (PDOException $e) {
+
+            # New exception
+            throw new CrazyException(
+                "Error updating item: " . $e->getMessage(),
+                500,
+                [
+                    "custom_code"   =>  "mariadb-008",
+                ]
+            );
+
+        }
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Delete One To Table
+     * 
+     * Delete one value to table
+     * 
+     * @param string $table
+     * @param int $id
+     * @param string $database
+     */
+    public function deleteOneToCollection(string $table, int $id, string $database = "") {
+
+        # Set result
+        $result = null;
+
+        # Check input
+        if(!$table || empty($value) || !$database)
+
+            # Return result
+            return $result;
+
+        # Check database
+        if(!$database)
+
+            # Get main database
+            $database = $this->_getDefaultDatabase();
+
+        # Use database
+        $this->client->exec("USE " . $database);
+    
+        try {
+
+            # Update table
+            $result = $this->manager
+                ->deleteFrom($table)
+                ->where('id', $id)
+                ->execute()
+            ;
+
+        } catch (PDOException $e) {
+
+            # New exception
+            throw new CrazyException(
+                "Error deleting item: " . $e->getMessage(),
+                500,
+                [
+                    "custom_code"   =>  "mariadb-009",
+                ]
+            );
+
+        }
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Find
+     * 
+     * Find values
+     * 
+     * @param string $table
+     * @param string $database
+     * @param array $options = [
+     *      "filters":array,
+     *      "sort":array
+     *      "limit":array
+     * ]
+     */
+    public function find(string $table, string $database, array $options = []):array|null {
+
+        # Set result
+        $result = null;
+
+        # Check input
+        if(!$table || empty($value) || !$database)
+
+            # Return result
+            return $result;
+
+        # Check database
+        if(!$database)
+
+            # Get main database
+            $database = $this->_getDefaultDatabase();
+
+        # Use database
+        $this->client->exec("USE " . $database);
+
+        # Set filters
+        $filters = isset($options["filters"]) && is_array($options["filters"])
+            ? $options["filters"]
+            : []
+        ;
+    
+        try {
+
+            # Update table
+            $result = $this->manager
+                ->from($table)
+                ->where($filters)
+                ->fetch()
+            ;
+
+        } catch (PDOException $e) {
+
+            # New exception
+            throw new CrazyException(
+                "Error finding items: " . $e->getMessage(),
+                500,
+                [
+                    "custom_code"   =>  "mariadb-009",
+                ]
+            );
+
+        }
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Find One
+     * 
+     * Find value
+     * 
+     * @param string $table
+     * @param string $database
+     * @param array $options = [
+     *      "filters":array,
+     *      "sort":array
+     *      "limit":array
+     * ]
+     */
+    public function findOne(string $table, string $database, array $options = []):array|null {
+
+        # Set result
+        $result = null;
+
+        # Check input
+        if(!$table || empty($value) || !$database)
+
+            # Return result
+            return $result;
+
+        # Check database
+        if(!$database)
+
+            # Get main database
+            $database = $this->_getDefaultDatabase();
+
+        # Use database
+        $this->client->exec("USE " . $database);
+
+        # Set filters
+        $filters = isset($options["filters"]) && is_array($options["filters"])
+            ? $options["filters"]
+            : []
+        ;
+    
+        try {
+
+            # Update table
+            $result = $this->manager
+                ->from($table)
+                ->where($filters)
+                ->limit(1)
+                ->fetch()
+            ;
+
+        } catch (PDOException $e) {
+
+            # New exception
+            throw new CrazyException(
+                "Error finding item: " . $e->getMessage(),
+                500,
+                [
+                    "custom_code"   =>  "mariadb-009",
+                ]
+            );
+
+        }
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Find Last One
+     * 
+     * Find last value
+     * 
+     * @param string $table
+     * @param string $database
+     * @param array $options = [
+     *      "filters":array,
+     *      "sort":array
+     *      "limit":array
+     * ]
+     */
+    public function findLastOne(string $table, string $database, array $options = []):array|null {
+
+        # Set result
+        $result = null;
+
+        # Check input
+        if(!$table || empty($value) || !$database)
+
+            # Return result
+            return $result;
+
+        # Check database
+        if(!$database)
+
+            # Get main database
+            $database = $this->_getDefaultDatabase();
+
+        # Use database
+        $this->client->exec("USE " . $database);
+
+        # Set filters
+        $filters = isset($options["filters"]) && is_array($options["filters"])
+            ? $options["filters"]
+            : []
+        ;
+    
+        try {
+
+            # Update table
+            $result = $this->manager
+                ->from($table)
+                ->where($filters)
+                ->orderBy('id DESC')
+                ->limit(1)
+                ->fetch()
+            ;
+
+        } catch (PDOException $e) {
+
+            # New exception
+            throw new CrazyException(
+                "Error finding last item: " . $e->getMessage(),
+                500,
+                [
+                    "custom_code"   =>  "mariadb-009",
+                ]
+            );
+
+        }
+
+        # Return result
+        return $result;
 
     }
 
@@ -122,6 +886,63 @@ class Mariadb implements CrazyDatabaseDriver {
 
         # Set result
         $result = false;
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Get Connection Array
+     * 
+     * Useful for connect to pdo
+     * 
+     * @param array $options Option
+     * @return array
+     */
+    public static function getConnectionArray(array $options = []):array {
+
+        # Set result
+        $result = [];
+
+        # Set dsn
+        $result[0] = 
+            "mysql:host=".$options["host"].";".
+            (
+                $options["port"] !== false 
+                    ? "port=".$options["port"]
+                    : ""
+            ).
+            "dbname=".$options["database"]
+        ;
+
+        # Check login
+        if($options["login"]){
+
+            # Set user
+            $result[1] = $options["login"];
+
+            # Check password
+            if($options["password"])
+
+                # Set password
+                $result[2] = $options["password"];
+
+        }
+
+        # Return result
+        return $result;
+
+    }
+
+    /** Private Methods
+     ******************************************************
+     */
+
+    private function _getDefaultDatabase():string {
+
+        # Get result
+        $result = $this->config["database"][0];
 
         # Return result
         return $result;

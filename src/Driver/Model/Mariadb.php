@@ -15,7 +15,7 @@ namespace  CrazyPHP\Driver\Model;
 /**
  * Dependances
  */
-use CrazyPHP\Library\Database\Driver\Mysql;
+use CrazyPHP\Library\Database\Driver\Mariadb as MariadbModel;
 use CrazyPHP\Interface\CrazyDriverModel;
 
 /**
@@ -27,14 +27,14 @@ use CrazyPHP\Interface\CrazyDriverModel;
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2024 Kévin Zarshenas
  */
-class Sql extends CrazyDriverModel {
+class Mariadb extends CrazyDriverModel {
 
     /** Private parameters
      ******************************************************
      */
 
     /** @var Mysql Instance */
-    public Mysql $mysql;
+    public MariadbModel $mariadb;
 
     /** @var bool $attributesAsValues Indicate if attributes is set as values in current schema */
     # private bool $attributesAsValues = false;
@@ -50,7 +50,7 @@ class Sql extends CrazyDriverModel {
         $this->ingestParameters($inputs);
 
         # Sql connection
-        $this->newSql();
+        $this->newMariadb();
 
     }
 
@@ -280,13 +280,13 @@ class Sql extends CrazyDriverModel {
      * 
      * @return void
      */
-    private function newSql():void {
+    private function newMariadb():void {
 
         # Get mongo db config
-        $this->mysql = new Mysql();
+        $this->mariadb = new MariadbModel();
 
         # New client
-        $this->mysql->newClient();
+        $this->mariadb->newClient();
 
     }
 

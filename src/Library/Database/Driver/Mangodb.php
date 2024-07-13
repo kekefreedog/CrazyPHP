@@ -343,7 +343,7 @@ class Mangodb implements CrazyDatabaseDriver {
      * 
      * Get Collection from database
      * 
-     * @param string $database Name of the database (by default the first one in config file)
+     * @param string $database Name of the database (by default take the first one in config file)
      * @return array|null
      */
     public function getAllCollections(string|Database $database = ""):array|null {

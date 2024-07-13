@@ -562,6 +562,14 @@ class Create extends CrazyModel implements CrazyCommand {
             Composer::requirePackage("phpfastcache/mongodb-extension", true, false);
 
         }
+
+        # Check if sql or mariadb in current app
+        if(in_array("mariadb", $databaseValues) || in_array("mysql", $databaseValues)){
+
+            # Compose requiere envms/fluentpdo
+            Composer::requirePackage("envms/fluentpdo", true, false);
+
+        }
                 
         # Return instance
         return $this;
