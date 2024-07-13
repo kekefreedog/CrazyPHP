@@ -93,7 +93,7 @@ class Core extends Kernel {
         
                     # New Exception
                     throw new CrazyException(
-                        "Please check custom env \"$k\" => \"$v\". Actually env name looks not valid, you have to cheoose a char string name.",
+                        "Please check custom env \"$k\" => \"$v\". Actually env name looks not valid, you have to choose a char string name.",
                         500,
                         [
                             "custom_code"   =>  "core-002",
