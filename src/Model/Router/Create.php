@@ -404,7 +404,7 @@ class Create extends CrazyModel implements CrazyCommand {
         if($this->router["Type"] == "api"){
 
             # Set controller into router
-            $this->router["Controller"] = "App\\Controller\\Api\\V1\\".str_replace("/", "\\", $this->router["Name"]);
+            $this->router["Controller"] = "App\\Controller\\Api\\v1\\".str_replace("/", "\\", $this->router["Name"]);
     
             # Set additionnal data
             $additionnal = [
