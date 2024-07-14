@@ -372,13 +372,27 @@ class Schema {
      * 
      * Return schema collection
      * 
-     * @param bool $validate ValidateValues schema
+     * @param array $option Option
      * @return array
      */
-    public function getResult():array {
+    public function getResult($option = []):array {
 
         # Set result
         $result = [];
+
+        # Set skipAttributes
+        $skipAttributes = [];
+
+        # Check option
+        if(!empty($option)){
+
+            # Check if skipAttributes
+            if(isset($option["skipAttributes"]) && is_array($option["skipAttributes"]))
+
+                # Set skipAttributes
+                $skipAttributes = $option["skipAttributes"];
+
+        }
 
         # Set result
         $results = $this->collectionWithValues;
@@ -391,6 +405,15 @@ class Schema {
 
                 # Iteration result
                 foreach($results as &$currentResult){
+
+                    # Check skip attributes
+                    foreach($skipAttributes as $name)
+
+                        # Check name
+                        if($name)
+
+                            # Clean in current result
+                            $currentResult = Arrays::removeByKey($currentResult, "name", $name);
 
                     # Vrocess values
                     $currentResult = (new Process($currentResult))->getResult();
@@ -427,6 +450,20 @@ class Schema {
         # Set result
         $result = [];
 
+        # Set skip Attributes
+        $skipAttributes = [];
+
+        # Check option
+        if(!empty($option)){
+
+            # Check if skipAttributes
+            if(isset($option["skipAttributes"]) && is_array($option["skipAttributes"]))
+
+                # Set skipAttributes
+                $skipAttributes = $option["skipAttributes"];
+
+        }
+
         # Check is attributes as values is not enable
         if(!$this->attributesAsValues){
 
@@ -438,6 +475,15 @@ class Schema {
 
                 # Iteration result
                 foreach($results as &$currentResult){
+
+                    # Check skip attributes
+                    foreach($skipAttributes as $name)
+
+                        # Check name
+                        if($name)
+
+                            # Clean in current result
+                            $currentResult = Arrays::removeByKey($currentResult, "name", $name);
 
                     # Vrocess values
                     $currentResult = (new Process($currentResult))->getResult();

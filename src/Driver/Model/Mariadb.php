@@ -16,7 +16,10 @@ namespace  CrazyPHP\Driver\Model;
  * Dependances
  */
 use CrazyPHP\Library\Database\Driver\Mariadb as MariadbModel;
+use CrazyPHP\Library\File\Config as FileConfig;
 use CrazyPHP\Interface\CrazyDriverModel;
+use CrazyPHP\Library\Model\Schema;
+use CrazyPHP\Library\Array\Arrays;
 
 /**
  * Crazy Driver Model Interface
@@ -27,14 +30,23 @@ use CrazyPHP\Interface\CrazyDriverModel;
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2024 Kévin Zarshenas
  */
-class Mariadb extends CrazyDriverModel {
+class Mariadb implements CrazyDriverModel {
 
     /** Private parameters
      ******************************************************
      */
 
+    /** @var array $arguments */
+    private array $arguments;
+
     /** @var Mysql Instance */
     public MariadbModel $mariadb;
+
+    /** @var Schema $schema */
+    private Schema|null $schema = null;
+
+    /** @var string|null $id for select one item */
+    private string|null $id = null;
 
     /** @var bool $attributesAsValues Indicate if attributes is set as values in current schema */
     # private bool $attributesAsValues = false;
@@ -52,6 +64,9 @@ class Mariadb extends CrazyDriverModel {
         # Sql connection
         $this->newMariadb();
 
+        # Create table
+        $this->createTable();
+
     }
 
     /** Public mathods | Attributes
@@ -66,6 +81,37 @@ class Mariadb extends CrazyDriverModel {
      * @return self
      */
     public function setAttributesAsValues():self {
+
+        # Return self
+        return $this;
+
+    }
+
+    /** Public methods | Collection / Table
+     ******************************************************
+     */
+
+    /**
+     * Create table
+     * 
+     * @return self
+     */
+    public function createTable():self {
+
+        # Create table
+        $this->mariadb->createTable($this->arguments["table"], $this->arguments["schema"]);
+
+        # Return self
+        return $this;
+
+    }
+
+    /**
+     * Create collection
+     * 
+     * @return self
+     */
+    public function createCollection():self {
 
         # Return self
         return $this;
@@ -160,6 +206,15 @@ class Mariadb extends CrazyDriverModel {
      */
     public function ingestData(array $data, ?array $options = null):self {
 
+        # New schema
+        $schema = new Schema($this->arguments["schema"], [$data], [
+            "flatten"           =>  true,
+            "skipEmptyValue"    =>  $this->isUpdate()
+        ]);
+
+        # Push schema in classe schema
+        $this->schema = $schema;
+
         # Return self
         return $this;
 
@@ -199,6 +254,36 @@ class Mariadb extends CrazyDriverModel {
 
         # Set result
         $result = [];
+
+        # Insert to mongo Check schema
+        if($this->schema !== null){
+
+            # Check collection
+            $schemaResult = $this->schema->getResult([
+                "skipAttributes"    =>  ["id"]
+            ]);
+
+            # Iteration
+            foreach($schemaResult as $v){
+
+                # Declare data
+                $data = [];
+
+                # Iteration v
+                foreach($v as $item)
+
+                    # Push in data
+                    $data[$item["name"]] = $item["value"];
+
+                # Unflatten result
+                $data = Arrays::unflatten($data);
+
+                # Insert
+                $result[] = $this->mariadb->insertToTable($this->arguments["table"], $data);
+
+            }
+
+        }
 
         # Return result
         return $result;
@@ -271,6 +356,58 @@ class Mariadb extends CrazyDriverModel {
      */
     private function ingestParameters(array $inputs):void {
 
+        # Set arguments
+        $this->arguments = self::ARGUMENTS;
+
+        # Check inputs
+        if(!empty($inputs))
+
+            # Iteration inputs
+            foreach($inputs as $name => $value)
+
+                # Check name in arguments
+                if(array_key_exists($name, $this->arguments))
+
+                        # Set value
+                        $this->arguments[$name] = $value;
+
+
+
+        # Check if collection
+        if(isset($this->arguments["table"]) && $this->arguments["table"]){
+
+            # Get Model Config
+            $models = FileConfig::getValue("Model");
+
+            # Search table
+            $search = Arrays::filterByKey($models, "name", $this->arguments["table"]);
+
+            # Check search
+            if(!empty($search))
+
+                # Get schema
+                $this->arguments["schema"] = ($search[array_key_first($search)]["attributes"]) ?? [];
+
+        }
+
+        # Get database
+        $databases = FileConfig::getValue("Database.collection.mariadb.database");
+
+        # If empty database
+        if(empty($databases))
+            
+            # New error
+            throw new CrazyException(
+                "No mongodb database defined in config.", 
+                500,
+                [
+                    "custom_code"   =>  "model-mongodb-001",
+                ]
+            );
+
+        # Set database
+        $this->arguments["database"] = $databases[array_key_first($databases)];
+
     }
 
     /**
@@ -289,5 +426,32 @@ class Mariadb extends CrazyDriverModel {
         $this->mariadb->newClient();
 
     }
+
+    /** Private methods | Options
+     ******************************************************
+     */
+
+    /**
+     * Is Update
+     * 
+     * @return bool
+     */
+    private function isUpdate():bool {
+
+        return $this->id !== null;
+
+    }
+
+    /** Public constants
+     ******************************************************
+     */
+
+    /** @const array */
+    public const ARGUMENTS = [
+        "table"        =>  "",
+        "schema"            =>  [],
+        "database"          =>  [],
+        "pageStateProcess" =>  false,
+    ];
 
 }

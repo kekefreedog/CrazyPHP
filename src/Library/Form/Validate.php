@@ -52,13 +52,15 @@ class Validate {
      */
     private $dispatch = [
         "INT"       =>  [
-            "isValidHttpStatusCode"
+            "isValidHttpStatusCode",
+            "isMobilePhone"
         ],
         "VARCHAR"   =>  [
             "isEmail",
             "isIpAddress",
             "isValidUrl",
-            "isSemanticVersioning"
+            "isSemanticVersioning",
+            "isMobilePhone"
         ],
         "ARRAY"     =>  [
         ], 
@@ -857,6 +859,38 @@ class Validate {
         # Return regex
         return $result;
 
+    }
+
+    /**
+     * Is Mobile Phone
+     * 
+     * @source https://stackoverflow.com/questions/22378736/regex-for-mobile-number-validation
+     * 
+     * @param string|int $input
+     * @return bool
+     */
+    public static function isMobilePhone(string|int $input):bool {
+
+        # Set result
+        $result = false;
+
+        # Check input
+        if($input){
+
+            # Set pattern
+            $pattern = '/^(\+\d{1,3}[- ]?)?\d{10}$/';
+
+            # Regex test
+            if(preg_match($pattern,(string)$input))
+
+                # Set result
+                $result = true;
+
+        }
+
+        # Return result
+        return $result;
+           
     }
 
 }

@@ -413,10 +413,7 @@ class Create extends CrazyModel implements CrazyCommand {
             ];
 
             # Create template instance
-            $template = new Handlebars([
-                "template"  =>  Handlebars::PERFORMANCE_PRESET,
-                "helpers"   =>  false
-            ]);
+            $template = new Handlebars();
 
             # Load template
             $template->load("@crazyphp_root/resources/Hbs/App/Controller/Api/Template.php.hbs");
@@ -425,7 +422,7 @@ class Create extends CrazyModel implements CrazyCommand {
             $result = $template->render($this->router + $additionnal);
 
             # Set file path
-            $filePath = Router::getControllerPath().ucfirst($this->router["Type"])."\/v1/".$this->router["Name"].".php";
+            $filePath = Router::getControllerPath().ucfirst($this->router["Type"])."/v1/".$this->router["Name"].".php";
 
             # Create file
             File::create($filePath, $result);

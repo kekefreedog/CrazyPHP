@@ -43,6 +43,24 @@ interface CrazyDriverModel {
      */
     public function setAttributesAsValues():self;
 
+    /** Public methods | Collection / Table
+     ******************************************************
+     */
+
+    /**
+     * Create table
+     * 
+     * @return self
+     */
+    public function createTable():self;
+
+    /**
+     * Create collection
+     * 
+     * @return self
+     */
+    public function createCollection():self;
+
     /** Public methods | Parser
      ******************************************************
      */

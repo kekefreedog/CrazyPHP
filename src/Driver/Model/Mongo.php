@@ -104,6 +104,34 @@ class Mongo implements CrazyDriverModel {
 
     }
 
+    /** Public methods | Collection / Table
+     ******************************************************
+     */
+
+    /**
+     * Create table
+     * 
+     * @return self
+     */
+    public function createTable():self {
+
+        # Return self
+        return $this;
+
+    }
+
+    /**
+     * Create collection
+     * 
+     * @return self
+     */
+    public function createCollection():self {
+
+        # Return self
+        return $this;
+
+    }
+
     /** Public methods | Parser
      ******************************************************
      */

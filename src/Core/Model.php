@@ -21,6 +21,7 @@ use CrazyPHP\Interface\CrazyModel;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\File\Config;
 use CrazyPHP\Model\Context;
+use PDO;
 
 /**
  * Model

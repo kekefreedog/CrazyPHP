@@ -468,4 +468,29 @@ class ArraysTest extends TestCase{
 
     }
 
+    /**
+     * Test Remove By Key
+     * 
+     * @return void
+     */
+    public function testRemoveByKey():void {
+
+        # Set input
+        $input = [
+            ['id' => 1, 'name' => 'Alice'],
+            ['id' => 2, 'name' => 'Bob'],
+            ['id' => 3, 'name' => 'Charlie'],
+        ];
+
+        # Set output
+        $output = [
+            ['id' => 1, 'name' => 'Alice'],
+            ['id' => 3, 'name' => 'Charlie'],
+        ];
+
+        # Assert one
+        $this->assertEquals($output, Arrays::removeByKey($input, "id", 2));
+
+    }
+
 }

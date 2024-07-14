@@ -133,11 +133,11 @@ class Arrays{
 	 * Find parameter than some child parameter correspond to key value
 	 * 
 	 * @param array $array Array to process
-	 * @param any $key Child parameter to use in filter
-	 * @param any $keyValue Child parameter value's to use in filter
+	 * @param mixed $key Child parameter to use in filter
+	 * @param mixed $keyValue Child parameter value's to use in filter
 	 * @return array 
      */
-    public static function filterByKey(array $array = [], $key = "", $keyValue = ""):array {
+    public static function filterByKey(array $array = [], string $key = "", mixed $keyValue = ""):array {
 
 		# Process and return result
 		return array_filter(
@@ -146,6 +146,46 @@ class Arrays{
 				return (isset($var[$key]) ? $var[$key] == $keyValue : []);
 			}
 		);
+
+	}
+
+	/**
+	 * Remove By Key
+	 * 
+	 * Remove items from an array where the specified parameter is equal to the given value.
+	 *
+	 * @param array $array The input array.
+	 * @param mixed $key The parameter to check.
+	 * @param mixed $keyValue The value to compare against.
+	 * @return array The filtered array with items removed.
+	 */
+	public static function removeByKey(array $array = [], mixed $key = "", mixed $keyValue = ""):array {
+
+		# Set result
+		$result =  array_filter($array, function($item) use ($key, $keyValue) {
+
+			# Check if item is an associative array and parameter exists
+			if(is_array($item) && isset($item[$key]))
+
+				# Return match
+				return $item[$key] !== $keyValue;
+
+			# Check if item is an object and parameter exists as property
+			if(is_object($item) && isset($item->$key))
+
+				# Return match
+				return $item->$key !== $keyValue;
+
+			# If parameter does not exist, do not remove the item
+			return true;
+
+		});
+
+		# Reset keys
+		$result = array_values($result);
+
+		# Return result
+		return $result;
 
 	}
 
