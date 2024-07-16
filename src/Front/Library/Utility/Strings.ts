@@ -46,4 +46,49 @@ export default class Strings {
 
     }
 
+    /**
+     * UCFirst
+     * 
+     * Capitalize the first character of a string.
+     * 
+     * @param str - The input string.
+     * @returns The string with the first character capitalized.
+     */
+    public static ucfirst = (str:string):string => {
+
+        // Check string given
+        if(!str) 
+
+            // Stop method
+            return str;
+        
+        // Return result
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    
+    }
+
+    /**
+     * UCWords
+     * 
+     * Capitalize the first character of each word in a string.
+     * 
+     * @param str - The input string.
+     * @returns The string with the first character of each word capitalized.
+     */
+    public static ucwords = (str:string):string => {
+
+        // Check string given
+        if(!str) 
+
+            // Stop method
+            return str;
+
+        // Return result
+        return str
+            .split(' ')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ')
+        ;
+    }
+
 }

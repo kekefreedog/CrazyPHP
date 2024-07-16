@@ -18,8 +18,12 @@ namespace  CrazyPHP\Driver\Model;
 use CrazyPHP\Library\Database\Driver\Mariadb as MariadbModel;
 use CrazyPHP\Library\File\Config as FileConfig;
 use CrazyPHP\Interface\CrazyDriverModel;
+use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Model\Schema;
 use CrazyPHP\Library\Array\Arrays;
+
+/* use PhpMyAdmin\SqlParser\Statements\SelectStatement;
+use PhpMyAdmin\SqlParser\Parser; */
 
 /**
  * Crazy Driver Model Interface
@@ -47,6 +51,9 @@ class Mariadb implements CrazyDriverModel {
 
     /** @var string|null $id for select one item */
     private string|null $id = null;
+
+    /** @var string|null $rawQuery for select one item */
+    private string|null $rawQuery = null;
 
     /** @var bool $attributesAsValues Indicate if attributes is set as values in current schema */
     # private bool $attributesAsValues = false;
@@ -186,6 +193,20 @@ class Mariadb implements CrazyDriverModel {
      */
     public function parseSql(string $sql, ?array $options = null):self {
 
+        # Raw query
+        $this->rawQuery = $sql;
+
+        /* # New parser
+        $parser = new Parser($sql);
+
+        # Iteration 
+        foreach ($parser->statements as $statement) {
+            if ($statement instanceof SelectStatement) {
+                // The $statement variable now holds an object representation of the SQL query
+                var_dump($statement);
+            }
+        } */
+
         # Return self
         return $this;
 
@@ -255,6 +276,15 @@ class Mariadb implements CrazyDriverModel {
         # Set result
         $result = [];
 
+        # Check raw query
+        if($this->rawQuery !== null){
+
+            # Set result
+            $result = $this->mariadb->find($this->arguments["table"], "", [
+                "query" =>  $this->rawQuery
+            ]);
+
+        }else
         # Insert to mongo Check schema
         if($this->schema !== null){
 

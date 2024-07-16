@@ -59,6 +59,7 @@ class Process {
             "snakeToCamel",
             "spaceBeforeCapital",
             "ucfirst",
+            "ucwords",
             "cleanPath",
             "strtolower"
         ],
@@ -771,6 +772,8 @@ class Process {
     }
 
     /**
+     * UCFirst
+     * 
      * Upper Case First
      * 
      * @param string
@@ -780,6 +783,21 @@ class Process {
 
         # Return result
         return ucfirst($input);
+
+    }
+
+    /**
+     * UCWords
+     * 
+     * Upper Case First For each Words
+     * 
+     * @param string
+     * @return string
+     */
+    public static function ucwords(string $input):string {
+
+        # Return result
+        return ucwords($input);
 
     }
 

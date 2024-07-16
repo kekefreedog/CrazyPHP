@@ -140,7 +140,7 @@ export default class Crazycache {
                 this.instance.getItem(item).then((value) => {
 
                     // Check if null
-                    if(value === null || item == "dateLoaded")
+                    if(value === null || item == "dateLoaded")
 
                         // Set current date
                         this.instance?.setItem(item, date);

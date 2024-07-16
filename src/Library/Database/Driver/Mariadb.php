@@ -22,8 +22,6 @@ use Envms\FluentPDO\Query;
 use PDOException;
 use PDO;
 
-use function PHPUnit\Framework\returnSelf;
-
 /**
  * Mariadb
  *
@@ -823,6 +821,7 @@ class Mariadb implements CrazyDatabaseDriver {
      * @param string $table
      * @param string $database
      * @param array $options = [
+     *      "query":string
      *      "filters":array,
      *      "sort":array
      *      "limit":array
@@ -834,7 +833,7 @@ class Mariadb implements CrazyDatabaseDriver {
         $result = null;
 
         # Check input
-        if(!$table || empty($value) || !$database)
+        if(!$table)
 
             # Return result
             return $result;
@@ -848,20 +847,37 @@ class Mariadb implements CrazyDatabaseDriver {
         # Use database
         $this->client->exec("USE " . $database);
 
-        # Set filters
-        $filters = isset($options["filters"]) && is_array($options["filters"])
-            ? $options["filters"]
-            : []
-        ;
+        # Check query
+        $isQuery = isset($options["query"]) || empty($options["query"]) || !empty($options["query"]);
+
+        # Check query
+        if(!$isQuery)
+
+            # Set filters
+            $filters = isset($options["filters"]) && is_array($options["filters"])
+                ? $options["filters"]
+                : []
+            ;
     
         try {
 
-            # Update table
-            $result = $this->manager
-                ->from($table)
-                ->where($filters)
-                ->fetch()
-            ;
+            # Check query
+            if($isQuery){
+
+                # Update table
+                $statment = $this->client->query($options["query"]);
+
+                # Set result
+                $result = $statment->fetchAll(PDO::FETCH_ASSOC);
+
+            }else
+
+                # Update table
+                $result = $this->manager
+                    ->from($table)
+                    ->where($filters)
+                    ->fetch()
+                ;
 
         } catch (PDOException $e) {
 
