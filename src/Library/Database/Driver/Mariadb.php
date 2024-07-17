@@ -715,7 +715,7 @@ class Mariadb implements CrazyDatabaseDriver {
         $result = null;
 
         # Check input
-        if(!$table || empty($value) || !$database)
+        if(!$table || empty($value))
 
             # Return result
             return $result;
@@ -848,7 +848,7 @@ class Mariadb implements CrazyDatabaseDriver {
         $this->client->exec("USE " . $database);
 
         # Check query
-        $isQuery = isset($options["query"]) || empty($options["query"]) || !empty($options["query"]);
+        $isQuery = isset($options["query"]) && !empty($options["query"]);
 
         # Check query
         if(!$isQuery)

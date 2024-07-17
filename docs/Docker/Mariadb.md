@@ -88,20 +88,15 @@ MariaDB [crazy_db]> SHOW TABLES;
 +--------------------+
 ```
 
-### 6. Show all tables
+### 6. Delete table
 
 Execute the command below :
 
 ```sh
-SHOW TABLES;
+DROP TABLE {table};
 ```
 
 Result :
 ```sh
-MariaDB [crazy_db]> SHOW TABLES;
-+--------------------+
-| Tables_in_crazy_db |
-+--------------------+
-| Booking            |
-+--------------------+
+Query OK, 0 rows affected
 ```

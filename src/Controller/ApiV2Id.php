@@ -46,8 +46,11 @@ class ApiV2Id extends Controller {
         # New model
         $model = new Model();
 
+        # Get id
+        $id = self::getParametersUrl("id");
+
         # Declare content
-        $content = $model->readById(10);
+        $content = $model->readById((string) $id);
 
         # Get last modified date of model config
         $lastModified = FileConfig::getLastModified("Model");

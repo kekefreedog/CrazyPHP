@@ -182,7 +182,7 @@ class Controller {
      * @param string $name Name of the parameter  
      * @return array|null
      */
-    public static function getParametersUrl(string $name = ""):string|array|null {
+    public static function getParametersUrl(string $name = ""):string|int|array|null {
 
         # Set result
         $result = null;

@@ -49,8 +49,8 @@ class Mariadb implements CrazyDriverModel {
     /** @var Schema $schema */
     private Schema|null $schema = null;
 
-    /** @var string|null $id for select one item */
-    private string|null $id = null;
+    /** @var string|int|null $id for select one item */
+    private string|int|null $id = null;
 
     /** @var string|null $rawQuery for select one item */
     private string|null $rawQuery = null;
@@ -137,6 +137,12 @@ class Mariadb implements CrazyDriverModel {
      * @return self
      */
     public function parseId(string|int $id, ?array $options = null):self {
+
+        # Store id
+        $this->id = is_int($id) 
+            ? $id 
+            :intval($id)
+        ;
 
         # Return self
         return $this;
@@ -284,6 +290,46 @@ class Mariadb implements CrazyDriverModel {
                 "query" =>  $this->rawQuery
             ]);
 
+        }else
+        # Insert to mongo Check schema
+        if($this->schema !== null && $this->id !== null){
+
+            # Check collection
+            $schemaResult = $this->schema->getResult([
+                "skipAttributes"    =>  ["id"]
+            ]);
+
+            # Iteration
+            foreach($schemaResult as $v){
+
+                # Declare data
+                $data = [];
+
+                # Iteration v
+                foreach($v as $item)
+
+                    # Push in data
+                    $data[$item["name"]] = $item["value"];
+
+                # Unflatten result
+                $data = Arrays::unflatten($data);
+
+                # Insert
+                $result[] = $this->mariadb->updateOneToTable($this->arguments["table"], $data, $this->id);
+
+            }
+
+        }else
+        # Insert to mongo Check schema
+        if($this->id !== null){
+
+            # Set result
+            $result[] = $this->mariadb->find($this->arguments["table"], "", [
+                "filters" =>  [
+                    "id"    =>  $this->id
+                ]
+            ]);
+            
         }else
         # Insert to mongo Check schema
         if($this->schema !== null){
