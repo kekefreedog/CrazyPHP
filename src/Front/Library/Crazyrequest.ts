@@ -311,7 +311,8 @@ export default class Crazyrequest{
             this.requestOptions.headers.set("Pragma", "no-cache");
 
             // Push Cache-Control
-            this.requestOptions.headers.set("Cache-Control", "no-cache");
+            // this.requestOptions.headers.set("Cache-Control", "no-cache");
+            this.requestOptions.headers.set("Cache-Control", "no-store");
 
         }
 
