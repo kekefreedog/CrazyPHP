@@ -305,14 +305,13 @@ export default class Crazyrequest{
         }
 
         // Check cache
-        if(this.options.cache === false){
+        if(this.options.cache == false){
 
             // Push pragma
             this.requestOptions.headers.set("Pragma", "no-cache");
 
             // Push Cache-Control
             this.requestOptions.headers.set("Cache-Control", "no-cache");
-
 
         }
 
