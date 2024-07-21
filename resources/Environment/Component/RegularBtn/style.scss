@@ -15,8 +15,8 @@ a {
     &.btn-outlined {
 
         /* Border */
-        border: 1px solid;
-        border-color: black;
+        border: 1px solid!important;
+        border-color: black!important;
 
     }
 
@@ -113,6 +113,15 @@ a {
                 /* Padding */
                 padding-right: 10px!important;
 
+                /* Children */
+                i {
+
+                    /* Position */
+                    margin-right: 5px;
+                    margin-left: 5px;
+
+                }
+
             }
 
             /* Icon left */
@@ -120,6 +129,15 @@ a {
 
                 /* Padding */
                 padding-left: 10px!important;
+
+                /* Children */
+                i {
+
+                    /* Position */
+                    margin-right: 5px;
+                    margin-left: 5px;
+
+                }
 
             }
 
@@ -147,7 +165,7 @@ a {
             &.icon-right{
 
                 /* Padding */
-                padding-right: 14px!important;
+                padding-right: 48px!important;
 
             }
 
@@ -155,7 +173,15 @@ a {
             &.icon-left{
 
                 /* Padding */
-                padding-left: 14px!important;
+                padding-left: 48px!important;
+
+                /* Children */
+                i {
+
+                    /* Position */
+                    margin-left: 0px;
+
+                }
 
             }
 
@@ -227,6 +253,23 @@ a {
             /* Dimension */
             height: 40px;
             line-height: 40px;
+
+        }
+
+    }
+
+    /* Normal */
+    &.btn-large {
+
+        /* Children */
+        i {
+
+            /* Dimension */
+            height: 40px;
+            line-height: 40px;
+
+            /* Font size */
+            font-size: 1.6rem!important;
 
         }
 
