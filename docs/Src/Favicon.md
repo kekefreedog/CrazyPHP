@@ -1,6 +1,9 @@
 # Manager Favicon
 
-You can change the Favicon using the following website :
+You can change the Favicon using the following website : 
+- ❤️ https://realfavicongenerator.net/
+- https://favicon.io/favicon-converter/
+- https://realfavicongenerator.net/api/
 
 ## Html tags
 
