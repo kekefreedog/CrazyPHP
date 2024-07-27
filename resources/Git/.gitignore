@@ -3,9 +3,13 @@
 .database
 .trash
 docs/crazyphp
-config/Front.yml
-public
+config/Database.yml
 logs
+
+# Crazy App Build
+# > To comment if you don't want to publish your build app
+public
+config/Front.yml
 
 # Composer dependances (PHP)
 /vendor/

@@ -258,7 +258,7 @@ a {
 
     }
 
-    /* Normal */
+    /* Large */
     &.btn-large {
 
         /* Children */
@@ -271,6 +271,26 @@ a {
             /* Font size */
             font-size: 1.6rem!important;
 
+        }
+
+    }
+
+    /* Extra large */
+    &.btn-extra-large {
+
+        /* Dimension */
+        width: 100px;
+        height: 100px;
+
+        /* Font size */
+        font-size: 3rem;
+
+        /* Children */
+        i {
+
+            /* Font size */
+            font-size: 3rem!important;
+        
         }
 
     }

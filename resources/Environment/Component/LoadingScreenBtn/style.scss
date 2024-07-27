@@ -55,7 +55,8 @@ $component_logoScreenBtn_preloaderColorVariante: "lighten-1";
         .spinner-layer{
 
             // Color
-            border-color: map-get(map-get($colors, $component_logoScreenBtn_preloaderColorName), $component_logoScreenBtn_preloaderColorVariante);
+            /* border-color: map-get(map-get($colors, $component_logoScreenBtn_preloaderColorName), $component_logoScreenBtn_preloaderColorVariante); */
+            border-color: #b46a48;
 
         }
 
@@ -75,6 +76,13 @@ $component_logoScreenBtn_preloaderColorVariante: "lighten-1";
             width: $component_logoScreenBtn_imageWidth;
             height: $component_logoScreenBtn_imageHeight;
             object-fit: contain;
+
+        }
+
+        i.fa-solid {
+
+            // Fonts
+            font-size: 85px;
 
         }
 

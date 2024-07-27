@@ -5,7 +5,7 @@
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2024 Kévin Zarshenas
+ * @copyright  2022-2023 Kévin Zarshenas
  */
 
 /**
@@ -23,7 +23,7 @@ import tippy, {animateFill} from 'tippy.js';
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2024 Kévin Zarshenas
+ * @copyright  2022-2023 Kévin Zarshenas
  */
 export default class RegularBtn extends Crazycomponent {
 
@@ -51,7 +51,7 @@ export default class RegularBtn extends Crazycomponent {
       size: {
          value: "large",
          type: "string",
-         select: ["small", "normal", "large"],
+         select: ["small", "normal", "large", "extra-large"],
       },
       wave: {
          value: "light",
@@ -71,6 +71,10 @@ export default class RegularBtn extends Crazycomponent {
          type: "string",
       },
       "icon-image": {
+         value: "",
+         type: "string",
+      },
+      "icon-image-style": {
          value: "",
          type: "string",
       },
@@ -102,7 +106,8 @@ export default class RegularBtn extends Crazycomponent {
     * Observable Attributes
     */
    static get observedAttributes() { 
-      return Object.keys(["type", "depth", "shape", "size", "wave", "label", "icon-class", "icon-text", "icon-image", "icon-position", "color-primary", "color-secondary"]); 
+      /* return Object.keys(["type", "depth", "shape", "size", "wave", "label", "icon-class", "icon-text", "icon-image", "icon-image-style", "icon-position", "color-primary", "color-secondary"]);  */
+      return ["type", "depth", "shape", "size", "wave", "label", "icon-class", "icon-text", "icon-image", "icon-image-style", "icon-position", "color-primary", "color-secondary"]; 
    }
 
    /**
