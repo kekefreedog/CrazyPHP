@@ -657,6 +657,43 @@ class Helpers {
     }
 
     /**
+     * Lowercase
+     * 
+     * Returns the string in uppercase
+     * 
+     * @param mixed $value
+     * @param mixed options
+     */
+    public static function lowercase($value) {
+
+        # Set result
+        $result = $value;
+
+        # Check if string
+        if(is_string($value))
+
+            # Set result
+            $result = mb_strtolower($result, 'UTF-8');
+
+        else
+        # check if array
+        if(is_array($result))
+
+            # Iteration value
+            foreach($result as &$v)
+
+                # Check if is string
+                if(is_string($v))
+
+                    # Uppercase
+                    $v = mb_strtolower($v);
+
+        # Return result
+        return $result;
+        
+    }
+
+    /**
      * Capitalize
      * 
      * Returns the string in capitalize
