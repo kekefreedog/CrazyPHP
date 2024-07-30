@@ -17,6 +17,7 @@ namespace CrazyPHP\Library\Template\Handlebars;
  */
 
 use CrazyPHP\Exception\CrazyException;
+use CrazyPHP\Library\Time\DateTime;
 use CrazyPHP\Library\Form\Process;
 use ReflectionMethod;
 use ReflectionClass;
@@ -463,7 +464,13 @@ class Helpers {
     public static function is($a, $b, $option) {
 
         # Check arguments are equivalent
-        return $a == $b ? $option["fn"]() : $option["inverse"]();
+        return (
+            (!$a && !$b) || 
+            ($a == $b)
+        ) 
+            ? $option["fn"]() 
+            : $option["inverse"]()
+        ;
 
     }
 
@@ -918,6 +925,99 @@ class Helpers {
         # Return result
         return $result;
 
+    }
+
+    /**
+     * Divide
+     * 
+     * Divide a by b
+     * 
+     * @param mixed $a
+     * @param mixed $b
+     * @param mixed options
+     */
+    public static function divide($a, $b, $option) {
+
+        # Check if array
+        if(is_numeric($a) && is_numeric($b) && intval($b) != 0)
+
+            # Return length
+            return intval($a) / intval($b);
+
+        else
+
+            # Return string
+            return "$a/$b";
+        
+    }
+
+    /**
+     * Multiply
+     * 
+     * Multiply a with b
+     * 
+     * @param mixed $a
+     * @param mixed $b
+     * @param mixed options
+     */
+    public static function multiply($a, $b, $option) {
+
+        # Check if array
+        if(is_numeric($a) && is_numeric($b))
+
+            # Return length
+            return intval($a) * intval($b);
+
+        else
+
+            # Return string
+            return "$a*$b";
+        
+    }
+
+    /**
+     * Date Status
+     * 
+     * Multiply a with b
+     * 
+     * @param mixed $a
+     * @param mixed $b
+     * @param mixed options
+     */
+    public static function date_status($date, $option) {
+
+        # Check input
+        if(!is_string($date) || !strtotime($date))
+
+            # Return the input if it is not a valid date string
+            return $date;
+    
+        # Date instance
+        $givenDate = new DateTime($date);
+
+        # Today instance
+        $today = new DateTime();
+
+        # Set time to 00:00:00 to only compare dates
+        $today->setTime(0, 0, 0);
+    
+        # Check past
+        if($givenDate < $today)
+            
+            # Date is in the past
+            return -1;
+        
+        # Furure
+        elseif($givenDate > $today)
+            
+            # Date is in the future
+            return 1;
+
+        else
+
+            # Date is today
+            return 0;
+        
     }
 
 }

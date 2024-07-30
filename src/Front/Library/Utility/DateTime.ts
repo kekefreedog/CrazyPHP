@@ -217,5 +217,104 @@ export default class DateTime {
         return `${year}${separator}${month}${separator}${day}`;
 
     }
+    
+    /**
+     * Get the first date of a week based on an offset from the current week.
+     * 
+     * @param weekOffset - The week offset from the current week (0 for this week, -1 for previous week, 1 for next week).
+     * @param format - Optional format for the returned date. Default is 'YYYY-MM-DD'.
+     * @returns {string} The first date of the specified week in the given format.
+     */
+    public static getFirstDateOfWeek = (weekOffset: number, format: string = 'YYYY-MM-DD'):string => {
+
+        // Get current date
+        const today = new Date();
+
+        // Get day number 0 (Sunday) to 6 (Saturday)
+        const currentDay = today.getDay();
+
+        // Days since the last Monday
+        const daysSinceMonday = (currentDay + 6) % 7;
+
+        // Calculate the date of the last Monday
+        const lastMonday = new Date(today);
+        lastMonday.setDate(today.getDate() - daysSinceMonday);
+
+        // Calculate the first date of the target week
+        const targetMonday = new Date(lastMonday);
+        targetMonday.setDate(lastMonday.getDate() + weekOffset * 7);
+
+        // Format the date
+        return DateTime.formatDate(targetMonday, format);
+
+    }
+
+    /**
+     * Is Date Current Week
+     * 
+     * Check if a given date is in the current week.
+     * 
+     * @param date - The date to check.
+     * @returns True if the date is in the current week, false otherwise.
+     */
+    public static isDateInCurrentWeek = (date:Date|string):boolean => {
+
+        // check date
+        if(typeof date == "string")
+
+            // Set date
+            date = new Date(date);
+
+        const today = new Date();
+        const dayOfWeek = today.getDay(); // 0 (Sunday) to 6 (Saturday)
+        const startOfWeek = new Date(today);
+        const endOfWeek = new Date(today);
+
+        // Calculate the start of the current week (Monday)
+        startOfWeek.setDate(today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
+
+        // Calculate the end of the current week (Sunday)
+        endOfWeek.setDate(startOfWeek.getDate() + 6);
+
+        // Set hours to 0 to compare only date parts
+        startOfWeek.setHours(0, 0, 0, 0);
+        endOfWeek.setHours(23, 59, 59, 999);
+        
+        // Compare the given date with the start and end of the current week
+        return date >= startOfWeek && date <= endOfWeek;
+
+    }
+
+    /**
+     * Format a Date object into a string based on the given format.
+     * 
+     * @param date - The Date object to format.
+     * @param format - The format string.
+     * @returns {string} The formatted date string.
+     */
+    public static formatDate = (date: Date, format: string):string => {
+
+        // Get full year
+        const year = date.getFullYear();
+
+        // Get month
+        const month = ('0' + (date.getMonth() + 1)).slice(-2);
+
+        // Get day
+        const day = ('0' + date.getDate()).slice(-2);
+
+        // Swtich
+        switch (format) {
+            case 'YYYY-MM-DD':
+                return `${year}-${month}-${day}`;
+            case 'MM/DD/YY':
+                return `${month}/${day}/${year.toString().slice(-2)}`;
+            case 'DD/MM/YYYY':
+                return `${day}/${month}/${year}`;
+            default:
+                throw new Error('Unsupported date format');
+        }
+
+    }
 
 }
