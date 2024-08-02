@@ -976,15 +976,15 @@ class Helpers {
     }
 
     /**
-     * Date Status
+     * Date Status Day
      * 
-     * Multiply a with b
+     * Define if date given is in the past, present or futur based on day
+     * Date given YYYY-MM-DD
      * 
-     * @param mixed $a
-     * @param mixed $b
+     * @param mixed $date
      * @param mixed options
      */
-    public static function date_status($date, $option) {
+    public static function date_status_day($date, $option) {
 
         # Check input
         if(!is_string($date) || !strtotime($date))
@@ -1018,6 +1018,57 @@ class Helpers {
             # Date is today
             return 0;
         
+    }
+
+    /**
+     * Date Status Week
+     * 
+     * Define if date given is in the past, present or futur based on week
+     * Date given YYYY-MM-DD
+     * 
+     * @param mixed $date
+     * @param mixed options
+     */
+    public static function date_status_week($date, $option) {
+
+        # Check input
+        if (!is_string($date) || !strtotime($date))
+
+            # Return the input if it is not a valid date string
+            return $date;
+    
+        # Date instance for given date
+        $givenDate = new DateTime($date);
+        $givenDate->setTime(0, 0, 0);
+    
+        # Today instance
+        $today = new DateTime();
+        $today->setTime(0, 0, 0);
+    
+        # Calculate start of the current week (Sunday)
+        $startOfWeek = clone $today;
+        $startOfWeek->modify('this week');
+    
+        # Calculate end of the current week (Saturday)
+        $endOfWeek = clone $startOfWeek;
+        $endOfWeek->modify('+6 days');
+    
+        # Compare given date with start and end of the current week
+        if($givenDate < $startOfWeek)
+
+            # Date is before the current week
+            return -1;
+        
+        elseif($givenDate > $endOfWeek)
+
+            # Date is after the current week
+            return 1;
+
+        else
+
+            # Date is in the current week
+            return 0;
+
     }
 
 }

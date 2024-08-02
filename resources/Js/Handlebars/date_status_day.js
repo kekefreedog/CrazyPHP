@@ -9,9 +9,10 @@
  */
 
 /**
- * Multiply
+ * Date Status Day
  * 
- * Multiply a with b
+ * Define if date given is in the past, present or futur based on day
+ * Date given YYYY-MM-DD
  *
  * @param a value
  * @param b value
