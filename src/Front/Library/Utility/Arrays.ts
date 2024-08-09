@@ -65,7 +65,7 @@ export default class Arrays {
      * @param value The value to match for removal.
      * @return A new array with the objects removed.
      */
-    public static removeObjectsByKeyValue = (array: Array<any>, key: string, value: string):Array<any> => {
+    public static removeObjectsByKeyValue = (array: Array<any>, key: string, value: string|number):Array<any> => {
         return array.filter(obj => this.getNestedValue(obj, key.split('.')) !== value);
     }
 

@@ -8,6 +8,8 @@
  * @copyright  2022-2024 Kévin Zarshenas
  */
 
+const objectHash = require("object-hash");
+
 /**
  * Join
  * 
@@ -22,16 +24,37 @@
  * {{join array '-'}}
  * <!-- results in: 'a-b-c' -->
  * ```
- * @param {Array} `array`
+ * @param {Array, Object} `array`
  * @param {String} `separator` The separator to use. Defaults to `, `.
  * @return {String}
  * @api public
  */
 module.exports = (array, separator) => {
 
-    if (typeof array === 'string') return array;
-    if (!Array.isArray(array)) return '';
-    separator = typeof separator === "string" ? separator : ', ';
+    // Check is string
+    if (typeof array === 'string') 
+        
+        // Return string
+        return array;
+    
+    // Check is object
+    if(typeof array == "object" && !Array.isArray(array))
+
+        // Push to array
+        array = Object.values(array);
+ 
+    // Check if array
+    if(!Array.isArray(array)) 
+
+        return '';
+
+    // Check separator
+    separator = typeof separator === "string" 
+        ? separator 
+        : ', '
+    ;
+
+    // Return result
     return array.join(separator);
 
 };
