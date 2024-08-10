@@ -11,7 +11,7 @@
 /**
  * Add
  * 
- * Return the sum of `a` plus `b`.
+ * Return the subtract of `a` plus `b`.
  *
  * @param a value
  * @param b value
@@ -25,13 +25,13 @@ module.exports = (a, b, options) => {
     if(isNumber(a) && isNumber(b))
 
         // Return sum 
-        return Number(a) + Number(b);
+        return Number(a) - Number(b);
 
     // Check if string
     if(typeof a === 'string' && typeof b === 'string')
         
         // Return sum
-        return `${a} + ${b}`;
+        return `${a} - ${b}`;
 
     // Return empty
     return '';

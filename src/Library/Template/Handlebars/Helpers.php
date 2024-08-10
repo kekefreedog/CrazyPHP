@@ -23,6 +23,8 @@ use ReflectionMethod;
 use ReflectionClass;
 use Exception;
 
+use function PHPUnit\Framework\returnSelf;
+
 /**
  * Helpers
  * 
@@ -604,6 +606,136 @@ class Helpers {
     }
 
     /**
+     * First
+     * 
+     * Returns the first item, or first `n` items of an array.
+     *
+     * ```handlebars
+     * {{first "['a', 'b', 'c', 'd', 'e']" 2}}
+     * <!-- results in: '["a", "b"]' -->
+     * ```
+     * 
+     * @param mixed $value
+     * @param mixed options
+     */
+    public static function first($value, $n) {
+
+        # Check if array
+        if(is_array($value))
+
+            # Return length
+            return array_slice($value, 0, $n);
+
+        else
+
+            # Return 0
+            return "";
+        
+    }
+
+    /**
+     * Timecode To Frame
+     * 
+     * Converts a timecode (TC) to the corresponding frame number if valid.
+     * Returns the original timecode string if the input format or fps is invalid.
+     *
+     * @param string $tc The timecode in the format "HH:MM:SS:FF" where HH = hours, MM = minutes, SS = seconds, FF = frames.
+     * @param int $fps The frames per second (fps) of the video.
+     * @return int|string The corresponding frame number if valid, otherwise the original `$tc` string.
+     */
+    public static function timecodeToFrame($tc, $fps) {
+
+        # Check tx and fps
+        if(!$fps|| !$tc)
+
+            # Return false
+            return $tc;
+
+        # Check fps
+        if(is_numeric($fps) && intval($fps) > 0)
+
+            # Set fps
+            $fps = intval($fps);
+
+        else
+
+            # Return tc
+            return $tc;
+
+        # Regular expression to match the TC format "HH:MM:SS:FF"
+        $tcRegex = '/^\d{2}:\d{2}:\d{2}:\d{2}$/';
+
+        # Validate timecode format and fps
+        if(!$tc || !preg_match($tcRegex, $tc))
+            
+            # Return the original timecode string if invalid
+            return $tc;
+
+        # Split the timecode into its components (HH:MM:SS:FF)
+        list($hours, $minutes, $seconds, $frames) = array_map('intval', explode(':', $tc));
+
+        # Additional validation on the components
+        if(
+            $minutes < 0 || $minutes >= 60 ||
+            $seconds < 0 || $seconds >= 60 ||
+            $frames < 0 || $frames >= $fps
+        )
+
+            # Return the original timecode string if components are invalid
+            return $tc; 
+
+        # Convert the timecode to the total number of frames
+        $totalFrames = (
+            $hours * 3600 * $fps) +
+            ($minutes * 60 * $fps) +
+            ($seconds * $fps) +
+            $frames
+        ;
+
+        return $totalFrames;
+
+    }
+
+    /**
+     * First
+     * 
+     * Returns the last item, or last `n` items of an array or string.
+     * Opposite of [first](#first).
+     *
+     * ```handlebars
+     * <!-- var value = ['a', 'b', 'c', 'd', 'e'] -->
+     *
+     * {{last value}}
+     * <!-- results in: ['e'] -->
+     *
+     * {{last value 2}}
+     * <!-- results in: ['d', 'e'] -->
+     *
+     * {{last value 3}}
+     * <!-- results in: ['c', 'd', 'e'] -->
+     * 
+     * @param mixed $value
+     * @param mixed options
+     */
+    public static function last($value, $n) {
+
+        # Check if array
+        if(is_array($value)){
+
+            # Ensure $n is positive
+            $n = max(0, $n);
+
+            # Return the last `n` items of the array
+            return array_slice($value, -$n);
+
+        }else
+
+            # Return 0
+            return "";
+        
+    }
+
+    /**
      * Round
      * 
      * Returns the length of the given string or array.
@@ -872,6 +1004,32 @@ class Helpers {
     }
 
     /**
+     * Splut
+     * 
+     * Split string a by the given character b.
+     * 
+     * @param a Value to compare
+     * @param b Value to compare with
+     * 
+     * @return mixed
+     */
+    public static function split($a, $b, $option) {
+
+        # Check if both are strings
+        if (is_string($a) && is_string($b))
+
+            # Return concatenated string
+            return $a 
+                ? explode($b, $a)
+                : $a
+            ;
+
+        # Return empty string
+        return '';
+
+    }
+
+    /**
      * Add
      * 
      * Return the sum of `a` plus `b`.
@@ -893,7 +1051,36 @@ class Helpers {
         if (is_string($a) && is_string($b))
 
             # Return concatenated string
-            return $a . $b;
+            return "$a + $b";
+
+        # Return empty string
+        return '';
+
+    }
+
+    /**
+     * Subtract
+     * 
+     * Return the difference of `a` by `b`.
+     * 
+     * @param a Value to compare
+     * @param b Value to compare with
+     * 
+     * @return mixed
+     */
+    public static function subtract($a, $b, $option) {
+
+        # Check if both are numbers
+        if (is_numeric($a) && is_numeric($b))
+
+            # Return sum, casting to numbers explicitly
+            return (float)$a - (float)$b;
+
+        # Check if both are strings
+        if (is_string($a) && is_string($b))
+
+            # Return concatenated string
+            return "$a - $b";
 
         # Return empty string
         return '';

@@ -146,7 +146,7 @@ export default class Objects {
      * @param inputs - All objects to merge
      * @returns The merged object
      */
-    public static deepMerge = (
+    public static deepMergeOld = (
         createIfNotExists: boolean = false,
         ...inputs: Array<Record<string, any>>
     ): Record<string, any> => {
@@ -176,6 +176,104 @@ export default class Objects {
 
         return merged;
     }
+
+    /**
+     * Deep Merge Alt
+     * 
+     * Deeply merge multiple objects.
+     * 
+     * @param createIfNotExists - Whether to create a new entry if the key does not exist in the merged object
+     * @param inputs - All objects to merge
+     * @returns The merged object
+     */
+    public static deepMerge = (createIfNotExists: boolean, ...inputs: any[]): any => {
+        const merge = (target: any, source: any): any => {
+            if (source === null || source === undefined) {
+                return target;
+            }
+
+            if (Array.isArray(source)) {
+                if (!Array.isArray(target)) {
+                    target = [];
+                }
+                source.forEach((item, index) => {
+                    target[index] = merge(target[index], item);
+                });
+            } else if (typeof source === 'object') {
+                if (typeof target !== 'object' || Array.isArray(target)) {
+                    target = {};
+                }
+                for (const key of Object.keys(source)) {
+                    if (target[key] === undefined && !createIfNotExists) {
+                        target[key] = source[key];
+                    } else {
+                        target[key] = merge(target[key], source[key]);
+                    }
+                }
+            } else {
+                // Primitive types (string, number, boolean, etc.)
+                if (createIfNotExists || target !== undefined) {
+                    target = source;
+                }
+            }
+
+            return target;
+        };
+
+        return inputs.reduce((acc, obj) => merge(acc, obj), {});
+    };
+
+    /**
+     * Deep merge with separator
+     * 
+     * Deeply merge multiple objects with an optional separator for string values.
+     * 
+     * @param createIfNotExists - Whether to create a new entry if the key does not exist in the merged object
+     * @param separator - String used to concatenate values for the same key
+     * @param inputs - All objects to merge
+     * @returns The merged object
+     */
+    public static deepMergeWithSeparator = (createIfNotExists: boolean, separator: string, ...inputs: any[]): any => {
+        const merge = (target: any, source: any): any => {
+            if (source === null || source === undefined) {
+                return target;
+            }
+
+            if (Array.isArray(source)) {
+                if (!Array.isArray(target)) {
+                    target = [];
+                }
+                source.forEach((item, index) => {
+                    target[index] = merge(target[index], item);
+                });
+            } else if (typeof source === 'object') {
+                if (typeof target !== 'object' || Array.isArray(target)) {
+                    target = {};
+                }
+                for (const key of Object.keys(source)) {
+                    if (createIfNotExists || target[key] !== undefined) {
+                        target[key] = merge(target[key], source[key]);
+                    } else {
+                        target[key] = source[key];
+                    }
+                }
+            } else if (typeof source === 'string') {
+                if (typeof target === 'string') {
+                    target += separator + source;
+                } else {
+                    target = source;
+                }
+            } else {
+                // For other primitive types, just assign the source value
+                target = source;
+            }
+
+            return target;
+        };
+
+        return inputs.reduce((acc, obj) => merge(acc, obj), {});
+    };
+
 
     /**
      * Sort By Key 

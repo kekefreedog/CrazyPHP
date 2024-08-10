@@ -9,9 +9,9 @@
  */
 
 /**
- * Add
+ * Split
  * 
- * Return the sum of `a` plus `b`.
+ * Split string a by the given character b.
  *
  * @param a value
  * @param b value
@@ -21,17 +21,14 @@
  */
 module.exports = (a, b, options) => {
 
-    // Check if number
-    if(isNumber(a) && isNumber(b))
-
-        // Return sum 
-        return Number(a) + Number(b);
-
     // Check if string
-    if(typeof a === 'string' && typeof b === 'string')
+    if(typeof a === 'string' && typeof b === 'string' && a && b)
         
         // Return sum
-        return `${a} + ${b}`;
+        return a 
+            ? a.split(b)
+            : a
+        ;
 
     // Return empty
     return '';
