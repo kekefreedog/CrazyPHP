@@ -832,6 +832,31 @@ class Arrays{
 
 	}
 
+	/**
+	 * Are all keys numeric
+	 * 
+	 * @param array $array
+	 * @return bool
+	 */
+	public static function areAllKeysNumeric(array $array):bool {
+
+		# Check input if input is array
+		if(!empty($array))
+
+			# Iteration array
+			foreach(array_keys($array) as $key)
+
+				# Check is not int
+				if(!is_int($key))
+
+					# Return false
+					return false;
+
+		# Return true
+		return true;
+
+	}
+
     /** Public Constants
      ******************************************************
      */

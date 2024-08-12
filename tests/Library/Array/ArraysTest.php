@@ -493,4 +493,41 @@ class ArraysTest extends TestCase{
 
     }
 
+    /**
+     * Test Are All Keys Numeric
+     * 
+     * @return void
+     */
+    public function testAreAllKeysNumeric():void {
+
+        # Set input a
+        $input_a = [
+            ['id' => 1, 'name' => 'Alice'],
+            ['id' => 2, 'name' => 'Bob'],
+            ['id' => 3, 'name' => 'Charlie'],
+        ];
+
+        # Set input b
+        $input_b = [
+            0 =>    "toto",
+            1 =>    "titi",
+            6 =>    "tata"
+        ];
+
+        # Set input b
+        $input_c = [
+            10      =>    "toto",
+            "toto"  =>    "titi",
+            6       =>    "tata"
+        ];
+
+        # Check if true
+        $this->assertTrue(Arrays::areAllKeysNumeric($input_a));
+        $this->assertTrue(Arrays::areAllKeysNumeric($input_b));
+
+        # Check false
+        $this->assertFalse(Arrays::areAllKeysNumeric($input_c));
+
+    }
+
 }
