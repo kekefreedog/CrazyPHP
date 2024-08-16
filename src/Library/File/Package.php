@@ -121,7 +121,8 @@ class Package{
     public const DEFAULT_DEV_DEPENDENCIES = [
         # Front
         "@fortawesome/fontawesome-free"             =>  "^6.5.1",
-        "@materializecss/materialize"               =>  "^2.0.3-alpha",
+        "@materializecss/materialize"               =>  "^2.1.0",
+        "material-dynamic-colors"                   =>  "*",
         "clipboard"                                 =>  "*",
         "handlebars"                                =>  "*",
         "handlebars-helpers"                        =>  "^0.9.8",

@@ -80,6 +80,32 @@ class Page {
      */
 
     /**
+     * Push Color Schema
+     * 
+     * @source https://github.com/leonardorafael/material-dynamic-colors
+     * @param string $source
+     * @return self
+     */
+    public function pushColorSchema(string $source = ""):Page {
+
+        # Check source
+        if(!$source)
+
+            # Get materialDynamicColors
+            $materialDynamicColors = Config::getValue("Style.materialDynamicColors.source");
+
+        # Check materialDynamicColors
+        if($materialDynamicColors)
+
+            # Push into ui content
+            $this->pushUiContent("materialDynamicColors.source", $materialDynamicColors);
+
+        # Return self
+        return $this;
+
+    }
+
+    /**
      * Push UI Content
      * 
      * @param string $key

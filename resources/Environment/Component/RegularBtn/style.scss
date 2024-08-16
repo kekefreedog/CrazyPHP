@@ -1,315 +1,452 @@
-/* A */
-a {
+/* Host */
+regular-btn {
 
-    /* Img */
-    img {
+    /* Display */
+    display: inline-block;
 
-        /* Dimension */
-        width: inherit;
-        height: inherit;
-        object-fit: contain;
-        
-    }
+    /* Dimension */
+    width: fit-content;
+    height: fit-content;
+    
+    /* A */
+    a {
 
-    /* Depth */
-    &.btn-outlined {
+        /* Img */
+        img {
 
-        /* Border */
-        border: 1px solid!important;
-        border-color: black!important;
+            /* Dimension */
+            width: inherit;
+            height: inherit;
+            object-fit: contain;
+            
+        }
 
-    }
+        /* Floating */
+        &.btn-floating {
 
-    /* Extended */
-    &.btn-extended {
 
-        /* Background */
-        background-color: transparent;
-
-        /* Text */
-        text-transform: inherit;
-
-        /* Silblies */
-
-        /* Btn small */
-        &.btn-small {
-
-            /* Silblies */
+            /* Round */
             &.btn-round {
 
                 /* Border */
-                border-radius: 16.2px;
-
-                /* Padding */
-                padding-left: 18x;
-                padding-right: 18px;
-
-            }
-                
-            /* Silblies */
-
-            /* Icon right */
-            &.icon-right{
-
-                /* Padding */
-                padding-right: 6px!important;
-
-            }
-
-            /* Icon left */
-            &.icon-left{
-
-                /* Padding */
-                padding-left: 6px!important;
+                border-radius: 50%;
 
             }
 
         }
 
-        /* Btn normal */
-        &.btn-normal {
-
-            /* Text */
-            text-decoration: none;
-            text-align: center;
-            letter-spacing: 0.5px;
+        /* Depth */
+        &.btn-outlined {
 
             /* Border */
-            border: none;
-            
-            /* Dimension */
-            display: inline-block;
-            line-height: 40px;
-            padding: 0 22px;
-
-            /* Placement */
-            vertical-align: middle;
-
-            /* Color */
-            color: #fff;
-
-            /* Transition */
-            transition: background-color 0.2s ease-out;
-
-
-
-            /* Silblies */
-            &.btn-round {
-
-                /* Border */
-                border-radius: 20px;
-
-            }
-
-            /* Dimension */
-            padding-left: 20px;
-            padding-right: 20px;
-            
-            /* Silblies */
-
-            /* Icon right */
-            &.icon-right{
-
-                /* Padding */
-                padding-right: 10px!important;
-
-                /* Children */
-                i {
-
-                    /* Position */
-                    margin-right: 5px;
-                    margin-left: 5px;
-
-                }
-
-            }
-
-            /* Icon left */
-            &.icon-left{
-
-                /* Padding */
-                padding-left: 10px!important;
-
-                /* Children */
-                i {
-
-                    /* Position */
-                    margin-right: 5px;
-                    margin-left: 5px;
-
-                }
-
-            }
+            border: 1px solid!important;
+            border-color: black!important;
 
         }
 
-        /* Btn large */
-        &.btn-large {
+        /* Extended */
+        &.btn-extended {
+
+            /* Background */
+            background-color: transparent;
+
+            /* Text */
+            text-transform: inherit;
 
             /* Silblies */
-            &.btn-round {
+
+            /* Btn small */
+            &.btn-small {
+
+                /* Position */
+                position: relative;
+                
+                /* Dimension */
+                padding: 0 10px;
+
+                /* Silblies */
+                &.btn-round {
+
+                    /* Border */
+                    border-radius: 16.2px;
+
+                    /* Padding */
+                    padding-left: 18x;
+                    padding-right: 18px;
+
+                }
+
+                /* Icon right */
+                &.icon-right {
+
+                    /* Dimension */
+                    padding-right: 30px;
+
+                    /* i */
+                    i {
+    
+                        /* Position */
+                        right: 0px;
+                        
+                    }
+
+                }
+
+                /* Icon left */
+                &.icon-left {
+
+                    /* Dimension */
+                    padding-right: 30px;
+
+                    /* i */
+                    i {
+    
+                        /* Position */
+                        left: 0px;
+                        
+                    }
+
+                }
+
+                /* i */
+                i {
+
+                    /* Position */
+                    position: absolute;
+
+                    /* Dimension */
+                    margin: 7px;
+
+                }
+
+            }
+
+            /* Btn normal */
+            &.btn-normal {
+
+                /* Text */
+                text-decoration: none;
+                text-align: center;
+                letter-spacing: 0.5px;
 
                 /* Border */
                 border: none;
-                border-radius: 27px;
+                
+                /* Dimension */
+                display: inline-block;
+                line-height: 40px;
+                padding: 0 22px;
+
+                /* Placement */
+                vertical-align: middle;
+
+                /* Color */
+                color: #fff;
+
+                /* Transition */
+                transition: background-color 0.2s ease-out;
+
+
+
+                /* Silblies */
+                &.btn-round {
+
+                    /* Border */
+                    border-radius: 20px;
+
+                }
+
+                /* Dimension */
+                padding-left: 20px;
+                padding-right: 20px;
+                
+                /* Silblies */
+
+                /* Icon right */
+                &.icon-right{
+
+                    /* Padding */
+                    padding-right: 10px!important;
+
+                    /* Children */
+                    i {
+
+                        /* Position */
+                        margin-right: 5px;
+                        margin-left: 5px;
+
+                    }
+
+                }
+
+                /* Icon left */
+                &.icon-left{
+
+                    /* Padding */
+                    padding-left: 10px!important;
+
+                    /* Children */
+                    i {
+
+                        /* Position */
+                        margin-right: 5px;
+                        margin-left: 5px;
+
+                    }
+
+                }
 
             }
 
-            /* Dimension */
-            padding-left: 24px;
-            padding-right: 24px;
-            
-            /* Silblies */
+            /* Btn large */
+            &.btn-large {
 
-            /* Icon right */
-            &.icon-right{
+                /* Silblies */
+                &.btn-round {
 
-                /* Padding */
-                padding-right: 48px!important;
+                    /* Border */
+                    border: none;
+                    border-radius: 27px;
+
+                }
+
+                /* Dimension */
+                padding-left: 24px;
+                padding-right: 24px;
+                
+                /* Silblies */
+
+                /* Icon right */
+                &.icon-right{
+
+                    /* Padding */
+                    padding-right: 48px!important;
+
+                }
+
+                /* Icon left */
+                &.icon-left{
+
+                    /* Padding */
+                    padding-left: 48px!important;
+
+                    /* Children */
+                    i {
+
+                        /* Position */
+                        margin-left: 0px;
+
+                    }
+
+                }
 
             }
 
-            /* Icon left */
-            &.icon-left{
+            /* Btn large */
+            &.btn-extra-large {
 
-                /* Padding */
-                padding-left: 48px!important;
+                /* Select */
+                user-select: none;
 
-                /* Children */
+                /* Dimension */
+                width: auto;
+                height: auto;
+                padding: 0 35px;
+                height: 100px;
+
+                /* Position */
+                position: relative;
+
+                /* Display */
+                display: flex;
+                align-items: center;
+
+                /* Icon right */
+                &.icon-right {
+
+                    /* Dimension */
+                    padding-right: 90px;
+
+                    /* i */
+                    i {
+    
+                        /* Position */
+                        right: 0px;
+                        
+                    }
+
+                }
+
+                /* Icon left */
+                &.icon-left {
+
+                    /* Dimension */
+                    padding-right: 90px;
+
+                    /* i */
+                    i {
+    
+                        /* Position */
+                        left: 0px;
+                        
+                    }
+
+                }
+
+                &.btn-round {
+
+                    /* Border */
+                    border-radius: 50px;
+
+                }
+
+                /* i */
                 i {
 
                     /* Position */
-                    margin-left: 0px;
+                    position: absolute;
 
+                    /* Dimension */
+                    margin: 20px;
+
+                }
+
+            }
+
+            /* Event */
+            &:hover {
+
+                /* Color */
+                background-color: transparent;
+
+            }
+
+            /* Children */
+            
+
+        }
+
+        /* Shape */
+        &.btn-box {
+
+            /* Border */
+            border-radius: 16px;
+
+            /* Silbies */
+
+            /* Normal size */
+            &.btn-normal {
+
+                /* Dimension */
+                /* width: 40px; */
+
+                /* Border */
+                border-radius: 13px;
+
+            }
+
+            /* Small size */
+            &.btn-small {
+
+                /* Border */
+                border-radius: 10px;
+
+            }
+
+        }
+
+        /* Size */
+
+        /* Small */
+        &.btn-small {
+
+            /* Floating */
+            &.btn-floating {
+
+                /* Dimension */
+                width: 30px;
+                height: 30px;
+
+                /* Children */
+                i {
+        
+                    /* Dimension */
+                    /* height: 30px!important; */
+        
                 }
 
             }
 
         }
 
-        /* Event */
-        &:hover {
+        /* Normal */
+        &.btn-normal {
+
+            /* Children */
+            i {
+
+                /* Dimension */
+                height: 40px;
+                line-height: 40px;
+
+            }
+
+        }
+
+        /* Large */
+        &.btn-large {
+
+            /* Children */
+            i {
+
+                /* Dimension */
+                height: 40px;
+                line-height: 40px;
+
+                /* Font size */
+                font-size: 1.6rem!important;
+
+            }
+
+        }
+
+        /* Extra large */
+        &.btn-extra-large {
+
+            /* Dimension */
+            width: 100px;
+            height: 100px;
+
+            /* Font size */
+            font-size: 3rem;
+
+            /* Children */
+            i {
+
+                /* Font size */
+                font-size: 3rem!important;
+            
+            }
+
+        }
+
+        /* Children */
+
+        /* Fix */
+        &.btn-floating, &.btn-floating:hover {
 
             /* Color */
             background-color: transparent;
 
         }
 
-        /* Children */
-        
-
-    }
-
-    /* Shape */
-    &.btn-box {
-
-        /* Border */
-        border-radius: 16px;
-
-        /* Silbies */
-
-        /* Normal size */
-        &.btn-normal {
-
-            /* Dimension */
-            /* width: 40px; */
-
-            /* Border */
-            border-radius: 13px;
-
-        }
-
-        /* Small size */
-        &.btn-small {
-
-            /* Border */
-            border-radius: 10px;
-
-        }
-
-    }
-
-    /* Size */
-
-    /* Small */
-    &.btn-small {
-
-        /* Children */
+        /* Icon */
         i {
 
-            /* Dimension */
-            height: 32.4px;
+            /* User selection */
+            user-select: none;
 
         }
-
-    }
-
-    /* Normal */
-    &.btn-normal {
-
-        /* Children */
-        i {
-
-            /* Dimension */
-            height: 40px;
-            line-height: 40px;
-
-        }
-
-    }
-
-    /* Large */
-    &.btn-large {
-
-        /* Children */
-        i {
-
-            /* Dimension */
-            height: 40px;
-            line-height: 40px;
-
-            /* Font size */
-            font-size: 1.6rem!important;
-
-        }
-
-    }
-
-    /* Extra large */
-    &.btn-extra-large {
-
-        /* Dimension */
-        width: 100px;
-        height: 100px;
-
-        /* Font size */
-        font-size: 3rem;
-
-        /* Children */
-        i {
-
-            /* Font size */
-            font-size: 3rem!important;
-        
-        }
-
-    }
-
-    /* Children */
-
-    /* Fix */
-    &.btn-floating, &.btn-floating:hover {
-
-        /* Color */
-        background-color: transparent;
-
-    }
-
-    /* Icon */
-    i {
-
-        /* User selection */
-        user-select: none;
 
     }
 

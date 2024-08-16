@@ -9,6 +9,7 @@
  */
 
 import Crazyobject from "./../Core/Crazyobject";
+import Crazycolor from "./../Library/Crazycolor";
 import Crazypage from "./../Library/Crazypage";
 import Crazypartial from "./../Library/Crazypartial";
 
@@ -44,6 +45,7 @@ export {default as LoaderPage} from "./../Library/Loader/Page";
 export {default as UtilityCsv} from "./../Library/Utility/Csv";
 export {default as Crazycache} from "./../Library/Crazycache";
 export {default as Crazystate} from "./../Library/Crazystate";
+export {default as Crazycolor} from "./../Library/Crazycolor";
 export {default as Crazyobject} from "./../Core/Crazyobject";
 export {default as Crazypage} from "./../Library/Crazypage";
 export {default as Form} from "./../Library/Utility/Form";
@@ -161,7 +163,8 @@ declare global {
         preAction?:?CallableFunction = null,
         postAction?:?CallableFunction = null,
         status?:?LoadPageOptionsStatus = null,
-        state?:Array<any>|Object = null,
+        state?:?Partial<PageState> = null,
+        color?:?Crazycolor = null,
         partials?:Object = null,
         scriptLoaded?:?typeof Crazypage = null,
         scriptRunning?:?new () => typeof Crazypage = null,
@@ -203,6 +206,10 @@ declare global {
         postActionExecuted?:boolean = false,
         // Partials Scanned
         partialsScanned?:boolean = false,
+        // Has crazy color
+        hasColor?:Boolean = false,
+        // Has crazy color applied
+        hasColorApplied?:Boolean = false,
     }
 
     /**
@@ -215,7 +222,7 @@ declare global {
         preAction?:?CallableFunction = null,
         postAction?:?CallableFunction = null,
         status?:?LoadPartialOptionsStatus = null,
-        state?:Array<any>|Object = null,
+        state?:?Object = null,
         domTarget?:?string = null,
         page?:Object = null,
         scriptLoaded?:?Crazypartial = null,
@@ -241,6 +248,42 @@ declare global {
         contentPushedToDom?:boolean = false,
         // Post Action Executed
         postActionExecuted?:boolean = false,
+    }
+
+    /** Interface | State
+     ******************************************************
+     */
+
+    /**
+     * Interface LoadPageOptionsStatus
+     */
+    interface PageState {
+        _context: {
+            routes: {
+                current:Partial<PageStateRoute>
+            }
+        },
+        _ui: {
+            materialDynamicColors: {
+                source: string
+            }
+        }
+    }
+
+    /**
+     * Interface LoadPageOptionsStatus
+     */
+    interface PageStateRoute {
+        controller: string,
+        group: "app"|"api"|"asset",
+        headers: Headers,
+        methods: Array<"get"|"post"|"put"|"option"|"patch">,
+        middleware: Array<>,
+        name: string,
+        parameters: object,
+        patterns: string[],
+        prefix: string|null,
+        route: string
     }
 
     /** Interface | Register

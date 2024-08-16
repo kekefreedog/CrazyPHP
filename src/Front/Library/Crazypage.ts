@@ -535,7 +535,7 @@ export default abstract class Crazypage {
      * @param url:string
      * @return Promise(Object|Array<any>)
      */
-    public static loadPageState = async (url:string = ""):Promise<Object|Array<any>> => { 
+    public static loadPageState = async (url:string = ""):Promise<PageState> => { 
             
         // Check url
         if(!url)
@@ -556,7 +556,7 @@ export default abstract class Crazypage {
 
         // Rerurn result
         return query.fetch();
-
+        
     }
 
 }

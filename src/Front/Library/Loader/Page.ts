@@ -12,6 +12,7 @@
  * Dependances
  */
 import {default as LoaderScript} from './../Loader/Script';
+import {default as Crazycolor} from './../Crazycolor';
 import {default as PageError} from './../Error/Page';
 import Crazyrequest from './../Crazyrequest';
 import Pageregister from './../Pageregister';
@@ -47,6 +48,10 @@ export default class Page {
                 Page.loadUrl
             )
             .then(
+                // Load Pre Action
+                Page.loadColorSchema
+            )
+            .then(
                 // Open New Tab (if needed)
                 Page.openNewTab
             )
@@ -79,7 +84,11 @@ export default class Page {
                     // Check ready state
                     if(document.readyState !== 'loading') {
                         // Load Content
-                        Page.scanPartials(options)
+                        Page.applyColorSchema(options)
+                            .then(
+                                // Scan Partials
+                                Page.scanPartials
+                            )
                             .then(
                                 // Scan Partials
                                 Page.loadOnReadyScript
@@ -98,7 +107,11 @@ export default class Page {
                         // Event listener
                         document.addEventListener('DOMContentLoaded', () => {
                             // Load Content
-                            Page.scanPartials(options)
+                            Page.applyColorSchema(options)
+                                .then(
+                                    // Scan Partials
+                                    Page.scanPartials
+                                )
                                 .then(
                                     // Scan Partials
                                     Page.loadOnReadyScript
@@ -149,7 +162,7 @@ export default class Page {
     public static loadPageDetail = async(options:LoaderPageOptions):Promise<LoaderPageOptions> => {
 
         // Let keys
-        let keys:Array<keyof LoadPageOptionsStatus> = ["isCurrentPage", "hasState", "scriptRegistered", "urlLoaded", "preActionExecuted", "urlUpdated", "titleUpdated", "styleLoaded", "contentLoaded", "onReadyExecuted", "historyRegistered","postActionExecuted"];
+        let keys:Array<keyof LoadPageOptionsStatus> = ["isCurrentPage", "hasState", "scriptRegistered", "urlLoaded", "preActionExecuted", "urlUpdated", "titleUpdated", "styleLoaded", "contentLoaded", "onReadyExecuted", "historyRegistered","postActionExecuted","hasColor"];
 
         // Prepare options
         for(let currentKey of keys){
@@ -356,6 +369,46 @@ export default class Page {
         return options;
 
     } 
+
+    /**
+     * load Color Schema
+     * 
+     * Load url from name and arguments
+     * 
+     * @param options:LoaderPageOptions Options with all page details
+     * @return Promise<LoaderPageOptions>
+     */
+    public static loadColorSchema = async(options:LoaderPageOptions):Promise<LoaderPageOptions> =>  {
+
+        // Get state
+        let state = await options.scriptLoaded?.loadPageState();
+
+        // Get source color
+        if(typeof state?._ui.materialDynamicColors.source == "string" && state._ui.materialDynamicColors.source){
+
+            // Get source
+            let source = state?._ui.materialDynamicColors.source;
+
+            // Check source
+            if(source){
+
+                // Get colors
+                let colors = new Crazycolor(source);
+
+                // Push to color
+                options.color = colors;
+
+                // Set status
+                options = this.setStatus(options, "hasColor", true);
+
+            }
+
+        }
+
+        // Return options
+        return options;
+
+    }
     
     /**
      * Open New Tab
@@ -525,8 +578,6 @@ export default class Page {
 
         }
 
-        console.log(stateObject);
-
         // Check content
         if("content" in options && typeof options.content === "function"){
 
@@ -607,6 +658,32 @@ export default class Page {
             loader: Page.resetOptions(options),
             state: {}
         })
+
+        // Return options
+        return options
+
+    }
+
+    /**
+     * Apply Color Schema
+     * 
+     * Apply color schema
+     * 
+     * @param options:LoaderPageOptions Options with all page details
+     * @return Promise<LoaderPageOptions>
+     */
+    public static applyColorSchema = async(options:LoaderPageOptions):Promise<LoaderPageOptions> =>  {        
+        
+        // Check colors
+        if(options.status?.hasColor && options.color){
+
+            // Apply theme
+            if(options.color.applyTheme())
+
+                // Set status
+                options = this.setStatus(options, "hasColorApplied", true);
+
+        }
 
         // Return options
         return options
