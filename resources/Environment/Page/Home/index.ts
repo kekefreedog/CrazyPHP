@@ -12,6 +12,7 @@
  * Dependances
  */
 const css = require("!!css-loader!sass-loader!./style.scss");
+import { M } from "@materializecss/materialize";
 const html = require("./template.hbs");
 import {Crazypage} from "crazyphp";
 require("./style.scss");
@@ -70,6 +71,31 @@ export default class Home extends Crazypage {
     public onReady = ():void => {
 
         console.log("hello home");
+
+        // Init scroll spy
+        this.initScrollSpy();
+
+    }
+
+    /**
+     * Init Scroll Spy
+     * 
+     * @return void
+     */
+    private initScrollSpy = () => {
+
+        // Get el
+        let els = document.querySelectorAll('.scrollspy');
+
+        // Check els
+        if(els.length)
+
+            M.ScrollSpy.init(els, {
+                "activeClass": "active",
+                "getActiveElement": (id) => {
+                    return 'a[href="#' + id + '"]';
+                }
+            });
 
     }
 

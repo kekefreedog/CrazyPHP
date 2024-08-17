@@ -1,5 +1,5 @@
 {{!-- Root --}}
-<div id="crazy-root" descriptive-id="" class="screen-fit-min-y screen-flex screen-center dark-mode-blue-grey darken-4-dark-mode light-mode-white">
+<div id="crazy-root" descriptive-id="" class="screen-fit-min-y screen-flex screen-center">
 
     {{!-- Left Navigation Rail --}}
     <div id="crazy-left-navigation-rail" descriptive-id="" class="">
@@ -8,17 +8,17 @@
 
             <nav>
 
-                <regular-btn label="hello" size="small" depth="1"></regular-btn>
+                <regular-btn class="mb-4" label="hello" size="small" depth="1"></regular-btn>
 
-                <regular-btn size="normal" depth="1"></regular-btn>
+                <regular-btn class="mb-4" size="normal" depth="1"></regular-btn>
 
-                <regular-btn size="large" depth="1"></regular-btn>
+                <regular-btn class="mb-4" size="large" depth="1"></regular-btn>
 
-                <regular-btn size="small" shape="box" depth="1"></regular-btn>
+                <regular-btn class="mb-4" size="small" shape="box" depth="1"></regular-btn>
 
-                <regular-btn size="normal" shape="box" depth="1"></regular-btn>
+                <regular-btn class="mb-4" size="normal" shape="box" depth="1"></regular-btn>
 
-                <regular-btn size="large" shape="box" depth="1" icon-text="delete"></regular-btn>
+                <regular-btn class="mb-4" size="large" shape="box" depth="1" icon-text="delete"></regular-btn>
 
             </nav>
 
@@ -32,110 +32,131 @@
     </div>
 
     {{!-- Body --}}
-    <div id="crazy-content" descriptive-id="" class="element-flex-grow-1 container pb-5">
+    <div id="crazy-content" descriptive-id="" class="element-flex-grow-1 pb-5">
 
-        <div class="row">
+        <div class="row container">
 
-            {{!-- Title --}}
-            <div class="col s12">
-                <h1>Crazy PHP</h1>
+            <div class="col s12 m10">
+
+                {{!-- Title --}}
+                <div class="col s12">
+                    <h1>Crazy PHP</h1>
+                </div>
+
+                {{!-- Components --}}
+                <div class="col s12">
+                    <h3>Components</h3>
+                </div>
+
+                {{!-- Regular Btn --}}
+                <div class="col s12">
+                    <h4>Regular Btn</h4>
+                </div>
+
+                {{!-- Regular Btn | Floating --}}
+                <section id="btn-floating-round" class="col s6 m6 s12 row scrollspy">
+
+                    <div class="col s12">
+                        <h5>Btn Floating Round</h5>
+                    </div>
+
+                    <div class="col s12 screen-flex screen-bottom-y screen-center-distributed-x screen-wrap">
+
+                        <regular-btn class="mb-5 mr-5" label="Floating small round" color-primary="orange" size="small" depth="1" shape="box" type="floating"></regular-btn>
+
+                        <regular-btn class="mb-5 mr-5" label="Floating normal round" color-primary="red" size="normal" depth="1" shape="box" type="floating"></regular-btn>
+
+                        <regular-btn class="mb-5 mr-5" label="Floating large round" color-primary="blue" size="large" depth="1" shape="box" type="floating"></regular-btn>
+
+                        <regular-btn class="mb-5 mr-5" label="Floating extra-large round" color-primary="green" size="extra-large" depth="1" shape="box" type="floating"></regular-btn>
+
+                    </div>
+
+                </section>
+
+                {{!-- Regular Btn | Floating --}}
+                <section id="btn-floating-box" class="col s6 m6 s12 row scrollspy">
+
+                    <div class="col s12">
+                        <h5>Btn Floating Box</h5>
+                    </div>
+
+                    <div class="col s12 screen-flex screen-bottom-y screen-center-distributed-x screen-wrap">
+
+                        <regular-btn class="mb-5 mr-5" label="Floating small box" color-primary="orange" size="small" depth="1" shape="round" type="floating"></regular-btn>
+
+                        <regular-btn class="mb-5 mr-5" label="Floating normal box" color-primary="red" size="normal" depth="1" shape="round" type="floating"></regular-btn>
+
+                        <regular-btn class="mb-5 mr-5" label="Floating large box" color-primary="blue" size="large" depth="1" shape="round" type="floating"></regular-btn>
+
+                        <regular-btn class="mb-5 mr-5" label="Floating extra-large box" color-primary="green" size="extra-large" depth="1" shape="round" type="floating"></regular-btn>
+
+                    </div>
+
+                </section>
+
+                {{!-- Regular Btn | Floating --}}
+                <section id="btn-extended-box" class="col s1é m12 s12 row scrollspy">
+
+                    {{!-- Regular Btn | Extended --}}
+                    <div class="col s12">
+                        <h5>Btn Extended Box</h5>
+                    </div>
+
+                    <div class="col s12 screen-flex screen-bottom-y screen-center-distributed-x screen-wrap">
+
+                        <regular-btn class="mb-5 mr-5" label="Floating small" color-primary="orange" size="small" depth="1" shape="box" type="extended"></regular-btn>
+
+                        <regular-btn class="mb-5 mr-5" label="Floating normal" color-primary="red" size="normal" depth="1" shape="box" type="extended"></regular-btn>
+
+                        <regular-btn class="mb-5 mr-5" label="Floating large" color-primary="blue" size="large" depth="1" shape="box" type="extended"></regular-btn>
+                        
+                        <regular-btn class="mb-5 mr-5" label="Floating extra-large" color-primary="green" size="extra-large" depth="1" shape="box" type="extended"></regular-btn>
+
+                    </div>
+
+                </section>
+
+                {{!-- Regular Btn | Floating --}}
+                <section id="btn-extended-round" class="col s1é m12 s12 row scrollspy">
+
+                    {{!-- Regular Btn | Extended --}}
+                    <div class="col s12">
+                        <h5>Btn Extended Round</h5>
+                    </div>
+
+                    <div class="col s12 screen-flex screen-bottom-y screen-center-distributed-x screen-wrap">
+
+                        <regular-btn class="mb-5 mr-5" label="Floating small" color-primary="orange" size="small" depth="1" shape="round" type="extended"></regular-btn>
+
+                        <regular-btn class="mb-5 mr-5" label="Floating normal" color-primary="red" size="normal" depth="1" shape="round" type="extended"></regular-btn>
+
+                        <regular-btn class="mb-5 mr-5" label="Floating large" color-primary="blue" size="large" depth="1" shape="round" type="extended"></regular-btn>
+                        
+                        <regular-btn class="mb-5 mr-5" label="Floating extra-large" color-primary="green" size="extra-large" depth="1" shape="round" type="extended"></regular-btn>
+
+                    </div>
+
+                </section>
+            
+            </div>  
+            
+            {{!-- Scroll spy --}}
+            <div class="col hide-on-small-only m2">
+
+                <div class="toc-wrapper pinned">
+
+                    <ul class="section table-of-contents">
+
+                        <li><a href="#btn-floating-round">Btn Floating Round</a></li>
+                        <li><a href="#btn-floating-box">Btn Floating Box</a></li>
+                        <li><a href="#btn-extended-box">Btn Extended Box</a></li>
+                        <li><a href="#btn-extended-round">Btn Extended Round</a></li>
+                    </ul>
+
+                </div>
+                
             </div>
-
-            {{!-- Components --}}
-            <div class="col s12">
-                <h3>Components</h3>
-            </div>
-
-            {{!-- Regular Btn --}}
-            <div class="col s12">
-                <h4>Regular Btn</h4>
-            </div>
-
-            {{!-- Regular Btn | Floating --}}
-            <section class="col s6 m6 s12 row">
-
-                <div class="col s12">
-                    <h5>Btn Floating Round</h5>
-                </div>
-
-                <div class="col s12 screen-flex screen-bottom-y screen-center-distributed-x">
-
-                    <regular-btn label="Floating small round" color-primary="orange" size="small" depth="1" shape="box" type="floating"></regular-btn>
-
-                    <regular-btn label="Floating normal round" color-primary="red" size="normal" depth="1" shape="box" type="floating"></regular-btn>
-
-                    <regular-btn label="Floating large round" color-primary="blue" size="large" depth="1" shape="box" type="floating"></regular-btn>
-
-                    <regular-btn label="Floating extra-large round" color-primary="green" size="extra-large" depth="1" shape="box" type="floating"></regular-btn>
-
-                </div>
-
-            </section>
-
-            {{!-- Regular Btn | Floating --}}
-            <section class="col s6 m6 s12 row">
-
-                <div class="col s12">
-                    <h5>Btn Floating Box</h5>
-                </div>
-
-                <div class="col s12 screen-flex screen-bottom-y screen-center-distributed-x">
-
-                    <regular-btn label="Floating small box" color-primary="orange" size="small" depth="1" shape="round" type="floating"></regular-btn>
-
-                    <regular-btn label="Floating normal box" color-primary="red" size="normal" depth="1" shape="round" type="floating"></regular-btn>
-
-                    <regular-btn label="Floating large box" color-primary="blue" size="large" depth="1" shape="round" type="floating"></regular-btn>
-
-                    <regular-btn label="Floating extra-large box" color-primary="green" size="extra-large" depth="1" shape="round" type="floating"></regular-btn>
-
-                </div>
-
-            </section>
-
-            {{!-- Regular Btn | Floating --}}
-            <section class="col s1é m12 s12 row">
-
-                {{!-- Regular Btn | Extended --}}
-                <div class="col s12">
-                    <h5>Btn Extended Box</h5>
-                </div>
-
-                <div class="col s12 screen-flex screen-bottom-y screen-center-distributed-x">
-
-                    <regular-btn label="Floating small" color-primary="orange" size="small" depth="1" shape="box" type="extended"></regular-btn>
-
-                    <regular-btn label="Floating normal" color-primary="red" size="normal" depth="1" shape="box" type="extended"></regular-btn>
-
-                    <regular-btn label="Floating large" color-primary="blue" size="large" depth="1" shape="box" type="extended"></regular-btn>
-                    
-                    <regular-btn label="Floating extra-large" color-primary="green" size="extra-large" depth="1" shape="box" type="extended"></regular-btn>
-
-                </div>
-
-            </section>
-
-            {{!-- Regular Btn | Floating --}}
-            <section class="col s1é m12 s12 row">
-
-                {{!-- Regular Btn | Extended --}}
-                <div class="col s12">
-                    <h5>Btn Extended Round</h5>
-                </div>
-
-                <div class="col s12 screen-flex screen-bottom-y screen-center-distributed-x">
-
-                    <regular-btn label="Floating small" color-primary="orange" size="small" depth="1" shape="round" type="extended"></regular-btn>
-
-                    <regular-btn label="Floating normal" color-primary="red" size="normal" depth="1" shape="round" type="extended"></regular-btn>
-
-                    <regular-btn label="Floating large" color-primary="blue" size="large" depth="1" shape="round" type="extended"></regular-btn>
-                    
-                    <regular-btn label="Floating extra-large" color-primary="green" size="extra-large" depth="1" shape="round" type="extended"></regular-btn>
-
-                </div>
-
-            </section>
 
         </div>
 

@@ -24,6 +24,18 @@ regular-btn {
         /* Floating */
         &.btn-floating {
 
+            /* Fix side nav */
+            margin: initial!important;
+
+            /* i */
+            i {
+
+                /* Fix side nav */
+                height: initial;
+                line-height: initial;
+
+            }
+
 
             /* Round */
             &.btn-round {
