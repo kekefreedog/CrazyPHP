@@ -12,10 +12,10 @@
  * Dependances
  */
 import {default as LoaderScript} from './../Loader/Script';
-import {default as Crazycolor} from './../Crazycolor';
 import {default as PageError} from './../Error/Page';
 import Crazyrequest from './../Crazyrequest';
 import Pageregister from './../Pageregister';
+import Crazycolor from '../Crazycolor';
 import Crazyurl from '../Crazyurl';
 import DomRoot from '../Dom/Root';
 
@@ -384,10 +384,10 @@ export default class Page {
         let state = await options.scriptLoaded?.loadPageState();
 
         // Get source color
-        if(typeof state?._ui.materialDynamicColors.source == "string" && state._ui.materialDynamicColors.source){
+        if(typeof state?._ui?.materialDynamicColors?.source == "string" && state._ui?.materialDynamicColors.source){
 
             // Get source
-            let source = state?._ui.materialDynamicColors.source;
+            let source = state?._ui?.materialDynamicColors?.source;
 
             // Check source
             if(source){
@@ -396,6 +396,7 @@ export default class Page {
                 let colors = new Crazycolor(source);
 
                 // Push to color
+                // @ts-ignore
                 options.color = colors;
 
                 // Set status

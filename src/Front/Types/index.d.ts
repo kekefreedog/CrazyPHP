@@ -131,6 +131,16 @@ declare global {
     }
 
     /**
+     * Crazy Component Property
+     */
+    interface CrazycomponentProperty {
+        name?: string
+        type: "string"|"number"|"bool"|"boolean",
+        select?: string[]
+        value?: string|number|boolean|object
+    }
+
+    /**
      * Redirect By Name Options
      */
     interface RedirectByNameOptions {

@@ -17,6 +17,7 @@ namespace CrazyPHP\Controller;
  */
 use CrazyPHP\Library\File\Config as FileConfig;
 use CrazyPHP\Exception\CrazyException;
+use CrazyPHP\Library\Form\Query;
 use CrazyPHP\Core\ApiResponse;
 use CrazyPHP\Core\Controller;
 use CrazyPHP\Model\Context;
@@ -46,8 +47,11 @@ class ApiV2All extends Controller {
         # New model
         $model = new Model();
 
+        # Filters parameters
+        $filtersParameters = Query::getForFilters();
+
         # Declare content
-        $content = $model->readWithFilters();
+        $content = $model->readWithFilters(...$filtersParameters);
 
         # Get last modified date of model config
         $lastModified = FileConfig::getLastModified("Model");

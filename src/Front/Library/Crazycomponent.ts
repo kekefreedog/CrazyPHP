@@ -8,6 +8,8 @@
  * @copyright  2022-2024 Kévin Zarshenas
  */
 
+import { strict } from "assert";
+
 /**
  * Crazycomponenet
  *
@@ -24,7 +26,7 @@ export default abstract class Crazycomponent extends HTMLElement {
      */
 
     /** @var properties Propoerties of the current component */
-    abstract properties:Object;
+    public properties:Record<string,CrazycomponentProperty>;
 
     /** @var crazy Crazy methods for Web Component */
     private crazy:CrazycomponentAction;
@@ -38,9 +40,11 @@ export default abstract class Crazycomponent extends HTMLElement {
     /**
      * Constructor 
      */
-    constructor(options:CrazycomponentOptions = {
-        allowChildNodes: false
-    }){
+    constructor(
+        options:CrazycomponentOptions = {
+            allowChildNodes: false,
+        }
+    ){
 
         // Parent constructor
         super();
@@ -49,7 +53,7 @@ export default abstract class Crazycomponent extends HTMLElement {
         this.ingestOptions(options);
 
         // Set crazy root
-        this.crazy = new CrazycomponentAction();
+        this.crazy = new CrazycomponentAction(this.properties);
 
     }
 
@@ -187,7 +191,7 @@ export default abstract class Crazycomponent extends HTMLElement {
             for(let propertie in this.properties){
 
                 // let value
-                let value:string = this.properties[propertie].value ?? "";
+                let value:CrazycomponentProperty["value"] = this.properties[propertie].value ?? "";
 
                 // Check if value exists in attributes
                 if(this.hasAttribute(propertie)){
@@ -218,7 +222,7 @@ export default abstract class Crazycomponent extends HTMLElement {
                 }
 
                 // Set current attribute
-                this.crazy.setAttribute(propertie, value);
+                this.crazy.setAttribute(propertie, value, this.properties);
 
             }
 
@@ -248,7 +252,7 @@ export default abstract class Crazycomponent extends HTMLElement {
      * 
      * @return string|boolean|null
      */
-    public getCurrentAttribute(name:string):string|boolean|null {
+    public getCurrentAttribute(name:string):string|boolean|number|null {
 
         // Declare result
         let result = this.crazy.getAttribute(name);
@@ -312,16 +316,16 @@ export default abstract class Crazycomponent extends HTMLElement {
         /// Attributes
         
         // Prepare attributes
-        let attributes = this.crazy.getAttributesName();
+        let attributeNames = this.crazy.getAttributesName();
 
         // Check attributes
-        if(attributes.length)
+        if(attributeNames.length)
 
             // Iteration of attributes
-            for(let attribute of attributes)
+            for(let attributeName of attributeNames)
 
                 // Get attribute
-                result.attributes[attribute] = this.crazy.getAttribute(attribute);
+                result.attributes[attributeName] = this.crazy.getAttribute(attributeName);
 
         // Return result
         return result;
@@ -436,8 +440,6 @@ export default abstract class Crazycomponent extends HTMLElement {
      */
     public attributeChangedCallback(name:string, oldValue:string, newValue:string):void {
 
-        /* console.log(newValue + " >> " + oldValue); */
-
         // Check new value isn't the old value
         if(newValue != oldValue && this.isConnected){
 
@@ -480,6 +482,9 @@ class CrazycomponentAction {
      ******************************************************
      */
 
+    /** @var properties Propoerties of the current component */
+    private properties:Record<string,CrazycomponentProperty>;
+
     /** @var attributesByDefault Collection Default */
     private attributesByDefault:Object = {};
 
@@ -500,6 +505,16 @@ class CrazycomponentAction {
 
     // Style Content
     styleContent: string|null;
+
+    /**
+     * Constructor 
+     */
+    constructor(properties:Record<string,CrazycomponentProperty> = {}){
+
+        // Set properties
+        this.properties = properties;
+
+    }
 
     /** Methods | Attributes
      ******************************************************
@@ -544,7 +559,7 @@ class CrazycomponentAction {
      * @param value 
      * @return
      */
-    public setAttribute(name:string = "", value:string|boolean|Object = ""):void {
+    public setAttribute(name:string = "", value:string|number|boolean|Object = "", properties:Object|null = null):void {
 
         // Check name
         if(!name)
@@ -553,47 +568,101 @@ class CrazycomponentAction {
             return;
 
         // Declare Current Value
-        let currentValue = {
+        let currentValue:CrazycomponentProperty = {
             name:name,
             value:"",
             type:"string",    
         };
 
-        // Chack value is type string
-        if(typeof value === "string")
+        // Get name in properties
+        if(properties && name in properties){
 
-            // Set current value
-            currentValue.value = value;
+            // Set current schema
+            let currentSchema:CrazycomponentProperty = properties[name];
 
-        else
-        // Check if value is type boolean
-        if(typeof value === "boolean")
+            // Check type is string
+            if(currentSchema.type == "string")
+                
+                // Set current value
+                currentValue.value = !value && currentSchema.value
+                    ? currentSchema.value
+                    : value
+                ;
 
-            // Set value
-            currentValue.value = value ? "true" : "false";
+            else
+            // Check type is number
+            if(currentSchema.type == "number")
+                
+                // Set current value
+                currentValue.value = !value && currentSchema.value
+                    ? currentSchema.value
+                    : (
+                        typeof value == "number"
+                            ? value
+                            : Number(value)
+                    )
+                ;
 
-        // Check if object
-        if(typeof value === "object" && Object.keys(value).length > 0)
+            else
+            // Check type is number
+            if(currentSchema.type == "bool" || currentSchema.type == "boolean")
+                
+                // Set current value
+                currentValue.value = !value && currentSchema.value
+                    ? currentSchema.value
+                    : (
+                        typeof value === "string" && ["true", "1", "TRUE"].includes(value)
+                            ? true
+                            : false
+                    )
+                ;
 
-            // Iteration of object
-            for(let key in value)
+        }else{
 
-                // Check if key in current value
-                if(key in currentValue){
+            // Chack value is type string
+            if(typeof value === "string")
 
-                    // Declare v
-                    let v = value[key];
+                // Set current value
+                currentValue.value = value;
 
-                    // Check if value is type boolean
-                    if(typeof v === "boolean")
-            
-                        // Set value
-                        v = v ? "true" : "false";
+            else
+            // Chack value is type string
+            if(typeof value === "number")
 
-                    // Set current value
-                    currentValue[key] = v;
+                // Set current value
+                currentValue.value = value;
 
-                }
+            else
+            // Check if value is type boolean
+            if(typeof value === "boolean")
+
+                // Set value
+                currentValue.value = value ? "true" : "false";
+
+            // Check if object
+            if(typeof value === "object" && Object.keys(value).length > 0)
+
+                // Iteration of object
+                for(let key in value)
+
+                    // Check if key in current value
+                    if(key in currentValue){
+
+                        // Declare v
+                        let v = value[key];
+
+                        // Check if value is type boolean
+                        if(typeof v === "boolean")
+                
+                            // Set value
+                            v = v ? "true" : "false";
+
+                        // Set current value
+                        currentValue[key] = v;
+
+                    }
+
+        }
 
         // Push value in current attributes
         this.attributesCurrent[name] = currentValue;
@@ -610,8 +679,6 @@ class CrazycomponentAction {
      * @return Check if update is a success
      */
     attributeChangedCallback = (name:string, oldValue:string, newValue:string) => {
-
-        console.log("-- attributeChangedCallback --");
 
         // Update attribute
         this.updateAttribute(name, newValue);
@@ -658,7 +725,17 @@ class CrazycomponentAction {
             if(this.attributesCurrent[name].type === "boolean" && maybeBoolean){
 
                 // Set attribute value
-                this.attributesCurrent[name].value = ["true", "1", "TRUE"] ? "true" : "false";
+                this.attributesCurrent[name].value = ["true", "1", "TRUE"].includes(value) ? true : false;
+
+                // Set result
+                result = true;
+
+            }else
+            // Check if number 
+            if(this.attributesCurrent[name].type === "number"){
+
+                // Set attribute value
+                this.attributesCurrent[name].value = Number(value);
 
                 // Set result
                 result = true;
@@ -684,6 +761,29 @@ class CrazycomponentAction {
 
                 // Set attribute value
                 this.attributesCurrent[name].value = ["true", "1", "TRUE"] ? "true" : "false";
+
+                // Set result
+                result = true;
+
+            }
+
+        }else
+        // Check if number
+        if(typeof value === "number"){
+
+            // Check type is boolean
+            if(this.attributesCurrent[name].type === "number"){
+
+                // Set attribute value
+                this.attributesCurrent[name].value = value;
+
+                // Set result
+                result = true;
+
+            }else{
+
+                // Set attribute value
+                this.attributesCurrent[name].value = value.toString();
 
                 // Set result
                 result = true;
@@ -778,10 +878,10 @@ class CrazycomponentAction {
      * 
      * @param name Name of the attribute to return
      */
-    public getAttribute(name:string):string|boolean|null{
+    public getAttribute(name:string):string|boolean|number|null{
 
         // Declare result
-        let result:string|boolean|null = null;
+        let result:string|boolean|number|null = null;
 
         // Check name
         if(!name || !(name in this.attributesCurrent))
@@ -793,12 +893,19 @@ class CrazycomponentAction {
         let attribute = this.attributesCurrent[name];
 
         // Check type
-        if(attribute.type === "boolean")
+        if(attribute.type === "boolean" || attribute.type === "bool")
 
             // Set result
             result = (["true", "1", "TRUE"].includes(attribute.value)) ?
                 true : 
                     false;
+
+        else
+        // Check type
+        if(attribute.type === "number")
+
+            // Set result
+            result = Number(attribute.value);
 
         else
 

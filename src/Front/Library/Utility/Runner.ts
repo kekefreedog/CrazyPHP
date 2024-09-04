@@ -13,6 +13,7 @@
  */
 import {default as NavigatorClient} from "./../Navigator/Client";
 import {default as UtilityProcess} from "./Process";
+import RunnerError from "../Error/RunnerError";
 
 /**
  * Runner
@@ -237,7 +238,31 @@ export default class Runner {
 
         // Catch any errors
         chain.catch(error => {
-            console.error('An error occurred during execution:', error);
+
+            // Check error instance of Runner error
+            if(error instanceof RunnerError){
+
+                // Check message
+                if(error.message){
+
+                    // Display message
+                    console.log(error.message);
+
+                }
+
+            }else{
+
+                // Check error
+                if(error instanceof Error){
+
+                    // Display error
+                    console.error(error.message);
+                    console.error('An error occurred during execution:', error);
+
+                }
+            
+            }
+
         });
 
         // Return chain
@@ -303,6 +328,43 @@ export default class Runner {
 
         // Return object
         return options;
+
+    }
+
+    /** Public methods | Exit
+     ******************************************************
+     */
+
+    /**
+     * Stop
+     * 
+     * Stop runner
+     * 
+     * @param message 
+     * @param options 
+     * @param callback 
+     * @returns {void}
+     */
+    public stop = (options:RunnerOption, message:string = "Runner stopped", callback?:(options:RunnerOption)=>void):void => {
+
+        // Check viewer
+        if(this.viewer)
+
+            // Close viewer
+            // @ts-ignore
+            this.viewer.close();
+
+        // Check callback
+        if(callback)
+
+            // Execute callback
+            callback(options);
+
+        // Run tearDownAfterClass
+        this.tearDownAfterClass(options);
+
+        // Stop runner
+        throw new RunnerError(message);
 
     }
 

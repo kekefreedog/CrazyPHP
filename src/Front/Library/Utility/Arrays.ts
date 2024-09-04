@@ -35,7 +35,7 @@ export default class Arrays {
      * @param keyValue
      * @return any
      */
-    public static filterByKey = (array:Array<any> = [], key:string, keyValue:string|Array<any>|null|Object) => array.filter(
+    public static filterByKey = (array:Array<any> = [], key:string, keyValue:string|Array<any>|null|Object|number) => array.filter(
         (aEl) => aEl[key] == keyValue
     );
 
@@ -50,7 +50,7 @@ export default class Arrays {
     public static filterByKeyMD = (
         array: Array<any> = [], 
         key: string, 
-        keyValue: string | Array<any> | null | Object
+        keyValue: string|Array<any>|null|Object|number
     ) => array.filter(
         (aEl) => this.getNestedValue(aEl, key.split('.')) == keyValue
     );
