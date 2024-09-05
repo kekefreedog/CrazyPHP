@@ -349,6 +349,49 @@ declare global {
      */
 
     /**
+     * CrazyRunner
+     */
+    interface CrazyRunner {
+        // Constructor
+        // new(extra:any=null,viewer:RunnerViewerConstructor|null=null):T;
+        // Public readonly
+        public readonly name:string;
+        // Public methods | Preparation
+        public async setUpBeforeClass(options:RunnerOption):Promise<RunnerOption>;
+        public async setUpBeforeMethod(options:RunnerOption):Promise<RunnerOption>;
+        public async tearDownAfterMethod(options:RunnerOption):Promise<RunnerOption>;
+        public async tearDownAfterClass(options:RunnerOption):Promise<RunnerOption>;
+        // Utility runner | Public parameter
+        public viewer:?RunnerViewer;
+        // Utility runner | Runner Info
+        public setName(name:string):void;
+        // Utility runner | Public
+        public execute():Promise<RunnerOption>;
+        public stop(options:RunnerOption, message:string = "Runner stopped", callback?:(options:RunnerOption)=>void);
+        // Utility runner | Options
+        public registerOptions(options:RunnerOption):void;
+        // Utility runner | State
+        public async runGetPageState?(options:RunnerOption):Promise<RunnerOption>;
+    }
+
+    /**
+     * Runner Viewer
+     */
+    interface RunnerViewer {
+        // Public methods
+        public open(data?:ToastProgressionData):void;
+        public close():void;
+        public update(data?:ToastProgressionData):void;
+    }
+
+    /**
+     * RunnerViewerConstructor
+     */
+    interface RunnerViewerConstructor {
+        new (viewerOptions?: Partial<ToastProgressionOptions>,runnerOptions?: RunnerOption):RunnerViewer;
+    }
+
+    /**
      * Runner Option
      */
     interface RunnerOption {
@@ -396,7 +439,5 @@ declare global {
             }
         }
     }
-
-    
 
 }

@@ -30,14 +30,17 @@ export default class Runner {
      ******************************************************
      */
 
-    public viewer:object|null = null;
+    /**
+     * Viewer
+     */
+    public viewer:RunnerViewer|null = null;
 
     /**
      * Constructor
      * 
      * @param extra
      */
-    public constructor(extra:any = null, viewer:object|null = null) {
+    public constructor(extra:any = null, viewer:RunnerViewerConstructor|null = null) {
 
         // Set options
         let options:RunnerOption = {
@@ -53,15 +56,11 @@ export default class Runner {
             }
         }
 
-        // Set viewer
-        this.viewer = viewer;
-
         // Check viewer
-        if(this.viewer !== null)
+        if(viewer)
 
             // Setup viewer
-            // @ts-ignore
-            this.viewer = new viewer();
+            this.viewer = new viewer(options);
 
         // Check extra
         if(extra && extra !== null)
@@ -155,7 +154,6 @@ export default class Runner {
                 if(this.viewer){
 
                     // Open viewer
-                    // @ts-ignore
                     this.viewer.open({
                         progression: `${options._info.run.current}/${options._info.run.total}`,
                         text: `Starting ${options._info.name.toLowerCase()}`
@@ -185,7 +183,6 @@ export default class Runner {
                     if(this.viewer){
             
                         // Open viewer
-                        // @ts-ignore
                         this.viewer.update({
                             progression: `${options._info.run.current}/${options._info.run.total}`,
                             text: `${options._info.run.name[options._info.run.current-1]?options._info.run.name[options._info.run.current-1].label:"Oups"}`
@@ -223,7 +220,6 @@ export default class Runner {
             if(this.viewer){
     
                 // Open viewer
-                // @ts-ignore
                 this.viewer.close();
     
             }
@@ -351,7 +347,6 @@ export default class Runner {
         if(this.viewer)
 
             // Close viewer
-            // @ts-ignore
             this.viewer.close();
 
         // Check callback
@@ -411,7 +406,7 @@ export default class Runner {
      * 
      * @returns
      */
-    private getAllMethodsStartingByRun = ():Array<string> => {
+    private getAllMethodsStartingByRun = ():string[] => {
 
         const props = [];
         let obj = this;
