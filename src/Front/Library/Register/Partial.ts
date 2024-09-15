@@ -116,7 +116,8 @@ export default class Register {
      * @param parent Parent where search
      * @returns Arrays
      */
-    public scan = (parent:string):Array<RegisterPartialScanned> => {
+    /** */
+    public scan = (parent:string|Element[]|Element):Array<RegisterPartialScanned> => {
 
         // Set result
         let result:Array<RegisterPartialScanned> = [];
@@ -124,14 +125,49 @@ export default class Register {
         let tempValue:null|Crazypartial;
         let tempResult:RegisterPartialScanned;
 
-        // Get parent
-        let parentEls = document.querySelectorAll(parent);
+        // Declare parent
+        let parentEls:Element[] = [];
+
+        // Check parent is list of element
+        if(parent instanceof Element){
+
+            // Set parent els
+            parentEls.push(parent);
+
+        }else
+        // Check parent element[]
+        if(Array.isArray(parent)){
+
+            // Check parent empty
+            if(parent.length)
+
+                // Iteration of element
+                for(let item of parent)
+
+                    // Check instance of parent
+                    if(item instanceof Element)
+
+                        // Push into parentEls
+                        parentEls.push(item);
+
+        }else 
+        // Check is string
+        if(typeof parent === "string")
+        {
+
+            // Get els
+            let items = document.querySelectorAll(parent)
+
+            // Get parent
+            parentEls = Array.from(items);
+
+        }
 
         // Check result
         if(parentEls.length)
 
             // Iterations parents
-            parentEls.forEach(parentEl => {
+            for(let parentEl of parentEls){
 
                 // Search elements with partial
                 let resultEls = parentEl.querySelectorAll("[partial]");
@@ -148,8 +184,8 @@ export default class Register {
                         // Check partial value
                         if(partialValue){
 
-                            // Get temp result
-                            tempValue = this.get(partialValue);
+                            // Get temp result object previously ingested in this instance of in the global instance
+                            tempValue = this.get(partialValue) || window.Crazyobject.partials.get(partialValue);
 
                             // Check temp value
                             if(tempValue){
@@ -171,7 +207,7 @@ export default class Register {
 
                     });
 
-            });
+            };
 
         // Return result
         return result;

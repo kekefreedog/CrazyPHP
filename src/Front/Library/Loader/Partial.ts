@@ -161,32 +161,6 @@ export default class Partial {
 
             // Get script from crazyobject
             let script = window.Crazyobject.partials.get(options.name);
-    
-            // Load script
-            // let script = await LoaderScript.load(url, options.name, true, "text/javascript");
-
-            // Get registered
-            // let registered = window.Crazyobject.registerPage.getRegistered(options.name ? options.name : "");
-    
-            /* // Check html
-            if(registered !== null && "classReference" in registered && "html" in registered?.classReference && registered?.classReference.html){
-    
-                // Set html in options
-                options.content = registered?.classReference.html;
-    
-            }
-    
-            // Check html
-            if(registered !== null && "classReference" in registered && "css" in registered?.classReference && registered?.classReference.css && "default" in registered?.classReference.css && typeof registered?.classReference.css.default === "string"){
-    
-                // Set html in options
-                options.style = registered?.classReference.css.default
-                    .toString()
-                    .replace(/\r?\n|\r/g, "")               // Remove end of line
-                    .replace(/\/\*[\s\S]*?\*\//g, "")       // Remove \/* Comment *\/
-                ;
-    
-            } */
 
             // Check script
             if(script !== null){

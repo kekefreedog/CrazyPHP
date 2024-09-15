@@ -13,7 +13,10 @@
  */
 import {default as NavigatorClient} from "./../Navigator/Client";
 import {default as UtilityProcess} from "./Process";
+import PartialRegister from "../Register/Partial";
 import RunnerError from "../Error/RunnerError";
+import PartialLoader from "../Loader/Partial";
+import { UtilityArrays } from "../../Types";
 
 /**
  * Runner
@@ -26,7 +29,7 @@ import RunnerError from "../Error/RunnerError";
  */
 export default class Runner {
 
-    /** Public parameter
+    /** Public parameters
      ******************************************************
      */
 
@@ -34,6 +37,16 @@ export default class Runner {
      * Viewer
      */
     public viewer:RunnerViewer|null = null;
+
+    /** Private parameters
+     ******************************************************
+     */
+
+
+    /**
+     * Partials
+     */
+    private _partials:RegisterPartialScanned[] = []; 
 
     /**
      * Constructor
@@ -326,6 +339,109 @@ export default class Runner {
         return options;
 
     }
+
+    /** Public methods | Partials
+     ******************************************************
+     */
+
+    /**
+     * Clean Partials
+     * 
+     * @returns {void}
+     */
+    public cleanPartials = ():void => {
+
+        // Clean partials
+        this._partials = [];
+
+    }
+
+    /**
+     * Load Partials
+     * 
+     * Load and run partials found into a given parent el
+     * 
+     * @param parent Parent element where search partials
+     * @param runScriptsFound Run script found or not
+     * @returns {RegisterPartialScanned[]}
+     */
+    public loadPartials = (parent:Element, runScriptsFound:boolean = true):RegisterPartialScanned[] => {
+
+        // Set partials scanned
+        let partialsScanned:RegisterPartialScanned[] = [];
+
+        // New partials instance
+        let partialRegister = new PartialRegister();
+
+        // Scan in parent
+        partialsScanned = partialRegister.scan(parent);
+
+        // Check partial
+        if(partialsScanned.length && runScriptsFound)
+
+            // Iteration of partialsScanned
+            for(let key in partialsScanned){
+
+                // New run script
+                // @ts-ignore
+                partialsScanned[key].scriptRunning = new partialsScanned[key].callable(partialsScanned[key]);
+
+            }
+
+        // Append partials into _partials
+        this._partials.push(...partialsScanned);
+
+        // Return result
+        return partialsScanned;
+
+    }
+
+    /**
+     * Get All Partials
+     * @returns {RegisterPartialScanned[]}
+     */
+    public getAllPartials = ():RegisterPartialScanned[] => {
+
+        // Set result
+        let result = this._partials;
+
+        // Return result
+        return result;
+
+    }
+
+    /**
+     * Get Partial By Name
+     * 
+     * @param name
+     * @returns {RegisterPartialScanned[]|null}
+     */
+    public getPartialName = (name:string):RegisterPartialScanned[]|null => {
+
+        // Set result
+        let result:RegisterPartialScanned[]|null = null;
+
+        // Check name
+        if(name){
+
+            // Search
+            let search = UtilityArrays.filterByKey(this._partials, "name", name);
+
+            // Get search
+            if(search.length){
+
+                // Set result
+                result = search as RegisterPartialScanned[];
+
+            }
+
+        }
+
+        // Return search
+        return result;
+
+    }
+
 
     /** Public methods | Exit
      ******************************************************
