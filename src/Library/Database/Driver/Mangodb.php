@@ -919,6 +919,15 @@ class Mangodb implements CrazyDatabaseDriver {
                             : $name
                     );
 
+                    # Check if other dot in name
+                    #
+                    # Use to fix empty properties when more than 2 multidimensionnal object
+                    #
+                    if(count(explode(".", $item["name"])) > 3 && empty($recursiveResult["properties"]))
+
+                        # Continue iteration
+                        continue;
+
                     # Set bson type
                     $bsonType = $recursiveResult["bsonType"] ?? "object";
 

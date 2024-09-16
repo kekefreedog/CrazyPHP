@@ -12,11 +12,10 @@
  * Dependances
  */
 import {default as NavigatorClient} from "./../Navigator/Client";
+import {default as PartialRegister} from "../Register/Partial";
 import {default as UtilityProcess} from "./Process";
-import PartialRegister from "../Register/Partial";
+import {default as UtilityArrays} from "./Arrays"
 import RunnerError from "../Error/RunnerError";
-import PartialLoader from "../Loader/Partial";
-import { UtilityArrays } from "../../Types";
 
 /**
  * Runner
