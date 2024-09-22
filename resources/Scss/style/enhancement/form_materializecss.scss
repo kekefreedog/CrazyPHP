@@ -1,0 +1,60 @@
+/// /// ///
+/// Enhancement - Crazy Content
+///
+/// Form ft. Materialize
+///
+/// @package    kzarshenas/crazyphp
+/// @author     kekefreedog <kevin.zarshenas@gmail.com>
+/// @copyright  2022-2024 Kévin Zarshenas
+/// /// /// 
+
+/*
+ * Fix Icon attach to radio input
+ */ 
+ input[type="radio"] ~ span i {
+
+    // User select
+    user-select: none;
+    cursor: default;
+
+    // Color
+    color: var(--md-sys-color-on-surface);
+
+    // Material icons
+    &.material-icons {
+
+        // Position
+        vertical-align: sub;
+
+        // Font
+        font-size: 20px;
+
+    }
+
+}
+
+/*
+ * Fix lock on disabled case for switch
+ */
+div.switch:has(input[type="checkbox"]) {
+
+    // Suffix
+    div.suffix {
+
+        // Icon
+        i {
+
+            // MAterialize
+            &.material-icons {
+
+                // User select
+                user-select: none;
+                cursor: default;
+
+            }
+
+        }
+
+    }
+
+}

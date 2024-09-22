@@ -551,14 +551,14 @@ export default class Form {
                 if(items[i].tagName == "INPUT"){
 
                     // Set Read only
-                    items[i].setAttribute("readonly", "");
+                    items[i].setAttribute("readonly", "loading");
 
                 }else
                 // Chech button
                 if(items[i].tagName == "BUTTON"){
 
                     // Set Read only
-                    items[i].setAttribute("disabled", "");
+                    items[i].setAttribute("disabled", "loading");
 
                 }
 
@@ -586,21 +586,23 @@ export default class Form {
             for (let i = 0; i < items.length; i++){
 
                 // Check tag name
-                if(items[i].tagName == "INPUT" && items[i].hasAttribute("readonly")){
+                if(items[i].tagName == "INPUT" && items[i].hasAttribute("readonly") && items[i].getAttribute("readonly") == "loading"){
 
                     // Set Read only
                     items[i].removeAttribute("readonly");
 
                 }else
                 // Check tag name
-                if(items[i].tagName == "INPUT" && items[i].hasAttribute("disabled")){
+                if(items[i].tagName == "INPUT" && items[i].hasAttribute("disabled") && items[i].getAttribute("disabled") == "loading"){
+
+                    console.log(items[i]);
 
                     // Set Read only
                     items[i].removeAttribute("disabled");
 
                 }else
                 // Chech button
-                if(items[i].tagName == "BUTTON" && items[i].hasAttribute("disabled")){
+                if(items[i].tagName == "BUTTON" && items[i].hasAttribute("disabled") && items[i].getAttribute("disabled") == "loading"){
 
                     // Set Read only
                     items[i].removeAttribute("disabled");

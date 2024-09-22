@@ -43,11 +43,11 @@ class Form {
     /** @var string $_description Title of the form */
     private string $_description = "";
 
-    /** @var string $_entity Entity of the form */
-    private string $_entity = "";
+    /** @var string|null $_entity Entity of the form */
+    private string|null $_entity = null;
 
-    /** @var array $_onready On ready */
-    private string $_onready = "";
+    /** @var string|null $_onready On ready */
+    private string|null $_onready = null;
 
     /** @var array $_items of the form */
     private array $_items = [];
@@ -61,8 +61,9 @@ class Form {
         "type"      =>  "",
         "label"     =>  "",
         "readonly"  =>  "",
-        "disable"   =>  "",
+        "disabled"  =>  "",
         "required"  =>  "",
+        "select"    =>  []
     ];
 
     /**
@@ -165,10 +166,10 @@ class Form {
      * 
      * Set Entity of the form
      * 
-     * @param string $title Title of the form
+     * @param string|null $title Title of the form
      * @return Form
      */
-    public function setEntity(string $entity = ""):Form {
+    public function setEntity(string|null $entity = null):Form {
 
         # Set id
         $this->_entity = $entity;
@@ -201,10 +202,10 @@ class Form {
      * 
      * Set On Ready action of the form
      * 
-     * @param string $onReady Title of the form
+     * @param string|null $onReady Title of the form
      * @return Form
      */
-    public function setOnReady(string $onReady = ""):Form {
+    public function setOnReady(string|null $onReady = null):Form {
 
         # Set id
         $this->_onready = $onReady;

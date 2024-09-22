@@ -21,7 +21,7 @@
 @import '/node_modules/tippy.js/animations/shift-away.css';
 
 // Component enhance
-@import './component_enhance.scss';
+@import './component_enhance.scss', './enhancement/form_materializecss.scss';
 
 // Import color
 @import './color_collection.scss', './color_gradient_collection.scss', './color_class.scss';
