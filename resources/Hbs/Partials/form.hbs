@@ -1,0 +1,119 @@
+{{!--
+  ! Form
+  !
+  ! Form partiel
+  !
+  ! HANDLEBARS.JS version 4.7.7
+  !
+  ! @package    kzarshenas/crazyphp
+  ! @author     kekefreedog <kevin.zarshenas@gmail.com>
+  ! @copyright  2022-2023 Kévin Zarshenas
+  !--}}
+{{#if form}}{{!-- Form --}}
+<form 
+    id="{{form.id}}"
+    class="row crazy-form g-0"
+    {{#if form.entity}}entity="{{form.entity}}"{{/if}}
+    {{#if form.onready}}onready="{{form.onready}}"{{/if}} 
+    partial="form"
+>
+    {{!-- Items --}}
+    {{#each form.items as |item|}}
+    <div class="input-field col s12 mn-2{{#if item._style.customClass.input-field}} {{item._style.customClass.input-field}}{{/if}}" style="margin-bottom: 15px;">
+        
+        {{!-- Range Input --}}
+        {{#is item.type "range"}} 
+        {{#if item.label}}{{item.label}}{{/if}}
+        <p class="range-field mt-0">
+            {{#if item.disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{/if}}
+            <input 
+                id="{{../form.id}}_{{item.name}}"
+                name="{{item.name}}" 
+                type="range"
+                min="0"
+                max="100"
+                class="pt-0{{#if item._style.customClass.input}} {{item._style.customClass.input}}{{/if}}"
+                {{#if item.disabled}}disabled=""{{else}}{{#if ../form.onready}}disabled="loading"{{/if}}{{/if}}
+            />
+        </p>
+
+        {{!-- Switch Input --}}
+        {{else}}{{#is item.type "switch"}}
+        {{#if item.label}}{{item.label}}{{/if}}
+        <div class="switch{{#if item.label}}  mt-4{{/if}}"><label>
+            {{#if item.disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{/if}}
+            Off
+            <input
+                id="{{../form.id}}_{{item.name}}" 
+                name="{{item.name}}"
+                type="checkbox"
+                {{#if item._style.customClass.input}}class="{{item._style.customClass.input}}"{{/if}}
+                {{#if item.disabled}}disabled=""{{else}}{{#if radioItem.disabled}}disabled=""{{else}}disabled="loading"{{/if}}{{/if}}
+            >
+            <span class="lever"></span>
+            On
+        </label></div>
+
+        {{!-- Radio Input --}}
+        {{else}}{{#is item.type "radio"}}
+        <div id="{{form.id}}_{{item.name}}">
+            {{#if item.disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{/if}}
+            {{#if item.label}}{{item.label}}{{/if}}
+            {{#each item.select as |radioItem|}}<p><label>
+                <input
+                    name="{{item.name}}"
+                    type="radio"
+                    {{#if item._style.customClass.input}}class="{{item._style.customClass.input}}"{{/if}}
+                    {{#if item.disabled}}disabled=""{{else}}{{#if radioItem.disabled}}disabled=""{{else}}disabled="loading"{{/if}}{{/if}}
+                />
+                <span>{{radioItem.label}}{{#if radioItem.disabled}}<i class="material-icons ml-3">lock</i>{{/if}}</span>
+            </label></p>{{/each}}
+        </div>
+
+        {{!-- Checkbox Input --}}
+        {{else}}{{#is item.type "checkbox"}}
+        <p><label>
+            {{#if item.disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{/if}}
+            <input 
+                id="{{../form.id}}_{{item.name}}" 
+                name="{{item.name}}" 
+                type="checkbox"
+                {{#if item._style.customClass.input}}class="{{item._style.customClass.input}}"{{/if}}
+                {{#if item.disabled}}disabled=""{{else}}{{#if ../form.onready}}disabled="loading"{{/if}}{{/if}}
+            />
+            {{#if item.label}}<span>{{item.label}}</span>{{/if}}
+        </label></p>
+        {{else}}
+
+        {{!-- Text Input --}}
+        {{#if item.disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{else}}
+        {{#if item._style.suffix}}<div class="suffix"><i class="{{item._style.suffix.class}}">{{item._style.suffix.text}}</i></div>{{/if}}{{/if}}
+        {{#if item._style.prefix}}<div class="prefix"><i class="{{item._style.prefix.class}}">{{item._style.prefix.text}}</i></div>{{/if}}
+        <input 
+            toto="{{JSONstringify item}}"
+            id="{{../form.id}}_{{item.name}}" 
+            name="{{item.name}}"
+            {{#if item._style.customClass.input}}class="{{item._style.customClass.input}}"{{/if}}
+            {{#if item.disabled}}disabled=""{{else}}{{#if ../form.onready}}disabled="loading"{{/if}}{{/if}}
+            {{#if item.type}}type="{{item.type}}"{{else}}type="text"{{/if}}
+            {{#if item.placeholder}}placeholder="{{item.placeholder}}"{{else}}placeholder=" "{{/if}}  
+        >
+        {{#if item.label}}<label for="{{../form.id}}_{{item.name}}">{{item.label}}</label>{{/if}}
+        {{/is}}{{/is}}{{/is}}{{/is}}
+
+    </div>
+    {{/each}}
+
+    {{!-- Submit --}}
+    <div class="col s12 screen-flex screen-right">
+        {{!-- Reset Button --}}
+        {{#if form.reset}}<button class="btn waves-effect waves-light right red white-text mr-5" type="reset" {{#if form.onready}}disabled=""{{/if}}>Reset
+            <i class="material-icons right">delete_forever</i>
+        </button>{{/if}}
+        {{!-- Submit button --}}
+        <button class="btn waves-effect waves-light green" type="submit" {{#if form.onready}}disabled=""{{/if}}>Save
+            <i class="material-icons right">save</i>
+        </button>
+    </div>
+
+</form>{{/if}}

@@ -57,13 +57,15 @@ class Form {
 
     /** @var array $_items_schema Schema of an item */
     private array $_item_schema = [
-        "name"      =>  "",
-        "type"      =>  "",
-        "label"     =>  "",
-        "readonly"  =>  "",
-        "disabled"  =>  "",
-        "required"  =>  "",
-        "select"    =>  []
+        "name"          =>  "",
+        "type"          =>  "",
+        "label"         =>  "",
+        "readonly"      =>  "",
+        "disabled"      =>  "",
+        "required"      =>  "",
+        "placeholder"   =>  "",
+        "select"        =>  [],
+        "_style"        =>  [],
     ];
 
     /**

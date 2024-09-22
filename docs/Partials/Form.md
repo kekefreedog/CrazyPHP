@@ -111,3 +111,39 @@ Partial Form allow to add a form into your page of any component that is calling
             label: Disabled Range Input
             disabled: true
 ```
+
+```yml
+# Custom form
+-
+    id: "form_id"               # Id of the form
+    title: Form                 # Name / Label of the form
+    entity: null                # Main entity on the database
+    onready: null
+    reset: true
+    items:
+        -   # Exemple of simple text input with placeholder
+            name: placeholder_text_input
+            type: text
+            label: Placeholder Text Input
+            placeholder: Text used as placeholder
+        -   # Exemple of simple text input with custom class
+            name: placeholder_text_input
+            type: text
+            label: Placeholder Text Input
+            _style:
+                prefix:
+                    class: material-icons
+                    text: place
+                suffix:
+                    class: material-icons
+                    text: gps_fixed
+                customClass: 
+                    input-field: outlined
+        -   # Exemple of checkbox with custom class
+            name: checkbox_input
+            type: checkbox
+            label: Checkbox Input
+            _style:
+                customClass: 
+                    input: filled-in
+```
