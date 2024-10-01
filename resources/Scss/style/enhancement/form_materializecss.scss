@@ -18,7 +18,7 @@
     cursor: default;
 
     // Color
-    color: var(--md-sys-color-on-surface);
+    color: var(--md-sys-color-on-background)!important;
 
     // Material icons
     &.material-icons {
@@ -56,5 +56,14 @@ div.switch:has(input[type="checkbox"]) {
         }
 
     }
+
+}
+
+/*
+ * Fix border for range input type
+ */
+.input-field input[type="range"]:focus {
+
+    border-bottom: none!important;
 
 }

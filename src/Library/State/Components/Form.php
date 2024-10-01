@@ -18,6 +18,8 @@ namespace  CrazyPHP\Library\State\Components;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Form\Process;
 use ReflectionClass;
+use DateTime;
+use Error;
 
 /**
  * Page
@@ -65,6 +67,7 @@ class Form {
         "required"      =>  "",
         "placeholder"   =>  "",
         "select"        =>  [],
+        "default"       =>  null,
         "_style"        =>  [],
     ];
 
@@ -255,10 +258,18 @@ class Form {
             foreach($item as $k => $v)
 
                 # Check if key in key schema
-                if(array_key_exists($k, $this->_item_schema))
+                if(array_key_exists($k, $this->_item_schema)){
+
+                    # Check is method exists
+                    if(($item["type"] ?? false) && method_exists($this, "_pushItems".ucfirst($k)."Type".ucfirst($item["type"])))
+
+                        # Process value
+                        $v = $this->{"_pushItems".ucfirst($k)."Type".ucfirst($item["type"])}($v, $item, $itemTemp);
 
                     # Push value
                     $itemTemp[$k] = $v;
+
+                }
 
         # Check itemp temp
         if(!empty($itemTemp))
@@ -352,6 +363,361 @@ class Form {
 
             # Push onready
             $result["items"] = $this->_items;
+
+        # Return result
+        return $result;
+
+    }
+
+    /** Private methods | pushItem
+     * 
+     * Method name nomenclature :
+     *  "_pushItems<Attribute>)Type<Type>
+     * 
+     * Exemple _pushItemsSelectTypeRange
+     * 
+     ******************************************************
+     */
+
+    /**
+     * Push Items Type Password
+     * 
+     * Keep only two first item and check min and max
+     * 
+     * @param mixed $value
+     * @param array $currentItem
+     * @return mixed 
+     */
+    private function _pushItemsDefaultTypePassword(mixed $value, array $currentItem):mixed {
+
+        # Set result
+        $result = $value;
+
+        # Check value
+        if(
+            $value && (
+                !isset($currentItem['_style']['password']['visible']) ||
+                (
+                    isset($currentItem['_style']['password']['visible']) &&
+                    !$currentItem['_style']['password']['visible']
+                )
+            )
+        )
+
+            # Set result
+            $result = "Password";
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Push Items Type Range
+     * 
+     * Keep only two first item and check min and max
+     * 
+     * @param mixed $value
+     * @param array $currentItem
+     * @return mixed 
+     */
+    private function _pushItemsSelectTypeRange(mixed $value, array $currentItem):mixed {
+
+        # Set result
+        $result = [];
+
+        # Check value
+        if(is_array($value) && count($value) >= 2){
+
+            # Keep 2 first item of the value
+            $resultTemp = array_slice($value, 0, 2);
+
+            # First item
+            $firstItem = current($resultTemp);
+
+            # Second item
+            $secondItem = next($resultTemp);
+
+            # Set result
+            $result = [
+                0   =>  [
+                    "value" =>  (is_numeric($firstItem["value"] ?? false))
+                        ? intval($firstItem["value"])
+                        : 0
+                ],
+                1   =>  [
+                    "value" =>  (is_numeric($secondItem["value"] ?? false))
+                        ? intval($secondItem["value"])
+                        : 100
+                ]
+            ];
+
+            # Compare first and second value
+            if($result[0]["value"] > $result[1]["value"])
+
+                # Reverse array
+                $result = array_reverse($result);
+
+        }
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Push Items Type Number
+     * 
+     * Keep only two first item and check min and max
+     * 
+     * @param mixed $value
+     * @param array $currentItem
+     * @return mixed 
+     */
+    private function _pushItemsSelectTypeNumber(mixed $value, array $currentItem):mixed {
+
+        # Set result
+        $result = [];
+
+        # Check value
+        if(is_array($value) && count($value) >= 2){
+
+            # Keep 2 first item of the value
+            $resultTemp = array_slice($value, 0, 2);
+
+            # First item
+            $firstItem = current($resultTemp);
+
+            # Second item
+            $secondItem = next($resultTemp);
+
+            # Set result
+            $result = [
+                0   =>  [
+                    "value" =>  (is_numeric($firstItem["value"] ?? false))
+                        ? intval($firstItem["value"])
+                        : 0
+                ],
+                1   =>  [
+                    "value" =>  (is_numeric($secondItem["value"] ?? false))
+                        ? intval($secondItem["value"])
+                        : 100
+                ]
+            ];
+
+            # Compare first and second value
+            if($result[0]["value"] > $result[1]["value"])
+
+                # Reverse array
+                $result = array_reverse($result);
+
+        }
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Push Items Type Number
+     * 
+     * Check default is number
+     * 
+     * @param mixed $value
+     * @param array $currentItem
+     * @param array &$itemTemp Current item return to front
+     * @return mixed 
+     */
+    private function _pushItemsDefaultTypeNumber(mixed $value, array $currentItem, array &$itemTemp):mixed {
+
+        # Set result
+        $result = null;
+
+        # Check value
+        if(is_numeric($value)){
+
+            # Parse number
+            $result = intval($value);
+
+        }else{
+
+            # Push error
+            $itemTemp["error"][] = [
+                "message"   =>  "Default number given \"$value\" is not a valid number",
+            ];
+
+        }
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Push Items Type Number
+     * 
+     * Check default is number
+     * 
+     * @param mixed $value
+     * @param array $currentItem
+     * @param array &$itemTemp Current item return to front
+     * @return mixed 
+     */
+    private function _pushItemsDefaultTypeDate(mixed $value, array &$currentItem, array &$itemTemp):mixed {
+
+        # Set result
+        $result = null;
+
+        # Check value 
+        if($value){
+
+            # Check if Today Yesterday Tomorrow in value
+            $value = static::_parseTodayYesterdayTomorrow($value);
+
+            # Check value
+            if(static::_isYmdDate($value))
+
+                # Set number
+                $result = $value;
+
+            # Else
+            else
+
+                # Push error
+                $itemTemp["error"][] = [
+                    "message"   =>  "Default date given \"$value\" is not matching pattern \"Y-m-d\""
+                ];
+
+        }
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Push Items Type Date
+     * 
+     * Keep only two first item and check min and max
+     * 
+     * @param mixed $value
+     * @param array $currentItem
+     * @return mixed 
+     */
+    private function _pushItemsSelectTypeDate(mixed $value, array $currentItem):mixed {
+
+        # Set result
+        $result = [];
+
+        # Check value
+        if(is_array($value) && count($value) >= 2){
+
+            # Keep 2 first item of the value
+            $resultTemp = array_slice($value, 0, 2);
+
+            # First item
+            $firstItem = static::_parseTodayYesterdayTomorrow(current($resultTemp)["value"] ?? null);
+
+            # Second item
+            $secondItem = static::_parseTodayYesterdayTomorrow(next($resultTemp)["value"] ?? null);
+
+            # Check if dates are valid
+            if(static::_isYmdDate($firstItem) && static::_isYmdDate($secondItem)){
+
+                # Set result
+                $result = [
+                    0   =>  [
+                        "value" =>  $firstItem
+                    ],
+                    1   =>  [
+                        "value" =>  $secondItem
+                    ]
+                ];
+
+            # Else
+            }else
+
+                # Push error
+                $itemTemp["error"][] = [
+                    "message"   =>  "Range from \"$firstItem\" to \"$secondItem\" is not valid"
+                ];
+
+            # Compare first and second value
+            if((new DateTime($result[0]["value"])) > (new DateTime($result[1]["value"])))
+
+                # Reverse array
+                $result = array_reverse($result);
+
+        }
+
+        # Return result
+        return $result;
+
+    }
+
+    /** Private static methods
+     ******************************************************
+     */
+
+    /**
+     * Parse Today Yesterday Tomorrow
+     * 
+     * @param mixed $value
+     * @return mixed
+     */
+    private static function _parseTodayYesterdayTomorrow(mixed $value):mixed {
+
+        # Set result
+        $result = $value;
+
+        # Check if value is today()
+        if($value == "today()")
+
+            # Set current date
+            $result = date('Y-m-d');
+
+        else
+        # Check if value is yesterday
+        if($value == "yesterday()")
+
+            # Set previous date
+            $result = date('Y-m-d', strtotime('-1 day'));
+
+        else
+        # Check if value is tomorrow
+        if($value == "tomorrow()")
+
+            # Set previous date
+            $result = date('Y-m-d', strtotime('+1 day'));
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Is Y m d date
+     * @param mixed $value
+     * @return bool
+     */
+    private static function _isYmdDate(mixed $value):bool {
+
+        # Set result
+        $result = false;
+
+        # Check result
+        if(is_string($value) && $value){
+
+            # Convert to date
+            $dateInstance = DateTime::createFromFormat('Y-m-d', $value);
+
+            # Check value
+            if($dateInstance && ($dateInstance->format('Y-m-d') === $value))
+
+                # Set result
+                $result = true;
+
+        }
 
         # Return result
         return $result;

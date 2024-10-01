@@ -25,6 +25,7 @@
         "tslib": "^2.4.1"
     },
     "dependencies": {
-        "@material/material-color-utilities": "^0.3.0"
+        "@material/material-color-utilities": "^0.3.0",
+        "maska": "^3.0.2"
     }
 }

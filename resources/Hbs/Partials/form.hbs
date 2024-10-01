@@ -19,10 +19,70 @@
 >
     {{!-- Items --}}
     {{#each form.items as |item|}}
-    <div class="input-field col s12 mn-2{{#if item._style.customClass.input-field}} {{item._style.customClass.input-field}}{{/if}}" style="margin-bottom: 15px;">
+    <div class="input-field col s12 mn-2{{#if item._style.customClass.input-field}} {{item._style.customClass.input-field}}{{/if}}" style="margin-bottom: {{#is item.type "range"}}0{{else}}15{{/is}}px;">
         
+        {{!-- Password Input --}}
+        {{#is item.type "password"}}
+        {{#if item.disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{else}}
+        {{#if item._style.password.visible}}<div class="suffix cursor-pointer waves-effect waves-circle"><i class="material-icons">visibility</i></div>{{else}}
+        {{#if item._style.suffix}}<div class="suffix"><i class="{{item._style.suffix.class}}">{{item._style.suffix.text}}</i></div>{{/if}}{{/if}}{{/if}}
+        {{#if item._style.prefix}}<div class="prefix"><i class="{{item._style.prefix.class}}">{{item._style.prefix.text}}</i></div>{{/if}}
+        <input
+            {{#if item._style.password.visible}}data-password-visible="0"{{/if}}
+            id="{{../form.id}}_{{item.name}}" 
+            name="{{item.name}}"
+            {{#if item._style.customClass.input}}class="{{item._style.customClass.input}}"{{/if}}
+            {{#if item.disabled}}disabled=""{{else}}{{#if ../form.onready}}disabled="loading"{{/if}}{{/if}}
+            type="password"
+            {{#if item.placeholder}}placeholder="{{item.placeholder}}"{{else}}placeholder=" "{{/if}}
+            {{#if item.readonly}}readonly=""{{/if}}
+            {{#if item.default}}value="{{item.default}}"{{/if}}
+            {{#if item._style.text.minlength includeZero=false}}minlength="{{item._style.text.minlength}}"{{/if}}
+            {{#if item._style.text.maxlength includeZero=false}}maxlength="{{item._style.text.maxlength}}"{{/if}}
+        >
+        {{#if item.label}}<label for="{{../form.id}}_{{item.name}}">{{item.label}}</label>{{/if}}
+
+        {{!-- Date Input --}}
+        {{else}}{{#is item.type "date"}} 
+        {{#if item.disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{else}}
+        {{#if item._style.suffix}}<div class="suffix"><i class="{{item._style.suffix.class}}">{{item._style.suffix.text}}</i></div>{{/if}}{{/if}}
+        {{#if item._style.prefix}}<div class="prefix"><i class="{{item._style.prefix.class}}">{{item._style.prefix.text}}</i></div>{{/if}}
+        <input
+            id="{{../form.id}}_{{item.name}}" 
+            name="{{item.name}}"
+            {{#if item._style.customClass.input}}class="{{item._style.customClass.input}}"{{/if}}
+            {{#if item.disabled}}disabled=""{{else}}{{#if ../form.onready}}disabled="loading"{{/if}}{{/if}}
+            type="date"
+            {{#if item.placeholder}}placeholder="{{item.placeholder}}"{{else}}placeholder=" "{{/if}}
+            {{#if item.readonly}}readonly=""{{/if}}
+            {{#if item.default}}value="{{item.default}}"{{/if}}
+            {{#if item.select.[0].value}}min="{{item.select.[0].value}}"{{/if}}
+            {{#if item.select.[1].value}}max="{{item.select.[1].value}}"{{/if}}
+        >
+        {{#if item.label}}<label for="{{../form.id}}_{{item.name}}">{{item.label}}</label>{{/if}}
+        
+        {{!-- Number Input --}}
+        {{else}}{{#is item.type "number"}} 
+        {{#if item.disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{else}}
+        {{#if item._style.suffix}}<div class="suffix"><i class="{{item._style.suffix.class}}">{{item._style.suffix.text}}</i></div>{{/if}}{{/if}}
+        {{#if item._style.prefix}}<div class="prefix"><i class="{{item._style.prefix.class}}">{{item._style.prefix.text}}</i></div>{{/if}}
+        <input
+            id="{{../form.id}}_{{item.name}}" 
+            name="{{item.name}}"
+            {{#if item._style.customClass.input}}class="{{item._style.customClass.input}}"{{/if}}
+            {{#if item.disabled}}disabled=""{{else}}{{#if ../form.onready}}disabled="loading"{{/if}}{{/if}}
+            type="number"
+            {{#if item.placeholder}}placeholder="{{item.placeholder}}"{{else}}placeholder=" "{{/if}}
+            {{#if item.readonly}}readonly=""{{/if}}
+            {{#if item.default includeZero=false}}value="{{item.default}}"{{/if}}
+            {{#if item.select.[0].value includeZero=false}}min="{{item.select.[0].value}}"{{/if}}
+            {{#if item.select.[1].value includeZero=false}}max="{{item.select.[1].value}}"{{/if}}
+            data-maska="N" data-maska-tokens="N:[0-9]:multiple" inputmode="numeric"
+        >
+        {{#if item.label}}<label for="{{../form.id}}_{{item.name}}">{{item.label}}</label>{{/if}}
+
         {{!-- Range Input --}}
-        {{#is item.type "range"}} 
+        {{else}}{{#is item.type "range"}}
         {{#if item.label}}{{item.label}}{{/if}}
         <p class="range-field mt-0">
             {{#if item.disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{/if}}
@@ -30,10 +90,12 @@
                 id="{{../form.id}}_{{item.name}}"
                 name="{{item.name}}" 
                 type="range"
-                min="0"
-                max="100"
+                min="{{#if item.select.[0].value}}{{item.select.[0].value}}{{else}}0{{/if}}"
+                max="{{#if item.select.[1].value}}{{item.select.[1].value}}{{else}}100{{/if}}"
                 class="pt-0{{#if item._style.customClass.input}} {{item._style.customClass.input}}{{/if}}"
                 {{#if item.disabled}}disabled=""{{else}}{{#if ../form.onready}}disabled="loading"{{/if}}{{/if}}
+                {{#if item.default includeZero=false}}value="{{item.default}}"{{/if}}
+                {{#if item._style.range.step}}step="{{item._style.range.step}}"{{/if}}
             />
         </p>
 
@@ -49,6 +111,7 @@
                 type="checkbox"
                 {{#if item._style.customClass.input}}class="{{item._style.customClass.input}}"{{/if}}
                 {{#if item.disabled}}disabled=""{{else}}{{#if radioItem.disabled}}disabled=""{{else}}disabled="loading"{{/if}}{{/if}}
+                {{#if item.default}}checked=""{{/if}}
             >
             <span class="lever"></span>
             On
@@ -65,6 +128,7 @@
                     type="radio"
                     {{#if item._style.customClass.input}}class="{{item._style.customClass.input}}"{{/if}}
                     {{#if item.disabled}}disabled=""{{else}}{{#if radioItem.disabled}}disabled=""{{else}}disabled="loading"{{/if}}{{/if}}
+                    {{#if item.default includeZero=false}}{{#is item.default radioItem.value}}checked=""{{/is}}{{else}}{{#if radioItem.default}}checked=""{{/if}}{{/if}}
                 />
                 <span>{{radioItem.label}}{{#if radioItem.disabled}}<i class="material-icons ml-3">lock</i>{{/if}}</span>
             </label></p>{{/each}}
@@ -80,6 +144,7 @@
                 type="checkbox"
                 {{#if item._style.customClass.input}}class="{{item._style.customClass.input}}"{{/if}}
                 {{#if item.disabled}}disabled=""{{else}}{{#if ../form.onready}}disabled="loading"{{/if}}{{/if}}
+                {{#if item.default includeZero=false}}checked=""{{/if}}
             />
             {{#if item.label}}<span>{{item.label}}</span>{{/if}}
         </label></p>
@@ -89,17 +154,20 @@
         {{#if item.disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{else}}
         {{#if item._style.suffix}}<div class="suffix"><i class="{{item._style.suffix.class}}">{{item._style.suffix.text}}</i></div>{{/if}}{{/if}}
         {{#if item._style.prefix}}<div class="prefix"><i class="{{item._style.prefix.class}}">{{item._style.prefix.text}}</i></div>{{/if}}
-        <input 
-            toto="{{JSONstringify item}}"
+        <input
             id="{{../form.id}}_{{item.name}}" 
             name="{{item.name}}"
             {{#if item._style.customClass.input}}class="{{item._style.customClass.input}}"{{/if}}
             {{#if item.disabled}}disabled=""{{else}}{{#if ../form.onready}}disabled="loading"{{/if}}{{/if}}
             {{#if item.type}}type="{{item.type}}"{{else}}type="text"{{/if}}
-            {{#if item.placeholder}}placeholder="{{item.placeholder}}"{{else}}placeholder=" "{{/if}}  
+            {{#if item.placeholder}}placeholder="{{item.placeholder}}"{{else}}placeholder=" "{{/if}}
+            {{#if item.readonly}}readonly=""{{/if}}
+            {{#if item.default}}value="{{item.default}}"{{/if}}
+            {{#if item._style.text.minlength includeZero=false}}minlength="{{item._style.text.minlength}}"{{/if}}
+            {{#if item._style.text.maxlength includeZero=false}}maxlength="{{item._style.text.maxlength}}"{{/if}}
         >
         {{#if item.label}}<label for="{{../form.id}}_{{item.name}}">{{item.label}}</label>{{/if}}
-        {{/is}}{{/is}}{{/is}}{{/is}}
+        {{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}
 
     </div>
     {{/each}}

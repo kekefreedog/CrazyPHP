@@ -10,7 +10,7 @@
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2024 Kévin Zarshenas
  */
-namespace  CrazyPHP\Library\Model;
+namespace  CrazyPHP\Library\Internet;
 
 /**
  * Dependances
@@ -49,7 +49,7 @@ class Internet {
      * @param int $portToTest Port to test
      * @return bool
      */
-    public function isConnected(string $pageToTest = "https://www.w3.org", int $portToTest = 80):bool {
+    public static function isConnected(string $pageToTest = "https://www.w3.org", int $portToTest = 80):bool {
 
         # Set result
         $result = false;

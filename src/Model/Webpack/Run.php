@@ -15,6 +15,7 @@ namespace CrazyPHP\Model\Webpack;
 /**
  * Dependances
  */
+use CrazyPHP\Library\Internet\Internet;
 use CrazyPHP\Library\Model\CrazyModel;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Interface\CrazyCommand;
@@ -194,8 +195,11 @@ class Run extends CrazyModel implements CrazyCommand {
      */
     public function runNpmInstall():self {
 
-        # Install npm dependences
-        Package::exec("install", "", false);
+        # Check internet connection
+        if(Internet::isConnected())
+
+            # Install npm dependences
+            Package::exec("install", "", false);
 
         # Return instance
         return $this;

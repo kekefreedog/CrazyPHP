@@ -36,6 +36,8 @@ Structure:
                 files:
                   hello.hbs:
                     source: "@crazyphp_root/resources/Hbs/Partials/hello.hbs"
+                  form.hbs:
+                    source: "@crazyphp_root/resources/Hbs/Partials/form.hbs"
           Jpeg: null
           Js: null
           Png: null
@@ -157,6 +159,8 @@ Structure:
                         files:
                           jspreadsheet_materializecss.scss:
                             source: "@crazyphp_root/resources/Scss/style/enhancement/jspreadsheet_materializecss.scss"
+                          form_materializecss.scss:
+                            source: "@crazyphp_root/resources/Scss/style/enhancement/form_materializecss.scss"
                     files:
                       color_class.scss:
                         source: "@crazyphp_root/resources/Scss/style/color_class.scss"
@@ -256,6 +260,8 @@ Structure:
                 files:
                   Hello.ts:
                     source: "@crazyphp_root/resources/Environment/Partials/Hello.ts"
+                  Form.ts:
+                    source: "@crazyphp_root/resources/Environment/Partials/Form.ts"
               Structure:
                 folders:
                   Navigation: null

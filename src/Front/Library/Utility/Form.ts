@@ -12,10 +12,12 @@
  * Dependances
  */
 import {default as PageError} from './../Error/Page';
+import {default as UtilityStrings} from './Strings';
 import Crazyrequest from '../Crazyrequest';
+import Page from '../Loader/Page';
+import { MaskInput } from "maska"
 import Root from '../Dom/Root';
 import Arrays from './Arrays';
-import Page from '../Loader/Page';
 
 /**
  * Form
@@ -44,6 +46,8 @@ export default class Form {
         // Scan current form
         this._ingestForm(form)
             .then(
+                this._initForm
+            ).then(
                 this._initOnReady
             ).then(
                 this._initEventOnSubmit
@@ -669,11 +673,52 @@ export default class Form {
     }
 
     /**
+     * Init Form
+     * 
+     * Prepare form input
+     * 
+     * @returns {Promise<void>}
+     */
+    private _initForm = async():Promise<void> => {
+
+        // Get all input
+        let allInputEls = this._formEl.querySelectorAll("input, select");
+
+        // Check inputs
+        if(allInputEls.length)
+
+            // Iteration
+            for(let inputEl of Array.from(allInputEls)){
+
+                // Check input of select
+                if(inputEl instanceof HTMLInputElement || inputEl instanceof HTMLSelectElement){
+
+                    // Get init method name
+                    let initMethodName:string = `_init${UtilityStrings.ucfirst(inputEl.type.toLowerCase())}Input`;
+
+                    // Check initMethodName in this 
+                    if(initMethodName in this){
+
+                        // Run method
+                        this[initMethodName](inputEl);
+
+                    }else
+
+                        // Check init
+                        console.info(`Need to implement "${initMethodName}"`);
+
+                }
+
+            }
+
+    }
+
+    /**
      * Init On Ready
      * 
      * Check action to accompish before loading
      * 
-     * @return Promise<void>
+     * @returns {Promise<void>}
      */
     private _initOnReady = async():Promise<void> => {
 
@@ -998,6 +1043,86 @@ export default class Form {
 
         // Push value id in form
         this._formEl.setAttribute("value_id", keysCollection.pop() as string);
+
+    }
+
+    /** Private methods | Init input
+     ******************************************************
+     */
+
+    /**
+     * Init Number Input
+     * 
+     * @param inputEl 
+     * @returns {void}
+     */
+    private _initNumberInput = (inputEl:HTMLSelectElement|HTMLInputElement):void => {
+
+        // Check maska
+        if(inputEl instanceof HTMLInputElement && inputEl.dataset && "maska" in inputEl.dataset){
+
+            // Init maska
+            new MaskInput(inputEl);
+
+        }
+
+    }
+
+    /**
+     * Init Password Input
+     * 
+     * @param inputEl 
+     * @returns {void}
+     */
+    private _initPasswordInput = (inputEl:HTMLSelectElement|HTMLInputElement):void => {
+
+        // Check maska
+        if(inputEl instanceof HTMLInputElement && inputEl.dataset && "passwordVisible" in inputEl.dataset && inputEl.parentNode){
+
+            // Get password visible
+            let passwordVisible = inputEl.dataset.passwordVisible;
+
+            // Get prefix
+            let suffixEl = inputEl.parentNode.querySelector("div.suffix");
+
+            // Add event on password
+            typeof passwordVisible === "string" && suffixEl && suffixEl.addEventListener("click", (e:Event) =>{
+
+                // Get password visible
+                let passwordVisible = inputEl.dataset.passwordVisible;
+
+                // Check e.target
+                if(e.currentTarget && e.currentTarget instanceof HTMLDivElement){
+
+                    // Change input type
+                    inputEl.type = passwordVisible == "0" 
+                        ? "text"
+                        : "password"
+                    ;
+
+                    // Get icon
+                    let suffixIconEl = suffixEl && suffixEl.querySelector("i");
+
+                    // Check suffix icon
+                    if(suffixIconEl && suffixIconEl instanceof HTMLElement)
+
+                        // Change icon
+                        suffixIconEl.innerHTML = passwordVisible == "0"
+                            ? "visibility_off"
+                            : "visibility"
+                        ;
+
+                    // Change attribute
+                    inputEl.dataset.passwordVisible = passwordVisible == "0"
+                        ? "1"
+                        : "0"
+                    ;
+
+                }
+
+            }, true);
+
+        }
 
     }
 

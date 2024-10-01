@@ -51,7 +51,7 @@ Partial Form allow to add a form into your page of any component that is calling
 ```
 
 ```yml
-# Basic form
+# Disabled form
 -
     id: "form_id"               # Id of the form
     title: Basic Form           # Name / Label of the form
@@ -113,6 +113,23 @@ Partial Form allow to add a form into your page of any component that is calling
 ```
 
 ```yml
+# Readonly form
+-
+    id: "form_id"               # Id of the form
+    title: Basic Form           # Name / Label of the form
+    entity: null                # Main entity on the database
+    onready: null
+    reset: true
+    items:
+        -   # Exemple of disabled text input
+            name: readonly_text_input
+            type: text
+            label: Read Only Text Input
+            readonly: true
+```
+
+
+```yml
 # Custom form
 -
     id: "form_id"               # Id of the form
@@ -146,4 +163,43 @@ Partial Form allow to add a form into your page of any component that is calling
             _style:
                 customClass: 
                     input: filled-in
+        -   # Exemple of range with custum min and max
+            name: custom_range_input_min_max
+            type: range
+            label: Custom Range Min and Max Input
+            select:
+                -   # Min
+                    value: 10
+                -   # Max
+                    value: 90
+        -   # Exemple of range with custum step
+            name: custom_range_input_step
+            type: range
+            label: Custom Range with Step Input
+            _style:
+                range:
+                    # Step
+                    step: 10
+        -   # Exemple of how get current date in default field
+            name: today_date_input
+            type: date
+            label: Current Date Input
+            default: today() # Or yesterday() or tomorrow()
+        -   # Custom number min and max
+            name: custom_number_input_min_max
+            type: number
+            label: Custom Number Min and Max Input
+            select:
+                - 
+                    value: 10
+                -
+                    value: 90
+        -   # Text input with min and max
+            name: text_input_min_max
+            type: text
+            label: Text Input With Min And Max
+            _style:
+                text:
+                    minlength: 2
+                    maxlength: 10
 ```
