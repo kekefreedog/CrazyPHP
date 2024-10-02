@@ -613,7 +613,6 @@ export default class Form {
 
                 }
 
-
             }
 
     }
@@ -690,8 +689,20 @@ export default class Form {
             // Iteration
             for(let inputEl of Array.from(allInputEls)){
 
-                // Check input of select
+                // Check if item given is input or select
                 if(inputEl instanceof HTMLInputElement || inputEl instanceof HTMLSelectElement){
+
+                    // Check is validate is enable
+                    if(inputEl.classList.contains("validate"))
+
+                        // Init validate on input
+                        await this._initEventValidateOnInput(inputEl, allInputEls);
+
+                    // Check if required is enable
+                    if(inputEl.required == true)
+
+                        // Init required on input
+                        await this._initEventRequiredOnInput(inputEl, allInputEls);
 
                     // Get init method name
                     let initMethodName:string = `_init${UtilityStrings.ucfirst(inputEl.type.toLowerCase())}Input`;
@@ -806,6 +817,130 @@ export default class Form {
                     "click",
                     this.eventOnReset
                 );
+
+    }
+
+    /**
+     * Init Event Validate On Input
+     * 
+     * @param inputEl 
+     * @param allInputEls 
+     */
+    private _initEventValidateOnInput = async(inputEl:HTMLInputElement|HTMLSelectElement, allInputEls:NodeListOf<Element>):Promise<void> => {
+
+        // Add event on input els
+        inputEl.addEventListener("invalid", (e:Event) => {
+
+            // Prevent default
+            e.preventDefault();
+
+            // Check currentTarget and its parent
+            if(e.target && e.target instanceof HTMLElement && e.target.closest("div.input-field")){
+
+                // Get parent input field
+                let inputFieldEl = e.target.closest("div.input-field");
+
+                // Add error
+                inputFieldEl?.classList.add("error");
+
+                // Suffix
+
+                // Check if already suffix
+                let suffixEl = inputFieldEl?.querySelector("div.suffix");
+
+                // Check suffix el
+                if(suffixEl){
+
+                    // Replace class
+                    suffixEl.classList.replace("suffix", "suffix-hidden");
+
+                }
+
+                // Create error suffix
+                let suffixErrorEl = this._newSuffixErrorEl();
+
+                // Add suffix
+                inputEl.before(suffixErrorEl);
+
+                // supporting-text
+
+                // Check if already suffix
+                let supportingTextEl = inputFieldEl?.querySelector("span.supporting-text");
+
+                // Check suffix el
+                if(supportingTextEl){
+
+                    // Replace class
+                    supportingTextEl.classList.replace("supporting-text", "suffix-hidden");
+
+                }
+
+                // Create error suffix
+                let supportingTextErrorEl = this._newSupportingTextErrorEl(inputEl, allInputEls);
+
+                // Add suffix
+                inputFieldEl?.append(supportingTextErrorEl);
+
+            }
+
+
+            console.log(e);
+
+        });
+
+    }
+
+    /**
+     * Init Event Required On Input
+     * 
+     * With delay when key up
+     * 
+     * @param inputEl 
+     * @param allInputEls 
+     */
+    private _initEventRequiredOnInput = async(inputEl:HTMLInputElement|HTMLSelectElement, allInputEls:NodeListOf<Element>):Promise<void> => {
+
+        // Check if input
+        if(inputEl instanceof HTMLInputElement){
+
+            // Event function
+            let eventRequiredOnInput = (e:Event) => {
+    
+                // Prevent default
+                e.preventDefault();
+    
+                console.log(e);
+    
+            };
+
+            // Set timer
+            let timeout:ReturnType<typeof setTimeout>|null = null;
+    
+            // Set wait time
+            let waitTime:number = 500;
+
+            // Add event on change
+            inputEl.addEventListener('keyup', (e:Event) => {    
+                
+                // Check timeout
+                if(timeout !== null){
+
+                    // Clear timeout
+                    clearTimeout(timeout);
+
+                }
+
+                // Set timeout
+                timeout = setTimeout(() => {
+
+                    // call event
+                    eventRequiredOnInput(e);
+
+                }, waitTime);
+
+            });
+
+        }
 
     }
 
@@ -1123,6 +1258,74 @@ export default class Form {
             }, true);
 
         }
+
+    }
+
+    /** Private methods | Error
+     ******************************************************
+     */
+
+    /**
+     * New Suffix Error Element
+     * 
+     * @param classContent 
+     * @param textContent 
+     */
+    private _newSuffixErrorEl = (classContent:string = "material-icons", textContent:string = "error"):HTMLDivElement => {
+
+        // Create icon
+        let iconEl = document.createElement("i");
+
+        // Add class on icon
+        iconEl.classList.add(
+            classContent 
+                ? classContent
+                : "material-icons"
+        );
+
+        // Add text
+        iconEl.innerText = textContent
+            ? textContent
+            : "error"
+        ;
+
+        // Create suffix el
+        let suffixEl = document.createElement("div");
+
+        // Add class on suffix el
+        suffixEl.classList.add("suffix");
+
+        // Append icon el
+        suffixEl.appendChild(iconEl);
+
+        // Return el
+        return suffixEl;
+
+     }
+
+    /**
+     * 
+     * New Supporting Text Error El
+     * 
+     * @param inputEl 
+     * @param allInputEls 
+     */
+    private _newSupportingTextErrorEl = (inputEl:HTMLInputElement|HTMLSelectElement, allInputEls:NodeListOf<Element>):HTMLSpanElement => {
+
+        // Create icon
+        let spanEl = document.createElement("span");
+
+        // Add class on suffix el
+        spanEl.classList.add("supporting-text");
+
+        // Add text
+        spanEl.innerText = inputEl.dataset && "error" in inputEl.dataset && inputEl.dataset.error
+            ? inputEl.dataset.error
+            : "Invalid entry"
+        ;
+
+        // Return el
+        return spanEl;
 
     }
 

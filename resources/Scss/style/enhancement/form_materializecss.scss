@@ -67,3 +67,34 @@ div.switch:has(input[type="checkbox"]) {
     border-bottom: none!important;
 
 }
+
+/**
+ * Fix supporting-text position
+ */
+.input-field .supporting-text {
+
+    // Position
+    margin-top: 0px;
+    vertical-align: top;
+
+}
+
+/**
+ * Fix text for error supporting-text
+ */
+.input-field.error .supporting-text {
+
+    // Color
+    color: var(--md-sys-color-on-secondary);
+
+}
+
+/**
+ * Fix .input-field border radius
+ */
+.input-field:not(.outlined), .input-field:not(.outlined) {
+
+    // Border 
+    border-radius: 5px;
+
+}

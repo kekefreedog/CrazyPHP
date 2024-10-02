@@ -47,6 +47,7 @@ class Home extends Controller {
             ->pushForm(static::CUSTOM_FORM)
             ->pushForm(static::READONLY_FORM)
             ->pushForm(static::DEFAULT_FORM)
+            ->pushForm(static::REQUIRED_FORM)
             ->render()
         ;
 
@@ -84,6 +85,12 @@ class Home extends Controller {
                 "name"      =>  "text_input",
                 "type"      =>  "text",
                 "label"     =>  "Text Input"
+            ],
+            # Simple email input
+            [
+                "name"      =>  "email_input",
+                "type"      =>  "email",
+                "label"     =>  "Email Input",
             ],
             # Simple checkbox
             [
@@ -534,6 +541,87 @@ class Home extends Controller {
                 "type"      =>  "password",
                 "label"     =>  "Password Input",
                 "default"   =>  "password"
+            ],
+        ]
+    ];
+
+    /** @var array FORM_REQUIRED */
+    public const REQUIRED_FORM = [
+        "id"            =>  "required_form",
+        "title"         =>  "Required Form",
+        "entity"        =>  null,
+        "onready"       =>  null,
+        "reset"         =>  true,
+        "items"         =>  [
+            # Required text input
+            [
+                "name"      =>  "required_text_input",
+                "type"      =>  "text",
+                "label"     =>  "Required Text Input",
+                "required"  =>  true
+            ],
+            # Required email input
+            [
+                "name"      =>  "required_email_input",
+                "type"      =>  "email",
+                "label"     =>  "Required Email Input",
+                "required"  =>  true
+            ],
+            # Simple checkbox
+            [
+                "name"      =>  "checkbox_input",
+                "type"      =>  "checkbox",
+                "label"     =>  "Checkbox Input",
+            ],
+            # Simple radio
+            [
+                "name"      =>  "radio_input",
+                "type"      =>  "radio",
+                "label"     =>  "Radio Input",
+                "select"    =>  [
+                    [
+                        "label" =>  "Option 1",
+                        "value" =>  1
+                    ],
+                    [
+                        "label" =>  "Option 2",
+                        "value" =>  2
+                    ],
+                    [
+                        "label" =>  "Option 3",
+                        "value" =>  3
+                    ],
+                ]
+            ],
+            # Simple switch
+            [
+                "name"      =>  "switch_input",
+                "type"      =>  "switch",
+                "label"     =>  "Switch Input",
+            ],
+            # Simple range
+            [
+                "name"      =>  "range_input",
+                "type"      =>  "range",
+                "label"     =>  "Range Input",
+            ],
+            # Simple number
+            [
+                "name"      =>  "number_input",
+                "type"      =>  "number",
+                "label"     =>  "Number Input",
+            ],
+            # Date number
+            [
+                "name"      =>  "date_input",
+                "type"      =>  "date",
+                "label"     =>  "Date Input",
+            ],
+            # Password
+            [
+                "name"      =>  "password_input",
+                "type"      =>  "password",
+                "label"     =>  "Password Input",
             ],
         ]
     ];

@@ -39,8 +39,9 @@
             {{#if item.default}}value="{{item.default}}"{{/if}}
             {{#if item._style.text.minlength includeZero=false}}minlength="{{item._style.text.minlength}}"{{/if}}
             {{#if item._style.text.maxlength includeZero=false}}maxlength="{{item._style.text.maxlength}}"{{/if}}
+            {{#if item.required}}required=""{{/if}}
         >
-        {{#if item.label}}<label for="{{../form.id}}_{{item.name}}">{{item.label}}</label>{{/if}}
+        {{#if item.label}}<label for="{{../form.id}}_{{item.name}}">{{#if item.required}}<b>{{/if}}{{item.label}}{{#if item.required}}</b>*{{/if}}</label>{{/if}}
 
         {{!-- Date Input --}}
         {{else}}{{#is item.type "date"}} 
@@ -58,8 +59,9 @@
             {{#if item.default}}value="{{item.default}}"{{/if}}
             {{#if item.select.[0].value}}min="{{item.select.[0].value}}"{{/if}}
             {{#if item.select.[1].value}}max="{{item.select.[1].value}}"{{/if}}
+            {{#if item.required}}required=""{{/if}}
         >
-        {{#if item.label}}<label for="{{../form.id}}_{{item.name}}">{{item.label}}</label>{{/if}}
+        {{#if item.label}}<label for="{{../form.id}}_{{item.name}}">{{#if item.required}}<b>{{/if}}{{item.label}}{{#if item.required}}</b>*{{/if}}</label>{{/if}}
         
         {{!-- Number Input --}}
         {{else}}{{#is item.type "number"}} 
@@ -77,13 +79,14 @@
             {{#if item.default includeZero=false}}value="{{item.default}}"{{/if}}
             {{#if item.select.[0].value includeZero=false}}min="{{item.select.[0].value}}"{{/if}}
             {{#if item.select.[1].value includeZero=false}}max="{{item.select.[1].value}}"{{/if}}
+            {{#if item.required}}required=""{{/if}}
             data-maska="N" data-maska-tokens="N:[0-9]:multiple" inputmode="numeric"
         >
-        {{#if item.label}}<label for="{{../form.id}}_{{item.name}}">{{item.label}}</label>{{/if}}
+        {{#if item.label}}<label for="{{../form.id}}_{{item.name}}">{{#if item.required}}<b>{{/if}}{{item.label}}{{#if item.required}}</b>*{{/if}}</label>{{/if}}
 
         {{!-- Range Input --}}
         {{else}}{{#is item.type "range"}}
-        {{#if item.label}}{{item.label}}{{/if}}
+        {{#if item.label}}{{#if item.required}}<b>{{/if}}{{item.label}}{{#if item.required}}</b>*{{/if}}{{/if}}
         <p class="range-field mt-0">
             {{#if item.disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{/if}}
             <input 
@@ -101,7 +104,7 @@
 
         {{!-- Switch Input --}}
         {{else}}{{#is item.type "switch"}}
-        {{#if item.label}}{{item.label}}{{/if}}
+        {{#if item.label}}{{#if item.required}}<b>{{/if}}{{item.label}}{{#if item.required}}</b>*{{/if}}{{/if}}
         <div class="switch{{#if item.label}}  mt-4{{/if}}"><label>
             {{#if item.disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{/if}}
             Off
@@ -121,11 +124,12 @@
         {{else}}{{#is item.type "radio"}}
         <div id="{{form.id}}_{{item.name}}">
             {{#if item.disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{/if}}
-            {{#if item.label}}{{item.label}}{{/if}}
+            {{#if item.label}}{{#if item.required}}<b>{{/if}}{{item.label}}{{#if item.required}}</b>*{{/if}}{{/if}}
             {{#each item.select as |radioItem|}}<p><label>
                 <input
                     name="{{item.name}}"
                     type="radio"
+                    {{#if item.required}}required=""{{/if}}
                     {{#if item._style.customClass.input}}class="{{item._style.customClass.input}}"{{/if}}
                     {{#if item.disabled}}disabled=""{{else}}{{#if radioItem.disabled}}disabled=""{{else}}disabled="loading"{{/if}}{{/if}}
                     {{#if item.default includeZero=false}}{{#is item.default radioItem.value}}checked=""{{/is}}{{else}}{{#if radioItem.default}}checked=""{{/if}}{{/if}}
@@ -146,7 +150,7 @@
                 {{#if item.disabled}}disabled=""{{else}}{{#if ../form.onready}}disabled="loading"{{/if}}{{/if}}
                 {{#if item.default includeZero=false}}checked=""{{/if}}
             />
-            {{#if item.label}}<span>{{item.label}}</span>{{/if}}
+            {{#if item.label}}<span>{{#if item.required}}<b>{{/if}}{{item.label}}{{#if item.required}}</b>*{{/if}}</span>{{/if}}
         </label></p>
         {{else}}
 
@@ -157,16 +161,17 @@
         <input
             id="{{../form.id}}_{{item.name}}" 
             name="{{item.name}}"
-            {{#if item._style.customClass.input}}class="{{item._style.customClass.input}}"{{/if}}
+            class="validate {{#if item._style.customClass.input}} {{item._style.customClass.input}}{{/if}}"
             {{#if item.disabled}}disabled=""{{else}}{{#if ../form.onready}}disabled="loading"{{/if}}{{/if}}
             {{#if item.type}}type="{{item.type}}"{{else}}type="text"{{/if}}
             {{#if item.placeholder}}placeholder="{{item.placeholder}}"{{else}}placeholder=" "{{/if}}
             {{#if item.readonly}}readonly=""{{/if}}
+            {{#if item.required}}required=""{{/if}}
             {{#if item.default}}value="{{item.default}}"{{/if}}
             {{#if item._style.text.minlength includeZero=false}}minlength="{{item._style.text.minlength}}"{{/if}}
             {{#if item._style.text.maxlength includeZero=false}}maxlength="{{item._style.text.maxlength}}"{{/if}}
         >
-        {{#if item.label}}<label for="{{../form.id}}_{{item.name}}">{{item.label}}</label>{{/if}}
+        {{#if item.label}}<label for="{{../form.id}}_{{item.name}}">{{#if item.required}}<b>{{/if}}{{item.label}}{{#if item.required}}</b>*{{/if}}</label>{{/if}}
         {{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}
 
     </div>
