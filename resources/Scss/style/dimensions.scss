@@ -60,6 +60,17 @@
     // Position
     display: flex;
 
+    /* Gap */
+
+    // SCSS loop to generate gap classes
+    @for $i from 0 through 100 {
+        @if ($i % 5 == 0) {
+            .flex-gap-#{$i} {
+                gap: #{$i}px;
+            }
+        }
+    }
+
     /* Brothers */
 
     // Place element in the center of the ciew window
@@ -92,6 +103,14 @@
 
         // Position
         justify-content: space-around;
+
+    }
+
+    // Place element in the horizontal center only
+    &.screen-space-between-x {
+
+        // Position
+        justify-content: space-between;
 
     }
 

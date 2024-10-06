@@ -79,9 +79,10 @@ export default class DateTime {
      * To YYYY/MM/DD format
      * 
      * @param date
+     * @param separator
      * @returns 
      */
-    public static toYYYYMMDDFormat = (date:Date):string => {
+    public static toYYYYMMDDFormat = (date:Date, separator:string = "/"):string => {
 
         // Gets the full year (e.g., 2024)
         const year = date.getFullYear();
@@ -93,7 +94,7 @@ export default class DateTime {
         const day = String(date.getDate()).padStart(2, '0'); 
     
         // Return result
-        return `${year}/${month}/${day}`;
+        return `${year}${separator}${month}${separator}${day}`;
 
     }
 
@@ -284,6 +285,21 @@ export default class DateTime {
         return date >= startOfWeek && date <= endOfWeek;
 
     }
+        
+    /**
+     * Is Valide Date
+     * 
+     * Validate a simple date string
+     * 
+     * @param dateString 
+     * @returns {boolean}
+     */
+    public static isValidDate = (dateString:string):boolean => {
+
+        // Return bool
+        return !isNaN(Date.parse(dateString));
+
+    }
 
     /**
      * Format a Date object into a string based on the given format.
@@ -314,6 +330,38 @@ export default class DateTime {
             default:
                 throw new Error('Unsupported date format');
         }
+
+    }
+
+    /**
+     * Get All Days Between
+     * 
+     * @param startDate 
+     * @param endDate 
+     * @returns 
+     */
+    public static getAllDaysBetween = (startDate:Date, endDate:Date):Date[] => {
+
+        // Prepare dates
+        const dates: Date[] = [];
+    
+        // Reset the time to midnight for both dates to avoid time discrepancies
+        const resetTime = (d: Date) => {
+            d.setHours(0, 0, 0, 0);
+            return d;
+        };
+    
+        let currentDate = resetTime(new Date(startDate)); // Clone startDate and reset time
+        const lastDate = resetTime(new Date(endDate));    // Clone endDate and reset time
+    
+        // Loop through and add each day to the dates array
+        while (currentDate <= lastDate) {
+            dates.push(new Date(currentDate)); // Push a clone of currentDate
+            currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
+        }
+    
+        // Return dates
+        return dates;
 
     }
 

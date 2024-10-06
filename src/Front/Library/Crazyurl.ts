@@ -79,55 +79,104 @@ export default class Crazyurl {
         
     }
 
+    /**
+     * Qet Query Parameters
+     * 
+     * Get all query parameters from the current URL.
+     * @returns {Record<string, string>} An object with key-value pairs representing query parameters.
+     */
+    public static getQueryParameters = ():Record<string, string> => {
+
+        // Set result
+        let result:Record<string, string> = {};
+
+        // Get params
+        const searchParams = new URLSearchParams(window.location.search);
+
+        // Iteration params
+        searchParams.forEach((value, key) => {
+
+            // Fill result
+            result[key] = value;
+
+        });
+
+        // Return result
+        return result;
+
+    }
+
 
     /**
      * Add Query Parameters
      * 
-     * Add Query Parameters
-     * 
-     * @source chatgpt
+     * Add Query Parameters with support for booleans, null values, empty strings, and keys without values.
      * 
      * @param params Parameters to add 
      * @param prefix Optional Prefix (for recursive loop)
      * @return string
      */
-    public static addQueryParameters = (params: Record<string, any>, prefix?: string):string => {
+    public static addQueryParameters = (params: Record<string, any>, prefix?: string): string => {
 
         // Search Parameters instances
-        const searchParams:URLSearchParams = new URLSearchParams(window.location.search);
-      
+        const searchParams: URLSearchParams = new URLSearchParams(window.location.search);
+
         // Loop entries
         for (const [key, value] of Object.entries(params)) {
 
             // Get current key
-            const paramKey:string = prefix ? `${prefix}[${key}]` : key;
-      
-            // Check if object
-            if (typeof value === "object") {
+            const paramKey: string = prefix ? `${prefix}[${key}]` : key;
 
-                // Recursive call
-                const subParams = Crazyurl.addQueryParameters(value, paramKey);
+            // Check if value is an object (not null) for recursion
+            if (typeof value === "object" && value !== null) {
 
-                // Add to search param
-                searchParams.append(subParams, "");
+                // Recursive call for nested objects
+                Crazyurl.addQueryParameters(value, paramKey);
 
-            } else
+            } else if (typeof value === "boolean") {
 
-                // Add to search param
-                searchParams.append(paramKey, value);
+                // Check already has param key
+                !paramKey.includes("[]") && searchParams.has(paramKey)
+                    // Set 
+                    ? searchParams.set(paramKey, value ? "true" : "false")
+                    // Append
+                    : searchParams.append(paramKey, value ? "true" : "false")
+                ;
 
+            } else if (value === null || value === "") {
+
+                // Check already has param key
+                !paramKey.includes("[]") && searchParams.has(paramKey)
+                    // Set 
+                    ? searchParams.set(paramKey, "")
+                    // Append 
+                    : searchParams.append(paramKey, "")
+                ;
+
+            } else {
+
+                // Check already has param key
+                !paramKey.includes("[]") && searchParams.has(paramKey)
+                    // Set 
+                    ? searchParams.set(paramKey, value)
+                    // Append 
+                    : searchParams.append(paramKey, value)
+                ;
+
+            }
         }
-      
-        // New url
-        const newUrl:string = `${window.location.pathname}?${searchParams.toString()}`;
 
-        // Set url
+        // Generate new URL with query parameters
+        const newUrl: string = `${window.location.origin}${window.location.pathname}?${searchParams.toString()}`;
+
+        // Set the URL (you may have a function for this)
         Crazyurl.set(newUrl);
 
-        // Return new url
+        // Return the new URL
         return newUrl;
-
     }
+
+
 
     /** Public static methods
      ******************************************************
@@ -137,14 +186,54 @@ export default class Crazyurl {
      * Remove Query Parameters
      * 
      * Remove Query Parameters
+     * 
+     * @param params:string|string[
+     * @returns {void}
      */
-    public static removeQueryParameters = () => {
+    public static removeQueryParameters = (params:string|string[]):void => {
 
-        const paramNameToRemove = "myParam";
-        const searchParams = new URLSearchParams(window.location.search);
-        searchParams.delete(paramNameToRemove);
-        const newUrl = `${window.location.pathname}?${searchParams.toString()}`;
-        window.history.pushState(null, "", newUrl);
+        // Check params
+        if(params && params.length){
+
+            // Check if string
+            if(typeof params === "string")
+
+                // Convert to array
+                params = [params];
+
+            // New search param instance
+            var searchParams = new URLSearchParams(window.location.search);
+
+            // Set any change
+            let anyChange = false;
+
+            // Iteration params
+            for(let paramNameToRemove of params)
+
+                // Check params is the url
+                if(searchParams.has(paramNameToRemove)){
+
+                    // Remove param
+                    searchParams.delete(paramNameToRemove);
+                    
+                    // Set any change
+                    anyChange = true;
+
+                }
+
+            // Check any change 
+            if(anyChange){
+
+                // Set new url
+                const newUrl = `${window.location.pathname}?${searchParams.toString()}`;
+
+                // Push in browser
+                window.history.pushState(null, "", newUrl);
+
+            }
+
+
+        }
         
 
     }

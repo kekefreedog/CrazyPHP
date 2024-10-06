@@ -91,4 +91,27 @@ export default class Strings {
         ;
     }
 
+    /**
+     * kebabToCamel
+     * 
+     * Convert a kebab-case string to PascalCase or camelCase
+     * @param input - The kebab-case string to convert
+     * @param capitalizeFirst - If true, the first letter will be uppercase (PascalCase), otherwise lowercase (camelCase)
+     * @returns The converted string
+     */
+    public static kebabToCamel = (input:string, capitalizeFirst:boolean = false):string => input
+        ? input
+            .split('-') // Split by hyphen
+            .map((word, index) => {
+                if (index === 0 && !capitalizeFirst) {
+                    // For camelCase, first word should be lowercase
+                    return word.toLowerCase();
+                }
+                // Capitalize the first letter of each word
+                return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+            })
+            .join('') // Join the parts together
+        : input
+    ;
+
 }
