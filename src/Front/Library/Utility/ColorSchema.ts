@@ -134,4 +134,60 @@ export default class ColorSchema {
 
     }
 
+    /**
+     * RGB to HEX
+     * 
+     * @param r 
+     * @param g 
+     * @param b 
+     * @returns {string}
+     */
+    public static rgbToHex = (r:number|string, g:number|string, b:number|string):string => {
+        return "#" + ColorSchema.componentToHex(r) + ColorSchema.componentToHex(g) + ColorSchema.componentToHex(b);
+    }
+
+    /**
+     * Create Vertical Gradient
+     * 
+     * @param colors 
+     * @param smooth 
+     * @returns 
+     */
+    public static createVerticalGradient = (colors: string[], smooth:boolean = true):string => {
+
+        if (smooth) {
+            // Smooth gradient with normal blending between colors
+            const colorStops = colors
+              .map((color, index) => `rgba(${color}) ${(index / (colors.length - 1)) * 100}%`)
+              .join(', ');
+            
+            return `background: linear-gradient(to bottom, ${colorStops});`;
+          } else {
+            // Hard stop gradient without blending between colors
+            const colorStops = colors
+              .map((color, index) => {
+                const position = (index / colors.length) * 100;
+                return `rgba(${color}) ${position}%, rgba(${color}) ${(position + 100 / colors.length)}%`;
+              })
+              .join(', ');
+        
+            return `linear-gradient(to bottom, ${colorStops});`;
+          }
+
+      }
+
+    /** Private static methods
+     ******************************************************
+    */
+
+    /**
+     * Component To Hex
+     * @param c 
+     * @returns 
+     */
+    private static componentToHex = (c:number|string):string => {
+        var hex = c.toString(16);
+        return hex.length == 1 ? "0" + hex : hex;
+    }
+
 }
