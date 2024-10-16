@@ -365,4 +365,15 @@ export default class DateTime {
 
     }
 
+    /**
+     * Is Weekend
+     * 
+     * @param date 
+     * @returns 
+     */
+    public static isWeekend = (date:Date):boolean => {
+        const day = date.getDay(); // 0 is Sunday, 6 is Saturday
+        return day === 0 || day === 6; // Returns true if Saturday or Sunday
+    }
+
 }
