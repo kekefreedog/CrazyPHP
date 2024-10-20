@@ -32,7 +32,7 @@ export default class RegularBtn extends Crazycomponent {
    */
 
    /** @var properties Propoerties of the current component */
-   public properties:Object = {
+   public properties:Record<string,CrazycomponentProperty> = {
       type: {
          value: "floating",
          type: "string",

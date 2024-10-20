@@ -24,12 +24,13 @@ use CrazyPHP\Library\File\Composer;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\File\Package;
 use CrazyPHP\Library\Cli\Command;
+use CrazyPHP\Library\System\Port;
 use CrazyPHP\Library\File\Docker;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Library\File\Json;
-use CrazyPHP\Library\System\Port;
 use CrazyPHP\Model\Config;
 use CrazyPHP\Model\Env;
+use Dotenv\Dotenv;
 
 /**
  * Up docker compose
@@ -158,6 +159,15 @@ class Up implements CrazyCommand {
         $this->runCheck();
 
         /**
+         * Run Set Docker Env
+         * 
+         * Set docker env variable from file `variables.env`
+         * 
+         * @return self
+         */
+        $this->runSetDockerEnv();
+
+        /**
          * Run Is Port Taken
          * 
          * Check if the port define in docker config is already take
@@ -234,6 +244,42 @@ class Up implements CrazyCommand {
                 ]
             );
 
+        # Return self
+        return $this;
+
+    }
+
+    /**
+     * Run Set Docker Env
+     * 
+     * Set docker env variable from file `variables.env`
+     * 
+     * @return self
+     */
+    public function runSetDockerEnv():self {
+
+        # Check file exists
+        if(File::exists(Docker::DOCKER_COMPOSE_ENV_VARIABLES_PATH)){
+
+            # Set path
+            $path = File::path(Docker::DOCKER_COMPOSE_ENV_VARIABLES_PATH);
+
+            # Check path info
+            if($path){
+
+                # Set path part
+                $path_parts = pathinfo($path);
+
+                # New dot env instance
+                $dotenv = Dotenv::createUnsafeImmutable($path_parts["dirname"], $path_parts["basename"]);
+
+                # Load env variable
+                $dotenv->load();
+
+            }
+
+        }
+        
         # Return self
         return $this;
 

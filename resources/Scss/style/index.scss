@@ -5,7 +5,7 @@
 ///
 /// @package    kzarshenas/crazyphp
 /// @author     kekefreedog <kevin.zarshenas@gmail.com>
-/// @copyright  2022-2024 Kévin Zarshenas
+/// @copyright  2022-2023 Kévin Zarshenas
 /// /// /// 
 
 // Material Icons
@@ -21,13 +21,14 @@
 @import '/node_modules/tippy.js/animations/shift-away.css';
 
 // Component enhance
-@import './component_enhance.scss', './enhancement/form_materializecss.scss';
+@import './component_enhance.scss';
 
 // Import color
 @import './color_collection.scss', './color_gradient_collection.scss', './color_class.scss';
 
 // Import dimensions
 @import './dimensions.scss';
+@import './grid.scss';
 
 // Import typography
 @import './typography.scss';
@@ -36,7 +37,7 @@
 @import './cursors.scss';
 
 // Partials
-// @import './partial/XXX';
+@import './partial/preloader_linear_indeterminate';
 
 // Import global
 @import './global.scss';

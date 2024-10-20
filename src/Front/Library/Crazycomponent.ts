@@ -760,7 +760,7 @@ class CrazycomponentAction {
             if(this.attributesCurrent[name].type === "boolean"){
 
                 // Set attribute value
-                this.attributesCurrent[name].value = ["true", "1", "TRUE"] ? "true" : "false";
+                this.attributesCurrent[name].value = value === true /* ["true", "1", "TRUE"].includes(value) */ ? "true" : "false";
 
                 // Set result
                 result = true;

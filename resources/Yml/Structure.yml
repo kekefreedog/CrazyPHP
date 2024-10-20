@@ -38,6 +38,10 @@ Structure:
                     source: "@crazyphp_root/resources/Hbs/Partials/hello.hbs"
                   form.hbs:
                     source: "@crazyphp_root/resources/Hbs/Partials/form.hbs"
+                  preloader_linear_indeterminate.hbs:
+                    source: "@crazyphp_root/resources/Hbs/Partials/preloader_linear_indeterminate.hbs"
+                  navigation.hbs:
+                    source: "@crazyphp_root/resources/Hbs/Partials/navigation.hbs"
           Jpeg: null
           Js: null
           Png: null
@@ -161,6 +165,10 @@ Structure:
                             source: "@crazyphp_root/resources/Scss/style/enhancement/jspreadsheet_materializecss.scss"
                           form_materializecss.scss:
                             source: "@crazyphp_root/resources/Scss/style/enhancement/form_materializecss.scss"
+                      partial:
+                        files:
+                          _preloader_linear_indeterminate.scss:
+                            source: "@crazyphp_root/resources/Scss/style/partial/_preloader_linear_indeterminate.scss"
                     files:
                       color_class.scss:
                         source: "@crazyphp_root/resources/Scss/style/color_class.scss"
@@ -176,6 +184,8 @@ Structure:
                         source: "@crazyphp_root/resources/Scss/style/cursors.scss"
                       typography.scss:
                         source: "@crazyphp_root/resources/Scss/style/typography.scss"
+                      grid.scss:
+                        source: "@crazyphp_root/resources/Scss/style/grid.scss"
                       index.scss:
                         source: "@crazyphp_root/resources/Scss/style/index.scss"
                       global.scss:
@@ -262,6 +272,10 @@ Structure:
                     source: "@crazyphp_root/resources/Environment/Partials/Hello.ts"
                   Form.ts:
                     source: "@crazyphp_root/resources/Environment/Partials/Form.ts"
+                  PreloaderLinearIndeterminate.ts:
+                    source: "@crazyphp_root/resources/Environment/Partials/PreloaderLinearIndeterminate.ts"
+                  Navigation.ts:
+                    source: "@crazyphp_root/resources/Environment/Partials/Navigation.ts"
               Structure:
                 folders:
                   Navigation: null

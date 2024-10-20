@@ -380,8 +380,9 @@ class Create extends CrazyModel implements CrazyCommand {
     
             # Set additionnal data
             $additionnal = [
-                "Namespace"     =>  Strings::removeLastString($this->router["Controller"], "\\"),
-                "Class"         =>  Strings::getLastString($this->router["Controller"], "\\"),
+                "Namespace"             =>  Strings::removeLastString($this->router["Controller"], "\\"),
+                "Class"                 =>  Strings::getLastString($this->router["Controller"], "\\"),
+                "materialDynamicColors" =>  FileConfig::getValue("Style.materialDynamicColors")
             ];
 
             # Create template instance

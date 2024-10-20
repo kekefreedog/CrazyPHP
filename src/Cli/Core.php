@@ -1002,7 +1002,7 @@ class Core extends CLI {
         }
 
         # Get port
-        $port = Docker::getLocalHostPort();
+        $port = Docker::getHttpPort();
 
         # Get server name
         $servername = Config::getValue("App.server.name");

@@ -50,6 +50,17 @@ ul.collapsible {
     /* Border */
     border-radius: 12px;
 
+    /* Background */
+    background-color: var(--md-sys-color-surface);
+
+    /* Header */
+    .collapsible-header {
+
+        /* Text */
+        text-wrap: nowrap;
+
+    }
+
     /* First */
     li:first-child .collapsible-header {
 
@@ -87,6 +98,9 @@ ul.collapsible {
 ///////////////////////////////////////////////////////
 ///
 
+/**
+ * Suffix
+ */
 .input-field .suffix {
 
     /* Dimension */
@@ -95,7 +109,7 @@ ul.collapsible {
     width: 40px;
     height: 40px;
 
-    /* Positin */
+    /* Position */
     top: 8px;
 
     /* Color */
@@ -103,9 +117,29 @@ ul.collapsible {
 
 }
 
+/**
+ * Input next sibbling
+ */
+ div.suffix ~ input[type="text"] {
+
+    /* Dimension */
+    padding-right: 62px!important;
+
+}
+
 /// Text Inputs
 ///////////////////////////////////////////////////////
 ///
+
+/**
+ * Iframe Container
+ */
+ div:has(> div.iframe-suffix) {
+    
+    // Position
+    position: relative;
+    
+ }
 
 /**
  * Iframe Suffix
@@ -305,5 +339,50 @@ ul.collapsible {
         background-color: #19191a;
 
     }
+
+}
+
+
+/// File Form
+///////////////////////////////////////////////////////
+///
+
+// File field
+div.file-field.input-field {
+
+    // Left btn
+    div.btn {
+
+        margin-top: 5px;
+    
+        // Fix wap
+        span {
+
+            // Text
+            white-space: nowrap;
+
+        }
+
+    }
+
+    // Fix vertical align
+    div.file-path-wrapper input {
+
+        // Position
+        padding-bottom: 20px;
+
+    }
+
+}
+
+/// Dropdown
+///////////////////////////////////////////////////////
+///
+
+// Dropdown border
+.dropdown-content {
+
+    // Dimension
+    border-radius: 16px;
 
 }

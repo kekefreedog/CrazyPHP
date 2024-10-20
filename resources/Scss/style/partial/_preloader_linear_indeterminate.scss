@@ -1,0 +1,40 @@
+/// /// ///
+/// Component - Crazy Content
+///
+/// Crazy Content
+///
+/// @package    kzarshenas/crazyphp
+/// @author     kekefreedog <kevin.zarshenas@gmail.com>
+/// @copyright  2022-2023 Kévin Zarshenas
+/// /// /// 
+
+
+/* Partial */
+[partial="preloader_linear_indeterminate"]{
+
+    /* Position */
+    position: absolute;
+    top: 0;
+    z-index: 1000!important;
+
+    /* Dimension */
+    width: 100%;
+
+    /* Opacity */
+    opacity: 1;
+
+    /* Transition */
+    transition: .5;
+
+    /* Off */
+    &[disabled] {
+
+        /* Opacity */
+        opacity: 0;
+    
+        /* Transition */
+        transition: .5;
+
+    }
+
+}

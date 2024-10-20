@@ -125,7 +125,21 @@
         <div id="{{form.id}}_{{item.name}}">
             {{#if item.disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{/if}}
             {{#if item.label}}{{#if item.required}}<b>{{/if}}{{item.label}}{{#if item.required}}</b>*{{/if}}{{/if}}
-            {{#each item.select as |radioItem|}}<p><label>
+            {{!-- Multiple choice Radio --}}
+            {{#each item.select as |radioItem|}}{{#if item.multiple}}<p><label>
+                <input 
+                    name="{{item.name}}[]"
+                    type="checkbox" 
+                    {{#if item.required}}required=""{{/if}}
+                    class="filled-in{{#if item._style.customClass.input}} {{item._style.customClass.input}}{{/if}}"
+                    {{#if item.disabled}}disabled=""{{else}}{{#if radioItem.disabled}}disabled=""{{else}}disabled="loading"{{/if}}{{/if}}
+                    {{#if item.disabled}}disabled=""{{else}}{{#if ../form.onready}}disabled="loading"{{/if}}{{/if}}
+                    {{#if item.default includeZero=false}}{{#is item.default radioItem.value}}checked=""{{/is}}{{else}}{{#if radioItem.default}}checked=""{{/if}}{{/if}}
+                    {{#if radioItem.value}}value="{{radioItem.value}}"{{/if}}
+                />
+                <span>{{radioItem.label}}{{#if radioItem.disabled}}<i class="material-icons ml-3">lock</i>{{/if}}</span>
+            {{!-- Singe choice Radio --}}
+            </label></p>{{else}}<p><label>
                 <input
                     name="{{item.name}}"
                     type="radio"
@@ -133,9 +147,10 @@
                     {{#if item._style.customClass.input}}class="{{item._style.customClass.input}}"{{/if}}
                     {{#if item.disabled}}disabled=""{{else}}{{#if radioItem.disabled}}disabled=""{{else}}disabled="loading"{{/if}}{{/if}}
                     {{#if item.default includeZero=false}}{{#is item.default radioItem.value}}checked=""{{/is}}{{else}}{{#if radioItem.default}}checked=""{{/if}}{{/if}}
+                    {{#if radioItem.value}}value="{{radioItem.value}}"{{/if}}
                 />
                 <span>{{radioItem.label}}{{#if radioItem.disabled}}<i class="material-icons ml-3">lock</i>{{/if}}</span>
-            </label></p>{{/each}}
+            </label></p>{{/if}}{{/each}}
         </div>
 
         {{!-- Checkbox Input --}}

@@ -32,7 +32,7 @@ export default class RegularCard extends Crazycomponent {
     */
 
     /** @var properties Propoerties of the current component */
-    public properties:Object = {
+    public properties:Record<string,CrazycomponentProperty> = {
         depth: {
             value: "flat",
             type: "string",

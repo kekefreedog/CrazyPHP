@@ -68,6 +68,7 @@ class Form {
         "placeholder"   =>  "",
         "select"        =>  [],
         "default"       =>  null,
+        "multiple"      =>  false,
         "_style"        =>  [],
     ];
 

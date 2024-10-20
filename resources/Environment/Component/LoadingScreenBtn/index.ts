@@ -31,7 +31,7 @@ export default class LoadingScreenBtn extends Crazycomponent {
     */
  
     /** @var properties Propoerties of the current component */
-    public properties:Object = {};
+    public properties:Record<string,CrazycomponentProperty> = {};
  
     /**
     * Constructor

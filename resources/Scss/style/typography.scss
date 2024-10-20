@@ -5,7 +5,7 @@
 ///
 /// @package    kzarshenas/crazyphp
 /// @author     kekefreedog <kevin.zarshenas@gmail.com>
-/// @copyright  2022-2024 Kévin Zarshenas
+/// @copyright  2022-2023 Kévin Zarshenas
 /// /// ///
 
 // Font weight (font-weight-100, font-weight-200...) 
@@ -44,17 +44,4 @@
 .line-height-normal {
     /* Type */
     line-height: normal;
-}
-
-
-/// Font
-///////////////////////////////////////////////////////
-///
-
-// Wrap text
-.wrap-text {
-
-    // Break spaces
-    white-space: pre-line;
-
 }

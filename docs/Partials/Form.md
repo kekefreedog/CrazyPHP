@@ -203,3 +203,29 @@ Partial Form allow to add a form into your page of any component that is calling
                     minlength: 2
                     maxlength: 10
 ```
+
+```yml
+# Multiple form
+-
+    id: "form_multiple"         # Id of the form
+    title: Form                 # Name / Label of the form
+    entity: null                # Main entity on the database
+    onready: null
+    reset: true
+    items:
+        -   # Exemple of simple switch
+            name: radio_input
+            type: radio
+            label: Radio Input
+            multiple: true
+            select: 
+                -
+                    label: Option 1
+                    value: 1
+                -
+                    label: Option 2
+                    value: 2
+                -
+                    label: Option 3
+                    value: 3
+```

@@ -72,31 +72,6 @@ export default class Home extends Crazypage {
 
         console.log("hello home");
 
-        // Init scroll spy
-        this.initScrollSpy();
-
-    }
-
-    /**
-     * Init Scroll Spy
-     * 
-     * @return void
-     */
-    private initScrollSpy = () => {
-
-        // Get el
-        let els = document.querySelectorAll('.scrollspy');
-
-        // Check els
-        if(els.length)
-
-            M.ScrollSpy.init(els, {
-                "activeClass": "active",
-                "getActiveElement": (id) => {
-                    return 'a[href="#' + id + '"]';
-                }
-            });
-
     }
 
 }

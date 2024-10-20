@@ -225,6 +225,61 @@ class Docker{
 
     }
 
+    /**
+     * Get Http Port
+     * 
+     * Return external http port 
+     * 
+     * @param int $lolookingPort
+     * @return int|null
+     */
+    public static function getHttpPort(int $lookingPort=80):int|null {
+
+        # Declare result
+        $result = null;
+
+        # Open docker compose
+        $dockerCompose = Yaml::open(File::path(self::DOCKER_COMPOSE_PATH));
+
+        # Read services.webserver.ports
+        $collection = Arrays::parseKey("services.webserver.ports", $dockerCompose);
+        # Check collection
+        if(!empty($collection))
+
+            # Iteration collection
+            foreach($collection as $item)
+        
+                # Check
+                if($item && strpos($item, ":") !== false){
+
+                    # Splitted
+                    $splitted = explode(":", $item);
+
+                    # check if last is the target
+                    if(array_pop($splitted) == $lookingPort){
+
+                        # Check if CRAZY_HTTP_PORT:-80
+                        if(strpos($splitted[0], "CRAZY_HTTP_PORT") !== false){
+
+                            # Get CRAZY_HTTP_PORT
+                            $result = intval(getenv("CRAZY_HTTP_PORT"));
+
+                        }else
+
+                            # Set result
+                            $result = intval($splitted[0]);
+
+                    }
+
+
+                }
+
+        # Return result
+        return $result;
+
+    }
+
+
     /** Public constants
      ******************************************************
      */
@@ -239,6 +294,9 @@ class Docker{
 
     /** @const string DOCKER_COMPOSE_COMMAND */
     public const DOCKER_COMPOSE_COMMAND = "docker-compose";
+
+    /** @const string DOCKER_COMPOSE_ENV_VARIABLES_PATH */
+    public const DOCKER_COMPOSE_ENV_VARIABLES_PATH = "@app_root/docker/variables.env";
 
     /** @const string DOCKER_COMPOSE_COMMAND */
     public const DOCKER_COMMAND = "docker";

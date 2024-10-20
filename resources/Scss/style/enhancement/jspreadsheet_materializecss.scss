@@ -5,7 +5,7 @@
 ///
 /// @package    kzarshenas/crazyphp
 /// @author     kekefreedog <kevin.zarshenas@gmail.com>
-/// @copyright  2022-2024 Kévin Zarshenas
+/// @copyright  2022-2023 Kévin Zarshenas
 /// /// /// 
 
 /// Parameters
@@ -31,13 +31,22 @@ $shadow-default: 0 4px 5px 0 rgba(0, 0, 0, .14), 0 1px 10px 0 rgba(0, 0, 0, .12)
     width: 100%;
     overflow-x: scroll;
 }
-.jexcel {
+.jexcel{
     border-radius: 6px 0 6px 0!important;
     font-size: 13px!important;
 
     /* Color */
     color: $font-color-default;
 
+}
+.jexcel td.editor textarea {
+
+    /* Color */
+    color: $font-color-default;
+
+}
+.jexcel td.jexcel_dropdown.editor {
+    background-color: #a68b4d!important;
 }
 .jexcel_content {
     border-radius: 6px 0 6px 0 !important;
@@ -187,4 +196,63 @@ $shadow-default: 0 4px 5px 0 rgba(0, 0, 0, .14), 0 1px 10px 0 rgba(0, 0, 0, .12)
 label[for=statut]{
     /*position*/
     top: -31px!important;
+}
+
+/**
+ * Nested Align
+ */
+.jexcel_content {
+
+    // T head
+    thead {
+
+        // Nested list
+        tr.jexcel_nested {
+
+            // Item
+            td {
+
+                // Left case
+                &[align="left"] {
+
+                    text-align: left;
+                    
+                }
+
+                // Left right
+                &[align="right"] {
+
+                    text-align: right;
+
+                }
+
+                // Left center
+                &[align="center"] {
+
+                    text-align: center;
+
+                }
+
+            }
+
+        }
+
+    }
+
+}
+
+// Fix freeze
+.jexcel tbody .jexcel_freezed {
+
+    // Depth
+    z-index: 1;
+
+    // Fix drop down on freezed item
+    &.jexcel_dropdown.editor {
+
+        // Depth
+        z-index: 2!important;
+
+    }
+
 }

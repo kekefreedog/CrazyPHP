@@ -35,13 +35,21 @@ class {{Class}} extends Controller {
      * Get
      */
     public static function get($request){
-
+        {{#if materialDynamicColors.source}}
+        
+        # Set state
+        $state = static::State()
+            ->pushColorSchema()
+            ->render()
+        ;
+        {{/if}}
+        
         # Set structure
         $structure = static::Structure()
             ->setDoctype()
             ->setLanguage()
             ->setHead()
-            ->setBodyTemplate(self::TEMPLATE)
+            ->setBodyTemplate(self::TEMPLATE{{#if materialDynamicColors.source}}, null, (array) $state{{/if}})
             ->setJsScripts()
             ->prepare()
             ->render()
