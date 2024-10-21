@@ -93,8 +93,11 @@ export default class Root {
         // Get crazy root
         let rootEl:HTMLElement = Root.getEl();
 
+        // Set content dom
+        let contentDom = document.createRange().createContextualFragment(content);
+
         // Set content
-        rootEl.innerHTML = content;
+        rootEl.replaceWith(contentDom);
 
         // Return content
         return rootEl;
