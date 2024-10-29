@@ -23,8 +23,6 @@ use ReflectionMethod;
 use ReflectionClass;
 use Exception;
 
-use function PHPUnit\Framework\returnSelf;
-
 /**
  * Helpers
  * 
@@ -1306,6 +1304,46 @@ class Helpers {
 
             # Date is in the current week
             return 0;
+
+    }
+
+    /**
+     * Is Array
+     * 
+     * Block helper that renders a block if index gien is the last of the list given
+     * 
+     * @param $index Value to compare
+     * @param $list Value to compare with
+     * 
+     * @return boolean
+     */
+
+    /**
+     * Is Array
+     * 
+     * Returns true if `value` is an es5 array.
+     *
+     * ```handlebars
+     * {{isArray "abc"}}
+     * <!-- results in: false -->
+     *
+     * <!-- array: [1, 2, 3] -->
+     * {{isArray array}}
+     * <!-- results in: true -->
+     * ```
+     * 
+     * @param $value The value to test.
+     */
+    public static function isArray($input, $option) {
+
+        # Set result
+        $result = array_is_list($input)
+            ? $option['fn']()
+            : $option['inverse']()
+        ;
+
+        # Return result
+        return $result;
 
     }
 

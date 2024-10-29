@@ -136,6 +136,7 @@ class Package{
         "@material-design-icons/font"               =>  "^0.14.2",
         "i18next"                                   =>  "^22.0.8",
         "material-dynamic-colors"                   =>  "*",
+        "tom-select"                                =>  "*",
         # Cache
         "localforage"                               =>  "^1.10.0",
         "object-hash"                               =>  "^3.0.0",

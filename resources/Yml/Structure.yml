@@ -165,10 +165,14 @@ Structure:
                             source: "@crazyphp_root/resources/Scss/style/enhancement/jspreadsheet_materializecss.scss"
                           form_materializecss.scss:
                             source: "@crazyphp_root/resources/Scss/style/enhancement/form_materializecss.scss"
+                          tomselect_materializecss.scss:
+                            source: "@crazyphp_root/resources/Scss/style/enhancement/tomselect_materializecss.scss"
                       partial:
                         files:
                           _preloader_linear_indeterminate.scss:
                             source: "@crazyphp_root/resources/Scss/style/partial/_preloader_linear_indeterminate.scss"
+                          _form.scss:
+                            source: "@crazyphp_root/resources/Scss/style/partial/_form.scss"
                     files:
                       color_class.scss:
                         source: "@crazyphp_root/resources/Scss/style/color_class.scss"

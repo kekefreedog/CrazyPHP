@@ -11,9 +11,11 @@
 /**
  * Dependances
  */
+import { TomSettings, RecursivePartial } from 'tom-select/dist/types/types';
 import {default as PageError} from './../Error/Page';
 import {default as UtilityStrings} from './Strings';
 import Crazyrequest from '../Crazyrequest';
+import TomSelect from 'tom-select';
 import Page from '../Loader/Page';
 import { MaskInput } from "maska"
 import Root from '../Dom/Root';
@@ -704,8 +706,14 @@ export default class Form {
                         // Init required on input
                         await this._initEventRequiredOnInput(inputEl, allInputEls);
 
+                    // Get input type
+                    let inputType:string = "type" in inputEl.dataset && typeof inputEl.dataset.type === "string" && inputEl.dataset.type
+                        ? inputEl.dataset.type
+                        : inputEl.type
+                    ;
+
                     // Get init method name
-                    let initMethodName:string = `_init${UtilityStrings.ucfirst(inputEl.type.toLowerCase())}Input`;
+                    let initMethodName:string = `_init${UtilityStrings.ucfirst(inputType.toLowerCase())}Input`;
 
                     // Check initMethodName in this 
                     if(initMethodName in this){
@@ -1256,6 +1264,42 @@ export default class Form {
                 }
 
             }, true);
+
+        }
+
+    }
+
+    /**
+     * Init Number Input
+     * 
+     * @param inputEl 
+     * @returns {void}
+     */
+    private _initSelectInput = (inputEl:HTMLSelectElement|HTMLInputElement):void => {
+
+        // Check maska
+        if(inputEl instanceof HTMLInputElement || inputEl instanceof HTMLSelectElement){
+
+            // Set option
+            let option:RecursivePartial<TomSettings> = {
+                persist: false,
+                createOnBlur: true,
+                create: true,
+                plugins: {}
+            };
+
+            // Check clear
+            if(inputEl.dataset && "selectClear" in inputEl.dataset)
+
+                // Set plugin
+                // @ts-ignore
+                option.plugins["clear_button"] = {
+                    title: inputEl.dataset.selectClear
+                };
+
+
+            // Init maska
+            let tomInstance = new TomSelect(inputEl, option);
 
         }
 

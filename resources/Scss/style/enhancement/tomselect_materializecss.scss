@@ -9,17 +9,144 @@
 /// /// /// 
 
 // Input search
-.ts-wrapper .ts-control input {
+.ts-wrapper {
 
-    // Dimension
-    width: initial!important;
-    height: initial!important;
+    .ts-control {
+        
+        // Border
+        border-radius: 4px 4px 0px 0px;
 
-    // Font
-    font-size: inherit!important;
+        // Dimension
+        min-height: 56px;
 
-    // Color
-    color: inherit!important;
+        // Color
+        background-color: var(--md-sys-color-background);
+        border: 1px solid var(--md-sys-color-on-surface-variant);
+
+        // Item
+        .item {
+        
+            // Border
+            border-radius: 4px;
+
+            // Font
+            font-size: 16px;
+
+            // Dimension
+            padding: 8px 6px!important;
+            margin: 0px 10px 0px 0!important;
+
+            // Color
+            // color: var(--md-sys-color-on-surface-variant);
+            color: var(--md-sys-color-on-background);
+
+        }
+
+        input {
+
+            // Dimension
+            width: initial!important;
+            height: initial!important;
+
+            // Font
+            font-size: 16px;
+
+            // Color
+            color: var(--md-sys-color-on-surface-variant);
+
+        }
+
+    }
+
+    // Ts Wrapper
+    .ts-dropdown {
+
+        // Color
+        background-color: var(--md-sys-color-on-tertiary);
+
+        // Position
+        margin-top: 0px;
+
+        // Shadow
+        box-shadow: 0 2px 2px #00000024,0 3px 1px -2px #0000001f,0 1px 5px #0003;
+
+        // Dimension
+        border: none;
+
+        // Children
+
+        // Items
+        .create, .no-results, .option {
+
+            // Font
+            font-size: 16px;
+            line-height: 22px;
+
+            // Color
+            color: var(--md-sys-color-primary);
+            background-color: transparent;
+            
+            // Dimension
+            padding: 14px 16px;
+
+            // Display
+            display: block;
+
+            &.active {
+
+                background-color: var(--md-sys-color-tertiary-container);
+
+            }
+
+        }
+
+    }
+
+    // Focus
+    &.focus {
+
+        // Ts control
+        .ts-control {
+
+            .item {
+
+                // Color
+                color: var(--md-sys-color-surface-variant);
+
+            }
+
+            input {
+
+                // Color
+                color: var(--md-sys-color-surface-variant);
+
+            }
+
+        }
+
+    }
+
+    // Clear
+    &.multi { 
+        
+        .ts-control > div.clear-button {
+
+            // Border
+            color: var(--md-sys-color-on-surface-variant);
+
+        }
+
+    }
+
+    &.disabled {
+
+        .ts-control {
+
+            opacity: 1;
+
+        }
+
+    } 
 
 }
 
@@ -39,5 +166,26 @@ select.tomselected + div.ts-wrapper + label {
 
     // Dimension
     transform: scale(.75);
+
+}
+
+// input-field
+.input-field > .ts-wrapper {
+
+    // Position
+    margin-top: 5px;
+
+}
+
+/*
+ * Fix suffix next to select
+ */
+div.suffix.suffix-tomselect {
+
+    // Depth
+    z-index: 2;
+
+    // Position
+    top: 30px;
 
 }

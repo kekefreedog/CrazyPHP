@@ -17,6 +17,7 @@ namespace  CrazyPHP\Library\State\Components;
  */
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Form\Process;
+use CrazyPHP\Library\Form\Validate;
 use ReflectionClass;
 use DateTime;
 use Error;
@@ -380,6 +381,35 @@ class Form {
      ******************************************************
      */
 
+    /**
+     * Push Items Default Type Select
+     * 
+     * Push default on select
+     * 
+     * @param mixed $value
+     * @param array $currentItem
+     * @return mixed 
+     */
+    private function _pushItemsDefaultTypeSelect(mixed $value, array $currentItem):mixed {
+
+        # Set result
+        $result = $value;
+
+        # Check tag
+        if(isset($currentItem["_style"]["select"]["tag"]) && Process::bool($currentItem["_style"]["select"]["tag"])){
+
+            # Check if result is not array
+            if(!is_array($value))
+
+                # Convert to array
+                $reset = [strval($value)];
+
+        }
+
+        # Return result
+        return $result;
+
+    }
     /**
      * Push Items Type Password
      * 
