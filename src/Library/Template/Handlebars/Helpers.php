@@ -1347,4 +1347,46 @@ class Helpers {
 
     }
 
+    /**
+     * Is Object
+     * 
+     * Return true if value is an object.
+     * 
+     * @param $value The value to test.
+     */
+    public static function isObject($input, $option) {
+
+        # Set result
+        $result = false;
+
+        # Check input
+        if(is_object($input))
+
+            # Set result
+            $result = true;
+
+        else
+        # Check associative array
+        if(is_array($input)){
+
+            # Get keys
+            $keys = array_keys($input);
+
+            # Set keys
+            if($keys !== range(0, count($input) - 1)) 
+
+                # Set result
+                $result = true;
+
+        }
+        
+
+        # Set result
+        return $result 
+            ? $option['fn']()
+            : $option['inverse']()
+        ;
+
+    }
+
 }

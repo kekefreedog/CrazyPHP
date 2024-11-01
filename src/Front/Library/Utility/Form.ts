@@ -223,16 +223,32 @@ export default class Form {
             for (let i = 0; i < items.length; i++){
 
                 // Check if name
-                if("name" in items[i] && items[i]["name"] !== ""){
+                if((items[i] instanceof HTMLSelectElement || items[i] instanceof HTMLInputElement ) && "name" in items[i] && items[i]["name"] !== ""){
+
+                    /**
+                     * Clean current value
+                     */
+
+                    // Check is tom select
+                    if("tomselect" in items[i]){
+
+                        // Get tome select instance
+                        // @ts-ignore
+                        let tomSelectInstance = items[i].tomselect;
+
+                        // Clear
+                        tomSelectInstance.clear();
+
+                        // Continue iteration
+                        continue;
+
+                    }
 
                     // Check if value
                     if(items[i].hasAttribute("value")){
 
                         // Reset value
                         items[i].removeAttribute("value");
-                        
-
-                    console.log(items[i].removeAttribute("value"));
 
                     }
 
@@ -241,6 +257,12 @@ export default class Form {
 
                         // Reset value
                         items[i].removeAttribute("value_id");
+
+                    /**
+                     * Retrieve default value
+                     */
+
+                    let defaultValue = this._getDefaultOfInput(items[i] as (HTMLSelectElement|HTMLInputElement));
 
                 }
 
@@ -409,14 +431,17 @@ export default class Form {
      */
     private eventOnReset = (e:Event):void => {
 
+        // Prevent default
+        e.preventDefault();
+
         // Lock form
         this.lock();
 
         // Check form in e.target
-        if(e.target !== null && "form" in e.target && e.target.form instanceof HTMLFormElement){
+        if(e.currentTarget instanceof HTMLFormElement){
 
             // Get target
-            let formEl = e.target.form;
+            let formEl = e.currentTarget;
 
             // Get value_id
             let valueID:Attr|null = formEl.attributes.getNamedItem("value_id");
@@ -430,9 +455,6 @@ export default class Form {
                 this._onSubmiDelete(entity.value, valueID.value)
                     .then(v => {
 
-                        // Reset value
-                        this.resetValue();
-
                     }).then(v => {
 
                         // Retrive other value
@@ -441,6 +463,9 @@ export default class Form {
                     })
 
             }else{
+
+                // Reset value
+                this.resetValue();
 
                 // Unlock
                 this.unlock();
@@ -811,20 +836,11 @@ export default class Form {
      */
     private _initEventOnReset = async():Promise<void> => {
 
-        // Search if button reset
-        let resetEls = this._formEl.querySelectorAll('button[type="reset"]');
-
-        // Check result
-        if(resetEls.length)
-
-            // Iteration
-            for(let i = 0; i < resetEls.length; i++)
-
-                // Add event on them
-                resetEls[i].addEventListener(
-                    "click",
-                    this.eventOnReset
-                );
+        // Add event on reset
+        this._formEl.addEventListener(
+            "reset",
+            this.eventOnReset
+        )
 
     }
 
@@ -1189,6 +1205,95 @@ export default class Form {
 
     }
 
+    /** Private methods | Default
+     ******************************************************
+     */
+
+    /**
+     * Get Default
+     * 
+     * @param inputEl
+     * @returns {any}
+     */
+    private _getDefaultOfInput = (inputEl:HTMLInputElement|HTMLSelectElement):any => {
+
+        // Set result
+        let result:null|string|boolean|number|Date = null;
+
+        // Get type
+        let type = inputEl.type;
+
+        // Get name
+        let name = inputEl.name;
+
+        // Is multiple
+        let isMultiple = name && name.slice(-2) == "[]";
+
+        // Check if input
+        if(inputEl instanceof HTMLInputElement){
+
+            // Check if default in current insput
+            if("default" in inputEl && typeof inputEl.default === "string"){
+
+                // Set result
+                result = inputEl.default;
+
+                // Check type is checkbox
+                if(!isMultiple && type == "checkbox"){
+
+                    // Check result
+                    result = ['1', 'true', 'on', 'yes'].includes(result) 
+                        ? true
+                        : false
+                    ;
+
+                }else 
+
+                // Check type is range
+                if(!isMultiple && ["range", "number"].includes(type)){
+
+                    // Get number of result
+                    result = Number(result);
+
+                }else
+                
+                // Check is date (to implement datetime)
+                if(!isMultiple && ["date"].includes(type)){
+
+                    // Convert to date
+                    result = new Date(result);
+
+                }else
+
+                // If radio
+                if(type === "radio"){
+
+                    // Search all radioEls in parent
+                    let radioInputEls = inputEl.parentElement?.querySelectorAll(name);
+
+                    // Check radioInputEls
+                    if(radioInputEls?.length){
+
+
+                        // Here
+                    }
+
+                }
+
+            }
+
+
+        }else
+        // Check if select
+        if(inputEl instanceof HTMLSelectElement){
+
+        }
+
+        // Return result 
+        return result;
+
+    }
+
     /** Private methods | Init input
      ******************************************************
      */
@@ -1297,9 +1402,23 @@ export default class Form {
                     title: inputEl.dataset.selectClear
                 };
 
+            // Check clear
+            if((inputEl.dataset && "selectTag" in inputEl.dataset) || ("multiple" in inputEl && inputEl.multiple)){
+
+                // Set plugin caret position
+                // @ts-ignore
+                option.plugins["caret_position"] = {};
+
+                // Set plugin drag drop
+                // @ts-ignore
+                option.plugins["drag_drop"] = {};
+
+
+            }
+
 
             // Init maska
-            let tomInstance = new TomSelect(inputEl, option);
+            new TomSelect(inputEl, option);
 
         }
 
