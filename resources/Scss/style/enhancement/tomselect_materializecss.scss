@@ -129,10 +129,22 @@
     // Clear
     &.multi { 
         
-        .ts-control > div.clear-button {
+        .ts-control {
 
-            // Border
-            color: var(--md-sys-color-on-surface-variant);
+            > div.clear-button {
+
+                // Border
+                color: var(--md-sys-color-on-surface-variant);
+
+            }
+
+            // role="combobox"
+            input[role="combobox"] {
+
+                // Color
+                color: var(--md-sys-color-on-background);
+
+            }
 
         }
 
@@ -187,5 +199,57 @@ div.suffix.suffix-tomselect {
 
     // Position
     top: 30px;
+
+}
+
+// Rectangle on select not focus
+select.tomselected + .ts-wrapper .ts-control::after {
+
+    // Content
+    content: "";
+    
+    // Dimension
+    border: solid var(--md-sys-color-on-background);
+    border-width: 0 3px 3px 0;
+    padding: 3px;
+    display: inline-block;
+
+    // Position
+    position: absolute;
+    top: calc(50% - 6px);
+    // top: 39%;
+    right: 25px;
+    z-index: 1;
+    transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+
+    // Pointer
+    cursor: pointer;
+
+}
+
+// Rectangle on select
+select.tomselected + .ts-wrapper.dropdown-active .ts-control::after {
+
+    // Content
+    content: "";
+    
+    // Dimension
+    border: solid var(--md-sys-color-on-background);
+    border-width: 0 3px 3px 0;
+    padding: 3px;
+    display: inline-block;
+
+    // Position
+    position: absolute;
+    top: calc(50% - 4px);
+    // top: 39%;
+    right: 25px;
+    z-index: 1;
+    transform: rotate(-135deg);
+    -webkit-transform: rotate(-135deg);
+
+    // Pointer
+    cursor: pointer;
 
 }

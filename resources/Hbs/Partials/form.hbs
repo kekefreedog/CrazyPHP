@@ -148,7 +148,7 @@
 
         {{!-- Radio Input --}}
         {{else}}{{#is item.type "radio"}}
-        <div id="{{form.id}}_{{item.name}}">
+        <div id="{{form.id}}_{{item.name}}" data-radio-name="{{item.name}}">
             {{#if item.disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{/if}}
             {{#if item.label}}{{#if item.required}}<b>{{/if}}{{item.label}}{{#if item.required}}</b>*{{/if}}{{/if}}
             {{!-- Multiple choice Radio --}}
@@ -160,8 +160,12 @@
                     class="filled-in{{#if item._style.customClass.input}} {{item._style.customClass.input}}{{/if}}"
                     {{#if item.disabled}}disabled=""{{else}}{{#if radioItem.disabled}}disabled=""{{else}}disabled="loading"{{/if}}{{/if}}
                     {{#if item.disabled}}disabled=""{{else}}{{#if ../form.onready}}disabled="loading"{{/if}}{{/if}}
-                    {{#if item.default includeZero=false}}{{#is item.default radioItem.value}}checked="" default=""{{/is}}{{else}}{{#if radioItem.default}}checked="" default=""{{/if}}{{/if}}
-                    {{#if radioItem.value}}value="{{radioItem.value}}"{{/if}}
+                    {{#if item.default includeZero=false}}
+                        {{#is item.default radioItem.value}}checked="" default=""{{/is}}
+                    {{else}}
+                        {{#is radioItem.default radioItem.value}}checked="" default=""{{/is}}
+                    {{/if}}
+                    {{#if radioItem.value includeZero=false}}value="{{radioItem.value}}"{{/if}}
                 />
                 <span>{{radioItem.label}}{{#if radioItem.disabled}}<i class="material-icons ml-3">lock</i>{{/if}}</span>
             {{!-- Singe choice Radio --}}

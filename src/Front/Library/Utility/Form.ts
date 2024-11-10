@@ -209,9 +209,10 @@ export default class Form {
      * 
      * Set value of form
      * 
+     * @param clear Do not use default and just clear value
      * @returns void
      */
-    public resetValue = ():void => {
+    public resetValue = (clear:boolean = false):void => {
 
         // Get all select and input on form el
         let items = this._formEl.querySelectorAll("select, input");
@@ -224,6 +225,27 @@ export default class Form {
 
                 // Check if name
                 if((items[i] instanceof HTMLSelectElement || items[i] instanceof HTMLInputElement ) && "name" in items[i] && items[i]["name"] !== ""){
+
+                    /**
+                     * Retrieve default value
+                     */
+
+                    // Get default value
+                    let defaultValue = clear 
+                        ? null
+                        : this._getDefaultOfInput(items[i] as (HTMLSelectElement|HTMLInputElement))
+                    ;
+
+                    // Check if radio
+                    // @ts-ignore
+                    if(items[i].type === "radio"){
+
+                        console.log("--debug--");
+                        // @ts-ignore
+                        console.log(items[i].name);
+                        console.log(defaultValue);
+
+                    }
 
                     /**
                      * Clean current value
@@ -244,25 +266,67 @@ export default class Form {
 
                     }
 
-                    // Check if value
+                    // Check if item has value
                     if(items[i].hasAttribute("value")){
 
-                        // Reset value
-                        items[i].removeAttribute("value");
+                        // Check if defaultValue
+                        if(defaultValue === null)
+
+                            // Reset value
+                            items[i].removeAttribute("value");
+
+                        else
+                        // Check default value is string
+                        if(defaultValue){
+
+                            // Set value
+                            items[i].setAttribute("value", defaultValue.toString());
+
+                            // Check html inpit
+                            if(items[i] instanceof HTMLInputElement)
+
+                                // Set value
+                                // @ts-ignore
+                                items[i].value = defaultValue.toString();
+
+                        }
 
                     }
 
-                    // Check if value_id
+                    // Check if item has value_id
                     if(items[i].hasAttribute("value_id"))
 
                         // Reset value
                         items[i].removeAttribute("value_id");
 
-                    /**
-                     * Retrieve default value
-                     */
+                    // Check if item has checked
+                    // @ts-ignore
+                    if(items[i].hasAttribute("checked") || items[i].type == "checkbox" ){
 
-                    let defaultValue = this._getDefaultOfInput(items[i] as (HTMLSelectElement|HTMLInputElement));
+                        // Check if defaultValue
+                        if(defaultValue === null){
+
+                            // Remove checked
+                            items[i].removeAttribute("checked");
+
+                            // Remove check
+                            // @ts-ignore
+                            items[i].checked = false;
+
+                        }else
+                        // Check default value is string
+                        if(defaultValue){
+
+                            // Check html inpit
+                            if(items[i] instanceof HTMLInputElement)
+
+                                // Set value
+                                // @ts-ignore
+                                items[i].checked = defaultValue;
+
+                        }
+
+                    }
 
                 }
 
@@ -1215,10 +1279,10 @@ export default class Form {
      * @param inputEl
      * @returns {any}
      */
-    private _getDefaultOfInput = (inputEl:HTMLInputElement|HTMLSelectElement):any => {
+    private _getDefaultOfInput = (inputEl:HTMLInputElement|HTMLSelectElement):null|string|boolean|number|Date|number[]|string[] => {
 
         // Set result
-        let result:null|string|boolean|number|Date = null;
+        let result:null|string|boolean|number|Date|number[]|string[] = null;
 
         // Get type
         let type = inputEl.type;
@@ -1233,10 +1297,10 @@ export default class Form {
         if(inputEl instanceof HTMLInputElement){
 
             // Check if default in current insput
-            if("default" in inputEl && typeof inputEl.default === "string"){
+            if(inputEl.hasAttribute("default") && typeof inputEl.getAttribute("default") === "string"){
 
                 // Set result
-                result = inputEl.default;
+                result = inputEl.getAttribute("default") as string;
 
                 // Check type is checkbox
                 if(!isMultiple && type == "checkbox"){
@@ -1268,14 +1332,99 @@ export default class Form {
                 // If radio
                 if(type === "radio"){
 
+                    // Get parent
+                    let parent = inputEl.closest(`[data-radio-name="${name.replace("[]", "")}"]`);
+
+                    // Check parent
+                    if(parent){
+
+                        // Search all radioEls in parent
+                        let radioInputEls = parent.querySelectorAll(`input[name="${name}"]`);
+
+                        // Check radioInputEls
+                        if(radioInputEls?.length){
+
+                            // Iteration radioInputEls
+                            radioInputEls.forEach((radioInputEl) => {
+
+                                // Check radioInputEl
+                                if(radioInputEl instanceof HTMLInputElement && radioInputEl.hasAttribute("default") && radioInputEl.hasAttribute("value")){
+
+                                    // Check multiple
+                                    if(isMultiple){
+
+                                        // Check result
+                                        if(!Array.isArray(result))
+
+                                            // Set result
+                                            result = [];
+
+                                        // Set result
+                                        // @ts-ignore
+                                        result.push(radioInputEl.value);
+
+                                    }else{
+
+                                        // Set result
+                                        result = radioInputEl.value;
+
+                                    }
+
+                                }
+
+                            });
+                        }
+
+                    }
+
+                }else
+                
+                // Check is date (to implement datetime)
+                if(!isMultiple && ["date"].includes(type)){
+
+                    // Convert to date
+                    result = new Date(result);
+
+                }else
+
+                // If radio
+                if(type === "select"){
+
                     // Search all radioEls in parent
-                    let radioInputEls = inputEl.parentElement?.querySelectorAll(name);
+                    let optionInputEls = inputEl.querySelectorAll("option");
 
                     // Check radioInputEls
-                    if(radioInputEls?.length){
+                    if(optionInputEls?.length){
 
+                        // Iteration radioInputEls
+                        optionInputEls.forEach((optionInputEl) => {
 
-                        // Here
+                            // Check radioInputEl
+                            if(optionInputEl instanceof HTMLOptionElement && optionInputEl.hasAttribute("default") && optionInputEl.hasAttribute("value")){
+
+                                // Check multiple
+                                if(isMultiple){
+
+                                    // Check result
+                                    if(!Array.isArray(result))
+
+                                        // Set result
+                                        result = [];
+
+                                    // Set result
+                                    // @ts-ignore
+                                    result.push(optionInputEl.value);
+
+                                }else{
+
+                                    // Set result
+                                    result = optionInputEl.value;
+
+                                }
+
+                            }
+
+                        });
                     }
 
                 }
@@ -1286,6 +1435,48 @@ export default class Form {
         }else
         // Check if select
         if(inputEl instanceof HTMLSelectElement){
+
+            // If radio
+            if(type === "select"){
+
+                // Search all radioEls in parent
+                let optionInputEls = inputEl.querySelectorAll("option");
+
+                // Check radioInputEls
+                if(optionInputEls?.length){
+
+                    // Iteration radioInputEls
+                    optionInputEls.forEach((optionInputEl) => {
+
+                        // Check radioInputEl
+                        if(optionInputEl instanceof HTMLOptionElement && optionInputEl.hasAttribute("default") && optionInputEl.hasAttribute("value")){
+
+                            // Check multiple
+                            if(isMultiple){
+
+                                // Check result
+                                if(!Array.isArray(result))
+
+                                    // Set result
+                                    result = [];
+
+                                // Set result
+                                // @ts-ignore
+                                result.push(optionInputEl.value);
+
+                            }else{
+
+                                // Set result
+                                result = optionInputEl.value;
+
+                            }
+
+                        }
+
+                    });
+                }
+
+            }
 
         }
 
