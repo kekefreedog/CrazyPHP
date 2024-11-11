@@ -20,7 +20,6 @@ use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\File\File;
 use Exception;
-use finfo;
 
 /**
  * Validate form values
