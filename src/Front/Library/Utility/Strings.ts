@@ -114,4 +114,42 @@ export default class Strings {
         : input
     ;
 
+    /**
+     * Is Json
+     * 
+     * Check if string given is json
+     * @param input
+     * @returns {boolean}
+     */
+    public static isJson = (input:string):boolean => {
+
+        // Set result
+        let result = false;
+
+        // Check input
+        if(input){
+
+            // Try
+            try {
+
+                // Parse json
+                JSON.parse(input);
+
+            // Catch exception
+            } catch (e) {
+
+                // Return false
+                result = false;
+            }
+
+            // Set result
+            result = true;
+
+        }
+
+        // Return result
+        return result;
+
+    }
+
 }

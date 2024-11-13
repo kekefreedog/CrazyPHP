@@ -236,17 +236,6 @@ export default class Form {
                         : this._getDefaultOfInput(items[i] as (HTMLSelectElement|HTMLInputElement))
                     ;
 
-                    // Check if radio
-                    // @ts-ignore
-                    if(items[i].type === "radio"){
-
-                        console.log("--debug--");
-                        // @ts-ignore
-                        console.log(items[i].name);
-                        console.log(defaultValue);
-
-                    }
-
                     /**
                      * Clean current value
                      */
@@ -258,8 +247,18 @@ export default class Form {
                         // @ts-ignore
                         let tomSelectInstance = items[i].tomselect;
 
-                        // Clear
-                        tomSelectInstance.clear();
+                        // Check value
+                        if(defaultValue){
+
+                            // Set value
+                            tomSelectInstance.setValue(defaultValue);
+
+                        }else{
+
+                            // Clear
+                            tomSelectInstance.clear();
+
+                        }
 
                         // Continue iteration
                         continue;
@@ -279,15 +278,29 @@ export default class Form {
                         // Check default value is string
                         if(defaultValue){
 
-                            // Set value
-                            items[i].setAttribute("value", defaultValue.toString());
+                            // Check if date
+                            if(defaultValue instanceof Date){
 
-                            // Check html inpit
-                            if(items[i] instanceof HTMLInputElement)
+                                // Check html inpit
+                                if(items[i] instanceof HTMLInputElement)
+
+                                    // Set value
+                                    // @ts-ignore
+                                    items[i].valueAsDate = defaultValue;
+
+                            }else{
 
                                 // Set value
-                                // @ts-ignore
-                                items[i].value = defaultValue.toString();
+                                items[i].setAttribute("value", defaultValue.toString());
+
+                                // Check html inpit
+                                if(items[i] instanceof HTMLInputElement)
+
+                                    // Set value
+                                    // @ts-ignore
+                                    items[i].value = defaultValue.toString();
+
+                            }
 
                         }
 
@@ -1287,6 +1300,12 @@ export default class Form {
         // Get type
         let type = inputEl.type;
 
+        // Check if data type 
+        if("type" in inputEl.dataset && inputEl.dataset.type)
+
+            // Override type
+            type = inputEl.dataset.type;
+
         // Get name
         let name = inputEl.name;
 
@@ -1427,6 +1446,14 @@ export default class Form {
                         });
                     }
 
+                    // Check if json
+                    if(UtilityStrings.isJson(result)){
+
+                        // Decode json
+                        result = JSON.parse(result);
+
+                    }
+
                 }
 
             }
@@ -1437,43 +1464,73 @@ export default class Form {
         if(inputEl instanceof HTMLSelectElement){
 
             // If radio
-            if(type === "select"){
+            if(["select", "select-multiple", "select-one"].includes(type)){
 
-                // Search all radioEls in parent
-                let optionInputEls = inputEl.querySelectorAll("option");
+                // Check default as attribute
+                if(inputEl.hasAttribute("default")){
 
-                // Check radioInputEls
-                if(optionInputEls?.length){
+                    // Get default
+                    result = inputEl.getAttribute("default");
 
-                    // Iteration radioInputEls
-                    optionInputEls.forEach((optionInputEl) => {
+                }else
+                // Check options
+                if(inputEl.querySelectorAll("option").length){
 
-                        // Check radioInputEl
-                        if(optionInputEl instanceof HTMLOptionElement && optionInputEl.hasAttribute("default") && optionInputEl.hasAttribute("value")){
+                    // Search all radioEls in parent
+                    let optionInputEls = inputEl.querySelectorAll("option");
 
-                            // Check multiple
-                            if(isMultiple){
+                    // Search first title
+                    let firstTitle:null|string = null;
 
-                                // Check result
-                                if(!Array.isArray(result))
+                    // Check radioInputEls
+                    if(optionInputEls?.length){
+
+                        // Iteration radioInputEls
+                        optionInputEls.forEach((optionInputEl) => {
+
+                            // Check radioInputEl
+                            if(optionInputEl instanceof HTMLOptionElement && optionInputEl.hasAttribute("default") && optionInputEl.hasAttribute("value")){
+
+                                // Check multiple
+                                if(isMultiple){
+
+                                    // Check result
+                                    if(!Array.isArray(result))
+
+                                        // Set result
+                                        result = [];
 
                                     // Set result
-                                    result = [];
+                                    // @ts-ignore
+                                    result.push(optionInputEl.value);
 
-                                // Set result
-                                // @ts-ignore
-                                result.push(optionInputEl.value);
+                                }else{
 
-                            }else{
+                                    // Set result
+                                    result = optionInputEl.value;
 
-                                // Set result
-                                result = optionInputEl.value;
+                                }
+
+                            }else
+                            // Check if title
+                            if(!optionInputEl.hasAttribute("value") && optionInputEl.innerText && firstTitle === null){
+
+                                // Set first title
+                                firstTitle = optionInputEl.innerText;
 
                             }
 
-                        }
+                        });
+                    }
 
-                    });
+                    // Check if result empty
+                    if(!result || result === null){
+
+                        // Set result with first title
+                        result = firstTitle;
+
+                    }
+                
                 }
 
             }
