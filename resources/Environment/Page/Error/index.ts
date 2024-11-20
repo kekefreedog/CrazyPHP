@@ -5,16 +5,16 @@
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2024 Kévin Zarshenas
+ * @copyright  2022-2023 Kévin Zarshenas
  */
 
 /**
  * Dependances
  */
 const css = require("!!css-loader!sass-loader!./style.scss");
-import {Carousel} from "@materializecss/materialize";
+import {Carousel, M} from "@materializecss/materialize";
+import {Crazypage, LoaderPage} from "crazyphp";
 const html = require("./template.hbs");
-import {Crazypage} from "crazyphp";
 require("./style.scss");
 
 /**
@@ -24,7 +24,7 @@ require("./style.scss");
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2024 Kévin Zarshenas
+ * @copyright  2022-2023 Kévin Zarshenas
  */
 export default class Home extends Crazypage {
 
@@ -71,7 +71,7 @@ export default class Home extends Crazypage {
     /**
      * On Ready
      *
-     * @return void
+     * @returns {void}
      */
     public onReady = ():void => {
 
@@ -80,14 +80,17 @@ export default class Home extends Crazypage {
         // Init carousel
         this.initCarousel();
 
+        // Init Index Button
+        this.initIndexBtn();
+
     }
 
     /**
      * Init Carousel
      * 
-     * @return void
+     * @returns {void}
      */
-    private initCarousel = () => {
+    private initCarousel = ():void => {
         
         // Get error-carousel
         let errorCarouselEl = document.getElementById("crazy-root");
@@ -96,12 +99,51 @@ export default class Home extends Crazypage {
         if(errorCarouselEl !== null)
 
             // New carousel instance
-            this.carouselInstance = new Carousel(
+            this.carouselInstance = new M.Carousel(
                 errorCarouselEl,
                 {
                     fullWidth: true,
                     indicators: true,
                     noWrap: true
+                }
+            );
+
+    }
+
+    /**
+     * Init Index Btn
+     * 
+     * @returns {void}
+     */
+    private initIndexBtn = ():void => {
+
+        // Get btn el
+        let btnEl = document.getElementById("root-btn");
+
+        // Check el
+        if(btnEl !== null)
+
+            // Add event on click
+            btnEl.addEventListener(
+                "click",
+                e => {
+
+                    e.preventDefault();
+
+                    // Set option
+                    let options:LoaderPageOptions = {
+                        name: "Index",
+                    };
+
+                    // Check ctrl or cmd pressed
+                    if(e.ctrlKey || e.metaKey)
+
+                        // Add openInNewTab in options
+                        options["openInNewTab"] = true;
+
+                    // Load page (redirection)
+                    new LoaderPage(options);
+
                 }
             );
 

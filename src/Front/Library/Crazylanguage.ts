@@ -47,13 +47,28 @@ export default class Crazylanguage {
         // Check current Navigator
         if(["firefox"].includes(currentNavigator)){
 
-            // Get current language
-            shortLanguage = window.navigator.language;
+            // Get languages
+            if(window.navigator.languages.length === 2){
 
-            // Set long language
-            longLanguage = window.navigator.languages.filter(item => item.startsWith(`${shortLanguage}-`)).shift() ?? "";
+                // Get tempShort
+                let tempLong = window.navigator.languages.at(0);
 
-            
+                // Get temp short
+                let tempShort = window.navigator.languages.at(1);
+
+                // Check temp long
+                if(typeof tempLong === "string" && tempLong)
+
+                    // Set long
+                    longLanguage = tempLong;
+
+                // Check temp short
+                if(typeof tempShort === "string" && tempShort)
+
+                    // Set short
+                    shortLanguage = tempShort;
+
+            }
 
         }else
         if(["chrome"].includes(currentNavigator)){
