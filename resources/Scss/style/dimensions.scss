@@ -62,12 +62,30 @@
 
     /* Brothers */
 
-    // Place element in the center of the ciew window
+    // Place element in the center of the view window
     &.screen-center {
 
         // Position
         justify-content: center;
         align-items: center;
+
+    }
+
+    // Place element in the center left of the view window
+    &.screen-left {
+
+        // Position
+        justify-content: left;
+        align-items: center;
+
+    }
+
+    // Place element in the center right of the view window
+    &.screen-right {
+
+        // Position
+        justify-content: right;
+        align-items: right;
 
     }
 

@@ -21,8 +21,34 @@
     {{#each form.items as |item|}}
     <div class="input-field col s12 mn-2{{#if item._style.customClass.input-field}} {{item._style.customClass.input-field}}{{/if}}" style="margin-bottom: {{#is item.type "range"}}0{{else}}15{{/is}}px;">
         
+        {{!-- Color Input --}}
+        {{#is item.type "color"}} 
+        {{#if item.required}}<b>{{/if}}{{item.label}}{{#if item.required}}</b>*{{/if}}<br>
+        {{#if item.disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{else}}
+        {{#if item._style.suffix}}<div class="suffix"><i class="{{item._style.suffix.class}}">{{item._style.suffix.text}}</i></div>{{/if}}{{/if}}
+        {{#if item._style.prefix}}<div class="prefix"><i class="{{item._style.prefix.class}}">{{item._style.prefix.text}}</i></div>{{/if}}
+        <input
+            id="{{../form.id}}_{{item.name}}" 
+            name="{{item.name}}"
+            {{#if item._style.customClass.input}}class="{{item._style.customClass.input}}"{{/if}}
+            {{#if item.disabled}}disabled=""{{else}}{{#if ../form.onready}}disabled="loading"{{/if}}{{/if}}
+            type="color"
+            {{#if item._style.color.picker}}
+                data-color-picker="{{item._style.color.picker}}"
+                {{#if item._style.color.theme}}data-color-theme="{{item._style.color.theme}}"{{/if}}
+                data-color-opacity="{{item._style.color.opacity}}"
+            {{/if}}
+            {{!-- data-type="color" --}}
+            {{#if item.placeholder}}placeholder="{{item.placeholder}}"{{else}}placeholder=" "{{/if}}
+            {{#if item.readonly}}readonly=""{{/if}}
+            {{#if item.default includeZero=false}}value="{{item.default}}" default="{{item.default}}"{{/if}}
+            {{#if item.select.[0].value includeZero=false}}min="{{item.select.[0].value}}"{{/if}}
+            {{#if item.select.[1].value includeZero=false}}max="{{item.select.[1].value}}"{{/if}}
+            {{#if item.required}}required=""{{/if}}
+        >
+
         {{!-- Select Input --}}
-        {{#is item.type "select"}}
+        {{else}}{{#is item.type "select"}}
         {{#if item.disabled}}<div class="suffix suffix-tomselect"><i class="material-icons">lock</i></div>{{else}}
         {{#if item._style.suffix}}<div class="suffix suffix-tomselect"><i class="{{item._style.suffix.class}}">{{item._style.suffix.text}}</i></div>{{/if}}{{/if}}
         {{#if item.label}}{{#if item.required}}<b>{{/if}}{{item.label}}{{#if item.required}}</b>*{{/if}}{{/if}}
@@ -218,21 +244,21 @@
             {{#if item._style.text.maxlength includeZero=false}}maxlength="{{item._style.text.maxlength}}"{{/if}}
         >
         {{#if item.label}}<label for="{{../form.id}}_{{item.name}}">{{#if item.required}}<b>{{/if}}{{item.label}}{{#if item.required}}</b>*{{/if}}</label>{{/if}}
-        {{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}
+        {{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}
 
     </div>
     {{/each}}
 
     {{!-- Submit --}}
-    <div class="col s12 screen-flex screen-right">
+    <div class="col s12 screen-flex screen-{{#if form.confirm.align}}{{form.confirm.align}}{{else}}left{{/if}}{{#if form.confirm.invert}} screen-direction-x-desc{{/if}}">
         {{!-- Reset Button --}}
-        {{#if form.reset}}<button class="btn waves-effect waves-light right red white-text mr-5" type="reset" {{#if form.onready}}disabled=""{{/if}}>Reset
+        {{#if form.reset}}<button class="btn waves-effect waves-light red white-text m{{#if form.confirm.invert}}l{{else}}r{{/if}}-5" type="reset" {{#if form.onready}}disabled=""{{/if}}>Reset
             <i class="material-icons right">delete_forever</i>
         </button>{{/if}}
         {{!-- Submit button --}}
-        <button class="btn waves-effect waves-light green" type="submit" {{#if form.onready}}disabled=""{{/if}}>Save
-            <i class="material-icons right">save</i>
-        </button>
+        {{#if form.confirm}}<button class="btn waves-effect waves-light green" type="submit" {{#if form.onready}}disabled=""{{/if}}>{{#isString form.confirm}}{{form.confirm}}{{else}}{{#isObject form.confirm}}{{#if form.confirm.title}}{{form.confirm.title}}{{/if}}{{else}}Save{{/isObject}}{{/isString}}
+            {{#isObject form.confirm}}{{#if form.confirm.icon}}<i class="{{form.confirm.icon.class}} right">{{form.confirm.icon.text}}</i>{{/if}}{{else}}<i class="material-icons right">save</i>{{/isObject}}
+        </button>{{/if}}
     </div>
 
 </form>{{/if}}

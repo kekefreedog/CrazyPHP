@@ -1389,4 +1389,27 @@ class Helpers {
 
     }
 
+    /**
+     * Is String
+     * 
+     * Return true if `value` is a string.
+     *
+     * ```handlebars
+     * {{isString "foo"}}
+     * <!-- results in:  'true' -->
+     * ``
+     * 
+     * @param $input The value to test.
+     * @param $option The value to test.
+     */
+    public static function isString($input, $option) {
+
+        # Set result
+        return is_string($input) 
+            ? $option['fn']()
+            : $option['inverse']()
+        ;
+
+    }
+
 }

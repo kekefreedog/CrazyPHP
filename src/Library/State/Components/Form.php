@@ -58,6 +58,9 @@ class Form {
     /** @var boolean $_reset */
     private bool $_reset = false;
 
+    /** @var bool|string|array $_confirm */
+    private bool|string|array $_confirm = true;
+
     /** @var array $_items_schema Schema of an item */
     private array $_item_schema = [
         "name"          =>  "",
@@ -241,6 +244,24 @@ class Form {
     }
 
     /**
+     * Set Confirm
+     * 
+     * Set Confirm action of the form
+     * 
+     * @param bool $confirm Confirm of the form
+     * @return Form
+     */
+    public function setConfirm(bool|string|array $confirm = true):Form {
+
+        # Set id
+        $this->_confirm = $confirm;
+
+        # Return self
+        return $this;
+
+    }
+
+    /**
      * Push Item
      * 
      * Push item of the form
@@ -359,6 +380,12 @@ class Form {
 
             # Push onready
             $result["reset"] = $this->_reset;
+
+        # Check onready
+        if(!$minimize || $this->_confirm)
+
+            # Push onready
+            $result["confirm"] = $this->_confirm;
 
         # Check items
         if(!empty($this->_items))
