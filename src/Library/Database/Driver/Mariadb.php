@@ -138,9 +138,24 @@ class Mariadb implements CrazyDatabaseDriver {
 
         # Get connection string
         $connectionArray = self::getConnectionArray($connection);
+        
+        try {
 
-        # Set client
-        $this->client = new PDO(...$connectionArray);
+            # Set client
+            $this->client = new PDO(...$connectionArray);
+
+        } catch (PDOException $e) {
+
+            # New Exception
+            throw new CrazyException(
+                $e->getMessage(),
+                500,
+                [
+                    "custom_code"   =>  "mariadb-010",
+                ]
+            );
+        
+        }
 
         # Set manager
         $this->manager = new Query($this->client);
@@ -396,6 +411,9 @@ class Mariadb implements CrazyDatabaseDriver {
         # Set primary
         $primary = "";
 
+        # Set reference
+        $references = [];
+
         # Iteration attributes
         foreach($attributes as $attribute){
 
@@ -426,6 +444,12 @@ class Mariadb implements CrazyDatabaseDriver {
                 # Set required
                 $required = 'NOT NULL';
 
+                # Set default
+                $default = isset($attribute['default']) 
+                    ? "DEFAULT '{".$attribute['default']."}'" 
+                    : ''
+                ;
+
             }else
             # If varchar
             if($columnTypeTemp == "VARCHAR"){
@@ -439,6 +463,12 @@ class Mariadb implements CrazyDatabaseDriver {
                     : 'NULL'
                 ;
 
+                # Set default
+                $default = isset($attribute['default']) 
+                    ? "DEFAULT '{".$attribute['default']."}'" 
+                    : ''
+                ;
+
             }else
             # If int
             if($columnTypeTemp == "INT"){
@@ -446,10 +476,22 @@ class Mariadb implements CrazyDatabaseDriver {
                 # Set column type
                 $columnType = "INT(11)";
 
+                # Check if reference
+                if(isset($attribute['reference']) && $attribute['reference'])
+
+                    # Update column type
+                    $columnType = "int(6) UNSIGNED";
+
                 # Set required
                 $required = isset($attribute['required']) && $attribute['required'] 
                     ? 'NOT NULL' 
                     : 'NULL'
+                ;
+
+                # Set default
+                $default = isset($attribute['default']) 
+                    ? "DEFAULT '{".$attribute['default']."}'" 
+                    : ''
                 ;
 
             }else
@@ -465,19 +507,52 @@ class Mariadb implements CrazyDatabaseDriver {
                     : 'NULL'
                 ;
 
+                # Set default
+                $default = isset($attribute['default']) 
+                    ? "DEFAULT '{".$attribute['default']."}'" 
+                    : ''
+                ;
+
+            }else
+            # If date
+            if($columnTypeTemp == "DATE" || $columnTypeTemp == "DATETIME"){
+
+                # Set column type (DATE)
+                $columnType = "TIMESTAMP";
+
+                # Set required
+
+                # Set required
+                $required = isset($attribute['required']) && $attribute['required'] 
+                    ? 'NOT NULL' 
+                    : 'NULL'
+                ;
+
+                # Set default
+                $default = isset($attribute['default']) 
+                    ? (
+                        $attribute['default'] == "today()"
+                            ? "DEFAULT current_timestamp"
+                            : "DEFAULT '{".$attribute['default']."}'" 
+                    )
+                    : ''
+                ;
+
             }
 
             # Clean column type
             $columnType = strtolower($columnType);
 
-            # Set default
-            $default = isset($attribute['default']) 
-                ? "DEFAULT '{".$attribute['default']."}'" 
-                : ''
-            ;
-
             # Push result into columns
             $columns[] = trim("`$columnName` $columnType $required $default").($isId ? " AUTO_INCREMENT" : "");
+
+            # Check if reference
+            if(isset($attribute['reference']) && $attribute['reference']){
+
+                # Set column type
+                $references[] = trim("FOREIGN KEY (`$columnName`) REFERENCES `".$attribute['reference']."` (`id`) ON DELETE CASCADE ON UPDATE CASCADE");
+
+            }
             
         }
 
@@ -488,7 +563,7 @@ class Mariadb implements CrazyDatabaseDriver {
             return $result;
 
         # Fill query
-        $query .= "(". implode(', ', $columns) . ", $primary)";
+        $query .= "(". implode(', ', $columns) . ", $primary" . (!empty($references) ? ", ".implode(', ', $references) : "" ) . ')';
 
         # Execute the SQL statement to create the table
         try {

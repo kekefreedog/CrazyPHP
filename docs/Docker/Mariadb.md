@@ -100,3 +100,11 @@ Result :
 ```sh
 Query OK, 0 rows affected
 ```
+
+### 5. Show all tables
+
+Get schema of one table
+
+```sql
+SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='Booking';
+```

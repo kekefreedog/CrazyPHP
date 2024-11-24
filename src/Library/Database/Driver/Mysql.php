@@ -138,9 +138,24 @@ class Mysql implements CrazyDatabaseDriver {
 
         # Get connection string
         $connectionArray = self::getConnectionArray($connection);
+        
+        try {
 
-        # Set client
-        $this->client = new PDO(...$connectionArray);
+            # Set client
+            $this->client = new PDO(...$connectionArray);
+
+        } catch (PDOException $e) {
+
+            # New Exception
+            throw new CrazyException(
+                $e->getMessage(),
+                500,
+                [
+                    "custom_code"   =>  "mariadb-010",
+                ]
+            );
+        
+        }
 
         # Set manager
         $this->manager = new Query($this->client);
@@ -360,13 +375,217 @@ class Mysql implements CrazyDatabaseDriver {
     /**
      * Create Table
      * 
-     * @param $table
-     * @param $schema
+     * @param string $table
+     * @param array $attributes
+     * @param bool $replaceTable
+     * @param array $option
+     * @param string $database
      * @return mixed
      */
-    public function createTable($table, $value) {
+    public function createTable($tableName = "", $attributes = [], $replaceTable = false, $option = [], string $database = ""):mixed {
 
-        
+        # Check database
+        if(!$database)
+
+            # Get main database
+            $database = $this->_getDefaultDatabase();
+
+        # Set result
+        $result = null;
+
+        # Check attributes
+        if(empty($attributes) || !$tableName)
+
+            # Return result
+            return $result;
+
+        # Switch to the specified database
+        $this->client->exec("USE " . $database);
+
+        # Prepare query
+        $query = "CREATE TABLE ".($replaceTable ? "" : "IF NOT EXISTS ")."`$tableName` ";
+
+        # Set columns
+        $columns = [];
+
+        # Set primary
+        $primary = "";
+
+        # Set reference
+        $references = [];
+
+        # Iteration attributes
+        foreach($attributes as $attribute){
+
+            # Set id id
+            $isId = false;
+
+            # Get column name
+            $columnName = $attribute['name'];
+
+            # Set type
+            $columnTypeTemp = strtoupper($attribute['type']);
+
+            # Set column type
+            $columnType = $columnTypeTemp;
+
+            # If varchar
+            if($columnTypeTemp == "INT" && $columnName == "id" && !$isId){
+
+                # Set column type
+                $columnType = "int(6) UNSIGNED";
+
+                # Set is id
+                $isId = true;
+
+                # Set primary
+                $primary = "PRIMARY KEY (`$columnName`)";
+
+                # Set required
+                $required = 'NOT NULL';
+
+                # Set default
+                $default = isset($attribute['default']) 
+                    ? "DEFAULT '{".$attribute['default']."}'" 
+                    : ''
+                ;
+
+            }else
+            # If varchar
+            if($columnTypeTemp == "VARCHAR"){
+
+                # Set column type
+                $columnType = "VARCHAR(255)";
+
+                # Set required
+                $required = isset($attribute['required']) && $attribute['required'] 
+                    ? 'NOT NULL' 
+                    : 'NULL'
+                ;
+
+                # Set default
+                $default = isset($attribute['default']) 
+                    ? "DEFAULT '{".$attribute['default']."}'" 
+                    : ''
+                ;
+
+            }else
+            # If int
+            if($columnTypeTemp == "INT"){
+
+                # Set column type
+                $columnType = "INT(11)";
+
+                # Check if reference
+                if(isset($attribute['reference']) && $attribute['reference'])
+
+                    # Update column type
+                    $columnType = "int(6) UNSIGNED";
+
+                # Set required
+                $required = isset($attribute['required']) && $attribute['required'] 
+                    ? 'NOT NULL' 
+                    : 'NULL'
+                ;
+
+                # Set default
+                $default = isset($attribute['default']) 
+                    ? "DEFAULT '{".$attribute['default']."}'" 
+                    : ''
+                ;
+
+            }else
+            # If int
+            if($columnTypeTemp == "BOOL" || $columnTypeTemp == "BOOLEAN"){
+
+                # Set column type
+                $columnType = "BOOLEAN";
+
+                # Set required
+                $required = isset($attribute['required']) && $attribute['required'] 
+                    ? 'NOT NULL' 
+                    : 'NULL'
+                ;
+
+                # Set default
+                $default = isset($attribute['default']) 
+                    ? "DEFAULT '{".$attribute['default']."}'" 
+                    : ''
+                ;
+
+            }else
+            # If date
+            if($columnTypeTemp == "DATE" || $columnTypeTemp == "DATETIME"){
+
+                # Set column type (DATE)
+                $columnType = "TIMESTAMP";
+
+                # Set required
+
+                # Set required
+                $required = isset($attribute['required']) && $attribute['required'] 
+                    ? 'NOT NULL' 
+                    : 'NULL'
+                ;
+
+                # Set default
+                $default = isset($attribute['default']) 
+                    ? (
+                        $attribute['default'] == "today()"
+                            ? "DEFAULT current_timestamp"
+                            : "DEFAULT '{".$attribute['default']."}'" 
+                    )
+                    : ''
+                ;
+
+            }
+
+            # Clean column type
+            $columnType = strtolower($columnType);
+
+            # Push result into columns
+            $columns[] = trim("`$columnName` $columnType $required $default").($isId ? " AUTO_INCREMENT" : "");
+
+            # Check if reference
+            if(isset($attribute['reference']) && $attribute['reference']){
+
+                # Set column type
+                $references[] = trim("FOREIGN KEY (`$columnName`) REFERENCES `".$attribute['reference']."` (`id`) ON DELETE CASCADE ON UPDATE CASCADE");
+
+            }
+            
+        }
+
+        # Check columns
+        if(empty($columns))
+
+            # Return result
+            return $result;
+
+        # Fill query
+        $query .= "(". implode(', ', $columns) . ", $primary" . (!empty($references) ? ", ".implode(', ', $references) : "" ) . ')';
+
+        # Execute the SQL statement to create the table
+        try {
+
+            # Exec
+            $result = $this->client->exec($query);
+
+        } catch (PDOException $e) {
+
+            # Error
+            throw new CrazyException(
+                "Error creating table: " . $e->getMessage(),
+                500,
+                [
+                    "custom_code"   =>  "mariadb-006",
+                ]
+            );
+
+        }
+
+        # Return result
+        return $result;
 
     }
 
@@ -500,17 +719,17 @@ class Mysql implements CrazyDatabaseDriver {
         # Set result
         $result = null;
 
-        # Check input
-        if(!$table || empty($value) || !$database)
-
-            # Return result
-            return $result;
-
         # Check database
         if(!$database)
 
             # Get main database
             $database = $this->_getDefaultDatabase();
+
+        # Check input
+        if(!$table || empty($value) || !$database)
+
+            # Return result
+            return $result;
 
         # Use database
         $this->client->exec("USE " . $database);
@@ -571,7 +790,7 @@ class Mysql implements CrazyDatabaseDriver {
         $result = null;
 
         # Check input
-        if(!$table || empty($value) || !$database)
+        if(!$table || empty($value))
 
             # Return result
             return $result;
@@ -677,6 +896,7 @@ class Mysql implements CrazyDatabaseDriver {
      * @param string $table
      * @param string $database
      * @param array $options = [
+     *      "query":string
      *      "filters":array,
      *      "sort":array
      *      "limit":array
@@ -688,7 +908,7 @@ class Mysql implements CrazyDatabaseDriver {
         $result = null;
 
         # Check input
-        if(!$table || empty($value) || !$database)
+        if(!$table)
 
             # Return result
             return $result;
@@ -702,20 +922,37 @@ class Mysql implements CrazyDatabaseDriver {
         # Use database
         $this->client->exec("USE " . $database);
 
-        # Set filters
-        $filters = isset($options["filters"]) && is_array($options["filters"])
-            ? $options["filters"]
-            : []
-        ;
+        # Check query
+        $isQuery = isset($options["query"]) && !empty($options["query"]);
+
+        # Check query
+        if(!$isQuery)
+
+            # Set filters
+            $filters = isset($options["filters"]) && is_array($options["filters"])
+                ? $options["filters"]
+                : []
+            ;
     
         try {
 
-            # Update table
-            $result = $this->manager
-                ->from($table)
-                ->where($filters)
-                ->fetch()
-            ;
+            # Check query
+            if($isQuery){
+
+                # Update table
+                $statment = $this->client->query($options["query"]);
+
+                # Set result
+                $result = $statment->fetchAll(PDO::FETCH_ASSOC);
+
+            }else
+
+                # Update table
+                $result = $this->manager
+                    ->from($table)
+                    ->where($filters)
+                    ->fetch()
+                ;
 
         } catch (PDOException $e) {
 
@@ -910,7 +1147,7 @@ class Mysql implements CrazyDatabaseDriver {
             "mysql:host=".$options["host"].";".
             (
                 $options["port"] !== false 
-                    ? "port=".$options["port"]
+                    ? "port=".$options["port"].";"
                     : ""
             ).
             "dbname=".$options["database"]
