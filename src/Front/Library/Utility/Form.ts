@@ -899,6 +899,40 @@ export default class Form {
                 })
             ;
 
+        }else
+        // Check if is
+        if(entityAttr && onreadyAttr && /^id\/[a-zA-Z0-9]+$/.test(onreadyAttr)){
+
+            // Prepare request 
+            let request = new Crazyrequest(
+                `/api/v2/${entityAttr}/${onreadyAttr.replace("id/", "")}`,
+                {
+                    method: "get",
+                    cache: false,
+                    responseType: "json",
+                    from: "internal"
+                }
+            );
+
+            // Fetch request
+            request.fetch()
+                .then(value => {
+
+                    console.log("dev");
+                    console.log(value);
+                    
+                    // Unlock
+                    this.unlock();
+
+                    // Check result
+                    if(value.results.length)
+
+                        // Set values
+                        this.setValue(value.results[0], value.results[0]._id);
+
+                })
+            ;
+
         // If not action, unlock form
         }else
             
@@ -1127,6 +1161,35 @@ export default class Form {
      * @return null|Array<any>
      */
     private emailRetrieve = (itemEl:HTMLElement):null|Array<any> => {
+
+        // Set result
+        let result:null|Array<any> = null;
+
+        // Check value
+        if("value" in itemEl && "name" in itemEl){
+
+            let key:string = itemEl.name as string;
+
+            // Set result
+            let value:string = itemEl.value as string;
+
+            // Push in result
+            result = [key, value];
+
+        }
+
+        // Return result
+        return result;
+
+    }
+
+    /**
+     * Retrieve Color
+     * 
+     * @param itemEl:HTMLElement
+     * @return null|Array<any>
+     */
+    private colorRetrieve = (itemEl:HTMLElement):null|Array<any> => {
 
         // Set result
         let result:null|Array<any> = null;
@@ -1603,16 +1666,21 @@ export default class Form {
      */
     private _initColorInput = (inputEl:HTMLSelectElement|HTMLInputElement):void => {
 
-        // Check maska
-        console.log("color init");
-        console.log(inputEl);
-
         // Check pickr
         if(inputEl instanceof HTMLInputElement && "colorPicker" in inputEl.dataset && inputEl.dataset.colorPicker == "pickr"){
 
+            // Create divEl
+            let divEl = document.createElement("div");
+
+            // Append el after el
+            inputEl.after(divEl);
+
+            // Hide input
+            inputEl.classList.add("hide");
+
             // Prepare options
             let options:Partial<Pickr.Options> = {
-                el: inputEl,
+                el: divEl,
                 theme: "colorTheme" in inputEl.dataset && ['classic', 'monolith', 'nano'].includes(inputEl.dataset.colorTheme as string)
                     ? inputEl.dataset.colorTheme as Pickr.Theme
                     : 'classic'
@@ -1656,8 +1724,86 @@ export default class Form {
                 }
             };
 
+            // Check if input has default
+            if(inputEl.hasAttribute("value")){
+
+                // Get default
+                var currentValue = inputEl.getAttribute("value");
+
+                // Check current value
+                if(currentValue)
+
+                    // Set default on option
+                    options.default = currentValue;
+
+                else
+                // Check if input has default
+                if(inputEl.hasAttribute("default")){
+    
+                    // Get default
+                    var currentDefault = inputEl.getAttribute("default");
+    
+                    // Check current value
+                    if(currentDefault === "randomHex()"){
+
+                        // Generate a random integer between 0 and 16777215 (0xFFFFFF)
+                        const randomColor = Math.floor(Math.random() * 16777216);
+                        
+                        // Convert to hexadecimal and pad with leading zeros if necessary
+                        options.default = `#${randomColor.toString(16).padStart(6, '0')}`;
+
+                    }else
+                    // Check currentValue
+                    if(currentDefault)
+
+                        // Set default on option
+                        options.default = currentDefault;
+    
+    
+                }
+
+
+
+            }
+
             // Simple example, see optional options for more configuration.
             const pickr = Pickr.create(options as Pickr.Options);
+
+            // Add event on save
+            pickr.on("save", (color, instance) => {
+
+                // Get color
+                let hexa:string = color.toHEXA();
+
+                // Set value on inputEl
+                inputEl.value = hexa
+
+                // Close instance
+                instance.hide();
+
+            });
+
+            // Add event on input
+            inputEl.addEventListener(
+                "change",
+                (e:Event) => {
+
+                    // Get targelt
+                    let el = e.currentTarget;
+
+                    // Check el
+                    if(el instanceof HTMLInputElement){
+
+                        // Get value
+                        let value = el.value;
+
+                        // Set value in pickr
+                        pickr.setColor(value);
+
+                    }
+
+                }
+            )
 
         }
 

@@ -798,7 +798,30 @@ class Helpers {
         if(is_int($value) || is_float($value) || ctype_digit($value))
 
             # Return round value
-            return round(intval($value));
+            return round(floatval($value));
+
+        else
+
+            # Return value
+            return $value;
+        
+    }
+
+    /**
+     * Round Decimal
+     * 
+     * Returns the length of the given string or array.
+     * 
+     * @param mixed $value
+     * @param mixed options
+     */
+    public static function roundDecimal($value) {
+
+        # Check if array
+        if(is_int($value) || is_float($value) || ctype_digit($value))
+
+            # Return round value
+            return round(floatval($value), 1);
 
         else
 
@@ -1409,6 +1432,24 @@ class Helpers {
             ? $option['fn']()
             : $option['inverse']()
         ;
+
+    }
+
+    /**
+     * Color Hex Random
+     * 
+     * Return random color hex format
+     * 
+     * @param $input The value to test.
+     * @param $option The value to test.
+     */
+    public static function colorHexRandom($option) {
+
+        # Generate a random integer between 0 and 16777215 (0xFFFFFF)
+        $randomColor = mt_rand(0, 16777215);
+        
+        // Convert to hexadecimal and ensure it is 6 characters long
+        return sprintf("#%06X", $randomColor);
 
     }
 

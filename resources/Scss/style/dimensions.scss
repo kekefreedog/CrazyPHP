@@ -25,6 +25,14 @@
 
 }
 
+// Fit content to the window view size
+.screen-fit-y {
+
+    // Dimension
+    align-items: stretch;
+
+}
+
 // Fit content at least to the window view size
 .screen-fit-min {
 

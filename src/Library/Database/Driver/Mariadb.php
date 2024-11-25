@@ -902,7 +902,7 @@ class Mariadb implements CrazyDatabaseDriver {
      *      "limit":array
      * ]
      */
-    public function find(string $table, string $database, array $options = []):array|null {
+    public function find(string $table, string $database = "", array $options = []):array|null {
 
         # Set result
         $result = null;
@@ -951,7 +951,7 @@ class Mariadb implements CrazyDatabaseDriver {
                 $result = $this->manager
                     ->from($table)
                     ->where($filters)
-                    ->fetch()
+                    ->fetchAll()
                 ;
 
         } catch (PDOException $e) {

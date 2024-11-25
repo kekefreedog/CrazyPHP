@@ -19,9 +19,9 @@ use CrazyPHP\Library\Database\Driver\Mariadb as MariadbModel;
 use CrazyPHP\Library\File\Config as FileConfig;
 use CrazyPHP\Interface\CrazyDriverModel;
 use CrazyPHP\Exception\CrazyException;
+use CrazyPHP\Library\Time\DateTime;
 use CrazyPHP\Library\Model\Schema;
 use CrazyPHP\Library\Array\Arrays;
-use CrazyPHP\Library\Time\DateTime;
 
 /* use PhpMyAdmin\SqlParser\Statements\SelectStatement;
 use PhpMyAdmin\SqlParser\Parser; */
@@ -325,7 +325,7 @@ class Mariadb implements CrazyDriverModel {
         if($this->id !== null){
 
             # Set result
-            $result[] = $this->mariadb->find($this->arguments["table"], "", [
+            $result = $this->mariadb->find($this->arguments["table"], "", [
                 "filters" =>  [
                     "id"    =>  $this->id
                 ]
@@ -398,6 +398,11 @@ class Mariadb implements CrazyDriverModel {
                 $result[] = $this->mariadb->insertToTable($this->arguments["table"], $data);
 
             }
+
+        }else{
+
+            # Set result
+            $result = $this->mariadb->find($this->arguments["table"]);
 
         }
 

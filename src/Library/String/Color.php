@@ -207,4 +207,25 @@ class Color {
 
     }
 
+    /** Public static methods | Randome color
+     ******************************************************
+     */
+
+    /**
+     * Random Hex
+     * 
+     * Return random color hex format
+     * 
+     * @return string
+     */
+    public static function randomHex():string {
+
+        # Generate a random integer between 0 and 16777215 (0xFFFFFF)
+        $randomColor = mt_rand(0, 16777215);
+        
+        // Convert to hexadecimal and ensure it is 6 characters long
+        return sprintf("#%06X", $randomColor);
+
+    }
+
 }
