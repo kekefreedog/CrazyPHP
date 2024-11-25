@@ -279,10 +279,13 @@ export default class Crazyrequest{
         if(this.options.header !== undefined && Object.keys(this.options.header).length > 0)
 
             // Iteration of header
-            for(let key of Object.keys(this.options.header))
+            for(let key of Object.keys(this.options.header)){
 
                 // Append to header
                 headers.append(key, this.options.header[key]);
+
+
+            }
 
         // Push header in options
         this.requestOptions.headers = headers;
@@ -313,6 +316,14 @@ export default class Crazyrequest{
             // Push Cache-Control
             // this.requestOptions.headers.set("Cache-Control", "no-cache");
             this.requestOptions.headers.set("Cache-Control", "no-store");
+
+        }
+
+        // Check responseType
+        if(!this.requestOptions.headers.has("Accept") && this.options.responseType === "json"){
+
+            // Push accept on reques
+            this.requestOptions.headers.set("Accept", "application/json");
 
         }
 

@@ -32,6 +32,7 @@ Model:
         source:                                       # Can be use in case you want retrieve value from another model (if key01 is find before key02, it will stop at the first found except if multiple is selected)
           - key01
           - key02
+        reference: OtherModel                         # In MySql / Mariadb allow to link this attribute to another model (linked to the id of the other model)
       - name: path
         label: Path
         description: Path of the front controller

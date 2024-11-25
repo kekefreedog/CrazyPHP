@@ -21,6 +21,7 @@ use CrazyPHP\Interface\CrazyDriverModel;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Model\Schema;
 use CrazyPHP\Library\Array\Arrays;
+use CrazyPHP\Library\Time\DateTime;
 
 /* use PhpMyAdmin\SqlParser\Statements\SelectStatement;
 use PhpMyAdmin\SqlParser\Parser; */
@@ -331,7 +332,7 @@ class Mariadb implements CrazyDriverModel {
             ]);
             
         }else
-        # Insert to mongo Check schema
+        # Insert to mariadb Check schema
         if($this->schema !== null){
 
             # Check collection
@@ -346,10 +347,49 @@ class Mariadb implements CrazyDriverModel {
                 $data = [];
 
                 # Iteration v
-                foreach($v as $item)
+                foreach($v as $item){
 
-                    # Push in data
-                    $data[$item["name"]] = $item["value"];
+                    # Check if type if date of dateime and value is today()
+                    if(
+                        (
+                            $item["type"] === "DATE" || 
+                            $item["type"] === "DATE"
+                        )
+                    ){
+
+                        # Check if value is today
+                        if($item["value"] == "today()"){
+
+                            # Set current timestamp
+                            $data[$item["name"]] = date("Y-m-d H:i:s");
+
+                        }else
+                        # Check if value is yesterday
+                        if($item["value"] == "yesterday()"){
+
+                            # Set current timestamp
+                            $data[$item["name"]] =  (new DateTime("yesterday"))->format("Y-m-d H:i:s");
+
+                        }else
+                        # Check if value is tomorrow
+                        if($item["value"] == "tomorrow()"){
+
+                            # Set current timestamp
+                            $data[$item["name"]] = (new DateTime("tomorrow"))->format("Y-m-d H:i:s");
+
+                        }else{
+
+                            # Push in data
+                            $data[$item["name"]] = $item["value"];
+
+                        }
+
+                    }else
+
+                        # Push in data
+                        $data[$item["name"]] = $item["value"];
+
+                }
 
                 # Unflatten result
                 $data = Arrays::unflatten($data);

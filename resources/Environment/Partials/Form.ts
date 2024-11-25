@@ -41,7 +41,7 @@ export default class Form extends Crazypartial {
     /**
      * Constructor
      */
-    public constructor(input:RegisterPartialScanned){
+    public constructor(input:RegisterPartialScanned, options:Partial<FormOptions> = {}){
 
         // Parent constructor
         super(input);
@@ -49,7 +49,7 @@ export default class Form extends Crazypartial {
         console.log("hello form");
 
         // Prepare form
-        this._form = new UtilityForm(UtilityForm.isHTMLFormElement(this.input.target) ? this.input.target : "");
+        this._form = new UtilityForm(UtilityForm.isHTMLFormElement(this.input.target) ? this.input.target : "", options);
 
     }
     

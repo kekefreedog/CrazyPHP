@@ -745,9 +745,9 @@ class Mariadb implements CrazyDatabaseDriver {
 
             # Create table
             $this->createTable($table, $value);
-            
 
         }
+
         try {
         
             // Insert chain

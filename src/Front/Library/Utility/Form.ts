@@ -40,11 +40,17 @@ export default class Form {
     /** @var _formEl */
     private _formEl:HTMLFormElement;
 
+    /** @var _options */
+    private _options:Partial<FormOptions>;
+
     /** Construct
      ******************************************************
      */
 
-    constructor(form:string|HTMLFormElement){
+    constructor(form:string|HTMLFormElement, options:Partial<FormOptions> = {}){
+
+        // Ingest options
+        this._options = options;
 
         // Scan current form
         this._ingestForm(form)
@@ -466,7 +472,13 @@ export default class Form {
             // Create item
             this._onSubmitUpdate(entity.value, valueID.value, formData)
                 .then(
-                    v => {
+                    value => {
+
+                        // Check submit done
+                        if(this._options.onSubmitDone)
+
+                            // Call it
+                            this._options.onSubmitDone(value, entity.value, formData);
 
                         // Unlock target
                         this.unlock();
@@ -488,6 +500,12 @@ export default class Form {
                             
                             // Set values
                             this.setValue(value.results[0], value.results[0]._id);
+
+                        // Check submit done
+                        if(this._options.onSubmitDone)
+
+                            // Call it
+                            this._options.onSubmitDone(value, entity.value, formData);
 
                         // Unlock target
                         this.unlock();
@@ -599,9 +617,10 @@ export default class Form {
         let request = new Crazyrequest(`/api/v2/${entityValue}/update/${valueID}`, {
             method: "PUT",
             header:{
-                'Cache-Control': 'no-cache, no-store, must-revalidate'
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
             },
-            cache: false
+            cache: false,
+            responseType: "json"
         });
 
         // Run request
@@ -1079,6 +1098,35 @@ export default class Form {
      * @return null|Array<any>
      */
     private textRetrieve = (itemEl:HTMLElement):null|Array<any> => {
+
+        // Set result
+        let result:null|Array<any> = null;
+
+        // Check value
+        if("value" in itemEl && "name" in itemEl){
+
+            let key:string = itemEl.name as string;
+
+            // Set result
+            let value:string = itemEl.value as string;
+
+            // Push in result
+            result = [key, value];
+
+        }
+
+        // Return result
+        return result;
+
+    }
+
+    /**
+     * Retrieve Email
+     * 
+     * @param itemEl:HTMLElement
+     * @return null|Array<any>
+     */
+    private emailRetrieve = (itemEl:HTMLElement):null|Array<any> => {
 
         // Set result
         let result:null|Array<any> = null;

@@ -413,6 +413,15 @@ declare global {
         extra?:any
     }
 
+    /** Interface | Utilities Form
+     ******************************************************
+     */
+
+    interface FormOptions {
+        onSubmitDone: (result:object, entity:string, formData:FormData)=>void,
+        onError: (result:object, entity:string, formData:FormData)=>void,
+    }
+
     /** Interface | Error
      ******************************************************
      */
