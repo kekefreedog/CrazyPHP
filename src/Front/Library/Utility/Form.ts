@@ -21,6 +21,7 @@ import Page from '../Loader/Page';
 import { MaskInput } from "maska"
 import Root from '../Dom/Root';
 import Arrays from './Arrays';
+import { json } from 'stream/consumers';
 
 /**
  * Form
@@ -1957,8 +1958,99 @@ export default class Form {
 
             }
 
+            // Declare potential add option
+            let addOption:(()=>void)|null = null;
+
+            // Check if 
+            if(inputEl.dataset && "selectRemote" in inputEl.dataset && inputEl.dataset.selectRemote && UtilityStrings.isJson(inputEl.dataset.selectRemote)){
+
+                // Decode selectRemote
+                let remoteData = JSON.parse(inputEl.dataset.selectRemote);
+
+                // Set value
+                option.valueField = remoteData.value;
+
+                // Set label
+                option.labelField = remoteData.label;
+
+                // Set search
+                option.searchField = remoteData.search;
+
+                // option.allowEmptyOption = true;
+
+                // Set load
+                option.load = (selectQuery, callback) => {
+
+                    // New query
+                    let query = new Crazyrequest(
+                        remoteData.url,
+                        {
+                            method: "get",
+                            cache: false,
+                            responseType: "json",
+                            from: "internal"
+                        }
+                    );
+
+                    // Rerurn result
+                    query.fetch(
+                        
+                        // Fetch all
+                        
+                    ).then(
+                        value => {
+
+                            // Callback with value retrieve
+                            callback(value.results);
+
+                        }
+                    );
+
+                };
+
+                // Prepare add option
+                addOption = () => {
+
+                    // New query
+                    let query = new Crazyrequest(
+                        remoteData.url,
+                        {
+                            method: "get",
+                            cache: false,
+                            responseType: "json",
+                            from: "internal"
+                        }
+                    );
+
+                    // Rerurn result
+                    query.fetch(
+
+                        // Fetch all
+
+                    ).then(
+                        value => {
+
+                            // Add options to tom
+                            selectInstance.addOptions(value.results);
+
+                        }
+                    );
+
+                }
+
+            }
+
             // Init maska
             let selectInstance = new TomSelect(inputEl, option);
+
+            // Check addOption is callable
+            if(addOption !== null && typeof addOption === "function"){
+
+                // Run function
+                // @ts-ignore
+                addOption();
+
+            }
 
         }
 
