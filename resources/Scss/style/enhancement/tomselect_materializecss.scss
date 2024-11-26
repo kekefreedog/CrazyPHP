@@ -58,50 +58,6 @@
 
     }
 
-    // Ts Wrapper
-    .ts-dropdown {
-
-        // Color
-        background-color: var(--md-sys-color-on-tertiary);
-
-        // Position
-        margin-top: 0px;
-
-        // Shadow
-        box-shadow: 0 2px 2px #00000024,0 3px 1px -2px #0000001f,0 1px 5px #0003;
-
-        // Dimension
-        border: none;
-
-        // Children
-
-        // Items
-        .create, .no-results, .option {
-
-            // Font
-            font-size: 16px;
-            line-height: 22px;
-
-            // Color
-            color: var(--md-sys-color-primary);
-            background-color: transparent;
-            
-            // Dimension
-            padding: 14px 16px;
-
-            // Display
-            display: block;
-
-            &.active {
-
-                background-color: var(--md-sys-color-tertiary-container);
-
-            }
-
-        }
-
-    }
-
     // Focus
     &.focus {
 
@@ -159,6 +115,53 @@
         }
 
     } 
+
+}
+
+// Ts Wrapper
+.ts-dropdown {
+
+    // Depth
+    z-index: 9999;
+
+    // Color
+    background-color: var(--md-sys-color-on-tertiary);
+
+    // Position
+    margin-top: 0px;
+
+    // Shadow
+    box-shadow: 0 2px 2px #00000024,0 3px 1px -2px #0000001f,0 1px 5px #0003;
+
+    // Dimension
+    border: none;
+
+    // Children
+
+    // Items
+    .create, .no-results, .option {
+
+        // Font
+        font-size: 16px;
+        line-height: 22px;
+
+        // Color
+        color: var(--md-sys-color-primary);
+        background-color: transparent;
+        
+        // Dimension
+        padding: 14px 16px;
+
+        // Display
+        display: block;
+
+        &.active {
+
+            background-color: var(--md-sys-color-tertiary-container);
+
+        }
+
+    }
 
 }
 

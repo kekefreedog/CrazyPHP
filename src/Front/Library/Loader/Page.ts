@@ -48,10 +48,6 @@ export default class Page {
                 Page.loadUrl
             )
             .then(
-                // Load Pre Action
-                Page.loadColorSchema
-            )
-            .then(
                 // Open New Tab (if needed)
                 Page.openNewTab
             )
@@ -368,47 +364,6 @@ export default class Page {
         // Return options
         return options;
 
-    } 
-
-    /**
-     * load Color Schema
-     * 
-     * Load url from name and arguments
-     * 
-     * @param options:LoaderPageOptions Options with all page details
-     * @return Promise<LoaderPageOptions>
-     */
-    public static loadColorSchema = async(options:LoaderPageOptions):Promise<LoaderPageOptions> =>  {
-
-        // Get state
-        let state = await options.scriptLoaded?.loadPageState();
-
-        // Get source color
-        if(typeof state?._ui?.materialDynamicColors?.source == "string" && state._ui?.materialDynamicColors.source){
-
-            // Get source
-            let source = state?._ui?.materialDynamicColors?.source;
-
-            // Check source
-            if(source){
-
-                // Get colors
-                let colors = new Crazycolor(source);
-
-                // Push to color
-                // @ts-ignore
-                options.color = colors;
-
-                // Set status
-                options = this.setStatus(options, "hasColor", true);
-
-            }
-
-        }
-
-        // Return options
-        return options;
-
     }
     
     /**
@@ -675,14 +630,44 @@ export default class Page {
      */
     public static applyColorSchema = async(options:LoaderPageOptions):Promise<LoaderPageOptions> =>  {
 
-        console.log(options);
-
         // Get document
         let doc = document;
 
+        // Set state
+        let state = {...await options.scriptLoaded?.loadPageState()};
+
+        // Get potential overide source
+        // @ts-ignore
+        let newSource = state._ui?.materialDynamicColors?.source;
+
+        // Get body
+        let bodyEl = document.body;
+
+        // Check new source
+        if(typeof newSource === "string" && newSource){
+
+            // Set dataset
+            bodyEl.dataset.crazyColor = newSource;
+
+
+        }else
+        // Check if default
+        if("defaultColor" in bodyEl.dataset){
+
+            // Get default color
+            let defaultSource = bodyEl.dataset.defaultColor;
+
+            // Check defaultSource
+            if(typeof defaultSource === "string" && defaultSource)
+
+                // Set crazy color
+                bodyEl.dataset.crazyColor = defaultSource;
+
+        }
+
         // Scan crazy color
         let result = Crazycolor.scanCrazyColor(doc);
-
+        
         // Check
         if(result?.length)
 

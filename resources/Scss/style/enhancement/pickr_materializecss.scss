@@ -1,0 +1,54 @@
+/// /// ///
+/// Enhancement - Crazy Content
+///
+/// Pickr ft. Materialize
+///
+/// @package    kzarshenas/crazyphp
+/// @author     kekefreedog <kevin.zarshenas@gmail.com>
+/// @copyright  2022-2024 Kévin Zarshenas
+/// /// /// 
+
+/**
+ * Adapt button
+ */
+button.pcr-button {
+
+    // Position
+    margin-top: 10px;
+    margin-bottom: 5px;
+    border-radius: 6px;
+
+    &::before {
+        
+        // Border
+        border-radius: 6px;
+
+    }
+
+}
+
+/**
+ * Editor
+ */
+.pcr-app {
+
+    /* Background */
+    background: var(--md-sys-color-on-tertiary);
+
+    /* Dimension */
+    border-radius: 6px;
+
+    /* Interaction */
+    .pcr-interaction {
+        
+        /* Result */
+        .pcr-result {
+
+            height: 25px;
+
+        }
+
+    }
+
+}
+

@@ -1312,6 +1312,33 @@ export default class Form {
 
     }
 
+    /**
+     * Set Color
+     * 
+     * Set text in item
+     * 
+     * @param itemEl:HTMLElement
+     * @param value:string
+     * @return void
+     */
+    private colorSet = (itemEl:HTMLElement, value:string, valuesID:string|Object|null):void => {
+
+        // Check itemEl 
+        if(itemEl.tagName == "INPUT"){
+
+            // Set value
+            itemEl.setAttribute("value", value);
+
+            // Dispatch event change
+            itemEl.dispatchEvent(new Event("change"));
+
+            // Set id
+            this._setID(valuesID, itemEl);
+
+        }
+
+    }
+
     /** Private methods | Set value | Set Custom Data
      ******************************************************
      */
@@ -1900,8 +1927,12 @@ export default class Form {
                 persist: false,
                 createOnBlur: true,
                 create: true,
+                dropdownParent: "body",
                 plugins: {}
             };
+
+            // Append create
+            option.create = false;
 
             // Check clear
             if(inputEl.dataset && "selectClear" in inputEl.dataset)
@@ -1926,9 +1957,8 @@ export default class Form {
 
             }
 
-
             // Init maska
-            new TomSelect(inputEl, option);
+            let selectInstance = new TomSelect(inputEl, option);
 
         }
 

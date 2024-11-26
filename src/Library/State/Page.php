@@ -26,6 +26,7 @@ use CrazyPHP\Library\File\File;
 use CrazyPHP\Library\Form\Query;
 use CrazyPHP\Core\ApiResponse;
 use CrazyPHP\Core\Controller;
+use CrazyPHP\Library\String\Color;
 use CrazyPHP\Model\Context;
 use CrazyPHP\Model\Env;
 use Exception;
@@ -88,17 +89,23 @@ class Page {
      */
     public function pushColorSchema(string $source = ""):Page {
 
+        # Get color source
+        $appSource = Config::getValue("Style.materialDynamicColors.source");
+
         # Check source
-        if(!$source)
+        if(!$source){
 
-            # Get materialDynamicColors
-            $materialDynamicColors = Config::getValue("Style.materialDynamicColors.source");
+            # Get url parameter
+            $source = $appSource;
 
-        # Check materialDynamicColors
-        if($materialDynamicColors)
+        }else
+        # Check source
+        if($source && Color::isValid($source)){
 
-            # Push into ui content
-            $this->pushUiContent("materialDynamicColors.source", $materialDynamicColors);
+            # Set language in response
+            $this->pushUiContent("materialDynamicColors.source", $source);
+
+        }
 
         # Return self
         return $this;
