@@ -106,7 +106,7 @@ export default class Crazycolor {
      * 
      * @return {boolean}
      */
-    public applyTheme = ():boolean => {
+    public applyTheme = (target:HTMLElement = document.body):boolean => {
 
         // Set result
         let result = false;
@@ -118,7 +118,7 @@ export default class Crazycolor {
             applyTheme(
                 this.theme, 
                 {
-                    target: document.body, 
+                    target: target, 
                     dark: ColorSchema.getTheme() == "dark" ? true : false,
                 }
             );
@@ -139,6 +139,58 @@ export default class Crazycolor {
 
         // Detect change
         lightModePreference.addEventListener("change", this._onColorModeChange);
+
+        // Return result
+        return result;
+
+    }
+
+    /** Public static methods
+     ******************************************************
+     */
+
+    /**
+     * Scan Crazy Color
+     * 
+     * Scan all el with attribute data-crazy-color
+     * 
+     * @parm parent
+     * @returns {null|HTMLElement[]} all element found
+     */
+    public static scanCrazyColor = (parent:HTMLElement|Document):null|HTMLElement[] => {
+
+        // Set result
+        let result:null|HTMLElement[] = null;
+
+        // Search els
+        let els = parent.querySelectorAll("[data-crazy-color]");
+
+        // Check els
+        if(els.length)
+
+            // Iteration els
+            els.forEach((el) => {
+
+                // Check el
+                if(el instanceof HTMLElement){
+
+                    // Get attribute of el
+                    var currentCrazyColor = el.dataset.crazyColor;
+
+                    // Check currentCrazyColor
+                    if(currentCrazyColor){
+
+                        // Apply color on el
+                        let currentColorInstance = new Crazycolor(currentCrazyColor);
+
+                        // Apply on el
+                        currentColorInstance.applyTheme(el);
+
+                    }
+
+                }
+
+            });
 
         // Return result
         return result;

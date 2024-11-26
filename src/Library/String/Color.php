@@ -17,6 +17,8 @@ namespace  CrazyPHP\Library\String;
  */
 use OzdemirBurak\Iris\Color\Factory;
 use OzdemirBurak\Iris\BaseColor;
+use OzdemirBurak\Iris\Exceptions\AmbiguousColorString;
+use OzdemirBurak\Iris\Exceptions\InvalidColorException;
 
 /**
  * Color
@@ -225,6 +227,35 @@ class Color {
         
         // Convert to hexadecimal and ensure it is 6 characters long
         return sprintf("#%06X", $randomColor);
+
+    }
+
+    /**
+     * Is Valid
+     * 
+     * @param string $input
+     * @return bool
+     */
+    public static function isValid(string $input):bool {
+
+        # Set result
+        $result = true;
+
+        # Try
+        try{
+
+            # New color
+            new Color($input);
+
+        # Catch error
+        }catch(AmbiguousColorString|InvalidColorException $e){
+
+            $result = false;
+
+        }
+
+        # Return result
+        return $result;
 
     }
 

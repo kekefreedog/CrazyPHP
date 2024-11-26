@@ -673,10 +673,24 @@ export default class Page {
      * @param options:LoaderPageOptions Options with all page details
      * @return Promise<LoaderPageOptions>
      */
-    public static applyColorSchema = async(options:LoaderPageOptions):Promise<LoaderPageOptions> =>  {        
+    public static applyColorSchema = async(options:LoaderPageOptions):Promise<LoaderPageOptions> =>  {
+
+        console.log(options);
+
+        // Get document
+        let doc = document;
+
+        // Scan crazy color
+        let result = Crazycolor.scanCrazyColor(doc);
+
+        // Check
+        if(result?.length)
+
+            // Set status
+            options = this.setStatus(options, "hasColorApplied", true);
         
         // Check colors
-        if(options.status?.hasColor && options.color){
+        /* if(options.status?.hasColor && options.color){
 
             // Apply theme
             if(options.color.applyTheme())
@@ -684,7 +698,7 @@ export default class Page {
                 // Set status
                 options = this.setStatus(options, "hasColorApplied", true);
 
-        }
+        } */
 
         // Return options
         return options

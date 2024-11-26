@@ -24,6 +24,7 @@ use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\Html\Head;
 use CrazyPHP\Library\File\File;
+use CrazyPHP\Library\String\Color;
 use CrazyPHP\Model\Context;
 
 /**
@@ -408,7 +409,7 @@ class Structure {
         return $this;
 
     }
-
+    
     /** Public methods | body
      ******************************************************
      */
@@ -451,6 +452,30 @@ class Structure {
      */
     public function setBody(string|array|null $attributes = null):self {
 
+        # Push color attribute
+        $this->_pushColorSchema($attributes);
+
+        # Set element
+        $this->setElement("html", $attributes, "body");
+
+        # Return current instance
+        return $this;
+
+    }
+
+    /**
+     * Set Body Color Schema
+     * 
+     * Set Body Tag
+     * 
+     * @param ?string $source For override current colorschema
+     * @return self
+     */
+    public function setBodyColorSchema(?string $source = null):self {
+
+        # Push color attribute
+        $this->_pushColorSchema($attributes, $source);
+
         # Set element
         $this->setElement("html", $attributes, "body");
 
@@ -470,10 +495,12 @@ class Structure {
     public function setBodyContent(?string $content = ""):self {
 
         # Check content
-        if($content !== null)
+        if($content !== null){
 
             # Set element
             $this->setElement("html.body", $content, null);
+
+        }
 
         # Return current instance
         return $this;
@@ -780,6 +807,44 @@ class Structure {
 
         # Replace
         $input = preg_replace($pattern, $replacement, $input);
+
+    }
+
+    /**
+     * Push Color schema on attributes
+     * 
+     * @param mixed &$attributes attributes to update
+     * @param ?string $source to override default color schema
+     * @return void
+     */
+    private function _pushColorSchema(mixed &$attributes, ?string $source = null):void {
+
+        # Get color source
+        $appSource = Config::getValue("Style.materialDynamicColors.source");
+
+        # Push language in response
+        $attributes["data-default-color"] = $appSource;
+
+        # Check source
+        if(!$source){
+
+            # Get url parameter
+            $source = $appSource;
+
+        }else
+        # Check source
+        if($source && Color::isValid($source)){
+
+            # check attributes
+            if(!is_array($attributes))
+
+                # Convert to array
+                $attributes = [];
+
+            # Set language in response
+            $attributes["data-crazy-color"] = $source;
+
+        }
 
     }
 

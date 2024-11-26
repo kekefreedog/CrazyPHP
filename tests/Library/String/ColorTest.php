@@ -71,6 +71,33 @@ class ColorTest extends TestCase{
      */
 
     /**
+     * Test Color Valid
+     * 
+     * @return void
+     */
+    public static function testColorValid():void {
+
+        # Check hex
+        static::assertTrue(Color::isValid("#a2837a"));
+
+        # Check rgb
+        static::assertTrue(Color::isValid("rgb(255, 0, 255)"));
+
+    }
+
+    /**
+     * Test Color Invalid
+     * 
+     * @return void
+     */
+    public static function testColorInvalid():void {
+
+        # Check valid
+        static::assertFalse(Color::isValid("toto"));
+
+    }
+
+    /**
      * test Color Package
      * 
      * @return void
