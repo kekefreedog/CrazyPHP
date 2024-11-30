@@ -2027,11 +2027,31 @@ export default class Form {
 
                         // Fetch all
 
+                    // Add options found
                     ).then(
                         value => {
 
                             // Add options to tom
                             selectInstance.addOptions(value.results);
+
+                        }
+                    // Check default and set it
+                    ).then(
+                        () => {
+
+                            // Check default in input el
+                            if(inputEl.hasAttribute("default")){
+
+                                // Get default
+                                let defaultValue = inputEl.getAttribute("default");
+
+                                // Check type of default value
+                                if(typeof defaultValue === "string")
+
+                                    // Set value
+                                    selectInstance.setValue(defaultValue);
+
+                            }
 
                         }
                     );

@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 /**
- * Test State
+ * Test Database
  *
- * Test State Classes
+ * Test Database Classes
  *
  * PHP version 8.1.2
  *
@@ -10,7 +10,7 @@
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2024 Kévin Zarshenas
  */
-namespace Tests\Library\File;
+namespace Tests\Library\Database;
 
 /**
  * Dependances

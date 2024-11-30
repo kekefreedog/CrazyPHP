@@ -22,6 +22,8 @@ use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Time\DateTime;
 use CrazyPHP\Library\Model\Schema;
 use CrazyPHP\Library\Array\Arrays;
+use CrazyPHP\Library\Database\Operation\SqlOperation;
+use CrazyPHP\Library\Form\Process;
 
 /* use PhpMyAdmin\SqlParser\Statements\SelectStatement;
 use PhpMyAdmin\SqlParser\Parser; */
@@ -58,6 +60,12 @@ class Mariadb implements CrazyDriverModel {
 
     /** @var bool $attributesAsValues Indicate if attributes is set as values in current schema */
     # private bool $attributesAsValues = false;
+
+    /** @var array|null $field to retrieve */
+    private $_fields = null;
+
+    /** @var null|array conditions */
+    private array|null $conditions = null;
 
     /**
      * Constructor
@@ -139,6 +147,10 @@ class Mariadb implements CrazyDriverModel {
      */
     public function parseId(string|int $id, ?array $options = null):self {
 
+        # Ingest options
+        $this->_ingestFields($options);
+        $this->_ingestPageStateProcess($options);
+
         # Store id
         $this->id = is_int($id) 
             ? $id 
@@ -159,6 +171,21 @@ class Mariadb implements CrazyDriverModel {
      */
     public function parseFilter(?array $filters, ?array $options = null):self {
 
+        # Ingest options
+        $this->_ingestFields($options);
+        $this->_ingestPageStateProcess($options);
+
+        # Check filters
+        if(isset($filters) && is_array($filters)){
+
+            # Process Operations In Filters
+            $filters = $this->_processOperationsInFilters($filters);
+
+            # Push filters in filters
+            $this->conditions[] = $filters;
+
+        }
+
         # Return self
         return $this;
 
@@ -173,6 +200,10 @@ class Mariadb implements CrazyDriverModel {
      */
     public function parseSort(null|array|string $sort, ?array $options = null):self {
 
+        # Ingest options
+        $this->_ingestFields($options);
+        $this->_ingestPageStateProcess($options);
+
         # Return self
         return $this;
 
@@ -185,6 +216,10 @@ class Mariadb implements CrazyDriverModel {
      * @param ?array $options Optionnal options
      */
     public function parseGroup(?array $group, ?array $options = null):self {
+
+        # Ingest options
+        $this->_ingestFields($options);
+        $this->_ingestPageStateProcess($options);
 
         # Return self
         return $this;
@@ -199,6 +234,10 @@ class Mariadb implements CrazyDriverModel {
      * @return self
      */
     public function parseSql(string $sql, ?array $options = null):self {
+
+        # Ingest options
+        $this->_ingestFields($options);
+        $this->_ingestPageStateProcess($options);
 
         # Raw query
         $this->rawQuery = $sql;
@@ -216,6 +255,22 @@ class Mariadb implements CrazyDriverModel {
 
         # Return self
         return $this;
+
+    }
+
+    /**
+     * Ingest pageStateProcess
+     * 
+     * @param ?array $options
+     * @return void
+     */
+    private function _ingestPageStateProcess(?array $options = null):void {
+
+        # Check options
+        if($options !== null && isset($options["pageStateProcess"]) && Process::bool($options["pageStateProcess"]) == true)
+
+            # Switch value in arguments
+            $this->arguments["pageStateProcess"] = true;
 
     }
 
@@ -470,6 +525,41 @@ class Mariadb implements CrazyDriverModel {
     }
 
     /**
+     * Process Operations In Filters
+     * 
+     * @param array $input
+     * @return array
+     */
+    private function _processOperationsInFilters(array $filters = []):array {
+
+        # Set result
+        $result = $filters;
+
+        # Check filters
+        if(!empty($result)){
+
+            # New operations
+            $operation = new SqlOperation();
+
+            # Iteration filters
+            foreach($result as &$value)
+
+                # Check if value is string
+                if(is_string($value) && strpos($value, "*") !== false){
+
+                    # Run operation
+                    $value = $operation->run($value);
+
+                }
+
+        }
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
      * Ingest Parameters
      * 
      * @param array $inputs Inputs of the constructor
@@ -560,6 +650,38 @@ class Mariadb implements CrazyDriverModel {
     private function isUpdate():bool {
 
         return $this->id !== null;
+
+    }
+
+    /**
+     * Ingest Fields
+     * 
+     * @param ?array $options
+     * @return void
+     */
+    private function _ingestFields(?array $options = null):void {
+
+        # Check options
+        if($options !== null && isset($options["fields"]) && !empty($options["fields"]))
+
+            # check if string
+            if(is_string($options["fields"]) && ($this->_fields === null || !in_array($options["fields"], $this->_fields)))
+
+                # Push in fileds
+                $this->_fields[] = $options["fields"];
+
+            else
+            # Check if array
+            if(is_array($options["fields"]))
+
+                # Iteration values
+                foreach($options["fields"] as $field)
+
+                    # If not already on fields
+                    if(!in_array($field, $this->_fields))
+
+                        # Push in fields
+                        $this->_fields[] = $field;
 
     }
 
