@@ -41,7 +41,7 @@
             {{!-- data-type="color" --}}
             {{#if item.placeholder}}placeholder="{{item.placeholder}}"{{else}}placeholder=" "{{/if}}
             {{#if item.readonly}}readonly=""{{/if}}
-            {{#if item.default includeZero=false}}value="{{item.default}}" default="{{item.default}}"{{/if}}
+            {{#if item.default includeZero=false}}value="{{#is item.default "randomHex()"}}{{colorHexRandom}}{{else}}{{item.default}}{{/is}}" default="{{item.default}}"{{/if}}
             {{#if item.select.[0].value includeZero=false}}min="{{item.select.[0].value}}"{{/if}}
             {{#if item.select.[1].value includeZero=false}}max="{{item.select.[1].value}}"{{/if}}
             {{#if item.required}}required=""{{/if}}
@@ -64,14 +64,15 @@
             autocomplete="off"
             {{#if item.placeholder}}placeholder="{{item.placeholder}}"{{/if}}
             {{#if item.disabled}}disabled=""{{else}}{{#if ../form.onready}}disabled="loading"{{/if}}{{/if}}
-        {{#if item._style.select.tag}}/>{{else}}>{{#if item.select}}
+            {{#if item.select.url}}data-select-remote="{{JSONstringify item.select}}"{{/if}}
+        {{#if item._style.select.tag}}/>{{else}}>{{#if item.select}}{{#if item.select.url}}{{else}}
             {{#each item.select as |option|}}<option
                 {{#if option.value includeZero=false}}value="{{option.value}}"{{/if}}
                 {{#if item.default includeZero=false}}{{#is item.default option.value}}selected=""{{/is}}{{else}}{{#if option.default}}selected=""{{/if}}{{/if}}
                 {{#if option.default}}default=""{{/if}}
                 {{#if option.disabled}}disabled=""{{/if}}
             >{{option.label}}</option>{{/each}}
-        {{/if}}</select>{{/if}}
+        {{/if}}{{/if}}</select>{{/if}}
 
         {{!-- Password Input --}}
         {{else}}{{#is item.type "password"}}
@@ -252,11 +253,11 @@
     {{!-- Submit --}}
     <div class="col s12 screen-flex screen-{{#if form.confirm.align}}{{form.confirm.align}}{{else}}left{{/if}}{{#if form.confirm.invert}} screen-direction-x-desc{{/if}}">
         {{!-- Reset Button --}}
-        {{#if form.reset}}<button class="btn waves-effect waves-light red white-text m{{#if form.confirm.invert}}l{{else}}r{{/if}}-5" type="reset" {{#if form.onready}}disabled=""{{/if}}>Reset
+        {{#if form.reset}}<button class="btn waves-effect waves-light red white-text m{{#if form.confirm.invert}}l{{else}}r{{/if}}-5" type="reset" {{#if form.onready}}disabled="loading"{{/if}}>Reset
             <i class="material-icons right">delete_forever</i>
         </button>{{/if}}
         {{!-- Submit button --}}
-        {{#if form.confirm}}<button class="btn waves-effect waves-light green" type="submit" {{#if form.onready}}disabled=""{{/if}}>{{#isString form.confirm}}{{form.confirm}}{{else}}{{#isObject form.confirm}}{{#if form.confirm.title}}{{form.confirm.title}}{{/if}}{{else}}Save{{/isObject}}{{/isString}}
+        {{#if form.confirm}}<button class="btn waves-effect waves-light green" type="submit" {{#if form.onready}}disabled="loading"{{/if}}>{{#isString form.confirm}}{{form.confirm}}{{else}}{{#isObject form.confirm}}{{#if form.confirm.title}}{{form.confirm.title}}{{/if}}{{else}}Save{{/isObject}}{{/isString}}
             {{#isObject form.confirm}}{{#if form.confirm.icon}}<i class="{{form.confirm.icon.class}} right">{{form.confirm.icon.text}}</i>{{/if}}{{else}}<i class="material-icons right">save</i>{{/isObject}}
         </button>{{/if}}
     </div>

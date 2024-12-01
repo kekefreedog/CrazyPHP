@@ -397,7 +397,7 @@ export default class Form {
         let result:FormData = new FormData();
 
         // Get all select and input on form el
-        let items = formEl.querySelectorAll("select, input");
+        let items = formEl.querySelectorAll("select[name], input[name]");
 
         // Check items
         if(items.length)
@@ -409,7 +409,7 @@ export default class Form {
                 itemResult = this.extractKeyValue(items[i] as HTMLElement);
 
                 // Check itemResult
-                if(itemResult !== null)
+                if(itemResult !== null && itemResult[0] !== "")
 
                     // Push value of current input
                     result.append(itemResult[0] as string, itemResult[1]);
@@ -457,6 +457,9 @@ export default class Form {
 
         // Get formdata
         let formData:FormData = this.getFormData(target);
+
+        console.log("--dev--");
+        console.log(formData);
 
         // Lock form
         this.lock();
@@ -668,7 +671,7 @@ export default class Form {
     public lock = ():void => {
 
         // Get all select and input on form el
-        let items = this._formEl.querySelectorAll("select, input, button[type=\"submit\"], button[type=\"reset\"]");
+        let items = this._formEl.querySelectorAll("select[name], input[name], button[type=\"submit\"], button[type=\"reset\"]");
 
         // Check items
         if(items.length)
@@ -706,7 +709,7 @@ export default class Form {
     public unlock = ():void => {
 
         // Get all select and input on form el
-        let items = this._formEl.querySelectorAll("select, input, button[type=\"submit\"], button[type=\"reset\"]");
+        let items = this._formEl.querySelectorAll("select[name], input[name], button[type=\"submit\"], button[type=\"reset\"]");
 
         // Check items
         if(items.length)
@@ -729,12 +732,19 @@ export default class Form {
                     // Set Read only
                     items[i].removeAttribute("disabled");
 
-                }else
-                // Chech button
-                if(items[i].tagName == "BUTTON" && items[i].hasAttribute("disabled") && items[i].getAttribute("disabled") == "loading"){
+                }else{
 
-                    // Set Read only
-                    items[i].removeAttribute("disabled");
+                    if(items[i].tagName == "BUTTON")
+
+                        console.log(items[i].tagName == "BUTTON" && items[i].hasAttribute("disabled") && items[i].getAttribute("disabled") == "loading");
+
+                    // Chech button
+                    if(items[i].tagName == "BUTTON" && items[i].hasAttribute("disabled") && items[i].getAttribute("disabled") == "loading"){
+
+                        // Set Read only
+                        items[i].removeAttribute("disabled");
+
+                    }
 
                 }
 
@@ -1115,11 +1125,26 @@ export default class Form {
         // Declare result
         let result = null;
 
-        // Check itemEl
-        if("type" in itemEl && itemEl.type && typeof itemEl.type === "string" && typeof this[`${itemEl.type}Retrieve`] === "function")
+        // Get type
+        let type:string|null = null;
+
+        // Get type of input el
+        if("type" in itemEl && itemEl.type && typeof itemEl.type === "string")
+
+            // Set type
+            type = itemEl.type;
+
+        // Get type of input el
+        if("type" in itemEl.dataset && itemEl.dataset.type && typeof itemEl.dataset.type === "string")
+
+            // Set type
+            type = itemEl.dataset.type;
+
+        // Check type
+        if(typeof type === "string" && typeof this[`${type}Retrieve`] === "function")
 
             // Set result
-            result = this[`${itemEl.type}Retrieve`](itemEl);
+            result = this[`${type}Retrieve`](itemEl);
 
         // Return null
         return result;
@@ -1144,6 +1169,93 @@ export default class Form {
 
             // Set result
             let value:string = itemEl.value as string;
+
+            // Push in result
+            result = [key, value];
+
+        }
+
+        // Return result
+        return result;
+
+    }
+
+    /**
+     * Retrieve Select
+     * 
+     * @param itemEl:HTMLElement
+     * @return null|Array<any>
+     */
+    private selectRetrieve = (itemEl:HTMLElement):null|Array<any> => {
+
+        // Set result
+        let result:null|Array<any> = null;
+
+        // Check value
+        if("value" in itemEl && "name" in itemEl){
+
+            let key:string = itemEl.name as string;
+
+            // Set result
+            let value:string = itemEl.value as string;
+
+            // Push in result
+            result = [key, value];
+
+        }
+
+        // Return result
+        return result;
+
+    }
+
+    /**
+     * Retrieve Date
+     * 
+     * @param itemEl:HTMLElement
+     * @return null|Array<any>
+     */
+    private dateRetrieve = (itemEl:HTMLElement):null|Array<any> => {
+
+        // Set result
+        let result:null|Array<any> = null;
+
+        // Check value
+        if("value" in itemEl && "name" in itemEl){
+
+            let key:string = itemEl.name as string;
+
+            // Set result
+            let value:string = itemEl.value as string;
+
+            // Push in result
+            result = [key, value];
+
+        }
+
+        // Return result
+        return result;
+
+    }
+
+    /**
+     * Number Date
+     * 
+     * @param itemEl:HTMLElement
+     * @return null|Array<any>
+     */
+    private numberRetrieve = (itemEl:HTMLElement):null|Array<any> => {
+
+        // Set result
+        let result:null|Array<any> = null;
+
+        // Check value
+        if("value" in itemEl && "name" in itemEl){
+
+            let key:string = itemEl.name as string;
+
+            // Set result
+            let value:number = itemEl.value as number;
 
             // Push in result
             result = [key, value];
