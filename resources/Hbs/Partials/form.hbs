@@ -41,7 +41,7 @@
             {{!-- data-type="color" --}}
             {{#if item.placeholder}}placeholder="{{item.placeholder}}"{{else}}placeholder=" "{{/if}}
             {{#if item.readonly}}readonly=""{{/if}}
-            {{#if item.default includeZero=false}}value="{{#is item.default "randomHex()"}}{{colorHexRandom}}{{else}}{{item.default}}{{/is}}" default="{{item.default}}"{{/if}}
+            {{#if item.default includeZero=false}}value="{{item.default}}" default="{{item.default}}"{{/if}}
             {{#if item.select.[0].value includeZero=false}}min="{{item.select.[0].value}}"{{/if}}
             {{#if item.select.[1].value includeZero=false}}max="{{item.select.[1].value}}"{{/if}}
             {{#if item.required}}required=""{{/if}}
@@ -64,15 +64,14 @@
             autocomplete="off"
             {{#if item.placeholder}}placeholder="{{item.placeholder}}"{{/if}}
             {{#if item.disabled}}disabled=""{{else}}{{#if ../form.onready}}disabled="loading"{{/if}}{{/if}}
-            {{#if item.select.url}}data-select-remote="{{JSONstringify item.select}}"{{/if}}
-        {{#if item._style.select.tag}}/>{{else}}>{{#if item.select}}{{#if item.select.url}}{{else}}
+        {{#if item._style.select.tag}}/>{{else}}>{{#if item.select}}
             {{#each item.select as |option|}}<option
                 {{#if option.value includeZero=false}}value="{{option.value}}"{{/if}}
                 {{#if item.default includeZero=false}}{{#is item.default option.value}}selected=""{{/is}}{{else}}{{#if option.default}}selected=""{{/if}}{{/if}}
                 {{#if option.default}}default=""{{/if}}
                 {{#if option.disabled}}disabled=""{{/if}}
             >{{option.label}}</option>{{/each}}
-        {{/if}}{{/if}}</select>{{/if}}
+        {{/if}}</select>{{/if}}
 
         {{!-- Password Input --}}
         {{else}}{{#is item.type "password"}}
@@ -133,7 +132,10 @@
             {{#if item.select.[0].value includeZero=false}}min="{{item.select.[0].value}}"{{/if}}
             {{#if item.select.[1].value includeZero=false}}max="{{item.select.[1].value}}"{{/if}}
             {{#if item.required}}required=""{{/if}}
-            data-maska="N" data-maska-tokens="N:[0-9]:multiple" inputmode="numeric"
+            {{#if item._style.number.decimal}}
+            step=".01" inputmode="numeric"{{else}}
+            data-maska="N" data-maska-tokens="N:[0-9]:multiple" inputmode="numeric"{{/if}}
+
         >
         {{#if item.label}}<label for="{{../form.id}}_{{item.name}}">{{#if item.required}}<b>{{/if}}{{item.label}}{{#if item.required}}</b>*{{/if}}</label>{{/if}}
 

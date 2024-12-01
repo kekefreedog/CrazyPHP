@@ -495,6 +495,28 @@ class Mariadb implements CrazyDatabaseDriver {
                 ;
 
             }else
+            # If decimal
+            if($columnTypeTemp == "DECIMAL"){
+
+                # Set decimal
+                $decimal = 2;
+
+                # Set column type
+                $columnType = "DECIMAL(11,$decimal)";
+
+                # Set required
+                $required = isset($attribute['required']) && $attribute['required'] 
+                    ? 'NOT NULL' 
+                    : 'NULL'
+                ;
+
+                # Set default
+                $default = isset($attribute['default']) 
+                    ? "DEFAULT '".number_format($attribute['default'], $decimal, '.', '')."'" 
+                    : ''
+                ;
+
+            }else
             # If int
             if($columnTypeTemp == "BOOL" || $columnTypeTemp == "BOOLEAN"){
 

@@ -160,6 +160,14 @@
 
     }
 
+    // Place element in the horizontal only
+    &.screen-distributed-x {
+
+        // Position
+        justify-content: space-between;
+
+    }
+
     // Place element in the horizontal center only
     &.screen-direction-y-asc {
 

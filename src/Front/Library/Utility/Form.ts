@@ -15,13 +15,13 @@ import { TomSettings, RecursivePartial } from 'tom-select/dist/types/types';
 import {default as PageError} from './../Error/Page';
 import {default as UtilityStrings} from './Strings';
 import Crazyrequest from '../Crazyrequest';
+import { json } from 'stream/consumers';
 import Pickr from '@simonwep/pickr';
 import TomSelect from 'tom-select';
 import Page from '../Loader/Page';
 import { MaskInput } from "maska"
 import Root from '../Dom/Root';
 import Arrays from './Arrays';
-import { json } from 'stream/consumers';
 
 /**
  * Form
@@ -1961,6 +1961,17 @@ export default class Form {
 
             // Init maska
             new MaskInput(inputEl);
+
+        }else
+        // check if decimal
+        if(inputEl instanceof HTMLInputElement && inputEl.hasAttribute("step") && [0.01].includes(Number(inputEl.getAttribute("step")))){
+            
+            // Mask input
+            new MaskInput(inputEl, {
+                number: {
+                    fraction: 2,
+                },
+            });
 
         }
 
