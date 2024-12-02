@@ -146,7 +146,21 @@ class Validate {
     private function _actionInt(array &$input = []):void {
 
         # Check value is same type
-        if(!is_int($input['value']) && !ctype_digit($input['value']))
+        if(
+            (
+                $input['value'] !== null && !is_int($input['value']) && !ctype_digit($input['value'])
+            ) && (
+                (
+                    isset($input['required']) &&
+                    $input['required'] == false &&
+                    $input['value'] !== null
+                ) ||
+                (
+                    !isset($input['required']) &&
+                    $input['value'] !== null
+                )
+            )
+        ){
 
             # New Exception
             throw new CrazyException(
@@ -156,6 +170,8 @@ class Validate {
                     "custom_code"   =>  "validate-010",
                 ]
             );
+
+        }
 
     }
 

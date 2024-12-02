@@ -174,9 +174,8 @@ export default class Form {
         let currentName:string;
         let currentType:string;
 
-
         // Get all select and input on form el
-        let items = this._formEl.querySelectorAll("select, input");
+        let items = this._formEl.querySelectorAll("select[name], input[name]");
 
         // Check items
         if(items.length)
@@ -192,6 +191,14 @@ export default class Form {
 
                     // Get type
                     currentType = items[i]["type"] ?? "";
+
+                    // Check if data type 
+                    // @ts-ignore
+                    if("type" in items[i].dataset && items[i].dataset.type)
+
+                        // Override type
+                        // @ts-ignore
+                        currentType = items[i].dataset.type;
 
                     // Check if in values
                     if(Object.keys(values).includes(currentName)){
@@ -457,9 +464,6 @@ export default class Form {
 
         // Get formdata
         let formData:FormData = this.getFormData(target);
-
-        console.log("--dev--");
-        console.log(formData);
 
         // Lock form
         this.lock();
@@ -1452,6 +1456,75 @@ export default class Form {
 
     }
 
+    /**
+     * Set Select 
+     * 
+     * Set select in item
+     * 
+     * @param itemEl:HTMLElement
+     * @param value:string
+     * @return void
+     */
+    private selectSet = (itemEl:HTMLElement, value:string, valuesID:string|Object|null):void => {
+
+        console.log("toto");
+
+        // Check itemEl 
+        if(["INPUT", "SELECT"].includes(itemEl.tagName)){
+
+            // Check if tomselect in item
+            if("tomselect" in itemEl && itemEl.tomselect instanceof TomSelect){
+
+                // Set value
+                itemEl.tomselect.setValue(value);
+
+                // Set id
+                this._setID(valuesID, itemEl);
+
+            }else{
+
+                // Set value
+                itemEl.setAttribute("value", value);
+
+                // Dispatch event change
+                itemEl.dispatchEvent(new Event("change"));
+
+                // Set id
+                this._setID(valuesID, itemEl);
+
+            }
+
+        }
+
+    }
+
+    /**
+     * Set Number
+     * 
+     * Set number in item
+     * 
+     * @param itemEl:HTMLElement
+     * @param value:string
+     * @return void
+     */
+    private numberSet = (itemEl:HTMLElement, value:string, valuesID:string|Object|null):void => {
+
+        // Check itemEl 
+        if(["INPUT", "SELECT"].includes(itemEl.tagName)){
+
+            // Set value
+            itemEl.setAttribute("value", value);
+
+            // Dispatch event change
+            itemEl.dispatchEvent(new Event("change"));
+
+            // Set id
+            this._setID(valuesID, itemEl);
+
+        }
+
+    }
+
     /** Private methods | Set value | Set Custom Data
      ******************************************************
      */
@@ -1871,17 +1944,18 @@ export default class Form {
                 var currentValue = inputEl.getAttribute("value");
 
                 // Check current value
-                if(currentValue)
+                if(currentValue && currentValue != "randomHex()"){
 
                     // Set default on option
                     options.default = currentValue;
 
-                else
+                }else
                 // Check if input has default
                 if(inputEl.hasAttribute("default")){
     
                     // Get default
                     var currentDefault = inputEl.getAttribute("default");
+
     
                     // Check current value
                     if(currentDefault === "randomHex()"){

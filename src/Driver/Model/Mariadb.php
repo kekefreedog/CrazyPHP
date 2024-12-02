@@ -64,6 +64,9 @@ class Mariadb implements CrazyDriverModel {
     /** @var array|null $field to retrieve */
     private $_fields = null;
 
+    /** @var bool $_delete */
+    private $_delete = false;
+
     /** @var null|array conditions */
     private array|null $conditions = null;
 
@@ -317,6 +320,9 @@ class Mariadb implements CrazyDriverModel {
      */
     public function pushToTrash(?array $options = null):self {
 
+        # Swith delete
+        $this->_delete = true;
+
         # Return self
         return $this;
 
@@ -347,7 +353,14 @@ class Mariadb implements CrazyDriverModel {
             ]);
 
         }else
-        # Insert to mongo Check schema
+        # Delete item by id
+        if($this->_delete && $this->id !== null){
+            
+            # Insert
+            $result[] = $this->mariadb->deleteOneToCollection($this->arguments["table"], $this->id);
+
+        }else
+        # Insert to maria db Check schema
         if($this->schema !== null && $this->id !== null){
 
             # Check collection
@@ -694,7 +707,7 @@ class Mariadb implements CrazyDriverModel {
         "table"        =>  "",
         "schema"            =>  [],
         "database"          =>  [],
-        "pageStateProcess" =>  false,
+        "pageStateProcess"  =>  false,
     ];
 
 }

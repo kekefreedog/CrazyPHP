@@ -30,13 +30,16 @@ export default abstract class Crazypartial {
      ******************************************************
      */
 
+    /**
+     * Input
+     */
     public input:RegisterPartialScanned;
 
     /** 
      * @param html:string 
      * Duplicate of the class name because build change name of class
      */
-    public static readonly html:string|null|CallableFunction = null;
+    public html:string|null|CallableFunction = null;
 
     /**
      * Constructor
@@ -48,11 +51,60 @@ export default abstract class Crazypartial {
         // Set input
         this.input = input;
 
+        // Check id and target
+        if(typeof this.input.id === "number" && this.input.target instanceof HTMLElement)
+
+            // Set id on target
+            this.input.target.dataset.partialId = this.input.id.toString();
+
+    }
+
+    /** Protected methods
+     ******************************************************
+     */
+
+    /**
+     * Reload
+     * 
+     * @param state:Object|null
+     */
+    public reload = (state:Object|null = null) => {
+
+        // Check target
+        if(this.input.target instanceof HTMLElement && this.html !== null){
+
+            // Set data
+            var htmlString = "";
+
+            // Check html
+            if(typeof state === "object" && typeof this.html === "function")
+
+                // Get string
+                htmlString = this.html(typeof state === "object" ? state : {});
+
+            // Get content dom
+            var contentDom = document.createRange().createContextualFragment(htmlString);
+
+            // Reload partial
+            this.input.target.replaceWith(contentDom);
+
+        }
+
+        // Execute on ready
+        this.onReady();
+
     }
 
     /** Public methods
      ******************************************************
      */
+
+    /**
+     * On Ready
+     */
+    public onReady = () => {
+
+    }
 
     /**
      * Enable

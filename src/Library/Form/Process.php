@@ -49,6 +49,9 @@ class Process {
     private array $dispatch = [
         "INT"       =>  [
         ],
+        "SELECT"       =>  [
+            "integer",
+        ],
         "VARCHAR"   =>  [
             "trim",
             "clean",
@@ -134,10 +137,24 @@ class Process {
     private function _actionInt(array &$input = []):void {
 
         # Check value is same type
-        if(!is_int($input['value']) && !ctype_digit($input['value']))
+        if(!is_int($input['value']) && !ctype_digit($input['value'])){
+
+            # Check requierd
+            if(
+                (
+                    isset($input['required']) &&
+                    $input['required'] == false
+                ) ||
+                !isset($input['required'])
+            )
+
+                # Set value to null
+                $input['value'] = null;
 
             # Stop function
             return;
+
+        }
 
         # Parse the value
         $input['value'] = intval($input['value']);
@@ -811,6 +828,19 @@ class Process {
 
         # Return result
         return strtolower($input);
+
+    }
+
+    /**
+     * Integer
+     * 
+     * @param string
+     * @return int
+     */
+    public static function integer(string $input):int {
+
+        # Return result
+        return intval($input);
 
     }
 

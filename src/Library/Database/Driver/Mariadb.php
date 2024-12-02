@@ -868,17 +868,17 @@ class Mariadb implements CrazyDatabaseDriver {
         # Set result
         $result = null;
 
-        # Check input
-        if(!$table || empty($value) || !$database)
-
-            # Return result
-            return $result;
-
         # Check database
         if(!$database)
 
             # Get main database
             $database = $this->_getDefaultDatabase();
+
+        # Check input
+        if(!$table || !$database)
+
+            # Return result
+            return $result;
 
         # Use database
         $this->client->exec("USE " . $database);
