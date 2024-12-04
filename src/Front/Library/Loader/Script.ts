@@ -44,52 +44,64 @@ export default class Script {
             // Try
             try {
 
-                // Create a htm element
-                const scriptEle: HTMLScriptElement = document.createElement("script");
-
-                // Define the type
-                scriptEle.type = type;
-
-                // Set async
-                scriptEle.async = async;
-
-                // Define utl
-                scriptEle.src = url;
-
-                // Check if id
-                if(id)
-
-                    // Set id in scriptEle
-                    scriptEle.id = `script-${id}`;
-
-                // Event load
-                scriptEle.addEventListener("load", e => {
+                // Check if script already exists
+                if(document.querySelector(`script#script-${id}`) !== null)
 
                     // Resolve status
                     resolve({ 
                         status: true
                     });
 
-                });
+                else{
 
-                // Event error
-                scriptEle.addEventListener("error", e => {
+                    // Create a htm element
+                    const scriptEle: HTMLScriptElement = document.createElement("script");
 
-                    // Set reject
-                    reject({
-                        
-                        // Set failed status
-                        status: false,
+                    // Define the type
+                    scriptEle.type = type;
 
-                        // Set message
-                        message: `Failed to load the script ${url}`,
+                    // Set async
+                    scriptEle.async = async;
+
+                    // Define utl
+                    scriptEle.src = url;
+
+                    // Check if id
+                    if(id)
+
+                        // Set id in scriptEle
+                        scriptEle.id = `script-${id}`;
+
+                    // Event load
+                    scriptEle.addEventListener("load", e => {
+
+                        // Resolve status
+                        resolve({ 
+                            status: true
+                        });
 
                     });
 
-                });
+                    // Event error
+                    scriptEle.addEventListener("error", e => {
 
-                // Add script in body of head
-                document[target].appendChild(scriptEle);
+                        // Set reject
+                        reject({
+                            
+                            // Set failed status
+                            status: false,
+
+                            // Set message
+                            message: `Failed to load the script ${url}`,
+
+                        });
+
+                    });
+
+                    // Add script in body of head
+                    document[target].appendChild(scriptEle);
+                
+                }
 
             // Catch error
             } catch (error) {

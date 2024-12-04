@@ -33,6 +33,11 @@ export default abstract class Crazypartial {
     /**
      * Input
      */
+    public isReloaded:boolean = false;
+
+    /**
+     * Input
+     */
     public input:RegisterPartialScanned;
 
     /** 
@@ -85,10 +90,41 @@ export default abstract class Crazypartial {
             // Get content dom
             var contentDom = document.createRange().createContextualFragment(htmlString);
 
+            // Search partial
+            let partialEl = contentDom.querySelector("[partial]");
+
+            // Check partialEl and set id
+            partialEl && partialEl.setAttribute("data-partial-id", this.input.id.toString());
+
+            // Get parent
+            let parentEl = this.input.target.parentElement;
+
+            // Destroy previous instance
+            this.onDestroy();
+
             // Reload partial
             this.input.target.replaceWith(contentDom);
 
+            // Check parent el
+            if(parentEl){
+
+                // Get new element
+                let newTargetEl = parentEl.querySelector(`[data-partial-id="${this.input.id.toString()}"]`);
+
+                // Check new target el
+                if(newTargetEl){
+
+                    // Set input target
+                    this.input.target = newTargetEl;
+
+                }
+
+            }
+
         }
+
+        // Set is reloaded
+        this.isReloaded = true;
 
         // Execute on ready
         this.onReady();
@@ -103,6 +139,13 @@ export default abstract class Crazypartial {
      * On Ready
      */
     public onReady = () => {
+
+    }
+
+    /**
+     * On Destroy
+     */
+    public onDestroy = () => {
 
     }
 

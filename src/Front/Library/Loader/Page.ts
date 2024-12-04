@@ -64,6 +64,10 @@ export default class Page {
                 Page.updateTitle
             )
             .then(
+                // Clean Potential Exisiting Partials
+                Page.cleanPotentialExisitingPartials
+            )
+            .then(
                 // Load Style
                 Page.loadStyle
             )
@@ -445,6 +449,36 @@ export default class Page {
 
         // Return options
         return options;        
+
+    }
+
+    /**
+     * Clean Potential Exisiting Partials
+     * 
+     * Load Css styles of the page
+     * 
+     * @param options:LoaderPageOptions Options with all page details
+     * @return Promise<LoaderPageOptions>
+     */
+    public static cleanPotentialExisitingPartials = async(options:LoaderPageOptions):Promise<LoaderPageOptions> =>  {
+
+        // Set current page
+        let currentPage = window.Crazyobject.currentPage.get();
+
+        // Check current page
+        if(currentPage && currentPage.partials && Array.isArray(currentPage.partials) && currentPage.partials.length)
+
+            // Iteration partials
+            for(let partialObject of currentPage.partials)
+
+                // Check scriptRunning
+                if(partialObject.scriptRunning)
+
+                    // Execute destroy
+                    partialObject.scriptRunning.onDestroy();
+
+        // Return options
+        return options;       
 
     }
 
