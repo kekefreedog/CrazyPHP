@@ -18,6 +18,7 @@ namespace CrazyPHP\Library\Database\Driver;
 use CrazyPHP\Library\File\Config as FileConfig;
 use CrazyPHP\Interface\CrazyDatabaseDriver;
 use CrazyPHP\Exception\CrazyException;
+use CrazyPHP\Library\Array\Arrays;
 use Envms\FluentPDO\Query;
 use PDOException;
 use PDO;
@@ -1188,6 +1189,77 @@ class Mariadb implements CrazyDatabaseDriver {
                 $result[2] = $options["password"];
 
         }
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Set Entity As Prefix
+     * 
+     * @param string $entity
+     * @param string $alias
+     * @return string
+     */
+    public static function setEntityAsPrefix(string $entity, string $alias = ""):string {
+
+        # Set result
+        $result = "";
+
+        # Set result exploded
+        $resultExploded = [];
+
+        # Open Model Config
+        $modelConfig = FileConfig::get("Model");
+
+        # Check current class model config exists
+        $modelMatching = Arrays::filterByKey($modelConfig["Model"], "name", $entity);
+
+        # Check model matching
+        if(!empty($modelMatching)){
+
+            # Get modelObject 
+            $modelObject = array_pop($modelMatching);
+
+            # Get attributes
+            $attributes = $modelObject["attributes"] ?? [];
+
+            # Check attributes
+            if(!empty($attributes))
+
+                # Iteration of attributes
+                foreach($attributes as $attribute){
+
+                    # Get currentName
+                    $currentName = $attribute["name"] ?? "";
+
+                    # Check current name
+                    if($currentName){
+
+                        # Push current name into result
+                        $resultExploded[] = 
+                            (
+                                $alias 
+                                    ? "$alias."
+                                    : ""
+                            ).$currentName.
+                            " AS ".
+                            $entity.
+                            "_".
+                            $currentName
+                        ;
+                    }
+
+                }
+
+        }
+
+        # Check resultExploded
+        if(!empty($resultExploded))
+
+            # Set result
+            $result = implode(", ", $resultExploded);
 
         # Return result
         return $result;

@@ -110,7 +110,7 @@ services:
         ports:
            - {{_config.Database.collection.mariadb.port}}:3306
         volumes:
-            - '{{_config.App.root}}/.database/mariadb:/var/lib/mariadb'
+            - '{{_config.App.root}}/.database/mariadb:/var/lib/mysql'
         networks:
             - backend
 {{/if}}

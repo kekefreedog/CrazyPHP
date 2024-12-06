@@ -74,7 +74,7 @@ export default abstract class Crazypartial {
      * @param state:Object|null
      */
     public reload = (state:Object|null = null) => {
-
+        
         // Check target
         if(this.input.target instanceof HTMLElement && this.html !== null){
 
