@@ -285,7 +285,42 @@ export default class DateTime {
         return date >= startOfWeek && date <= endOfWeek;
 
     }
-        
+
+    /**
+     * Is Date Next Week
+     * 
+     * Check if a given date is in the next week.
+     * 
+     * @param date - The date to check.
+     * @returns True if the date is in the next week, false otherwise.
+     */
+    public static isDateInNextWeek = (date: Date | string): boolean => {
+
+        // Check date
+        if (typeof date === "string") {
+            date = new Date(date);
+        }
+
+        const today = new Date();
+        const dayOfWeek = today.getDay(); // 0 (Sunday) to 6 (Saturday)
+        const startOfNextWeek = new Date(today);
+        const endOfNextWeek = new Date(today);
+
+        // Calculate the start of the next week (Monday)
+        startOfNextWeek.setDate(today.getDate() + (dayOfWeek === 0 ? 1 : 8 - dayOfWeek));
+
+        // Calculate the end of the next week (Sunday)
+        endOfNextWeek.setDate(startOfNextWeek.getDate() + 6);
+
+        // Set hours to 0 to compare only date parts
+        startOfNextWeek.setHours(0, 0, 0, 0);
+        endOfNextWeek.setHours(23, 59, 59, 999);
+
+        // Compare the given date with the start and end of the next week
+        return date >= startOfNextWeek && date <= endOfNextWeek;
+
+    }
+
     /**
      * Is Valide Date
      * 
