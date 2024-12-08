@@ -969,13 +969,31 @@ class Mariadb implements CrazyDatabaseDriver {
                 $result = $statment->fetchAll(PDO::FETCH_ASSOC);
 
             }else
+            # Check filters
+            if(!empty($filters)){
+
+                # Set instance
+                $instance = $this->manager->from($table);
+
+                # Iteration filters
+                foreach($filters as $key => $value){
+
+                    $instance->where($key, $value);
+
+                }
+
+                # Update table
+                $result = $instance->fetchAll();
+
+            }else{
 
                 # Update table
                 $result = $this->manager
                     ->from($table)
-                    ->where($filters)
                     ->fetchAll()
                 ;
+
+            }
 
         } catch (PDOException $e) {
 

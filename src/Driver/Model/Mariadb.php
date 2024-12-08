@@ -185,10 +185,10 @@ class Mariadb implements CrazyDriverModel {
         if(isset($filters) && is_array($filters)){
 
             # Process Operations In Filters
-            $filters = $this->_processOperationsInFilters($filters);
+            # $filters = $this->_processOperationsInFilters($filters);
 
             # Push filters in filters
-            $this->conditions[] = $filters;
+            $this->conditions = $filters;
 
         }
 
@@ -584,8 +584,25 @@ class Mariadb implements CrazyDriverModel {
 
         }else{
 
-            # Set result
-            $result = $this->mariadb->find($this->arguments["table"]);
+            # Check conditions
+            if($this->conditions !== null){
+
+                # Set result
+                $result = $this->mariadb->find(
+                    $this->arguments["table"], 
+                    "",
+                    [
+                        "filters"   =>  $this->conditions
+                    ]
+                );
+
+
+            }else{
+
+                # Set result
+                $result = $this->mariadb->find($this->arguments["table"]);
+
+            }
 
             ## Fields filter | end
     
