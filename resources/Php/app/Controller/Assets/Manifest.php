@@ -16,6 +16,7 @@ namespace App\Controller\Assets;
  * Dependances
  */
 use CrazyPHP\Core\Media\Favicon as MediaFavion;
+use CrazyPHP\Library\File\Config;
 use CrazyPHP\Core\Controller;
 use CrazyPHP\Core\Response;
 use CrazyPHP\Model\Asset;
@@ -41,6 +42,9 @@ class manifest extends Controller {
         $appNameTemp = explode("/", $config["App"]["name"], 2);
         $appName = array_pop($appNameTemp);
 
+        # Get theme source
+        $themeSource = Config::getValue("Style.materialDynamicColors.source");
+
         # Set data
         $data = [
             "name"              =>  $appName,
@@ -57,8 +61,8 @@ class manifest extends Controller {
                     "type"  =>  "image/png"
                 ]
             ],
-            "theme_color"       =>  "#ffffff",
-            "background_color"  =>  "#ffffff",
+            "theme_color"       =>  $themeSource ? $themeSource : "#ffffff",
+            "background_color"  =>  $themeSource ? $themeSource : "#ffffff",
             "display"           =>  "standalone",
         ];
 

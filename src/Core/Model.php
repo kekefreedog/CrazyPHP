@@ -572,6 +572,36 @@ class Model implements CrazyModel {
     }
 
     /**
+     * Get List of all model names
+     * 
+     * @return array
+     */
+    public static function getListAllModelNames():array {
+
+        # Set result
+        $result = [];
+
+        # Get all model available
+        $modelConfig = Config::getValue("Model");
+
+        # Check model config
+        if(is_array($modelConfig) && !empty($modelConfig))
+
+            # Iteration model config
+            foreach($modelConfig as $item)
+
+                # Check name
+                if(isset($item["name"]) && $item["name"])
+
+                    # Push name in result
+                    $result[] = $item["name"];
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
      * Check Entity in Entity
      * 
      * @return Model return controller of the current model found

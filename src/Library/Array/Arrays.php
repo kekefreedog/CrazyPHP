@@ -857,6 +857,51 @@ class Arrays{
 
 	}
 
+	/**
+	 * Add Prefix to keys
+	 * 
+	 * @param array $array
+	 * @param string $prefix
+	 * @return array
+	 */
+	public static function addPrefixToKeys(array $array, string $prefix = "", string $separator = "_"):array {
+
+		# Return result
+		return array_combine(
+			array_map(fn($key) => ( $prefix ? $prefix.$separator : "" ) . $key, array_keys($array)),
+			$array
+		);
+
+	}
+
+	/**
+	 * Add Prefix to keys with exception
+	 */
+	public static function addPrefixToKeysWithException(array $array, string $prefix = "", $exception = [], bool $ucfirst = false, string $separator = "_"): array {
+		// Ensure $exception is an array for uniform handling
+		$exceptions = is_array($exception) ? $exception : [$exception];
+	
+		// Return result
+		return array_combine(
+			array_map(
+				function ($key) use ($prefix, $separator, $exceptions, $ucfirst) {
+					// Apply ucfirst if enabled
+					$processedKey = $ucfirst ? ucfirst($key) : $key;
+	
+					// Skip adding prefix if the key matches any exception
+					foreach ($exceptions as $exc) {
+						if (strpos($processedKey, $exc) === 0) {
+							return $key; // Keep the original key unchanged
+						}
+					}
+					return ($prefix ? $prefix . $separator : "") . $key;
+				},
+				array_keys($array)
+			),
+			$array
+		);
+	}
+
     /** Public Constants
      ******************************************************
      */

@@ -530,4 +530,106 @@ class ArraysTest extends TestCase{
 
     }
 
+    /**
+     * Test add prefix to keys
+     * 
+     * @return void
+     */
+    public function testAddPrefixToKeys():void {
+
+        # Set input
+        $input = [
+            "toto"  =>  "toto",
+            "one"   =>  1,
+            "bool"  =>  false,
+            "null"  =>  null,
+            "array" =>  [],
+        ];
+
+        # Set output
+        $outputA = [
+            "prefix*toto"  =>  "toto",
+            "prefix*one"   =>  1,
+            "prefix*bool"  =>  false,
+            "prefix*null"  =>  null,
+            "prefix*array" =>  [],
+        ];
+
+        # Set output
+        $outputB = [
+            "prefix_toto"  =>  "toto",
+            "prefix_one"   =>  1,
+            "prefix_bool"  =>  false,
+            "prefix_null"  =>  null,
+            "prefix_array" =>  [],
+        ];
+
+        # Set prefix
+        $prefix = "prefix";
+
+        # Assert 1
+        $this->assertEquals($outputA, Arrays::addPrefixToKeys($input, $prefix, "*"));
+
+        # Assert 1
+        $this->assertEquals($outputB, Arrays::addPrefixToKeys($input, $prefix));
+        
+        # Assert 2
+        $this->assertEquals($input, Arrays::addPrefixToKeys($input));
+
+    }
+
+    /**
+     * Test add prefix to keys With Exception
+     * 
+     * @return void
+     */
+    public function testAddPrefixToKeysWithException():void {
+
+        # Set input
+        $inputA = [
+            "user*toto"  =>  "toto",
+            "titi*one"   =>  1,
+            "bool"  =>  false,
+            "null"  =>  null,
+            "array" =>  [],
+        ];
+
+        # Set input
+        $inputB = [
+            "user_toto"  =>  "toto",
+            "titi_one"   =>  1,
+            "bool"  =>  false,
+            "null"  =>  null,
+            "array" =>  [],
+        ];
+
+        # Set output
+        $outputA = [
+            "user*toto"  =>  "toto",
+            "titi*one"   =>  1,
+            "prefix*bool"  =>  false,
+            "prefix*null"  =>  null,
+            "prefix*array" =>  [],
+        ];
+
+        # Set output
+        $outputB = [
+            "user_toto"  =>  "toto",
+            "titi_one"   =>  1,
+            "prefix_bool"  =>  false,
+            "prefix_null"  =>  null,
+            "prefix_array" =>  [],
+        ];
+
+        # Set prefix
+        $prefix = "prefix";
+
+        # Assert 1
+        $this->assertEquals($outputA, Arrays::addPrefixToKeysWithException($inputA, $prefix, ["user", "titi"], false, "*"));
+
+        # Assert 1
+        $this->assertEquals($outputB, Arrays::addPrefixToKeysWithException($inputB, $prefix, ["user", "titi"]));
+
+    }
+
 }

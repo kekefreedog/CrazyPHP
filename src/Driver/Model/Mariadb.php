@@ -15,14 +15,16 @@ namespace  CrazyPHP\Driver\Model;
 /**
  * Dependances
  */
+
+use CrazyPHP\Core\Model;
 use CrazyPHP\Library\Database\Driver\Mariadb as MariadbModel;
+use CrazyPHP\Library\Database\Operation\SqlOperation;
 use CrazyPHP\Library\File\Config as FileConfig;
 use CrazyPHP\Interface\CrazyDriverModel;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Time\DateTime;
 use CrazyPHP\Library\Model\Schema;
 use CrazyPHP\Library\Array\Arrays;
-use CrazyPHP\Library\Database\Operation\SqlOperation;
 use CrazyPHP\Library\Form\Process;
 
 /* use PhpMyAdmin\SqlParser\Statements\SelectStatement;
@@ -69,6 +71,9 @@ class Mariadb implements CrazyDriverModel {
 
     /** @var null|array conditions */
     private array|null $conditions = null;
+
+    /** @var bool conditions */
+    private bool $optionAlreadyLoaded = false;
 
     /**
      * Constructor
@@ -151,8 +156,7 @@ class Mariadb implements CrazyDriverModel {
     public function parseId(string|int $id, ?array $options = null):self {
 
         # Ingest options
-        $this->_ingestFields($options);
-        $this->_ingestPageStateProcess($options);
+        $this->_ingestOptions($options);
 
         # Store id
         $this->id = is_int($id) 
@@ -175,8 +179,7 @@ class Mariadb implements CrazyDriverModel {
     public function parseFilter(?array $filters, ?array $options = null):self {
 
         # Ingest options
-        $this->_ingestFields($options);
-        $this->_ingestPageStateProcess($options);
+        $this->_ingestOptions($options);
 
         # Check filters
         if(isset($filters) && is_array($filters)){
@@ -204,8 +207,7 @@ class Mariadb implements CrazyDriverModel {
     public function parseSort(null|array|string $sort, ?array $options = null):self {
 
         # Ingest options
-        $this->_ingestFields($options);
-        $this->_ingestPageStateProcess($options);
+        $this->_ingestOptions($options);
 
         # Return self
         return $this;
@@ -221,8 +223,7 @@ class Mariadb implements CrazyDriverModel {
     public function parseGroup(?array $group, ?array $options = null):self {
 
         # Ingest options
-        $this->_ingestFields($options);
-        $this->_ingestPageStateProcess($options);
+        $this->_ingestOptions($options);
 
         # Return self
         return $this;
@@ -239,8 +240,7 @@ class Mariadb implements CrazyDriverModel {
     public function parseSql(string $sql, ?array $options = null):self {
 
         # Ingest options
-        $this->_ingestFields($options);
-        $this->_ingestPageStateProcess($options);
+        $this->_ingestOptions($options);
 
         # Raw query
         $this->rawQuery = $sql;
@@ -261,6 +261,46 @@ class Mariadb implements CrazyDriverModel {
 
     }
 
+    /** Public methods | Ingest options
+     ******************************************************
+     */
+
+    /**
+     * Ingest Options
+     * 
+     * @param ?array $options
+     * @return void
+     */
+    private function _ingestOptions(?array $options = null):void {
+
+        # Check optionAlreadyLoaded
+        if(!$this->optionAlreadyLoaded){
+
+            # Ingest extended
+            $this->_ingestExtended($options);
+
+            # Ingest fields
+            $this->_ingestFields($options);
+
+            # Ingest page state process
+            $this->_ingestPageStateProcess($options);
+
+            # Ingest sql prefix
+            $this->_ingestSqlPrefix($options);
+
+            # Ingest unflatten
+            $this->_ingestUnflatten($options);
+
+            # Ingest load reference
+            $this->_ingestLoadReference($options);
+
+            # Set option already loaded
+            $this->optionAlreadyLoaded = true;
+
+        }
+
+    }
+
     /**
      * Ingest pageStateProcess
      * 
@@ -274,6 +314,81 @@ class Mariadb implements CrazyDriverModel {
 
             # Switch value in arguments
             $this->arguments["pageStateProcess"] = true;
+
+    }
+
+    /**
+     * Ingest sql prefix
+     * 
+     * @param ?array $options
+     * @return void
+     */
+    private function _ingestExtended(?array $options = null):void {
+
+        # Check options
+        if($options !== null && isset($options["extended"]) && Process::bool($options["extended"]) == true){
+
+            # Switch value in arguments
+            $this->arguments["extended"] = true;
+
+            # Switch value in arguments
+            $this->arguments["unflatten"] = true;
+
+            # Switch value in arguments
+            $this->arguments["loadReference"] = true;
+
+            # Switch value in arguments
+            $this->arguments["sqlPrefix"] = true;
+
+        }
+
+    }
+
+    /**
+     * Ingest sql prefix
+     * 
+     * @param ?array $options
+     * @return void
+     */
+    private function _ingestSqlPrefix(?array $options = null):void {
+
+        # Check options
+        if($options !== null && isset($options["sqlPrefix"]) && Process::bool($options["sqlPrefix"]) == true)
+
+            # Switch value in arguments
+            $this->arguments["sqlPrefix"] = true;
+
+    }
+
+    /**
+     * Ingest sql prefix
+     * 
+     * @param ?array $options
+     * @return void
+     */
+    private function _ingestUnflatten(?array $options = null):void {
+
+        # Check options
+        if($options !== null && isset($options["unflatten"]) && Process::bool($options["unflatten"]) == true)
+
+            # Switch value in arguments
+            $this->arguments["unflatten"] = true;
+
+    }
+
+    /**
+     * Ingest load reference
+     * 
+     * @param ?array $options
+     * @return void
+     */
+    private function _ingestLoadReference(?array $options = null):void {
+
+        # Check options
+        if($options !== null && isset($options["loadReference"]) && Process::bool($options["loadReference"]) == true)
+
+            # Switch value in arguments
+            $this->arguments["loadReference"] = true;
 
     }
 
@@ -472,6 +587,62 @@ class Mariadb implements CrazyDriverModel {
             # Set result
             $result = $this->mariadb->find($this->arguments["table"]);
 
+            ## Fields filter | end
+    
+            ## Process For Page State | Start
+
+            # Load reference
+            if($this->arguments["loadReference"])
+
+                # Process
+                $result = $this->_loadReferenceProcess($result);
+    
+            # check arguments
+            if($this->arguments["sqlPrefix"])
+    
+                # Check result
+                if(!empty($result))
+    
+                    # Iteration result
+                    foreach($result as &$row){
+
+                        # Get id
+                        $id = $row["id"] ?? null;
+    
+                        # Process value
+                        $row = $this->_sqlPrefixProcess($row);
+
+                        # Check id
+                        if($id)
+
+                            # Push id in row
+                            $row["id"] = $id;
+
+                        # Push table
+                        $row["entity"] = $this->arguments["table"];
+
+                    }
+    
+            # check arguments
+            if($this->arguments["unflatten"])
+    
+                # Check result
+                if(!empty($result))
+    
+                    # Iteration result
+                    foreach($result as &$row)
+    
+                    # Set result
+                    $row = Arrays::unflatten($row, "_");
+    
+            # check arguments
+            if($this->arguments["pageStateProcess"])
+    
+                # Process value
+                $result = $this->_pageStateProcess($result);
+    
+            ## Process For Page State | End
+
         }
 
         # Return result
@@ -489,7 +660,7 @@ class Mariadb implements CrazyDriverModel {
     public function count():int {
 
         # Set result
-        $result = 0;
+        $result = count($this->mariadb->find($this->arguments["table"]));
 
         # Return result
         return $result;
@@ -520,6 +691,128 @@ class Mariadb implements CrazyDriverModel {
      */
 
     /**
+     * Load Preference
+     * 
+     * @param array $input
+     * @return array
+     */
+    public function _loadReferenceProcess(array $input):array {
+
+        # Set result
+        $result = $input;
+
+        # Temp cache
+        $tempCache = [];
+
+        # Check input
+        if(!empty($result)){
+
+            # Get models
+            $models = Model::getListAllModelNames();
+
+            # Iteration input
+            foreach($result as &$row)
+
+                # Iteration row
+                foreach($row as $key => $col){
+
+                    # Check if column as "_id" at the end
+                    if($col && strlen($key) > 3 && substr($key, -3) == '_id' && ($entity = ucfirst(str_replace("_id", "", $key))) && in_array($entity, $models)){
+
+                        # Get model
+                        $entity = $entity;
+                        
+                        # Get id
+                        $id = $col;
+
+                        # Check if already in cache
+                        if(isset($tempCache[$entity][$id])){
+
+                            # Get result temp
+                            $resultTemp = $tempCache[$entity][$id];
+
+                        # Get value
+                        }else{
+
+                            # Read item
+                            $resultTemp = (new Model($entity))->readById($id);
+
+                            # Check if result
+                            if(!empty($resultTemp) && is_array($resultTemp[0])){
+
+                                # Set result temp
+                                $resultTemp = $resultTemp[0];
+
+                                # Push result in temps 
+                                $tempCache[$entity][$id] = $resultTemp;
+
+                            }else
+
+                                # Continue iteration
+                                continue;
+
+                        }
+
+                        # Add prefix
+                        $resultTemp = Arrays::addPrefixToKeys($resultTemp, $entity);
+
+                        # Remove key
+                        unset($row[$key]);
+
+                        # Merge result to row
+                        $row += $resultTemp;
+
+                    }
+
+                }
+
+        }
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Sql Prefix Process
+     * 
+     * Process result
+     * 
+     * @param array $input
+     * @return array
+     */
+    public function _sqlPrefixProcess(array $input):array {
+
+        # Get models
+        $models = Model::getListAllModelNames();
+
+        # Set result
+        $result = Arrays::addPrefixToKeysWithException($input, $this->arguments["table"], $models, true);
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Unflatten Process
+     * 
+     * Process result
+     * 
+     * @param array $input
+     * @return array
+     */
+    public function unflattenProcess(array $input):array {
+
+        # Set result
+        $result = Arrays::addPrefixToKeys($input, $this->arguments["table"]);
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
      * Page State Process
      * 
      * Process result (input) for Page State by adding _metadata info...
@@ -530,7 +823,12 @@ class Mariadb implements CrazyDriverModel {
     public function _pageStateProcess(array $input):array {
 
         # Set result
-        $result = [];
+        $result = [
+            "records"   =>  $input
+        ];
+
+        # Prepare metadata
+        $result["_metadata"]["records_total"] = count($input);
 
         # Return result
         return $result;
@@ -708,6 +1006,10 @@ class Mariadb implements CrazyDriverModel {
         "schema"            =>  [],
         "database"          =>  [],
         "pageStateProcess"  =>  false,
+        "sqlPrefix"         =>  false,
+        "unflatten"         =>  false,
+        "loadReference"     =>  false,
+        "extended"          =>  false, # Apply sqlPrefix , loadReference , unflatten
     ];
 
 }
