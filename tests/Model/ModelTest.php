@@ -98,4 +98,37 @@ class ModelTest extends TestCase {
 
     }
 
+    /**
+     * Test List of All Model Names
+     * 
+     * @return void
+     */
+    public function testListOfAllModelNames():void {
+
+        # Get list
+        $result = Model::getListAllModelNames();
+
+        # Get models
+        $models = FileConfig::getValue("Model");
+
+        # Set model names
+        $modelNames = [];
+
+        # Check models
+        if(!empty($models))
+
+            # Iteration models
+            foreach($models as $model)
+
+                # Check name
+                if(isset($model["name"]) && $model["name"])
+
+                    # Push result in model names
+                    $modelNames[] = $model["name"];
+
+        # Check name
+        $this->assertEquals($modelNames, $result);
+
+    }
+
 }
