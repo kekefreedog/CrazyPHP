@@ -5,11 +5,12 @@
 ///
 /// @package    kzarshenas/crazyphp
 /// @author     kekefreedog <kevin.zarshenas@gmail.com>
-/// @copyright  2022-2024 Kévin Zarshenas
+/// @copyright  2022-2023 Kévin Zarshenas
 /// /// /// 
 
 /* Import Crazy Content */
 @import "./../../../Front/style/scss/component/crazy_content";
+@import "./../../../Front/style/scss/index.scss";
 
 $crazy-left-navigation-rail-always-visible-z-index: 1000;
 $crazy-left-navigation-rail-always-visible-width: 88px;
@@ -31,9 +32,6 @@ $crazy-left-navigation-rail-collapsible-width: 230px;
 
         // z index
         z-index: calc($crazy-left-navigation-rail-always-visible-z-index + 200);
-
-        // background
-        background: green;
 
         /* Children */
 
@@ -112,9 +110,6 @@ $crazy-left-navigation-rail-collapsible-width: 230px;
 
         width: $crazy-left-navigation-rail-collapsible-width;
         min-height: 100vh;
-
-
-        background: violet;
 
     }
 
