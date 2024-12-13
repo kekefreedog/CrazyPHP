@@ -22,6 +22,7 @@ import Page from '../Loader/Page';
 import { MaskInput } from "maska"
 import Root from '../Dom/Root';
 import Arrays from './Arrays';
+import Objects from './Objects';
 
 /**
  * Form
@@ -2196,6 +2197,19 @@ export default class Form {
                         
                     ).then(
                         value => {
+                            
+                            // Check value results
+                            if(
+                                "results" in value && 
+                                Array.isArray(value.results) && 
+                                value.results.length
+                            )
+
+                                // Iteration value
+                                for(let key in value.results)
+
+                                    // Set key
+                                    value.results[key] = Objects.flatten(value.results[key], "", ".");
 
                             // Callback with value retrieve
                             callback(value.results);
@@ -2227,6 +2241,19 @@ export default class Form {
                     // Add options found
                     ).then(
                         value => {
+
+                            // Check value results
+                            if(
+                                "results" in value && 
+                                Array.isArray(value.results) && 
+                                value.results.length
+                            )
+
+                                // Iteration value
+                                for(let key in value.results)
+
+                                    // Set key
+                                    value.results[key] = Objects.flatten(value.results[key], "", ".");
 
                             // Add options to tom
                             selectInstance.addOptions(value.results);
