@@ -15,14 +15,11 @@ import { TomSettings, RecursivePartial } from 'tom-select/dist/types/types';
 import {default as PageError} from './../Error/Page';
 import {default as UtilityStrings} from './Strings';
 import Crazyrequest from '../Crazyrequest';
-import { json } from 'stream/consumers';
 import Pickr from '@simonwep/pickr';
 import TomSelect from 'tom-select';
-import Page from '../Loader/Page';
 import { MaskInput } from "maska"
-import Root from '../Dom/Root';
-import Arrays from './Arrays';
 import Objects from './Objects';
+import Root from '../Dom/Root';
 
 /**
  * Form
@@ -466,9 +463,6 @@ export default class Form {
         // Get formdata
         let formData:FormData = this.getFormData(target);
 
-        // Lock form
-        this.lock();
-
         // Get entity
         let entity:Attr|null = target.attributes.getNamedItem("entity");
 
@@ -476,10 +470,41 @@ export default class Form {
         let valueID:Attr|null = target.attributes.getNamedItem("value_id");
 
         // Check entity or value id
-        if(entity !== null && valueID !== null)
+        if(entity !== null && valueID !== null){
+
+            // Lock form
+            this.lock();
 
             // Create item
             this._onSubmitUpdate(entity.value, valueID.value, formData)
+                // Check errors
+                .then(
+                    value => {
+
+                        // Check error
+                        if("errors" in value && Array.isArray(value.errors) && value.errors.length){
+
+                            alert(JSON.stringify(value.errors));
+
+                        }
+
+                        // Check if not results
+                        if(!("results" in value)){
+
+                            // Unlock target
+                            this.unlock();
+
+                            // Stop
+                            throw "";
+
+                        }
+
+                        // Return value
+                        return value;
+
+                    }
+                )
+                // Set data
                 .then(
                     value => {
 
@@ -495,17 +520,47 @@ export default class Form {
                     }
                 );
 
-        else
+        }else
         // Check entity
         if(entity !== null){
 
+            // Lock form
+            this.lock();
+
             // Create item
             this._onSubmitCreate(entity.value, formData)
+                // Check errors
+                .then(
+                    value => {
+
+                        // Check error
+                        if("errors" in value && Array.isArray(value.errors) && value.errors.length){
+
+                            alert(JSON.stringify(value.errors));
+
+                        }
+
+                        // Check if not results
+                        if(!("results" in value)){
+
+                            // Unlock target
+                            this.unlock();
+
+                            // Stop
+                            throw "";
+
+                        }
+
+                        // Return value
+                        return value;
+
+                    }
+                )
                 .then(
                     value => {
 
                         // Check v
-                        if(value.results.length)
+                        if("results" in value && value.results.length)
                             
                             // Set values
                             this.setValue(value.results[0], value.results[0]._id);
@@ -902,12 +957,18 @@ export default class Form {
             // Fetch request
             request.fetch()
                 .then(value => {
+
+                    // Check error
+                    if("errors" in value && Array.isArray(value.errors) && value.errors.length){
+
+                        alert("error");
+                    }
                     
                     // Unlock
                     this.unlock();
 
                     // Check result
-                    if(value.results.length)
+                    if("results" in value && value.results.length)
 
                         // Set values
                         this.setValue(value.results[0], value.results[0]._id);
@@ -919,9 +980,15 @@ export default class Form {
         // Check if is
         if(entityAttr && onreadyAttr && /^id\/[a-zA-Z0-9]+$/.test(onreadyAttr)){
 
+            // Get id
+            let id = onreadyAttr.replace("id/", "");
+
+            // Set value id if not already done
+            !this._formEl.hasAttribute("value_id") && this._formEl.setAttribute("value_id", id.toString());
+
             // Prepare request 
             let request = new Crazyrequest(
-                `/api/v2/${entityAttr}/${onreadyAttr.replace("id/", "")}`,
+                `/api/v2/${entityAttr}/${id}`,
                 {
                     method: "get",
                     cache: false,
@@ -934,14 +1001,18 @@ export default class Form {
             request.fetch()
                 .then(value => {
 
-                    console.log("dev");
-                    console.log(value);
+                    // Check error
+                    if("errors" in value && Array.isArray(value.errors) && value.errors.length){
+
+                        alert("error");
+
+                    }
                     
                     // Unlock
                     this.unlock();
 
                     // Check result
-                    if(value.results.length)
+                    if("results" in value && value.results.length)
 
                         // Set values
                         this.setValue(value.results[0], value.results[0]._id);
@@ -1053,9 +1124,6 @@ export default class Form {
                 inputFieldEl?.append(supportingTextErrorEl);
 
             }
-
-
-            console.log(e);
 
         });
 
