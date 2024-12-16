@@ -441,7 +441,7 @@ declare global {
             style?:{
                 color?:{
                     text?:string,
-                    fill?:string
+                    fill?:string,
                 },
                 icon?:{
                     class?:string,
