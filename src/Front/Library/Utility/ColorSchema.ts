@@ -77,7 +77,7 @@ export default class ColorSchema {
      * 
      * @return 'dark'|'light'
      */
-    public static get = ():'dark'|'light' => window?.matchMedia?.('(prefers-color-scheme:dark)')?.matches ? 'dark' : 'light';
+    public static get = ():'dark'|'light' => window.Crazyobject?.forcedTheme ? window.Crazyobject.forcedTheme : ( window?.matchMedia?.('(prefers-color-scheme:dark)')?.matches ? 'dark' : 'light' );
 
     /**
      * Set Theme
@@ -91,14 +91,14 @@ export default class ColorSchema {
      */
     public static setTheme = (theme:'dark'|'light', useLocalStorage:boolean = false):void => {
 
-            // Set on html
-            document.documentElement.setAttribute('theme', theme);
+        // Set on html
+        document.documentElement.setAttribute('theme', theme);
 
-            // If useLocalStorage
-            if("localStorage" in window && useLocalStorage)
+        // If useLocalStorage
+        if("localStorage" in window && useLocalStorage)
 
-                // Set in local storage
-                window.localStorage.setItem('crazy-theme', theme);
+            // Set in local storage
+            window.localStorage.setItem('crazy-theme', theme);
 
     }
 

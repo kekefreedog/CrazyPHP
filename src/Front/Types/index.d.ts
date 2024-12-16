@@ -91,7 +91,8 @@ declare global {
         globalComponentsCollection:Object;
         globalStateCollection?:Object
         globalPartials?:Object
-        glabalAlerts?:Record<string, typeof CrazyAlertDriver>
+        glabalAlerts?:Record<string, typeof CrazyAlertDriver>,
+        forceTheme?:"dark"|"light",
     }
 
     /**

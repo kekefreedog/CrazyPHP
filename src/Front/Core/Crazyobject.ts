@@ -74,6 +74,9 @@ export default class Crazyobject {
     /** @var alert State */
     public alert:Crazyalert;
 
+    /** @var forcedTheme State */
+    public forcedTheme:"light"|"dark"|null = null;
+
     /**
      * Constructor
      */
@@ -81,6 +84,9 @@ export default class Crazyobject {
 
         // Register Global Web Components give by the app
         this.components = new Componentregister(input);
+
+        // Check force theme
+        input.forceTheme && (this.forcedTheme = input.forceTheme);
 
         // Color schema
         this.colorSchema = new ColorSchema();
