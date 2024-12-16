@@ -41,6 +41,7 @@ export {default as LoaderPage} from "./Library/Loader/Page";
 export {default as Crazycache} from "./Library/Crazycache";
 export {default as Crazystate} from "./Library/Crazystate";
 export {default as Crazycolor} from "./Library/Crazycolor";
+export {default as Crazyalert} from "./Library/Crazyalert";
 export {default as Crazyobject} from "./Core/Crazyobject";
 export {default as Crazypage} from "./Library/Crazypage";
 export {default as Crazyurl} from "./Library/Crazyurl";

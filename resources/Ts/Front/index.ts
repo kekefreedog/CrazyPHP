@@ -55,6 +55,14 @@ let globalPartials = {
    "form": Form,
 };
 
+/** Crazy Global Alerts
+ ******************************************************
+ * Declare only alert instance to load on all page of your app
+ * > First driver is considered like the one by default to user
+ */
+ let globalAlerts = {
+ }
+
 /** Actions
  ******************************************************
  */

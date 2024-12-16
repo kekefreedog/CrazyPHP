@@ -46,6 +46,7 @@ export {default as UtilityCsv} from "./../Library/Utility/Csv";
 export {default as Crazycache} from "./../Library/Crazycache";
 export {default as Crazystate} from "./../Library/Crazystate";
 export {default as Crazycolor} from "./../Library/Crazycolor";
+export {default as Crazyalert} from "./../Library/Crazyalert";
 export {default as Crazyobject} from "./../Core/Crazyobject";
 export {default as Crazypage} from "./../Library/Crazypage";
 export {default as Form} from "./../Library/Utility/Form";
@@ -54,7 +55,6 @@ export {default as Hash} from "./../Library/Utility/Hash";
 export {default as DomRoot} from "./../Library/Dom/Root";
 
 /* Modules to export */
-/* export {}; */
 
 // Declare GLobal type
 declare global {
@@ -91,6 +91,7 @@ declare global {
         globalComponentsCollection:Object;
         globalStateCollection?:Object
         globalPartials?:Object
+        glabalAlerts?:Record<string, typeof CrazyAlertDriver>
     }
 
     /**
@@ -418,8 +419,9 @@ declare global {
      */
 
     interface FormOptions {
-        onSubmitDone: (result:object, entity:string, formData:FormData)=>void,
-        onError: (result:object, entity:string, formData:FormData)=>void,
+        onSubmitDone:(result:object, entity:string, formData:FormData)=>void,
+        onError:(result:object, entity:string, formData:FormData)=>void,
+        alertDriver:string,
     }
 
     /** Interface | Error
@@ -431,7 +433,7 @@ declare global {
      */
     interface CrazyError {
         code:number,
-        type?:?string
+        type?:?"error"|"warning"|"success"|"info"|"news"
         detail?:?string,
         _run?:?Object,
         _status_code?:?{
@@ -447,6 +449,81 @@ declare global {
                 }
             }
         }
+    }
+
+    /** Interface | Alert
+     ******************************************************
+     */
+
+    /**
+     * Crazy Alert Options
+     */
+    interface CrazyAlertOptions {
+        driver: string,
+        postAction?: () => void,
+    }
+
+    /**
+     * Crazy Alert Parser Options
+     */
+    interface CrazyAlertParserOptions extends CrazyAlertOptions {
+        overrideType:CrazyError["type"],
+    }
+
+    /**
+     * Crazy Alert Input
+     */
+    interface CrazyAlertInput extends Partial<CrazyError> {
+        redirectTo?:LoaderPageOptions,
+    }
+
+    /**
+     * Crazy Alert News Input
+     */
+    interface CrazyAlertNewsInput extends Partial<CrazyError> {
+        type: "news"
+    }
+
+    /**
+     * Crazy Alert Info Input
+     */
+    interface CrazyAlertInfoInput extends Partial<CrazyError> {
+        type: "info"
+    }
+
+    /**
+     * Crazy Alert success Input
+     */
+    interface CrazyAlertSuccessInput extends Partial<CrazyError> {
+        type: "success"
+    }
+
+    /**
+     * Crazy Alert success Input
+     */
+    interface CrazyAlertWarningInput extends Partial<CrazyError> {
+        type: "warning"
+    }
+
+    /**
+     * Crazy Alert success Input
+     */
+    interface CrazyAlertErrorInput extends Partial<CrazyError> {
+        type: "error"
+    }
+
+    /**
+     * Crazy Alert Driver
+     */
+    interface CrazyAlertDriver {
+        public news(input?:CrazyAlertNewsInput, options?:null|Partial<CrazyAlertOptions>):void,
+        public info(input?:CrazyAlertInfoInput, options?:null|Partial<CrazyAlertOptions>):void,
+        public success(input?:CrazyAlertSuccessInput, options?:null|Partial<CrazyAlertOptions>):void,
+        public warning(input?:CrazyAlertWarningInput, options?:null|Partial<CrazyAlertOptions>):void,
+        public error(input?:CrazyAlertErrorInput, options?:null|Partial<CrazyAlertOptions>):void,
+    }
+    interface CrazyAlertDriverConstructor {
+        new (): CrazyAlertDriver;
     }
 
 }

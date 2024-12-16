@@ -481,12 +481,15 @@ export default class Form {
                 .then(
                     value => {
 
-                        // Check error
-                        if("errors" in value && Array.isArray(value.errors) && value.errors.length){
+                        // Parse errors
+                        window.Crazyobject.alert.parseErrors(value.errors as CrazyError|CrazyError[], {
+                            postAction: ():void => {
 
-                            alert(JSON.stringify(value.errors));
+                                // Stop event
+                                throw "";
 
-                        }
+                            }
+                        });
 
                         // Check if not results
                         if(!("results" in value)){
@@ -536,7 +539,15 @@ export default class Form {
                         // Check error
                         if("errors" in value && Array.isArray(value.errors) && value.errors.length){
 
-                            alert(JSON.stringify(value.errors));
+                            // Parse errors
+                            window.Crazyobject.alert.parseErrors(value.errors as CrazyError|CrazyError[], {
+                                postAction: ():void => {
+
+                                    // Stop event
+                                    throw "";
+
+                                }
+                            });
 
                         }
 

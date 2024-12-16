@@ -21,6 +21,7 @@ import Crazyconsole from "./../Library/Crazyconsole";
 import CurrentPage from "./../Library/Current/Page";
 import HistoryPage from "./../Library/History/Page";
 import Crazyevents from "./../Library/Crazyevents";
+import Crazyalert from "./../Library/Crazyalert";
 import Crazystate from "./../Library/Crazystate";
 import Crazypage from "./../Library/Crazypage";
 import Hash from './../Library/Utility/Hash';
@@ -70,6 +71,9 @@ export default class Crazyobject {
     /** @var state State */
     public state:Crazystate;
 
+    /** @var alert State */
+    public alert:Crazyalert;
+
     /**
      * Constructor
      */
@@ -78,15 +82,13 @@ export default class Crazyobject {
         // Register Global Web Components give by the app
         this.components = new Componentregister(input);
 
-        // Register Partials
-        this.partials = new RegisterPartial();
-
         // Color schema
         this.colorSchema = new ColorSchema();
 
         // Init of the app
         this.hashInit(input)                // Init Hash
             .then(this.stateInit)           // Init state
+            .then(this.alertInit)           // Init alert
             .then(this.partialsInit)        // Init Partials
             .then(this.historyPageInit)     // Init History Page
             .then(this.eventInit)           // Init Event
@@ -151,6 +153,26 @@ export default class Crazyobject {
     }
 
     /**
+     * Alert Init
+     * 
+     * Prepare alert instances in your crazy page
+     * 
+     * @returns Promise<void>
+     */
+    private alertInit = async(input:CrazyObjectInput):Promise<CrazyObjectInput> => {
+
+        // Check global alerts
+        if(input.glabalAlerts)
+
+            // Prepare alert
+            this.alert = new Crazyalert(input.glabalAlerts);
+
+        // Return input
+        return input;
+
+    }
+
+    /**
      * Partials Init
      * 
      * Prepare partial in your crazy page
@@ -158,6 +180,9 @@ export default class Crazyobject {
      * @returns Promise<void>
      */
     private partialsInit = async(input:CrazyObjectInput):Promise<CrazyObjectInput> => {
+
+        // Register Partials
+        this.partials = new RegisterPartial();
 
         // Register global partials
         this.partials.register(input.globalPartials);
