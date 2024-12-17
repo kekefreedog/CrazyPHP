@@ -11,6 +11,20 @@ regular-btn {
     /* A */
     a {
 
+        /* Color */
+
+        // Color
+        color: var(--md-sys-color-secondary)!important;
+        background: var(--md-sys-color-on-secondary)!important;
+
+        // Icon
+        i {
+
+            // Color
+            color: var(--md-sys-color-secondary)!important;
+
+        }
+
         /* Img */
         img {
 
@@ -45,6 +59,22 @@ regular-btn {
 
             }
 
+            /* Round left */
+            &.btn-round-left {
+
+                /* Border */
+                border-radius: 50% 3px 3px 50%;
+
+            }
+
+            /* Round right */
+            &.btn-round-right {
+
+                /* Border */
+                border-radius: 3px 50% 50% 3px;
+
+            }
+
         }
 
         /* Depth */
@@ -58,9 +88,6 @@ regular-btn {
 
         /* Extended */
         &.btn-extended {
-
-            /* Background */
-            background-color: transparent;
 
             /* Text */
             text-transform: inherit;
@@ -384,6 +411,14 @@ regular-btn {
         
                     /* Dimension */
                     /* height: 30px!important; */
+
+                    /* Materiali */
+                    &.material-icons {
+
+                        /* Padding */
+                        padding-top: 3px;
+
+                    }
         
                 }
 

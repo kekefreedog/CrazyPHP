@@ -40,6 +40,12 @@
         {{#is attributes.shape "box"}}
             btn-{{@root.attributes.shape}}
         {{/is}}
+        {{#is attributes.shape "round-left"}}
+            btn-{{@root.attributes.shape}}
+        {{/is}}
+        {{#is attributes.shape "round-right"}}
+            btn-{{@root.attributes.shape}}
+        {{/is}}
         {{!-- Size : small | normal | large | extra-large  --}}
         btn-{{attributes.size}}
         {{#if attributes.wave}}
@@ -63,6 +69,10 @@
                 {{colorSuffix attributes.color-secondary "text"}}
             {{/if}}
         {{/if}}
+        {{!-- Pulse --}}
+        {{#isnt attributes.pulse "false"}}
+            pulse
+        {{/isnt}}
     "
     {{!-- Href --}}
     {{#if attributes.href}}

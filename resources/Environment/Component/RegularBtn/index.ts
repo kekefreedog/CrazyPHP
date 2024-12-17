@@ -46,7 +46,7 @@ export default class RegularBtn extends Crazycomponent {
       shape: {
          value: "round",
          type: "string",
-         select: ["round", "box"],
+         select: ["round", "box", "round-left", "round-right"],
       },
       size: {
          value: "large",
@@ -60,6 +60,10 @@ export default class RegularBtn extends Crazycomponent {
       },
       label: {
          value: "",
+         type: "string"
+      },
+      pulse: {
+         value: "false",
          type: "string"
       },
       "icon-class": {
@@ -88,7 +92,7 @@ export default class RegularBtn extends Crazycomponent {
          type: "string"
       },
       "color-secondary": {
-         value: "blue lighten-5",
+         value: "",
          type: "string",
       },
       "href": {
@@ -106,8 +110,7 @@ export default class RegularBtn extends Crazycomponent {
     * Observable Attributes
     */
    static get observedAttributes() { 
-      /* return Object.keys(["type", "depth", "shape", "size", "wave", "label", "icon-class", "icon-text", "icon-image", "icon-image-style", "icon-position", "color-primary", "color-secondary"]);  */
-      return ["type", "depth", "shape", "size", "wave", "label", "icon-class", "icon-text", "icon-image", "icon-image-style", "icon-position", "color-primary", "color-secondary"]; 
+      return ["type", "depth", "shape", "size", "wave", "label", "icon-class", "icon-text", "icon-image", "icon-image-style", "icon-position", "color-primary", "color-secondary", "pulse"]; 
    }
 
    /**

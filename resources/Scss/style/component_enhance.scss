@@ -49,6 +49,14 @@ ul.collection {
     // Dimension
     border-radius: 12px;
 
+    // Collection header 
+    li.collection-header {
+
+        // Color
+        background: var(--md-sys-color-surface-variant);
+
+    }
+
 }
 
 /// List collapsible
@@ -63,6 +71,14 @@ ul.collapsible {
 
     /* Background */
     background-color: var(--md-sys-color-surface);
+
+    /* Check not child active */
+    &:not(:has(li:last-child.active)){
+
+        /* Overflow */
+        overflow: hidden;
+
+    }
 
     /* Header */
     .collapsible-header {
@@ -194,6 +210,10 @@ ul.collapsible {
 /* Project card  */
 .card.project-card {
 
+    /* Color */
+    color: var(--md-sys-color-primary);
+    background: var(--md-sys-color-primary-container);
+
     /* Children */
     .card-image {
 
@@ -234,6 +254,9 @@ ul.collapsible {
 
             /* Dimension */
             padding: initial!important;
+
+            /* display */
+            display: grid!important;
 
         }
 
