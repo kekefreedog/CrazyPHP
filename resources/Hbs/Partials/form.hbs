@@ -261,7 +261,7 @@
         </button>{{/if}}
         {{!-- Submit button --}}
         {{#if form.confirm}}<button class="btn waves-effect waves-light green" type="submit" {{#if form.onready}}disabled="loading"{{/if}}>{{#isString form.confirm}}{{form.confirm}}{{else}}{{#isObject form.confirm}}{{#if form.confirm.title}}{{form.confirm.title}}{{/if}}{{else}}Save{{/isObject}}{{/isString}}
-            {{#isObject form.confirm}}{{#if form.confirm.icon}}<i class="{{form.confirm.icon.class}} right">{{form.confirm.icon.text}}</i>{{/if}}{{else}}<i class="material-icons right">save</i>{{/isObject}}
+            {{#isObject form.confirm}}{{#if form.confirm.icon}}<i class="ml-2 {{form.confirm.icon.class}} right">{{form.confirm.icon.text}}</i>{{/if}}{{else}}<i class="ml-2 material-icons right">save</i>{{/isObject}}
         </button>{{/if}}
     </div>
 
