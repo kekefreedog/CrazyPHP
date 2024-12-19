@@ -19,7 +19,7 @@
  * 
  * @return number
  */
-module.exports = (a, b, options) => {
+module.exports = function(a, b, options){
 
     // Check if string
     if(typeof a === 'string' && typeof b === 'string' && a && b)

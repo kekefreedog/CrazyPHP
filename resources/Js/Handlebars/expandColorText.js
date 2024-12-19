@@ -21,7 +21,7 @@
  * @param options Not used
  * @return string
  */
-module.exports = (color, type = "", options = {}) => {
+module.exports = function(color, type = "", options = {}) {
 
     // Declare result
     let result = "";
@@ -62,4 +62,5 @@ module.exports = (color, type = "", options = {}) => {
 
     // Return result
     return result;
-}
+
+};

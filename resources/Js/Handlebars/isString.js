@@ -23,7 +23,8 @@
  * 
  * @return
  */
-module.exports = (input, options) => typeof input === "string" 
-    ? options.fn(this) 
-    : options.inverse(this)
-;
+module.exports = function(input, options) { 
+    return typeof input === "string" 
+        ? options.fn(this) 
+        : options.inverse(this)
+};

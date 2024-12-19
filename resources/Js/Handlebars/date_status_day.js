@@ -20,7 +20,7 @@
  * 
  * @return number
  */
-module.exports = (date, options) => {
+module.exports = function(date, options) {
 
     // Check date given
     if (typeof date !== 'string' || isNaN(Date.parse(date)))
@@ -55,4 +55,4 @@ module.exports = (date, options) => {
         // Date is today
         return 0;
 
-}
+};

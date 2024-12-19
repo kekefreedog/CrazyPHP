@@ -18,4 +18,14 @@
  * @param options Not used
  * @return string
  */
-module.exports = (a, prefix) => (a && prefix) ? (a.includes(" ") ? `${prefix}-${a.trim()}-${prefix}-` : `${prefix}-${a.trim()}`) : a;
+module.exports = function(a, prefix) {
+    
+    // Return result
+    return (a && prefix) 
+        ? (a.includes(" ") 
+            ? `${prefix}-${a.trim()}-${prefix}-` 
+            : `${prefix}-${a.trim()}`) 
+        : a
+    ;
+
+};

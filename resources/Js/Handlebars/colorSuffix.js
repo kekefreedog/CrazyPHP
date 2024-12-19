@@ -18,4 +18,13 @@
  * @param options Not used
  * @return string
  */
-module.exports = (a, suffix, options) => (a && suffix) ? (a.includes(" ") ? a.trim().replace(" ", `-${suffix} ${suffix}-`) : a + `-${suffix}`) : a;
+module.exports = function(a, suffix, options) {
+    
+    // Return result
+    return (a && suffix) 
+        ? (a.includes(" ") 
+            ? a.trim().replace(" ", `-${suffix} ${suffix}-`) 
+            : a + `-${suffix}`) 
+        : a;
+    
+};

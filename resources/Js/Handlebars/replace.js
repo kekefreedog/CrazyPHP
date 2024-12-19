@@ -17,4 +17,12 @@
  * 
  * @return string
  */
-module.exports = (str, a, b, options) => (typeof str === "string" && typeof a === "string" && typeof b === "string") ? str.split(a).join(b) : str;
+module.exports = function(str, a, b, options) {
+
+    // Return result
+    return (typeof str === "string" && typeof a === "string" && typeof b === "string") 
+        ? str.split(a).join(b) 
+        : str
+    ;
+
+};

@@ -18,7 +18,7 @@
  * 
  * @return number
  */
-module.exports = (value, options) => {
+module.exports = function(value, options) {
 
     // Check if array or string
     if(typeof value === 'string' || Array.isArray(value))
@@ -29,4 +29,4 @@ module.exports = (value, options) => {
     // Return 0
     return 0;
 
-}
+};

@@ -17,4 +17,12 @@
  * 
  * @return string
  */
-module.exports = (a, b, options) => (typeof a === "object") ? JSON.stringify(a) : "Invalid object";
+module.exports = function(a, b, options) {
+
+    // Return result
+    return (typeof a === "object") 
+        ? JSON.stringify(a) 
+        : "Invalid object"
+    ;
+
+};

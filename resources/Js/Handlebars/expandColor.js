@@ -22,7 +22,7 @@
  * @param options Not used
  * @return string
  */
-module.exports = (color, inverse = false, type = "", options = {}) => {
+module.exports = function(color, inverse = false, type = "", options = {}) {
 
   // Declare result
   let result = "";

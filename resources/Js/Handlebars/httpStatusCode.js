@@ -23,7 +23,7 @@ const http_status_code = require("./../../Json/http_status_code.json");
  * 
  * @return
  */
-module.exports = (code = 500, what = "*", options) => {
+module.exports = function(code = 500, what = "*", options) {
 
     // Check if code is valid and in http_status_code
     if(!code || !(parseInt(code) in http_status_code)){
@@ -64,4 +64,4 @@ module.exports = (code = 500, what = "*", options) => {
     // Check if what is valid
     return what == "*" ? options.fn(result) : options.fn(result[what]);
     
-}
+};

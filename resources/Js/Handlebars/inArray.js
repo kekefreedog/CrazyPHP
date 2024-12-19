@@ -21,7 +21,7 @@
  * 
  * @return
  */
-module.exports = (array, value, options) => {
+module.exports = function(array, value, options) {
 
     // Check array
     if(Array.isArray(array) && value && array.indexOf(value) > -1)
@@ -32,4 +32,4 @@ module.exports = (array, value, options) => {
     // Else 
     return options.inverse(this);
 
-}
+};

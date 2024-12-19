@@ -32,7 +32,7 @@
  * 
  * @return number
  */
-module.exports = (value, n, options) => {
+module.exports = function(value, n, options) {
 
     // Check if array or string
     if(Array.isArray(value))
@@ -43,4 +43,4 @@ module.exports = (value, n, options) => {
     // Return 0
     return "";
 
-}
+};

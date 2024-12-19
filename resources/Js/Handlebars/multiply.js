@@ -19,7 +19,7 @@
  * 
  * @return number
  */
-module.exports = (a, b, options) => {
+module.exports = function(a, b, options) {
 
     // Check if array or string
     if((!isNaN(parseFloat(a)) && isFinite(a)) && (!isNaN(parseFloat(b)) && isFinite(b)))

@@ -17,7 +17,7 @@
  * 
  * @param option.
  */
-module.exports = (value, options) => {
+module.exports = function(value, options) {
 
     // Generate a random integer between 0 and 16777215 (0xFFFFFF)
     const randomColor = Math.floor(Math.random() * 16777216);

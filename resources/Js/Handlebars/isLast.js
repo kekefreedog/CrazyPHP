@@ -18,19 +18,24 @@
  * 
  * @return boolean
  */
-module.exports = (index, list, options) => (
-    typeof index === "number" && 
-    (
+module.exports = function(index, list, options) { 
+    
+    // Return result
+    return (
+        typeof index === "number" && 
         (
-            Array.isArray(list) && 
-            index === (list.length - 1)
-        ) ||
-        (
-            typeof list === "object" &&
-            index === (Object.keys(list).length - 1)
+            (
+                Array.isArray(list) && 
+                index === (list.length - 1)
+            ) ||
+            (
+                typeof list === "object" &&
+                index === (Object.keys(list).length - 1)
+            )
         )
-    )
-) 
-    ? options.fn(this) 
-    : options.inverse(this)
-;
+    ) 
+        ? options.fn(this) 
+        : options.inverse(this)
+    ;
+    
+};

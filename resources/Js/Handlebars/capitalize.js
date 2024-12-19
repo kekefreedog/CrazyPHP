@@ -17,7 +17,12 @@
  * 
  * @return string
  */
-module.exports = (str, options) => (typeof str === "string") 
-    ? str.charAt(0).toUpperCase() + str.slice(1)
-    : ""
-;
+module.exports = function(str, options) {
+    
+    // Return result
+    return (typeof str === "string") 
+        ? str.charAt(0).toUpperCase() + str.slice(1)
+        : ""
+    ;
+
+};

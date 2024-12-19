@@ -22,4 +22,12 @@
  * 
  * @return boolean
  */
-module.exports = (a, b, options) => (a <= b) ? options.fn(this) : options.inverse(this);
+module.exports = function(a, b, options) {
+
+    // Return result
+    (a <= b) 
+        ? options.fn(this) 
+        : options.inverse(this)
+    ;
+
+};

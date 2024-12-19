@@ -17,16 +17,19 @@
  * 
  * @return string
  */
-module.exports = (a, options) => (typeof a === "string") 
-    ? a.toUpperCase() : 
-    (
-        Array.isArray(a)
-            ? a.map(item => {
-                if (typeof item === 'string') {
-                    return item.toUpperCase();
-                }
-                return item;
-            })
-            : a
-    )
-;
+module.exports = function(a, options) {
+    
+    return (typeof a === "string") 
+        ? a.toUpperCase() : 
+        (
+            Array.isArray(a)
+                ? a.map(item => {
+                    if (typeof item === 'string') {
+                        return item.toUpperCase();
+                    }
+                    return item;
+                })
+                : a
+        );
+
+};

@@ -18,7 +18,20 @@
  * 
  * @return
  */
-module.exports = (object, options) => typeof object === "object" 
-    ? options.fn(this) 
-    : options.inverse(this)
-;
+module.exports = function(object, options) {
+
+    // Is object
+	if(typeof object === "object" && object){
+
+        // Return fn
+        return options.fn(this);
+
+    // Is not
+    }else{
+
+        // Return inverse
+        return options.inverse(this);
+
+    }
+
+};

@@ -19,7 +19,7 @@
  * 
  * @return number
  */
-module.exports = (tc, fps, options) => {
+module.exports = function(tc, fps, options){
 
     // Regular expression to match the TC format "HH:MM:SS:FF"
     const tcRegex = /^\d{2}:\d{2}:\d{2}:\d{2}$/;
@@ -49,6 +49,7 @@ module.exports = (tc, fps, options) => {
                         (seconds * fps) +
                         frames;
 
+    // Return total frames
     return totalFrames;
 
 }

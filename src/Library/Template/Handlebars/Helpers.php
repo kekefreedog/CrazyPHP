@@ -1406,7 +1406,7 @@ class Helpers {
 
         # Set result
         return $result 
-            ? $option['fn']()
+            ? $option['fn']($input)
             : $option['inverse']()
         ;
 
@@ -1429,7 +1429,7 @@ class Helpers {
 
         # Set result
         return is_string($input) 
-            ? $option['fn']()
+            ? $option['fn']($input)
             : $option['inverse']()
         ;
 

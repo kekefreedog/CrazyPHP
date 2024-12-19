@@ -25,4 +25,12 @@
  * @param a Value to compare
  * @return boolean
  */
-module.exports = (a, options) => Array.isArray(a) ? options.fn(this) : options.inverse(this);
+module.exports = function(a, options) {
+    
+    // Return result
+    return Array.isArray(a) 
+        ? options.fn(this) 
+        : options.inverse(this)
+    ;
+    
+};

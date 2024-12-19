@@ -29,7 +29,7 @@ const objectHash = require("object-hash");
  * @return {String}
  * @api public
  */
-module.exports = (array, separator) => {
+module.exports = function(array, separator) {
 
     // Check is string
     if (typeof array === 'string') 
