@@ -1,6 +1,6 @@
 {
     "name": "crazyphp",
-    "version": "0.5.0",
+    "version": "0.5.1",
     "description": "My crazy framework for creating ultra-fast webapps.",
     "main": "src/Front/index.ts",
     "types": "./src/Front/Types/index.d.ts",
