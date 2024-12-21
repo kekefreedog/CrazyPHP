@@ -17,14 +17,17 @@ namespace  CrazyPHP\Core;
  */
 use CrazyPHP\Library\Router\Router as LibraryRouter;
 use Mezon\Router\Types\BaseType as VendorBaseType;
+use Psr\Http\Message\ServerRequestInterface;
 use Mezon\Router\Router as VendorRouter;
 use CrazyPHP\Interface\CrazyRouterType;
+use CrazyPHP\Library\Router\Middleware;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Cache\Cache;
 use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Library\File\Json;
 use CrazyPHP\Model\Context;
+use DateTime;
 
 /**
  * Router
@@ -47,6 +50,15 @@ class Router extends VendorRouter {
     /** Various parameters */
     public $staticRoutes, $paramRoutes, $routeNames, $cachedRegExps, $cachedParameters, $regExpsWereCompiled;
 
+    /** @var Datetime lastModifiedDateRouter */
+    private DateTime $_lastModifiedDateRouter;
+
+    /** @var Datetime lastModifiedDateApi */
+    private DateTime $_lastModifiedDateApi;
+
+    /** @var Datetime lastModifiedDateMiddleware */
+    private DateTime $_lastModifiedDateMiddleware;
+
     /**
      * Constructor
      * 
@@ -57,6 +69,8 @@ class Router extends VendorRouter {
         # Parent constructor
         parent::__construct();
 
+        # Set last modified date
+        $this->_setLastModifiedDates();
     }
 
     /** Public methods
@@ -122,17 +136,32 @@ class Router extends VendorRouter {
             Cache::getCacheName(__CLASS__).".RouterCollectionCached.$collectionName"
         );
 
-        # New cache instance
-        $this->cache = new Cache();
+        # Check cache
+        if($this->cache === null)
+
+            # New cache instance
+            $this->cache = new Cache();
 
         # Set lastModifiedDate
-        $lastModifiedDate = File::getLastModifiedDate($collectionPath ? File::path($collectionPath) : File::path("@app_root/config/Router.yml"));
+        $lastModifiedDate = $collectionPath 
+            ? File::getLastModifiedDate(File::path($collectionPath))
+            : $this->_lastModifiedDateRouter
+        ;
 
         # Get last modified date of api
-        $lastModifiedDateApi = File::getLastModifiedDate(File::path("@app_root/config/Api.yml"));
+        $lastModifiedDateApi = $this->_lastModifiedDateApi;
+
+        # Get last modified date of api
+        $lastModifiedDateMiddleware = $this->_lastModifiedDateMiddleware;
 
         # Compare two dates
         if($lastModifiedDateApi > $lastModifiedDate)
+
+            # Update last modified date
+            $lastModifiedDate = $lastModifiedDateApi;
+
+        # Compare two dates
+        if($lastModifiedDateMiddleware > $lastModifiedDate)
 
             # Update last modified date
             $lastModifiedDate = $lastModifiedDateApi;
@@ -224,6 +253,115 @@ class Router extends VendorRouter {
 
         # Dump On cache
         $this->dumpOnCache($key);
+
+    }
+
+    /**
+     * Push Middlewares
+     * 
+     * Put middlewares on router
+     * 
+     * @return void
+     */
+    public function pushMiddlewares(string $collectionPath = ""):void {
+
+        # Prepare collection name
+        $collectionName = $collectionPath ?
+            pathinfo($collectionPath, PATHINFO_FILENAME) :
+                "ConfigMiddlewares";
+
+        # Get key
+        $key = str_replace(
+            ["{", "}", "(", ")", "/", "\\", "@", ":"],
+            ".",
+            Cache::getCacheName(__CLASS__).".RouterCollectionCached.$collectionName"
+        );
+
+        # Check cache
+        if($this->cache === null)
+
+            # New cache instance
+            $this->cache = new Cache();
+
+        # Set lastModifiedDate
+        $lastModifiedDate = $collectionPath 
+            ? File::getLastModifiedDate(File::path($collectionPath))
+            : $this->_lastModifiedDateRouter
+        ;
+
+        # Get last modified date of api
+        $lastModifiedDateApi = $this->_lastModifiedDateApi;
+
+        # Get last modified date of api
+        $lastModifiedDateMiddleware = $this->_lastModifiedDateMiddleware;
+
+        # Compare two dates
+        if($lastModifiedDateApi > $lastModifiedDate)
+
+            # Update last modified date
+            $lastModifiedDate = $lastModifiedDateApi;
+
+        # Compare two dates
+        if($lastModifiedDateMiddleware > $lastModifiedDate)
+
+            # Update last modified date
+            $lastModifiedDate = $lastModifiedDateApi;
+
+        # Check cache is valid
+        if($this->cache->hasUpToDate($key, $lastModifiedDate)){
+
+            # Get cached data
+            list($coreMiddlewares, $appMiddlewares) = $this->cache->get($key);
+            
+        }else{
+
+            # Get core middlewares
+            $coreMiddlewares = Middleware::getAllFromCore(); 
+
+            # Get app middlewares
+            $appMiddlewares = Middleware::getAllFromApp();
+
+            # Put on Cache
+            $this->cache->set($key, [
+                $coreMiddlewares,
+                $appMiddlewares
+            ]);
+
+        }
+
+        # Check middleware
+        if(!empty($coreMiddlewares))
+
+            /** Iteration core middlewares */
+            foreach($coreMiddlewares as $middleware)
+
+                # Register middleware
+                $this->registerMiddleware(
+                    "*", 
+                    function(string $route, ...$parameters) use ($middleware){
+                        return $middleware["class"]::{$middleware["name"]}($route, ...$parameters);
+                    }
+                );
+
+        # Check not empty
+        if(!empty($appMiddlewares))
+
+            # Iteration middleware
+            foreach($appMiddlewares as $pattern => $middlewares)
+
+                # Check middlewares
+                if(!empty($middlewares))
+
+                    # Iteration of middlewares
+                    foreach($middlewares as $middleware)
+
+                        # Register middleware
+                        $this->registerMiddleware(
+                            $pattern, 
+                            function(ServerRequestInterface $request) use ($middleware){
+                                return $middleware($request);
+                            }
+                        );
 
     }
 
@@ -350,6 +488,23 @@ class Router extends VendorRouter {
 
     }
 
+    /**
+     * Set Last Modified Dates
+     * 
+     * @return void
+     */
+    private function _setLastModifiedDates():void {
+
+        # Set last modified date router
+        $this->_lastModifiedDateRouter = File::getLastModifiedDate(File::path("@app_root/config/Router.yml"));
+
+        # Set last modified date api
+        $this->_lastModifiedDateApi = File::getLastModifiedDate(File::path("@app_root/config/Api.yml"));
+        
+        # Set last modified date middleware
+        $this->_lastModifiedDateMiddleware = File::getLastModifiedDate(File::path("@app_root/config/Middleware.yml"));
+
+    }
 
     /** Public constant
      ******************************************************

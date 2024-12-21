@@ -18,14 +18,12 @@ namespace  CrazyPHP\Core;
 use CrazyPHP\Exception\CrazyException;
 use Symfony\Component\Finder\Finder;
 use CrazyPHP\Library\File\File;
-use CrazyPHP\Core\Middleware;
 use CrazyPHP\Core\Instance;
 use CrazyPHP\Core\Response;
 use CrazyPHP\Model\Env;
 use ReflectionMethod;
 use ReflectionClass;
 use App\Core\Kernel;
-
 
 /**
  * Core
@@ -221,28 +219,20 @@ class Core extends Kernel {
      */
     public function runMiddlewaresPreparation():void {
 
-        # New reflection
-        $reflection = new ReflectionClass("CrazyPHP\Core\Middleware");
-
-        # Get static methods
-        $staticMethods = $reflection->getMethods(ReflectionMethod::IS_STATIC|ReflectionMethod::IS_PUBLIC);
-
-        # Check static methods
-        if(empty($staticMethods))
-
-            # Stop function
-            return;
-
-        /** @var ReflectionMethod $staticMethod */
-        foreach($staticMethods as $staticMethod)
-
-            # Register middleware
-            $this->instance->router->registerMiddleware(
-                "*", 
-                function(string $route, ...$parameters) use ($staticMethod){
-                    return $staticMethod->class::{$staticMethod->name}($route, ...$parameters);
-                }
+        # Check instance router
+        if(!isset($this->instance->router))
+        
+            # New Exception
+            throw new CrazyException(
+                "Please check if router instance is correctly launch in your app.",
+                500,
+                [
+                    "custom_code"   =>  "core-002",
+                ]
             );
+        
+        # Call route controller
+        $this->instance->router->pushMiddlewares();
 
     }
 
