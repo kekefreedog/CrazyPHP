@@ -87,6 +87,49 @@ class Header{
     }
 
     /**
+     * Get Value
+     * 
+     * Get Value From Header
+     * 
+     * @param string $name If empty returns all value
+     * @return mixed
+     */
+    public static function getValue(string $name = ""):mixed {
+
+        # Retrieve all request headers
+        $result = getallheaders();
+    
+        # Check if the requested header exists
+        if($name && isset($result[$name]))
+
+            # Set result
+            $result = $result[$name];
+
+        else
+
+            # Set result as null
+            $result = null;
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Get All
+     * 
+     * Return all header
+     * 
+     * @return array
+     */
+    public static function getAllValues():array {
+
+        # Return all headers
+        return getallheaders();
+
+    }
+
+    /**
      * yaml
      * 
      * Get Yaml Header

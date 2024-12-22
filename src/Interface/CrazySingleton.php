@@ -15,8 +15,6 @@ namespace  CrazyPHP\Interface;
 /**
  * Dependances
  */
-use CrazyPHP\Interface\CrazyController;
-use PDO;
 
 /**
  * Crazy Singleton Interface

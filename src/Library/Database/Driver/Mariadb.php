@@ -635,14 +635,14 @@ class Mariadb implements CrazyDatabaseDriver {
 
         try {
 
-            # Switch to the specified database
-            $this->client->exec("USE " . $database);
+            # Prepare query
+            $query = $this->client->prepare("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = :databaseName");
 
-            # Execute the SHOW TABLES command
-            $statment = $this->client->query("SHOW TABLES");
+            # Execute
+            $query->execute(['databaseName' => $database]);
 
-            # Fetch all table
-            $result = $statment->fetchAll(PDO::FETCH_COLUMN);
+            # Fetch results
+            $result = $query->fetchAll(PDO::FETCH_COLUMN);
 
         } catch (PDOException $e) {
 

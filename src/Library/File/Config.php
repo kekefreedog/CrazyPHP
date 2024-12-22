@@ -20,7 +20,6 @@ use Symfony\Component\Finder\Finder;
 use CrazyPHP\Library\Time\DateTime;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\Form\Process;
-use CrazyPHP\Library\Cache\Cache;
 use CrazyPHP\Model\Env;
 
 /**

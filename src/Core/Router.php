@@ -15,6 +15,8 @@ namespace  CrazyPHP\Core;
 /**
  * Dependances
  */
+
+use CrazyPHP\Driver\Model\Config as ModelConfig;
 use CrazyPHP\Library\Router\Router as LibraryRouter;
 use Mezon\Router\Types\BaseType as VendorBaseType;
 use Psr\Http\Message\ServerRequestInterface;
@@ -25,6 +27,7 @@ use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Cache\Cache;
 use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\File\File;
+use CrazyPHP\Library\File\Header;
 use CrazyPHP\Library\File\Json;
 use CrazyPHP\Model\Context;
 use DateTime;
@@ -300,7 +303,7 @@ class Router extends VendorRouter {
             $lastModifiedDate = $lastModifiedDateApi;
 
         # Check cache is valid
-        if($this->cache->hasUpToDate($key, $lastModifiedDate)){
+        if($this->cache->hasUpToDate($key, $lastModifiedDate) && false){
 
             # Get cached data
             list($coreMiddlewares, $appMiddlewares) = $this->cache->get($key);
@@ -438,6 +441,45 @@ class Router extends VendorRouter {
 
         # Load cache
         $this->loadFromDisk($tmpFilePath);
+
+    }
+
+    /** Public static methods | Router
+     ******************************************************
+     */
+
+    /**
+     * Redirect To
+     * 
+     * @param string $routerName
+     * @param ?array $arguments
+     */
+    public static function redirectTo(string $routerName, ?array $arguments = null):void {
+
+        # Check route name
+        if($routerName){
+
+            # Get accept value from header
+            $accept = Header::getHeaderAccept();
+
+            # Check if text
+            if($accept == "text/html"){
+
+                # New response
+                (new Response())
+                    ->addHeader("Location", ModelConfig::getRouterPath([
+                        "name"      =>  $routerName,
+                        "arguments" =>  $arguments
+                    ]))
+                    ->send()
+                ;
+
+            }
+
+            # Exit
+            exit();
+
+        }
 
     }
 

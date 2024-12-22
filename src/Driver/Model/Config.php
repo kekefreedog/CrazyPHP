@@ -398,8 +398,16 @@ class Config implements CrazyDriverModel {
             # Set route name
             $routeName = Context::getCurrentRoute("name");
 
-        # Get arguments
-        $arguments = Query::getArguments();
+        # Check arguments in options
+        if(isset($options["arguments"]) && is_array($options["arguments"]))
+
+            # Set arguments
+            $arguments = $options["arguments"];
+
+        else
+
+            # Get arguments
+            $arguments = Query::getArguments();
 
         # Get reverse route
         $result = Router::reverse((string)$routeName, $arguments);

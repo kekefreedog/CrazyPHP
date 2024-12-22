@@ -16,7 +16,6 @@ namespace  CrazyPHP\Driver\Model;
  * Dependances
  */
 
-use CrazyPHP\Core\Model;
 use CrazyPHP\Library\Database\Driver\Mariadb as MariadbModel;
 use CrazyPHP\Library\Database\Operation\SqlOperation;
 use CrazyPHP\Library\File\Config as FileConfig;
@@ -26,6 +25,7 @@ use CrazyPHP\Library\Time\DateTime;
 use CrazyPHP\Library\Model\Schema;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\Form\Process;
+use CrazyPHP\Core\Model;
 
 /* use PhpMyAdmin\SqlParser\Statements\SelectStatement;
 use PhpMyAdmin\SqlParser\Parser; */

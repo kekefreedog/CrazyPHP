@@ -17,12 +17,8 @@ namespace  CrazyPHP\Core;
  */
 use CrazyPHP\Exception\CrazyException;
 use Symfony\Component\Finder\Finder;
-use CrazyPHP\Library\File\File;
 use CrazyPHP\Core\Instance;
-use CrazyPHP\Core\Response;
 use CrazyPHP\Model\Env;
-use ReflectionMethod;
-use ReflectionClass;
 use App\Core\Kernel;
 
 /**
@@ -210,8 +206,7 @@ class Core extends Kernel {
     /** Public methods | Router
      ******************************************************
      */
-    
-    
+
     /**
      * Run Middlewares Preparation
      * 
