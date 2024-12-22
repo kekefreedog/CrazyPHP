@@ -149,7 +149,7 @@ class Cache extends Psr16Adapter {
      * 
      * Chack if db has a up to date cached of the current key given
      * 
-     * @return bool
+     * @return bool True is up to date, False if old
      */
     public function hasUpToDate(string $key, DateTime $lastModifiedDate ): bool {
 
@@ -173,13 +173,34 @@ class Cache extends Psr16Adapter {
 
         } catch (PhpfastcacheInvalidArgumentException $e) {
 
-            # New error
-            throw new PhpfastcacheSimpleCacheException($e->getMessage(), 0, $e);
+            # New Exception
+            throw new CrazyException(
+                $e->getMessage(),
+                500,
+                [
+                    "custom_code"   =>  "cache-020",
+                ],
+                $e
+            );
 
         }
 
         # Return result
         return $result;
+
+    }
+
+    /** 
+     * Is Up To Date
+     * 
+     * Chack if db has a up to date cached of the current key given
+     * 
+     * @return bool True is up to date, False if old
+     */
+    public function isUpToDate(string $key, DateTime $lastModifiedDate ): bool {
+
+        # Return has up to date
+        return $this->hasUpToDate($key, $lastModifiedDate);
 
     }
 

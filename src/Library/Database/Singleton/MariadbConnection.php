@@ -18,7 +18,9 @@ namespace CrazyPHP\Library\Database\Singleton;
 use CrazyPHP\Library\Database\Driver\Mariadb;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Interface\CrazySingleton;
+use CrazyPHP\Library\Cache\Cache;
 use CrazyPHP\Library\File\Config;
+use CrazyPHP\Library\File\File;
 use PDOException;
 use PDO;
 
@@ -84,8 +86,8 @@ class MariadbConnection implements CrazySingleton {
         "user"  =>  0
     ]):void {
 
-        # Get config
-        $config = Config::getValue(self::CONFIG_KEY);
+        # Cache Instance
+        $cacheInstance = new Cache();
 
         # Set user
         $user = ($options["user"] ?? false)
@@ -93,68 +95,90 @@ class MariadbConnection implements CrazySingleton {
             : 0
         ;
 
-        # Connection
-        $connection = [];
+        # Get key
+        $key = Cache::getKeyWithCacheName(__CLASS__, "connectionArray.$user");
 
-        # Check if root
-        if($user === "root"){
+        $lastModifiedDate = File::getLastModifiedDate(File::path(static::CONFIG_PATH));
 
-            # Set login
-            $connection["login"] = $config["root"]["login"];
+        # Check cache is valid
+        if($cacheInstance->hasUpToDate($key, $lastModifiedDate)){
 
-            # Set passord
-            $connection["password"] = $config["root"]["password"];
+            # Set connectionArray
+            $connectionArray = $cacheInstance->get($key);
+            
+        # Set cache
+        }else{
 
-        }else
-        # Check user
-        if($user === "" || !array_key_exists($user, $config["users"]))
+            # Get config
+            $config = Config::getValue(self::CONFIG_KEY);
 
-            # New Exception
-            throw new CrazyException(
-                "User \"$user\" can't be found...",
-                500,
-                [
-                    "custom_code"   =>  "mongodb-001",
-                ]
-            );
+            # Connection
+            $connection = [];
 
-        else
-        # Check if key
-        if(isset($config["users"][$user]) && !empty($config["users"][$user])){
+            # Check if root
+            if($user === "root"){
 
-            # Set login
-            $connection["login"] = $config["users"][$user]["login"];
+                # Set login
+                $connection["login"] = $config["root"]["login"];
 
-            # Set passord
-            $connection["password"] = $config["users"][$user]["password"];
+                # Set passord
+                $connection["password"] = $config["root"]["password"];
 
-        }else
+            }else
+            # Check user
+            if($user === "" || !array_key_exists($user, $config["users"]))
 
-            # New Exception
-            throw new CrazyException(
-                "User \"$user\" don't exists...",
-                500,
-                [
-                    "custom_code"   =>  "mongodb-002",
-                ]
-            );
+                # New Exception
+                throw new CrazyException(
+                    "User \"$user\" can't be found...",
+                    500,
+                    [
+                        "custom_code"   =>  "mariadbconnection-001",
+                    ]
+                );
 
-        # Get host
-        $connection["host"] = $config["host"];
+            else
+            # Check if key
+            if(isset($config["users"][$user]) && !empty($config["users"][$user])){
 
-        # Datanbase name
-        $connection["database"] = $user === "root" ?
-            "admin" :
-                $config["database"][0];
-        
+                # Set login
+                $connection["login"] = $config["users"][$user]["login"];
 
-            # Set database
+                # Set passord
+                $connection["password"] = $config["users"][$user]["password"];
 
-        # Get port
-        $connection["port"] = $config["port"];
+            }else
 
-        # Get connection string
-        $connectionArray = Mariadb::getConnectionArray($connection);
+                # New Exception
+                throw new CrazyException(
+                    "User \"$user\" don't exists...",
+                    500,
+                    [
+                        "custom_code"   =>  "mariadbconnection-002",
+                    ]
+                );
+
+            # Get host
+            $connection["host"] = $config["host"];
+
+            # Datanbase name
+            $connection["database"] = $user === "root" ?
+                "admin" :
+                    $config["database"][0];
+            
+
+                # Set database
+
+            # Get port
+            $connection["port"] = $config["port"];
+
+            # Get connection string
+            $connectionArray = Mariadb::getConnectionArray($connection);
+
+            # Push  connectionArray in cache
+            $cacheInstance->set($key, $connectionArray);
+
+        }
         
         # Try
         try{
@@ -170,7 +194,7 @@ class MariadbConnection implements CrazySingleton {
                 $e->getMessage(),
                 500,
                 [
-                    "custom_code"   =>  "mariadb-010",
+                    "custom_code"   =>  "mariadbconnection-010",
                 ]
             );
         
@@ -207,5 +231,8 @@ class MariadbConnection implements CrazySingleton {
 
     /** @var string CONFIG_KEY Config key for current database */
     public const CONFIG_KEY = "Database.collection.mariadb";
+
+    /** @var string CACHE_ROUTER */
+    public const CONFIG_PATH = "@app_root/config/Database.yml";
 
 }

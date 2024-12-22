@@ -130,11 +130,7 @@ class Router extends VendorRouter {
                 "ConfigRouter";
 
         # Get key
-        $key = str_replace(
-            ["{", "}", "(", ")", "/", "\\", "@", ":"],
-            ".",
-            Cache::getCacheName(__CLASS__).".RouterCollectionCached.$collectionName"
-        );
+        $key = Cache::getKeyWithCacheName(__CLASS__, ".RouterCollectionCached.$collectionName");
 
         # Check cache
         if($this->cache === null)
@@ -271,11 +267,7 @@ class Router extends VendorRouter {
                 "ConfigMiddlewares";
 
         # Get key
-        $key = str_replace(
-            ["{", "}", "(", ")", "/", "\\", "@", ":"],
-            ".",
-            Cache::getCacheName(__CLASS__).".RouterCollectionCached.$collectionName"
-        );
+        $key = Cache::getKeyWithCacheName(__CLASS__, ".RouterCollectionCached.$collectionName");
 
         # Check cache
         if($this->cache === null)
