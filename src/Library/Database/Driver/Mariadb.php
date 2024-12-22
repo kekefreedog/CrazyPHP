@@ -340,6 +340,18 @@ class Mariadb implements CrazyDatabaseDriver {
         # Set reference
         $references = [];
 
+        # Set simple uniques
+        $simpleUniques = [];
+
+        # Set multiple uniques
+        $multipleUniques = [];
+
+        # Set simple keys
+        $simpleKeys = [];
+
+        # Set multiple keys
+        $multipleKeys = [];
+
         # Iteration attributes
         foreach($attributes as $attribute){
 
@@ -391,7 +403,11 @@ class Mariadb implements CrazyDatabaseDriver {
 
                 # Set default
                 $default = isset($attribute['default']) 
-                    ? "DEFAULT '{".$attribute['default']."}'" 
+                    ? (
+                        $attribute['default'] === null 
+                            ? "DEFAULT NULL"
+                            : "DEFAULT '{".$attribute['default']."}'"
+                    ) 
                     : ''
                 ;
 
@@ -416,7 +432,11 @@ class Mariadb implements CrazyDatabaseDriver {
 
                 # Set default
                 $default = isset($attribute['default']) 
-                    ? "DEFAULT '{".$attribute['default']."}'" 
+                    ? (
+                        $attribute['default'] === null 
+                            ? "DEFAULT NULL"
+                            : "DEFAULT '".$attribute['default']."'"
+                    ) 
                     : ''
                 ;
 
@@ -501,6 +521,46 @@ class Mariadb implements CrazyDatabaseDriver {
                 $references[] = trim("FOREIGN KEY (`$columnName`) REFERENCES `".$attribute['reference']."` (`id`) ON DELETE CASCADE ON UPDATE CASCADE");
 
             }
+
+            # Check if unique
+            if(isset($attribute["unique"])){
+
+                # Check if bool
+                if(is_bool($attribute["unique"]) && $attribute["unique"] === true){
+
+                    # Set unique
+                    $simpleUniques[] = $columnName;
+
+                }else
+                # If is string
+                if(is_string($attribute["unique"]) && $attribute["unique"]){
+
+                    # Set unique
+                    $multipleUniques[$attribute["unique"]][] = $columnName;
+
+                }
+
+            }
+
+            # Check if key
+            if(isset($attribute["key"])){
+
+                # Check if bool
+                if(is_bool($attribute["key"]) && $attribute["key"] === true){
+
+                    # Set key
+                    $simpleKeys[] = $columnName;
+
+                }else
+                # If is string
+                if(is_string($attribute["key"]) && $attribute["key"]){
+
+                    # Set unique
+                    $multipleKeys[$attribute["unique"]][] = $columnName;
+
+                }
+
+            }
             
         }
 
@@ -511,7 +571,24 @@ class Mariadb implements CrazyDatabaseDriver {
             return $result;
 
         # Fill query
-        $query .= "(". implode(', ', $columns) . ", $primary" . (!empty($references) ? ", ".implode(', ', $references) : "" ) . ')';
+        $query .= 
+            # Start
+            "(".
+                # Columns
+                implode(', ', $columns).
+                # Primary key
+                ", $primary". 
+                # Key
+                (!empty($simpleKeys) ? ", ".self::setSimpleExtra("key", $simpleKeys) : "").
+                (!empty($multipleKeys) ? ", ".self::setMultipleExtra("key", $multipleKeys) : "").
+                # Unique
+                (!empty($simpleUniques) ? ", ".self::setSimpleExtra("unique", $simpleUniques) : "").
+                (!empty($multipleUniques) ? ", ".self::setMultipleExtra("unique", $multipleUniques) : "").
+                # Reference
+                (!empty($references) ? ", ".implode(', ', $references) : "" ).
+            # End
+            ')'
+        ;
 
         # Execute the SQL statement to create the table
         try {
@@ -1220,6 +1297,87 @@ class Mariadb implements CrazyDatabaseDriver {
 
         # Return result
         return $result;
+
+    }
+
+    /**
+     * Set Simple Extra
+     * 
+     * @param string $type (unique or key)
+     * @param array $content
+     * @return string
+     */
+    public static function setSimpleExtra(string $type, array $content):string {
+
+        # Set result
+        $result = '';
+
+        # Check type
+        if(in_array($type, ["key", "unique"]))
+
+            # Check content
+            if(!empty($content))
+
+                # Iteration content
+                foreach($content as $column)
+
+                    # Check column
+                    if(is_string($column) && $column)
+
+                        # Push value in string
+                        $result .= 
+                            ($type == "key" ? "KEY" : "UNIQUE KEY").
+                            " `$column` (`$column`), "
+                        ;
+
+        # Return result
+        return rtrim($result, ", ");
+
+    }
+
+    /**
+     * Set Multiple Extra
+     * 
+     * @param string $type (unique or key)
+     * @param array $content
+     * @return string
+     */
+    public static function setMultipleExtra(string $type, array $content):string {
+
+        # Set result
+        $result = '';
+
+        # Check type
+        if(in_array($type, ["key", "unique"]))
+
+            # Check content
+            if(!empty($content))
+
+                # Iteration content
+                foreach($content as $key => $columns)
+
+                    # Check column
+                    if(is_string($key) && $key && is_array($columns) && !empty($columns)){
+
+                        # Push value in string
+                        $result .= 
+                            ($type == "key" ? "KEY" : "UNIQUE KEY").
+                            " `$key` ("
+                        ;
+
+                        # Iteration columns
+                        foreach($columns as $column)
+
+                            # Push into result
+                            $result .= "`$column`, ";
+
+                        # Push end
+                        $result .= "), ";
+
+                    }
+
+        # Return result
+        return rtrim(str_replace(", )", ")", $result), ", ");
 
     }
 

@@ -33,6 +33,8 @@ Model:
           - key01
           - key02
         reference: OtherModel                         # In MySql / Mariadb allow to link this attribute to another model (linked to the id of the other model)
+        unique: true|OtherAttribute                   # In MySql / Mariadb, make this attribute unique key
+        key: true|OtherAttribute                      # In MySql / Mariadb, make this attribute key
       - name: path
         label: Path
         description: Path of the front controller

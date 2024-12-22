@@ -101,4 +101,66 @@ class MariadbTest extends TestCase {
 
     }
 
+    /**
+     * Test Set Simple extra
+     * 
+     * @return void
+     */
+    public function testSetSimpleExtra():void {
+
+        # Input
+        $input = [
+            "key",
+            [
+                "name",
+                "id",
+                "toto"
+            ]
+        ];
+
+        # Result
+        $result = Mariadb::setSimpleExtra(...$input);
+
+        # Expected
+        $expected = "KEY `name` (`name`), KEY `id` (`id`), KEY `toto` (`toto`)";
+
+        # Assert
+        $this->assertEquals($expected, $result);
+
+    }
+
+    /**
+     * Test Set Multiple extra
+     * 
+     * @return void
+     */
+    public function testSetMultipleExtra():void {
+
+        # Input
+        $input = [
+            "unique",
+            [
+                "name_id_toto"  =>  [ 
+                    "name",
+                    "id",
+                    "toto"
+                ],
+                "id_royal_po"  =>   [
+                    "id",
+                    "royal_po"
+                ],
+            ]
+        ];
+
+        # Result
+        $result = Mariadb::setMultipleExtra(...$input);
+
+        # Expected
+        $expected = "UNIQUE KEY `name_id_toto` (`name`, `id`, `toto`), UNIQUE KEY `id_royal_po` (`id`, `royal_po`)";
+
+        # Assert
+        $this->assertEquals($expected, $result);
+
+    }
+
 }
