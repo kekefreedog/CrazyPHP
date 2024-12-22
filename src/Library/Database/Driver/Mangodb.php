@@ -16,8 +16,8 @@ namespace CrazyPHP\Library\Database\Driver;
  * Dependances
  */
 use MongoDB\Driver\Exception\CommandException as MongoDbCommandException;
+use CrazyPHP\Library\Database\Singleton\MongodbConnection;
 use CrazyPHP\Library\File\Config as FileConfig;
-use CrazyPHP\Library\Cli\Command as CliCommand;
 use CrazyPHP\Interface\CrazyDatabaseDriver;
 use CrazyPHP\Exception\CrazyException;
 use MongoDB\Driver\Manager;
@@ -48,12 +48,12 @@ class Mangodb implements CrazyDatabaseDriver {
     /**
      * @var $client Client of current database
      */
-    public $client = null;
+    public ?Client $client = null;
 
     /**
      * @var $manager Manager of current database
      */
-    public $manager = null;
+    public ?Manager $manager = null;
 
     /**
      * Constructor
@@ -82,74 +82,10 @@ class Mangodb implements CrazyDatabaseDriver {
      */
     public function newClient(string|int $user = 0):self{
 
-        # Connection
-        $connection = [];
-
-        # Check if root
-        if($user === "root"){
-
-            # Set login
-            $connection["login"] = $this->config["root"]["login"];
-
-            # Set passord
-            $connection["password"] = $this->config["root"]["password"];
-
-        }else
-        # Check user
-        if($user === "" || !array_key_exists($user, $this->config["users"]))
-
-            # New Exception
-            throw new CrazyException(
-                "User \"$user\" can't be found...",
-                500,
-                [
-                    "custom_code"   =>  "mongodb-001",
-                ]
-            );
-
-        else
-        # Check if key
-        if(isset($this->config["users"][$user]) && !empty($this->config["users"][$user])){
-
-            # Set login
-            $connection["login"] = $this->config["users"][$user]["login"];
-
-            # Set passord
-            $connection["password"] = $this->config["users"][$user]["password"];
-
-        }else
-
-            # New Exception
-            throw new CrazyException(
-                "User \"$user\" don't exists...",
-                500,
-                [
-                    "custom_code"   =>  "mongodb-002",
-                ]
-            );
-
-        # Get host
-        $connection["host"] = $this->config["host"];
-
-        # Datanbase name
-        $connection["database"] = $user === "root" ?
-            "admin" :
-                $this->config["database"][0];
-        
-
-            # Set database
-
-        # Get port
-        $connection["port"] = $this->config["port"];
-
-        # Get connection string
-        $connectionString = self::getConnectionString($connection);
-
-        # Set client
-        $this->client = new Client($connectionString);
-
-        # Set manager
-        $this->manager = new Manager($connectionString);
+        # Set client and manager
+        list($this->client, $this->manager) = MongodbConnection::getInstance([
+            "user"  =>  $user
+        ]);
 
         # Return self
         return $this;

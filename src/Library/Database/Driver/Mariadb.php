@@ -15,6 +15,7 @@ namespace CrazyPHP\Library\Database\Driver;
 /**
  * Dependances
  */
+use CrazyPHP\Library\Database\Singleton\MariadbConnection;
 use CrazyPHP\Library\File\Config as FileConfig;
 use CrazyPHP\Interface\CrazyDatabaseDriver;
 use CrazyPHP\Exception\CrazyException;
@@ -77,86 +78,10 @@ class Mariadb implements CrazyDatabaseDriver {
      */
     public function newClient(string|int $user = 0):self {
 
-        # Connection
-        $connection = [];
-
-        # Check if root
-        if($user === "root"){
-
-            # Set login
-            $connection["login"] = $this->config["root"]["login"];
-
-            # Set passord
-            $connection["password"] = $this->config["root"]["password"];
-
-        }else
-        # Check user
-        if($user === "" || !array_key_exists($user, $this->config["users"]))
-
-            # New Exception
-            throw new CrazyException(
-                "User \"$user\" can't be found...",
-                500,
-                [
-                    "custom_code"   =>  "mongodb-001",
-                ]
-            );
-
-        else
-        # Check if key
-        if(isset($this->config["users"][$user]) && !empty($this->config["users"][$user])){
-
-            # Set login
-            $connection["login"] = $this->config["users"][$user]["login"];
-
-            # Set passord
-            $connection["password"] = $this->config["users"][$user]["password"];
-
-        }else
-
-            # New Exception
-            throw new CrazyException(
-                "User \"$user\" don't exists...",
-                500,
-                [
-                    "custom_code"   =>  "mongodb-002",
-                ]
-            );
-
-        # Get host
-        $connection["host"] = $this->config["host"];
-
-        # Datanbase name
-        $connection["database"] = $user === "root" ?
-            "admin" :
-                $this->config["database"][0];
-        
-
-            # Set database
-
-        # Get port
-        $connection["port"] = $this->config["port"];
-
-        # Get connection string
-        $connectionArray = self::getConnectionArray($connection);
-        
-        try {
-
-            # Set client
-            $this->client = new PDO(...$connectionArray);
-
-        } catch (PDOException $e) {
-
-            # New Exception
-            throw new CrazyException(
-                $e->getMessage(),
-                500,
-                [
-                    "custom_code"   =>  "mariadb-010",
-                ]
-            );
-        
-        }
+        # New connection
+        $this->client = MariadbConnection::getInstance([
+            "user"  =>  $user
+        ]);
 
         # Set manager
         $this->manager = new Query($this->client);
