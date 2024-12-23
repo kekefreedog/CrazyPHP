@@ -13,8 +13,13 @@
 <form 
     id="{{form.id}}"
     class="row crazy-form g-0"
+    {{!-- Entity --}}
     {{#if form.entity}}entity="{{form.entity}}"{{/if}}
-    {{#if form.onready}}onready="{{form.onready}}"{{/if}} 
+    {{!-- On Ready --}}
+    {{#if form.onready}}onready="{{form.onready}}"{{/if}}
+    {{!-- Url where Post --}}
+    {{#if form.post}}post="{{form.post}}"{{/if}} 
+    {{!-- Declare partial --}}
     partial="form"
 >
     {{!-- Items --}}

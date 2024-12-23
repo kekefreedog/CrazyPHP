@@ -56,6 +56,12 @@ export default abstract class Crazypage {
      */
     public static readonly css:null|Object = null;
 
+    /** 
+     * @param parameters:string 
+     * List of parameters needed for this page
+     */
+    public static readonly parameters:string[] = [];
+
     /**
      * @param options:LoaderPageOptions
      */

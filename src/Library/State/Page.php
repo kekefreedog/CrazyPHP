@@ -27,6 +27,7 @@ use CrazyPHP\Library\Form\Query;
 use CrazyPHP\Core\ApiResponse;
 use CrazyPHP\Core\Controller;
 use CrazyPHP\Library\String\Color;
+use CrazyPHP\Library\String\Url;
 use CrazyPHP\Model\Context;
 use CrazyPHP\Model\Env;
 use Exception;
@@ -60,6 +61,9 @@ class Page {
 
     /** @var array $ui */
     private $ui = [];
+
+    /** @var array $events */
+    private $events = [];
 
     /**
      * Constructor
@@ -244,6 +248,72 @@ class Page {
 
     }
 
+    /**
+     * Push Redirection
+     * 
+     * Push event of type redirection
+     * @param string $nameOrUrl
+     * @param bool $nameOrUrl Open into a new page
+     * @return self
+     */
+    public function pushRedirection(string $nameOrUrl, bool $openInNewTab = false):self {
+
+        # Set temp
+        $temp = null;
+
+        # Check url
+        if($nameOrUrl){
+
+            # If is external
+            if(Url::isExternal($nameOrUrl))
+
+                # Set url
+                $temp["url"] = $nameOrUrl;
+
+            # If is internal
+            else
+
+                # Set url
+                $temp["name"] = $nameOrUrl;
+
+            # Check openInNewTab
+            if($openInNewTab)
+
+                # Set target
+                $temp["target"] = "_blank";
+
+        }
+
+        # Push event
+        $this->pushEvent([
+                "type"  =>  "redirect",
+            ] + $temp);
+
+        # Return self
+        return $this;
+
+    }
+
+    /**
+     * Push Event
+     * 
+     * Push event in state
+     * @param array $eventInput
+     * @return self
+     */
+    public function pushEvent(array $eventInput = []):self {
+
+        # Check event input
+        if(!empty($eventInput)){
+
+            # Push into event
+            $this->events[] = $eventInput;
+
+        }
+
+        # Return self
+        return $this;
+    }
 
     /**
      * Push Context
@@ -490,6 +560,12 @@ class Page {
 
             # Push ui
             $result["_ui"] = $this->ui;
+
+        # Check events
+        if(!empty($this->events))
+
+            # Push errors
+            $result["_events"] = $this->events;
 
         # Check if catch state enable
         $this->_catchState($result);

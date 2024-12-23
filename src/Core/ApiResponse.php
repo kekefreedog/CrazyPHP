@@ -17,6 +17,7 @@ namespace  CrazyPHP\Core;
  */
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\File\Config;
+use CrazyPHP\Library\State\Page;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Model\Context;
 use CrazyPHP\Core\Response;
@@ -159,6 +160,25 @@ class ApiResponse extends Response {
 
         # Push context
         $this->pushContent("_context", $context);
+
+        # Return self
+        return $this;
+
+    }
+
+    /**
+     * Push State
+     * 
+     * Push state in Api Response
+     * @return self
+     */
+    public function pushState(Page $state):self {
+
+        # Render state
+        $stateRendered = $state->render();
+
+        # Push context
+        $this->pushContent(content:$stateRendered);
 
         # Return self
         return $this;

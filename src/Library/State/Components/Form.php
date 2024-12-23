@@ -15,9 +15,7 @@ namespace  CrazyPHP\Library\State\Components;
 /**
  * Dependances
  */
-use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Form\Process;
-use CrazyPHP\Library\Form\Validate;
 use ReflectionClass;
 use DateTime;
 use Error;
@@ -49,6 +47,9 @@ class Form {
     /** @var string|null $_entity Entity of the form */
     private string|null $_entity = null;
 
+    /** @var string|null $_post Url where post result of the form */
+    private string|null $_post = null;
+
     /** @var string|null $_onready On ready */
     private string|null $_onready = null;
 
@@ -67,6 +68,7 @@ class Form {
         "type"          =>  "",
         "label"         =>  "",
         "readonly"      =>  "",
+        "post"          =>  "",
         "disabled"      =>  "",
         "required"      =>  "",
         "placeholder"   =>  "",
@@ -183,6 +185,24 @@ class Form {
 
         # Set id
         $this->_entity = $entity;
+
+        # Return self
+        return $this;
+
+    }
+
+    /**
+     * Set Post
+     * 
+     * Set post url of the form
+     * 
+     * @param string|null $url Url of the post
+     * @return Form
+     */
+    public function setPost(string|null $post = null):Form {
+
+        # Set id
+        $this->_post = $post;
 
         # Return self
         return $this;
@@ -374,6 +394,12 @@ class Form {
 
             # Push onready
             $result["onready"] = $this->_onready;
+
+        # Check onready
+        if(!$minimize || $this->_post)
+
+            # Push onready
+            $result["post"] = $this->_post;
 
         # Check onready
         if(!$minimize || $this->_reset)

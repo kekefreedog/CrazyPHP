@@ -179,4 +179,53 @@ class Url {
 
 	}
 
+    /**
+     * Is External
+     * 
+     * Check if given url is external
+     * 
+     * @param string $url Url to check
+     * @param string $host Host to check with, if empty is set with `$_SERVER['HTTP_HOST']`
+     */
+    public static function isExternal(string $url, string $host = ""):bool {
+
+        # Check host
+        if(!$host)
+
+            # Set host
+            $host = $_SERVER['HTTP_HOST'] ?? "";
+
+        # Check again host
+        if(!$host) return true;
+        
+        # Get components
+        $components = parse_url($url);
+
+        # Check we will treat url like '/relative.php' as relative
+        if(empty($components['host'])) return false;
+
+        # Url host looks exactly like the local host
+        if(strcasecmp($components['host'], $host) === 0 ) return false;
+
+        # check if the url host is a subdomain
+        return strrpos(strtolower($components['host']), ".$host") !== strlen($components['host']) - strlen(".$host");
+
+    }
+
+
+    /**
+     * Is Internal
+     * 
+     * Check if given url is internal
+     * 
+     * @param string $url Url to check
+     * @param string $host Host to check with, if empty is set with `$_SERVER['HTTP_HOST']`
+     */
+    public static function isInternal(string $url, string $host = ""):bool {
+
+        # Return inverse of is external
+        return !static::isExternal($url, $host);
+
+    }
+
 }

@@ -133,6 +133,16 @@
             "response": "html",
             "Content-Type": "text\/html"
         }
-    }
+    },
+    // Events
+    "_events": [
+        // Type redirect ( ts type : `LoaderEventRedirection` )
+        {
+            "type":     "redirect",
+            "name":     "url",      // Name of the internal page
+            "url":      "url",      // Url of the external page
+            "target":   "_blank"    // If `_blan  open the link in a new page`
+        }
+    ]
 }
 ```

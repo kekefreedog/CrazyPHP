@@ -11,7 +11,7 @@
 /**
  * Dependances
  */
-import { Crazyobject } from "../Types";
+import LoaderEvents from "./Loader/Events";
 import Crazycache from "./Crazycache";
 import hash from "object-hash";
 
@@ -46,7 +46,8 @@ export default class Crazyrequest{
         cache: false,
         responseType: "json",
         responseEncoding: "utf8",
-        from: "internal"
+        from: "internal",
+        catchEvents: true,
     };
 
     /** @var requestOptions */
@@ -183,6 +184,19 @@ export default class Crazyrequest{
 
                     // Return null
                     return null;
+
+                }
+            ).then(
+                response => {
+
+                    // Check if object
+                    if(this.options.catchEvents && typeof response === "object" && response && "_events" in response && Array.isArray(response._events) && response._events.length)
+
+                        // New events loader
+                        new LoaderEvents(response);
+
+                    // Return value
+                    return response;
 
                 }
             )

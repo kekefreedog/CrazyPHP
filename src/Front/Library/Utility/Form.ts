@@ -469,6 +469,9 @@ export default class Form {
         // Get value_id
         let valueID:Attr|null = target.attributes.getNamedItem("value_id");
 
+        // Get post
+        let postUrl:Attr|null = target.attributes.getNamedItem("post");
+
         // Check entity or value id
         if(entity !== null && valueID !== null){
 
@@ -588,6 +591,62 @@ export default class Form {
                     }
                 );
 
+        }else
+        // Check post url
+        if(postUrl !== null){
+
+            // Lock form
+            this.lock();
+
+            // Create item
+            this._onSubmitSend(postUrl.value, formData, "post")
+                // Check errors
+                .then(
+                    value => {
+
+                        // Check error
+                        if("errors" in value && Array.isArray(value.errors) && value.errors.length){
+
+                            // Parse errors
+                            window.Crazyobject.alert.parseErrors(value.errors as CrazyError|CrazyError[], {
+                                postAction: ():void => {
+
+                                    // Stop event
+                                    throw "";
+
+                                }
+                            });
+
+                        }
+
+                        // Check if not results
+                        if(!("results" in value)){
+
+                            // Unlock target
+                            this.unlock();
+
+                            // Stop
+                            throw "";
+
+                        }
+
+                        // Return value
+                        return value;
+
+                    }
+                )
+                .then(
+                    value => {
+
+                        console.log("youyou");
+                        console.log(value);
+
+                        // Unlock target
+                        this.unlock();
+    
+                    }
+                );
+
         }
 
     }
@@ -658,7 +717,7 @@ export default class Form {
      * 
      * @param entityValue
      * @param formData
-     * @return Promise<any>
+     * @returns {Promise<any>}
      */
     private _onSubmitCreate = async (entityValue:string, formData:FormData):Promise<any> => {
 
@@ -684,7 +743,7 @@ export default class Form {
      * @param entityValue
      * @param valueID
      * @param formData
-     * @return Promise<any>
+     * @returns {Promise<any>}
      */
     private _onSubmitUpdate = async (entityValue:string, valueID:string, formData:FormData):Promise<any> => {
 
@@ -710,7 +769,7 @@ export default class Form {
      * 
      * @param entityValue
      * @param valueID
-     * @return Promise<any>
+     * @returns {Promise<any>}
      */
     private _onSubmiDelete = async (entityValue:string, valueID:string):Promise<any> => {
 
@@ -725,6 +784,32 @@ export default class Form {
 
         // Run request
         return request.fetch();
+
+    }
+
+    /**
+     * On Submit Send
+     * 
+     * Send form data to url
+     * 
+     * @param url
+     * @param formdata
+     * @param method
+     * @returns {Promise<any>}
+     */
+    private _onSubmitSend = async (url:string, formData:FormData, method:CrazyFetchOption["method"] = "get"):Promise<any> => {
+
+        // Prepare request
+        let request = new Crazyrequest(url, {
+            method: method,
+            header:{
+                'Cache-Control': 'no-cache, no-store, must-revalidate'
+            },
+            cache: false
+        });
+
+        // Run request
+        return request.fetch(formData);
 
     }
 
@@ -1253,6 +1338,52 @@ export default class Form {
 
             // Set result
             let value:string = itemEl.value as string;
+
+            // Push in result
+            result = [key, value];
+
+        }
+
+        // Return result
+        return result;
+
+    }
+
+    /**
+     * Retrieve checkbox
+     * 
+     * @param itemEl:HTMLElement
+     * @return null|Array<any>
+     */
+    private checkboxRetrieve = (itemEl:HTMLElement):null|Array<any> => {
+
+        // Set result
+        let result:null|Array<any> = null;
+
+        // Check value
+        if("value" in itemEl && "name" in itemEl && itemEl instanceof HTMLInputElement){
+
+            // Declare value
+            let value:string = "";
+
+            // Declare key
+            let key:string = itemEl.name as string;
+
+            // Set result
+            let rawValue:boolean = itemEl.checked;
+
+            // Check raw value is on
+            if(rawValue){
+
+                // Set value
+                value = "true"
+
+            }else{
+
+                // Set value
+                value = "false";
+
+            }
 
             // Push in result
             result = [key, value];

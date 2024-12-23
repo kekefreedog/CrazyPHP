@@ -33,6 +33,7 @@ export {default as LoaderPartial} from "./../Library/Loader/Partial";
 export {default as Crazylanguage} from "./../Library/Crazylanguage";
 export {default as UtilityMoney} from "./../Library/Utility/Money";
 export {default as RegisterPage} from "./../Library/Register/Page";
+export {default as LoaderEvents} from "./../Library/Loader/Events";
 export {default as Crazyconsole} from "./../Library/Crazyconsole";
 export {default as Crazyrequest} from "./../Library/Crazyrequest";
 export {default as Crazyelement} from "./../Library/Crazyelement";
@@ -81,7 +82,8 @@ declare global {
         responseType?: "arraybuffer"|"document"|"json"|"text"|"stream"|boolean,
         responseEncoding?: "utf8",
         from?: "internal"|"external",
-        ignoreHash?: boolean
+        ignoreHash?: boolean,
+        catchEvents?: true
     }
 
     /**
@@ -261,6 +263,16 @@ declare global {
         // Post Action Executed
         postActionExecuted?:boolean = false,
     }
+
+    /**
+     * Loader Event Redirection
+     */
+    interface LoaderEventRedirection {
+        type:"redirect",
+        name?: string,
+        url?: string,
+        target?: "_blank"|null
+    };
 
     /** Interface | State
      ******************************************************
