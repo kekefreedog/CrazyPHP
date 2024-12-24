@@ -420,3 +420,33 @@ div.file-field.input-field {
     border-radius: 16px;
 
 }
+
+/// Fixed Action Button
+///////////////////////////////////////////////////////
+///
+
+// Fixed Action Btn
+.fixed-action-btn {
+
+    // Placement top
+    &.top {
+
+        // Position
+        top: 23px;
+        bottom: unset;
+
+        // Dimension
+        padding-bottom: 15px;
+        padding-top: 0;
+
+        > ul {
+
+            // Position
+            top: 64px;
+            bottom: unset;
+
+        }
+
+    }
+
+}
