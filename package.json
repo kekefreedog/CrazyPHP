@@ -27,6 +27,9 @@
     "dependencies": {
         "@material/material-color-utilities": "^0.3.0",
         "@simonwep/pickr": "^1.9.1",
+        "filepond": "^4.32.6",
+        "filepond-plugin-image-exif-orientation": "^1.0.11",
+        "filepond-plugin-image-preview": "^4.6.12",
         "maska": "^3.0.2",
         "tom-select": "^2.3.1"
     }

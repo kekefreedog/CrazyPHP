@@ -26,8 +26,56 @@
     {{#each form.items as |item|}}
     <div class="input-field col s12 mn-2{{#if item._style.customClass.input-field}} {{item._style.customClass.input-field}}{{/if}}" style="margin-bottom: {{#is item.type "range"}}0{{else}}15{{/is}}px;">
         
+        {{!-- File Input --}}
+        {{#is item.type "file"}} 
+        {{#if item.disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{else}}
+        {{#if item._style.suffix}}<div class="suffix"><i class="{{item._style.suffix.class}}">{{item._style.suffix.text}}</i></div>{{/if}}{{/if}}
+        {{#if item._style.prefix}}<div class="prefix"><i class="{{item._style.prefix.class}}">{{item._style.prefix.text}}</i></div>{{/if}}
+            {{!-- Filepond --}}
+            {{#is item._style.file.picker "filepond"}}
+                <input 
+                    id="{{../form.id}}_{{item.name}}" 
+                    name="{{item.name}}{{#if item.multiple}}[]{{/if}}"
+                    {{#if item._style.file.preview}}data-file-preview=""{{/if}}
+                    {{#if item.multiple}}multiple=""{{/if}}
+                    {{#if item._style.customClass.input}}class="{{item._style.customClass.input}}"{{/if}}
+                    {{#if item.disabled}}disabled=""{{else}}{{#if ../form.onready}}disabled="loading"{{/if}}{{/if}}
+                    type="file"
+                    {{#if item.placeholder}}placeholder="{{item.placeholder}}"{{else}}placeholder=" "{{/if}}
+                    {{#if item.readonly}}readonly=""{{/if}}
+                    {{#if item.default}}value="{{item.default}}" default="{{item.default}}"{{/if}}
+                    {{#if item.select.[0].value}}min="{{item.select.[0].value}}"{{/if}}
+                    {{#if item.select.[1].value}}max="{{item.select.[1].value}}"{{/if}}
+                    {{#if item.required}}required=""{{/if}}
+                    class="filepond"
+                >
+                {{#if item.label}}<label for="{{../form.id}}_{{item.name}}">{{#if item.required}}<b>{{/if}}{{item.label}}{{#if item.required}}</b>*{{/if}}</label>{{/if}}
+            {{!-- Legacy file input --}}
+            {{else}}<div class="file-field">
+                <div class="btn">
+                    <span>{{#if item.label}}{{#if item.required}}<b>{{/if}}{{item.label}}{{#if item.required}}</b>*{{/if}}{{/if}}</span>
+                    <input
+                        id="{{../form.id}}_{{item.name}}"
+                        {{#if item.multiple}}multiple=""{{/if}}
+                        name="{{item.name}}{{#if item.multiple}}[]{{/if}}"
+                        {{#if item._style.customClass.input}}class="{{item._style.customClass.input}}"{{/if}}
+                        {{#if item.disabled}}disabled=""{{else}}{{#if ../form.onready}}disabled="loading"{{/if}}{{/if}}
+                        type="file"
+                        {{#if item.placeholder}}placeholder="{{item.placeholder}}"{{else}}placeholder=" "{{/if}}
+                        {{#if item.readonly}}readonly=""{{/if}}
+                        {{#if item.default}}value="{{item.default}}" default="{{item.default}}"{{/if}}
+                        {{#if item.select.[0].value}}min="{{item.select.[0].value}}"{{/if}}
+                        {{#if item.select.[1].value}}max="{{item.select.[1].value}}"{{/if}}
+                        {{#if item.required}}required=""{{/if}}
+                    >
+                </div>
+                <div class="file-path-wrapper">
+                    <input class="file-path validate" type="text">
+                </div>
+            </div>{{/is}}
+
         {{!-- Color Input --}}
-        {{#is item.type "color"}} 
+        {{else}}{{#is item.type "color"}} 
         {{#if item.required}}<b>{{/if}}{{item.label}}{{#if item.required}}</b>*{{/if}}<br>
         {{#if item.disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{else}}
         {{#if item._style.suffix}}<div class="suffix"><i class="{{item._style.suffix.class}}">{{item._style.suffix.text}}</i></div>{{/if}}{{/if}}
@@ -253,7 +301,7 @@
             {{#if item._style.text.maxlength includeZero=false}}maxlength="{{item._style.text.maxlength}}"{{/if}}
         >
         {{#if item.label}}<label for="{{../form.id}}_{{item.name}}">{{#if item.required}}<b>{{/if}}{{item.label}}{{#if item.required}}</b>*{{/if}}</label>{{/if}}
-        {{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}
+        {{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}
 
     </div>
     {{/each}}

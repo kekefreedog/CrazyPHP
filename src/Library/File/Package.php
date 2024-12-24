@@ -123,6 +123,7 @@ class Package{
         "@fortawesome/fontawesome-free"             =>  "^6.5.1",
         "@materializecss/materialize"               =>  "2.1.0",
         "material-dynamic-colors"                   =>  "*",
+        "@material/material-color-utilities"        =>  "^0.3.0",
         "clipboard"                                 =>  "*",
         "handlebars"                                =>  "*",
         "handlebars-helpers"                        =>  "^0.9.8",
@@ -137,6 +138,11 @@ class Package{
         "i18next"                                   =>  "^22.0.8",
         "material-dynamic-colors"                   =>  "*",
         "tom-select"                                =>  "*",
+        "@simonwep/pickr"                           =>  "^1.9.1",
+        "maska"                                     =>  "^3.0.2",
+        "filepond"                                  =>  "^4.32.6",
+        "filepond-plugin-image-exif-orientation"    =>  "^1.0.11",
+        "filepond-plugin-image-preview"             =>  "^4.6.12",
         # Cache
         "localforage"                               =>  "^1.10.0",
         "object-hash"                               =>  "^3.0.0",
@@ -389,8 +395,8 @@ class Package{
     /**
      * Read value in package.json
      *
-     * @param string  $values Values to update on composer.json
-     * @param string $createIfNotExists create parameter if doesn't exists
+     * @param array $values Values to update on composer.json
+     * @param bool $createIfNotExists create parameter if doesn't exists
      * @param string $file File composer.json
      * @return array
      */
@@ -413,7 +419,7 @@ class Package{
     /**
      * Delete value in package.json
      *
-     * @param string  $values Values to update on composer.json
+     * @param array $values Values to update on composer.json
      * @return string
      */
     public static function delete(array $values = []):bool{

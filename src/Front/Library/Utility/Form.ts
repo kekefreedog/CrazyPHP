@@ -11,10 +11,13 @@
 /**
  * Dependances
  */
+import FilePondPluginImageExifOrientation from 'filepond-plugin-image-exif-orientation';
 import { TomSettings, RecursivePartial } from 'tom-select/dist/types/types';
+import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
 import {default as PageError} from './../Error/Page';
 import {default as UtilityStrings} from './Strings';
 import Crazyrequest from '../Crazyrequest';
+import * as FilePond from 'filepond';
 import Pickr from '@simonwep/pickr';
 import TomSelect from 'tom-select';
 import { MaskInput } from "maska"
@@ -2503,6 +2506,59 @@ export default class Form {
                 // Run function
                 // @ts-ignore
                 addOption();
+
+            }
+
+        }
+
+    }
+
+    /**
+     * Init File Input
+     * 
+     * @param inputEl 
+     * @returns {void}
+     */
+    private _initFileInput = (inputEl:HTMLSelectElement|HTMLInputElement):void => {
+
+        // Check maska
+        if(inputEl instanceof HTMLInputElement){
+
+            // Check if input has filepond
+            if(inputEl.classList.contains("filepond")){
+
+                // Check if preview
+                if(typeof inputEl.dataset.filePreview === "string")
+
+                    // Register plugin
+                    FilePond.registerPlugin(FilePondPluginImagePreview);
+
+                // Register exif plugin
+                FilePond.registerPlugin(FilePondPluginImageExifOrientation);
+
+                // Create pond instance
+                let pondInstance = FilePond.create(inputEl, {
+                    
+                    oninit: () => {
+
+                        // Check element
+                        if(pondInstance.element){
+
+                            // Apply margin
+                            pondInstance.element.classList.add("mb-0", "mt-6");
+
+                            // Remove credits
+
+                            // Search credit
+                            let els = pondInstance.element.querySelectorAll(".filepond--credits");
+
+                            // Iteration and delete
+                            els?.forEach((value:Element):void => value.remove());
+
+                        }
+
+                    }
+                });
 
             }
 

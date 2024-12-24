@@ -80,7 +80,7 @@ class Structure{
      * Ingest data
      * 
      * @param string $root Root where create files
-     * @param array $template Template to use for app creation
+     * @param string $template Template to use for app creation
      * @param string $action Action of the strucure
      *  - action
      *  - update
@@ -164,7 +164,7 @@ class Structure{
      * Set Template path
      * - {{root}} will be replace by root path
      * 
-     * @param array $template Template to use for app creation
+     * @param string $template Template to use for app creation
      * @return void
      */
     public function setTemplate(string $template = ""):void {
