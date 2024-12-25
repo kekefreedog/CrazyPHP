@@ -2564,6 +2564,11 @@ export default class Form {
 
                 }
 
+                // Set name
+                // if(inputEl.name)
+
+                    // Set name
+
                 // Check if max file
                 if(typeof inputEl.dataset.maxFiles === "string")
 
