@@ -47,7 +47,12 @@
                     {{#if item.select.[0].value}}min="{{item.select.[0].value}}"{{/if}}
                     {{#if item.select.[1].value}}max="{{item.select.[1].value}}"{{/if}}
                     {{#if item.required}}required=""{{/if}}
+                    {{#if item.required}}required=""{{/if}}
+                    {{!-- Filepond specific --}}
+                    {{#if item._style.file.maxFiles}}data-max-files="{{item._style.file.maxFiles}}"{{/if}}
                     class="filepond"
+                    {{#if item._style.file.acceptedFileTypes}}accept="{{join item._style.file.acceptedFileTypes ","}}"{{/if}}
+                    {{#if item._style.file.locale}}data-file-locale="{{item._style.file.locale}}"{{/if}}
                 >
                 {{#if item.label}}<label for="{{../form.id}}_{{item.name}}">{{#if item.required}}<b>{{/if}}{{item.label}}{{#if item.required}}</b>*{{/if}}</label>{{/if}}
             {{!-- Legacy file input --}}
@@ -67,6 +72,7 @@
                         {{#if item.select.[0].value}}min="{{item.select.[0].value}}"{{/if}}
                         {{#if item.select.[1].value}}max="{{item.select.[1].value}}"{{/if}}
                         {{#if item.required}}required=""{{/if}}
+                        {{#if item._style.file.acceptedFileTypes}}accept="{{join item._style.file.acceptedFileTypes ","}}"{{/if}}
                     >
                 </div>
                 <div class="file-path-wrapper">

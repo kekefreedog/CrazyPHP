@@ -12,11 +12,13 @@
  * Dependances
  */
 import FilePondPluginImageExifOrientation from 'filepond-plugin-image-exif-orientation';
+import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type';
 import { TomSettings, RecursivePartial } from 'tom-select/dist/types/types';
 import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
 import {default as PageError} from './../Error/Page';
 import {default as UtilityStrings} from './Strings';
 import Crazyrequest from '../Crazyrequest';
+import fr_FR from 'filepond/locale/fr-fr';
 import * as FilePond from 'filepond';
 import Pickr from '@simonwep/pickr';
 import TomSelect from 'tom-select';
@@ -2536,9 +2538,10 @@ export default class Form {
                 // Register exif plugin
                 FilePond.registerPlugin(FilePondPluginImageExifOrientation);
 
-                // Create pond instance
-                let pondInstance = FilePond.create(inputEl, {
+                // Prepare options
+                let options:FilePond.FilePondOptions = {
                     
+                    // Set on init
                     oninit: () => {
 
                         // Check element
@@ -2558,7 +2561,42 @@ export default class Form {
                         }
 
                     }
-                });
+
+                }
+
+                // Check if max file
+                if(typeof inputEl.dataset.maxFiles === "string")
+
+                    // set max files
+                    options.maxFiles = Number(inputEl.dataset.maxFiles);
+
+                // Check if multiple
+                if(inputEl.multiple)
+
+                    // set max files
+                    options.allowReorder = true;
+
+                // Check if accept
+                if(inputEl.accept){
+
+                    // Register validate type
+                    FilePond.registerPlugin(FilePondPluginFileValidateType);
+
+                }
+
+                // Check lang
+                if(typeof inputEl.dataset.fileLocale === "string")
+
+                    // Check if fr
+                    if(["fr-fr", "fr_FR"].includes(inputEl.dataset.fileLocale)){
+
+                        // Register lang
+                        options = {...options, ...fr_FR};
+
+                    }
+
+                // Create pond instance
+                let pondInstance = FilePond.create(inputEl, options);
 
             }
 

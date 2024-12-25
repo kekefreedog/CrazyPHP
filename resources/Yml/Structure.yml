@@ -169,6 +169,8 @@ Structure:
                             source: "@crazyphp_root/resources/Scss/style/enhancement/tomselect_materializecss.scss"
                           pickr_materializecss.scss:
                             source: "@crazyphp_root/resources/Scss/style/enhancement/pickr_materializecss.scss"
+                          filepond_materializecss.scss:
+                            source: "@crazyphp_root/resources/Scss/style/enhancement/filepond_materializecss.scss"
                       partial:
                         files:
                           _preloader_linear_indeterminate.scss:
