@@ -21,7 +21,10 @@
 
         // Color
         background-color: var(--md-sys-color-background);
-        border: 1px solid var(--md-sys-color-on-surface-variant);
+        border-bottom: 1px solid var(--md-sys-color-on-surface-variant);
+        border-right: 0;
+        border-left: 0;
+        border-top: 0;
 
         // Item
         .item {

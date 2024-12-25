@@ -25,6 +25,7 @@ import TomSelect from 'tom-select';
 import { MaskInput } from "maska"
 import Objects from './Objects';
 import Root from '../Dom/Root';
+import { key } from 'localforage';
 
 /**
  * Form
@@ -415,14 +416,25 @@ export default class Form {
             // Iteration items
             for (let i = 0; i < items.length; i++){
 
-                // Get result
-                itemResult = this.extractKeyValue(items[i] as HTMLElement);
+                // Get multiple
+                let mutliple = "mutliple" in items[0] && typeof items[0].mutliple === "boolean" 
+                    ? items[0].mutliple
+                    : false
+                ;
 
-                // Check itemResult
-                if(itemResult !== null && itemResult[0] !== "")
+                // Check if multiple
+                if(!mutliple){
 
-                    // Push value of current input
-                    result.append(itemResult[0] as string, itemResult[1]);
+                    // Get result
+                    itemResult = this.extractKeyValue(items[i] as HTMLElement);
+
+                    // Check itemResult
+                    if(itemResult !== null && itemResult[0] !== "")
+
+                        // Push value of current input
+                        result.append(itemResult[0] as string, itemResult[1]);
+
+                }
 
             }
 
@@ -1314,6 +1326,7 @@ export default class Form {
             // Set type
             type = itemEl.dataset.type;
 
+
         // Check type
         if(typeof type === "string" && typeof this[`${type}Retrieve`] === "function")
 
@@ -1566,6 +1579,58 @@ export default class Form {
 
             // Push in result
             result = [key, value];
+
+        }
+
+        // Return result
+        return result;
+
+    }
+
+    /**
+     * File Retrieve
+     * 
+     * @param itemEl:HTMLElement
+     * @return null|Array<any>
+     */
+    private fileRetrieve = (itemEl:HTMLElement):null|Array<any> => {
+
+        // Set result
+        let result:null|Array<any> = null;
+
+        // Check value
+        if("name" in itemEl && itemEl instanceof HTMLInputElement && itemEl.files?.length){
+
+            let key:string = itemEl.name as string;
+
+            // Set result
+            let files:FileList = itemEl.files;
+
+            // Push in result
+            result = [key, Array.from(files).at(0)];
+
+        }else
+        // Check if pond instance
+        if(itemEl.dataset.pondId && itemEl instanceof HTMLInputElement){
+
+            // Search el
+            let pondEl = itemEl.closest("form")?.querySelector(`div#${itemEl.dataset.pondId}`);
+
+            // Check pond el
+            if(pondEl instanceof HTMLDivElement){
+
+                let key:string = itemEl.name as string;
+
+                // Get pond instance
+                let pondInstance = FilePond.find(pondEl);
+
+                // Get files
+                let files = pondInstance.getFiles();
+
+                // Set result
+                result = [key, files.length ? files[0].file as File : ""];
+
+            }
 
         }
 
@@ -2558,6 +2623,23 @@ export default class Form {
                             // Iteration and delete
                             els?.forEach((value:Element):void => value.remove());
 
+                            // Search input with name
+                            let el = pondInstance.element.querySelector("input[name]");
+        
+                            // Check el
+                            if(el instanceof HTMLInputElement){
+        
+                                // Check id
+                                if(pondInstance.id)
+        
+                                    // Add data type
+                                    el.dataset.pondId = pondInstance.id;
+        
+                                // Set type
+                                el.dataset.type = "file";
+        
+                            }
+
                         }
 
                     }
@@ -2602,6 +2684,29 @@ export default class Form {
 
                 // Create pond instance
                 let pondInstance = FilePond.create(inputEl, options);
+
+                // Add event
+                pondInstance.on("updatefiles", () => {
+
+                    // Search input with name
+                    let el = pondInstance.element?.querySelector("input[name]");
+
+                    // Check el
+                    if(el instanceof HTMLInputElement){
+
+                        // Check id
+                        if(pondInstance.id)
+
+                            // Add data type
+                            el.dataset.pondId = pondInstance.id;
+
+                        // Set type
+                        el.dataset.type = "file";
+
+                    }
+                        
+
+                })
 
             }
 
