@@ -502,7 +502,7 @@ export default class Form {
                     value => {
 
                         // Parse errors
-                        window.Crazyobject.alert.parseErrors(value.errors as CrazyError|CrazyError[], {
+                        value && "errors" in value && window.Crazyobject.alert.parseErrors(value.errors as CrazyError|CrazyError[], {
                             postAction: ():void => {
 
                                 // Stop event
