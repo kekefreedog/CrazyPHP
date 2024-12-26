@@ -15,6 +15,7 @@ import FilePondPluginImageExifOrientation from 'filepond-plugin-image-exif-orien
 import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type';
 import { TomSettings, RecursivePartial } from 'tom-select/dist/types/types';
 import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
+import IMask, { MaskedOptions, MaskedNumberOptions } from 'imask';
 import {default as PageError} from './../Error/Page';
 import {default as UtilityStrings} from './Strings';
 import Crazyrequest from '../Crazyrequest';
@@ -22,10 +23,9 @@ import fr_FR from 'filepond/locale/fr-fr';
 import * as FilePond from 'filepond';
 import Pickr from '@simonwep/pickr';
 import TomSelect from 'tom-select';
-import { MaskInput } from "maska"
 import Objects from './Objects';
 import Root from '../Dom/Root';
-import { key } from 'localforage';
+
 
 /**
  * Form
@@ -2305,24 +2305,27 @@ export default class Form {
      */
     private _initNumberInput = (inputEl:HTMLSelectElement|HTMLInputElement):void => {
 
-        // Check maska
-        if(inputEl instanceof HTMLInputElement && inputEl.dataset && "maska" in inputEl.dataset){
+        // Declare options
+        let options:MaskedNumberOptions = {
+            mask: Number,
+            skipInvalid: true,
+            thousandsSeparator: " ",
+            radix: ".",
+            mapToRadix: [','],
+            autofix: true,
+        };
 
-            // Init maska
-            new MaskInput(inputEl);
+        // Check if max
+        inputEl.hasAttribute("max") && inputEl.getAttribute("max") && (options.max = Number(inputEl.getAttribute("max")));
 
-        }else
+        // Check if min
+        inputEl.hasAttribute("min") && inputEl.getAttribute("min") && (options.min = Number(inputEl.getAttribute("min")));
+
         // check if decimal
-        if(inputEl instanceof HTMLInputElement && inputEl.hasAttribute("step") && [0.01].includes(Number(inputEl.getAttribute("step")))){
-            
-            // Mask input
-            new MaskInput(inputEl, {
-                number: {
-                    fraction: 2,
-                },
-            });
+        inputEl.hasAttribute("step") && inputEl.getAttribute("step")?.includes(".") && (options.scale = inputEl.getAttribute("step")?.split(".").at(-1)?.length);
 
-        }
+        // Set instance
+        IMask(inputEl, options);
 
     }
 
@@ -2427,7 +2430,6 @@ export default class Form {
                 // @ts-ignore
                 option.plugins["drag_drop"] = {};
 
-
             }
 
             // Declare potential add option
@@ -2442,8 +2444,37 @@ export default class Form {
                 // Set value
                 option.valueField = remoteData.value;
 
-                // Set label
-                option.labelField = remoteData.label;
+                // Check label has {{}}
+                if(remoteData.label.includes("{{") && remoteData.label.includes("}}")){
+
+                    // Set render
+                    option.render = {
+                        option: (data:Record<string,any>, escape:(input:string)=>string):string => {
+                    
+                            // Declare result
+                            let result:string = remoteData.label.replace(/\{\{(.*?)\}\}/g, (i:any, match:any) => escape(data[match]))
+    
+                            // Append div after and before
+                            return `<div>${result}</div>` as string;
+                            
+                        },
+                        item: (data:Record<string,any>, escape:(input:string)=>string):string => {
+
+                            // Declare result
+                            let result:string = remoteData.label.replace(/\{\{(.*?)\}\}/g, (i:any, match:any) => escape(data[match]))
+    
+                            // Append div after and before
+                            return `<div>${result}</div>` as string;
+                            
+                        }
+                    };
+
+                }else{
+
+                    // Set label
+                    option.labelField = remoteData.label;
+
+                }
 
                 // Set search
                 option.searchField = remoteData.search;
