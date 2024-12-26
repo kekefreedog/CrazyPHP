@@ -1649,7 +1649,7 @@ export default class Form {
     private textSet = (itemEl:HTMLElement, value:string, valuesID:string|Object|null):void => {
 
         // Check itemEl 
-        if(itemEl.tagName == "INPUT"){
+        if(itemEl.tagName == "INPUT" && value !== null){
 
             // Set value
             itemEl.setAttribute("value", value);
@@ -1692,7 +1692,7 @@ export default class Form {
     private passwordSet = (itemEl:HTMLElement, value:string, valuesID:string|Object|null):void => {
 
         // Check itemEl 
-        if(itemEl.tagName == "INPUT"){
+        if(itemEl.tagName == "INPUT" && value !== null){
 
             // Set value
             itemEl.setAttribute("value", value);
@@ -1716,7 +1716,7 @@ export default class Form {
     private colorSet = (itemEl:HTMLElement, value:string, valuesID:string|Object|null):void => {
 
         // Check itemEl 
-        if(itemEl.tagName == "INPUT"){
+        if(itemEl.tagName == "INPUT" && value !== null){
 
             // Set value
             itemEl.setAttribute("value", value);
@@ -1742,10 +1742,8 @@ export default class Form {
      */
     private selectSet = (itemEl:HTMLElement, value:string, valuesID:string|Object|null):void => {
 
-        console.log("toto");
-
         // Check itemEl 
-        if(["INPUT", "SELECT"].includes(itemEl.tagName)){
+        if(["INPUT", "SELECT"].includes(itemEl.tagName) && value !== null){
 
             // Check if tomselect in item
             if("tomselect" in itemEl && itemEl.tomselect instanceof TomSelect){
@@ -1785,7 +1783,7 @@ export default class Form {
     private numberSet = (itemEl:HTMLElement, value:string, valuesID:string|Object|null):void => {
 
         // Check itemEl 
-        if(["INPUT", "SELECT"].includes(itemEl.tagName)){
+        if(["INPUT", "SELECT"].includes(itemEl.tagName) && value !== null){
 
             // Set value
             itemEl.setAttribute("value", value);
