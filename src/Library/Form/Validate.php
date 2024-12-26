@@ -107,18 +107,6 @@ class Validate {
 
                 # Action for varchar
                 $this->_actionInt($input);
-
-            # Type varchar
-            if(strtoupper(substr(trim($input['type']), 0, 7)) == "VARCHAR")
-
-                # Action for varchar
-                $this->_actionVarchar($input);
-
-            # Type array
-            elseif(strtoupper(substr(trim($input['type']), 0, 5)) == "ARRAY")
-
-                # Action for array
-                $this->_actionArray($input);
                 
             # Type Boolean
             elseif(strtoupper(substr(trim($input['type']), 0, 4)) == "BOOL")
@@ -131,6 +119,18 @@ class Validate {
 
                 # Action for file
                 $this->_actionFile($input);
+
+            # Type array
+            elseif(strtoupper(substr(trim($input['type']), 0, 5)) == "ARRAY")
+
+                # Action for array
+                $this->_actionArray($input);
+
+            # Type varchar
+            if(strtoupper(substr(trim($input['type']), 0, 7)) == "VARCHAR")
+
+                # Action for varchar
+                $this->_actionVarchar($input);
 
     }
 
@@ -312,84 +312,89 @@ class Validate {
                 # Set default value
                 $input['value'] = Process::setDefault($input["default"]);
 
-        # Check file is valid
-        self::isValidFile($input["value"], true);
+        # Check if array file
+        if(is_array($input["value"]) && File::isFileArray($input["value"])){
 
-        # Set ext first time
-        $ext = null;
+            # Check file is valid
+            self::isValidFile($input["value"], true);
 
-        # Check if extension allowed
-        if(isset($input["extAllow"]) && !empty($input["extAllow"]) && $input["extAllow"]){
+            # Set ext first time
+            $ext = null;
 
-            # set ext allow
-            $extAllow = $input["extAllow"];
+            # Check if extension allowed
+            if(isset($input["extAllow"]) && !empty($input["extAllow"]) && $input["extAllow"]){
 
-            # Check extAllow is array
-            if(!is_array($extAllow))
+                # set ext allow
+                $extAllow = $input["extAllow"];
 
-                # Convert to array
-                $extAllow = [$extAllow];
+                # Check extAllow is array
+                if(!is_array($extAllow))
 
-            # Guess the mime type of the file
-            $mimeType = File::guessMime($input["value"]["tmp_name"]);
-
-            # Set ext
-            $ext = array_search($extAllow, File::EXTENSION_TO_MIMETYPE) 
-                ? array_search($extAllow, File::EXTENSION_TO_MIMETYPE)
-                : @end(explode("/", $mimeType))
-            ;
-            
-            # Check mime type is in the extAllow
-            if(!in_array(strtolower($ext), array_map("strtolower", $extAllow)))
-
-                # New Exception
-                throw new CrazyException(
-                    "Extension \"$ext\" of the file \"".$input["value"]["name"]."\" given isn't allowed... Here the file extension allowed : ".implode(", ", $extAllow),
-                    500,
-                    [
-                        "custom_code"   =>  "validate-050",
-                    ]
-                );
-
-        }
-
-        # Check if omit extension
-        if(isset($input["extOmit"]) && !empty($input["extOmit"]) && $input["extOmit"]){
-
-            # set ext allow
-            $extOmit = $input["extOmit"];
-
-            # Check extOmit is array
-            if(!is_array($extOmit))
-
-                # Convert to array
-                $extOmit = [$extOmit];
-
-            # check if ext already set
-            if($ext === null){
+                    # Convert to array
+                    $extAllow = [$extAllow];
 
                 # Guess the mime type of the file
                 $mimeType = File::guessMime($input["value"]["tmp_name"]);
-    
+
                 # Set ext
-                $ext = array_search($extOmit, File::EXTENSION_TO_MIMETYPE) 
-                    ? array_search($extOmit, File::EXTENSION_TO_MIMETYPE)
+                $ext = array_search($extAllow, File::EXTENSION_TO_MIMETYPE) 
+                    ? array_search($extAllow, File::EXTENSION_TO_MIMETYPE)
                     : @end(explode("/", $mimeType))
                 ;
+                
+                # Check mime type is in the extAllow
+                if(!in_array(strtolower($ext), array_map("strtolower", $extAllow)))
+
+                    # New Exception
+                    throw new CrazyException(
+                        "Extension \"$ext\" of the file \"".$input["value"]["name"]."\" given isn't allowed... Here the file extension allowed : ".implode(", ", $extAllow),
+                        500,
+                        [
+                            "custom_code"   =>  "validate-050",
+                        ]
+                    );
 
             }
-            
-            # Check mime type is in the extAllow
-            if(in_array(strtolower($ext), array_map("strtolower", $extOmit)))
 
-                # New Exception
-                throw new CrazyException(
-                    "Extension \"$ext\" of the file \"".$input["value"]["name"]."\" given is omited... Here the other file extension not allowed : ".implode(", ", $extOmit),
-                    500,
-                    [
-                        "custom_code"   =>  "validate-060",
-                    ]
-                );
+            # Check if omit extension
+            if(isset($input["extOmit"]) && !empty($input["extOmit"]) && $input["extOmit"]){
+
+                # set ext allow
+                $extOmit = $input["extOmit"];
+
+                # Check extOmit is array
+                if(!is_array($extOmit))
+
+                    # Convert to array
+                    $extOmit = [$extOmit];
+
+                # check if ext already set
+                if($ext === null){
+
+                    # Guess the mime type of the file
+                    $mimeType = File::guessMime($input["value"]["tmp_name"]);
+        
+                    # Set ext
+                    $ext = array_search($extOmit, File::EXTENSION_TO_MIMETYPE) 
+                        ? array_search($extOmit, File::EXTENSION_TO_MIMETYPE)
+                        : @end(explode("/", $mimeType))
+                    ;
+
+                }
+            
+                # Check mime type is in the extAllow
+                if(in_array(strtolower($ext), array_map("strtolower", $extOmit)))
+
+                    # New Exception
+                    throw new CrazyException(
+                        "Extension \"$ext\" of the file \"".$input["value"]["name"]."\" given is omited... Here the other file extension not allowed : ".implode(", ", $extOmit),
+                        500,
+                        [
+                            "custom_code"   =>  "validate-060",
+                        ]
+                    );
+
+            }
 
         }
 

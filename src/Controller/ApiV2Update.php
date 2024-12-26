@@ -35,7 +35,7 @@ class ApiV2Update extends Controller {
      * 
      * @return void
      */
-    public static function put():void {
+    public static function put($request):void {
 
         # Get id
         $id = (string) self::getParametersUrl("id");

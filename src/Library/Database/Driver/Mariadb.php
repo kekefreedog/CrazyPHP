@@ -506,6 +506,29 @@ class Mariadb implements CrazyDatabaseDriver {
                     : ''
                 ;
 
+            }else
+            # If file
+            if($columnTypeTemp == "FILE"){
+
+                # Set column type
+                $columnType = "VARCHAR(255)";
+
+                # Set required
+                $required = isset($attribute['required']) && $attribute['required'] 
+                    ? 'NOT NULL' 
+                    : 'NULL'
+                ;
+
+                # Set default
+                $default = isset($attribute['default']) 
+                    ? (
+                        $attribute['default'] === null 
+                            ? "DEFAULT NULL"
+                            : "DEFAULT '{".$attribute['default']."}'"
+                    ) 
+                    : ''
+                ;
+
             }
 
             # Clean column type

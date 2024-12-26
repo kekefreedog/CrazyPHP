@@ -20,6 +20,7 @@ use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\System\Os;
 use CrazyPHP\Library\Time\DateTime;
 use CrazyPHP\Model\Env;
+use finfo;
 
 /**
  * File
@@ -90,6 +91,79 @@ class File {
         return $result;
 
     }    
+    
+    /**
+     * Get Mime From Buffer
+     * 
+     * Get Mime Type of file
+     *
+     * @param string $buffer
+     * @return string|bool
+     */
+    public static function getMimeFromBuffer(string $buffer = ""):string|false {
+
+        # Check if the input is base64 and decode it
+        if(str_starts_with($buffer, 'data:')){
+
+            # Set parts
+            $parts = explode(',', $buffer, 2);
+
+            # Set buffer
+            $buffer = base64_decode($parts[1]);
+
+        }
+    
+        # Use finfo to determine the file type
+        $finfo = new finfo(FILEINFO_MIME_TYPE);
+
+        # Return mimtype
+        $mimeType = $finfo->buffer($buffer);
+    
+        # Return null if MIME type is not recognized
+        return $mimeType;
+
+    }
+
+    /**
+     * Is File Array
+     * 
+     * @param array $array
+     * @param bool $checkTypeOfKeys (false by default)
+     * @return bool
+     */
+    public static function isFileArray(array $array, bool $checkTypeOfKeys = false):bool {
+
+        # Check if all required keys exist in the array
+        $requiredKeys = ['name', 'type', 'tmp_name', 'error', 'size'];
+
+        # Iteration keys
+        foreach ($requiredKeys as $key)
+
+            # Check key exists
+            if(!array_key_exists($key, $array))
+
+                # Stop function
+                return false;
+    
+        // Optionally, validate that values are of expected types
+        if(
+            $checkTypeOfKeys &&
+            (
+                !is_string($array['name']) || 
+                !is_string($array['type']) || 
+                !is_string($array['tmp_name']) || 
+                !is_int($array['error']) || 
+                !is_int($array['size'])
+            )
+        )
+
+            # Stop function
+            return false;
+    
+        # Stop function
+        return true;
+
+    }
     
     /**
     * Get File Extension
@@ -1023,8 +1097,8 @@ class File {
      */
     public const EXTENSION_TO_MIMETYPE = [
         # Html
-        "html"  =>  "text/html",
         "htm"   =>  "text/html",
+        "html"  =>  "text/html",
         # Yml
         "yml"   =>  "text/yaml",
         "yaml"  =>  "text/yaml",

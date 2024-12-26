@@ -283,7 +283,7 @@ class Schema {
             if($this->options["flatten"])
 
                 # Flat value
-                $value = Arrays::flatten($value);
+                $value = Arrays::flatten($value, "", ".", true);
 
             # Prepare item
             $items = $this->collection;
@@ -343,6 +343,12 @@ class Schema {
             
                             # Set value
                             $item["value"] = false;
+                            
+                        # Type Boolean
+                        elseif(strtoupper(substr(trim($item['type']), 0, 4)) == "FILE")
+            
+                            # Set value
+                            $item["value"] = null;
 
                     }
 

@@ -900,16 +900,10 @@ export default class Form {
                 // Check tag name
                 if(items[i].tagName == "INPUT" && items[i].hasAttribute("disabled") && items[i].getAttribute("disabled") == "loading"){
 
-                    console.log(items[i]);
-
                     // Set Read only
                     items[i].removeAttribute("disabled");
 
                 }else{
-
-                    if(items[i].tagName == "BUTTON")
-
-                        console.log(items[i].tagName == "BUTTON" && items[i].hasAttribute("disabled") && items[i].getAttribute("disabled") == "loading");
 
                     // Chech button
                     if(items[i].tagName == "BUTTON" && items[i].hasAttribute("disabled") && items[i].getAttribute("disabled") == "loading"){

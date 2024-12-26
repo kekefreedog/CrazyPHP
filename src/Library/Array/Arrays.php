@@ -12,6 +12,8 @@
  */
 namespace  CrazyPHP\Library\Array;
 
+use CrazyPHP\Library\File\File;
+
 /**
  * Dependances
  */
@@ -750,9 +752,10 @@ class Arrays{
 	 * @param array $array to flatten
 	 * @param string $prefix if needed
 	 * @param string $separator by default "."
+	 * @param bool $skipFileArray Skip file array (by default false)
 	 * @return array
 	 */
-	public static function flatten(array $array = [], string $prefix = '', string $separator = "."):array {
+	public static function flatten(array $array = [], string $prefix = '', string $separator = ".", bool $skipFileArray = false):array {
 		
 		# Prepare result
 		$result = [];
@@ -767,7 +770,15 @@ class Arrays{
 				$new_key = $prefix . (empty($prefix) ? '' : $separator) . $key;
 
 				# Check if array
-				if (is_array($value))
+				if(
+					is_array($value) && 
+					(
+						!$skipFileArray || (
+							$skipFileArray &&
+							!File::isFileArray($value)
+						)
+					)
+				)
 
 					# Recursively flatten the array
 					$result = array_merge($result, static::flatten($value, $new_key, $separator));

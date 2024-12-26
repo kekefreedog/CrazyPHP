@@ -26,6 +26,7 @@ use CrazyPHP\Core\ApiResponse;
 use CrazyPHP\Core\Response;
 use CrazyPHP\Model\Context;
 use CrazyPHP\Core\Model;
+use CrazyPHP\Library\File\File;
 use CrazyPHP\Model\Env;
 
 /**
@@ -262,7 +263,7 @@ class Controller {
             case 'POST':
 
                 # Set result
-                $result = $_POST;
+                $result = $_POST + $_FILES;
 
                 # Check result
                 if(empty($result)){
@@ -283,15 +284,27 @@ class Controller {
                 # Set raw data
                 $rawData = file_get_contents("php://input");
 
+                # Process the raw data
+                $parsedData = static::parseMultipartData($rawData);
+
+                // Simulate $_POST and $_FILES
+                $_POST = $parsedData['post'];
+                
+                $_FILES = $parsedData['files'];
+
                 # Check if formdata
-                if(strpos($rawData, 'Content-Disposition: form-data;') !== false){
+                /* if(strpos($rawData, 'Content-Disposition: form-data;') !== false){
 
                     /**
                      * @source https://stackoverflow.com/questions/5483851/manually-parse-raw-multipart-form-data-data-with-php
-                     */
+                     *//*
 
                     // read incoming data
                     $input = file_get_contents('php://input');
+
+                    print_r($toto = static::parseMultipartData($input));
+                    print_r(getimagesize($toto["image"]["tmp_name"]));
+                    exit;
                     
                     // grab multipart boundary from content type header
                     preg_match('/boundary=(.*)$/', $_SERVER['CONTENT_TYPE'], $matches);
@@ -300,28 +313,63 @@ class Controller {
                     // split content by boundary and get rid of last -- element
                     $a_blocks = preg_split("/-+$boundary/", $input);
                     array_pop($a_blocks);
+   
+                    # Set i
+                    $i = 0;
+
+                    # loop data blocks
+                    foreach($a_blocks as $id => $block){
                         
-                    // loop data blocks
-                    foreach ($a_blocks as $id => $block)
-                    {
-                      if (empty($block))
-                        continue;
+                        # Check block
+                        if(empty($block))
+
+                            # Continue iteration
+                            continue;
                       
-                      // you'll have to var_dump understand this and maybe replace \n or \r with a visibile char
+                        // you'll have to var_dump understand this and maybe replace \n or \r with a visibile char
                       
-                      // parse uploaded files
-                      if (strpos($block, 'application/octet-stream') !== FALSE)
-                      {
-                        // match "name", then everything after "stream" (optional) except for prepending newlines 
-                        preg_match('/name=\"([^\"]*)\".*stream[\n|\r]+([^\n\r].*)?$/s', $block, $matches);
-                      }
-                      // parse all other fields
-                      else
-                      {
-                        // match "name" and optional value in between newline sequences
-                        preg_match('/name=\"([^\"]*)\"[\n|\r]+([^\n\r].*)?\r$/s', $block, $matches);
-                      }
-                      $data[$matches[1]] = $matches[2] ?? "";
+                        // parse uploaded files
+                        if(strpos($block, 'application/octet-stream') !== false){
+
+                            # match "name", then everything after "stream" (optional) except for prepending newlines 
+                            preg_match('/name=\"([^\"]*)\".*stream[\n|\r]+([^\n\r].*)?$/s', $block, $matches);
+
+                        }else
+                        # parse all other fields
+                        {
+                        
+                            # match "name" and optional value in between newline sequences
+                            preg_match('/name=\"([^\"]*)\"[\n|\r]+([^\n\r].*)?\r$/s', $block, $matches);
+
+                        }
+
+                        # Catch name
+                        preg_match('/name="([^"]*)"/', $block, $matchesName);
+
+                        # Catch mime type
+                        preg_match('/Content-Type:\s*([\w\/\-\.]+)/i', $block, $matchesMime);
+
+                        # $data[$matchesName[1] ?? $matches[1]] = $matches[2] ?? "";
+
+                        # Create tmp file
+                        $tmpFilePath = tempnam(sys_get_temp_dir(), 'php');
+
+                        # Put data
+                        file_put_contents($tmpFilePath, $block ?? "");
+
+                        # Set data
+                        $data[$matchesName[1] ?? $i] = [
+                            "name"      =>  $matches[1],
+                            "type"      =>  $matchesMime[1],
+                            "tmp_name"  =>  $tmpFilePath,
+                            "error"     =>  0,
+                            "size"      =>  filesize($tmpFilePath),
+                            "isJpeg"    =>  getimagesize($tmpFilePath)
+                        ];
+
+                        # Increment i
+                        $i++;
+                      
                     } 
 
                 }else{
@@ -332,7 +380,9 @@ class Controller {
                 }
 
                 # Set result
-                $result = $data;
+                $result = $data; */
+
+                $result = $_POST + $_FILES;
                 
                 # Break
                 break;
@@ -471,6 +521,103 @@ class Controller {
         # Return result
         return $result;
 
+    }
+
+    /** Private static methods
+     ******************************************************
+     */
+
+    /**
+     * Parse Multipart Data
+     * 
+     * Function to parse the raw multipart data
+     * 
+     * @param string $rawData
+     * @return array
+     */
+    public static function parseMultipartData($rawData) {
+
+        $post = [];
+        $files = [];
+    
+        // Extract boundary
+        $boundary = substr($rawData, 0, strpos($rawData, "\r\n"));
+        $parts = explode($boundary, $rawData);
+        array_pop($parts); // Remove the last boundary
+        array_shift($parts); // Remove the initial empty part
+    
+        foreach ($parts as $part) {
+            if (empty(trim($part))) {
+                continue;
+            }
+    
+            // Split headers and body
+            list($headers, $body) = explode("\r\n\r\n", $part, 2);
+    
+            // Parse headers
+            $headers = explode("\r\n", $headers);
+            $contentDisposition = null;
+            $contentType = null;
+            foreach ($headers as $header) {
+                if (stripos($header, 'Content-Disposition:') === 0) {
+                    $contentDisposition = $header;
+                }
+                if (stripos($header, 'Content-Type:') === 0) {
+                    $contentType = trim(substr($header, strlen('Content-Type:')));
+                }
+            }
+    
+            // Extract metadata from Content-Disposition
+            if (preg_match('/name="([^"]+)"/', $contentDisposition, $nameMatch)) {
+                $name = $nameMatch[1];
+                $body = substr($body, 0, strrpos($body, "\r\n")); // Remove trailing CRLF
+    
+                // Check if this is a file or a regular form field
+                if (preg_match('/filename="([^"]+)"/', $contentDisposition, $filenameMatch)) {
+                    $filename = $filenameMatch[1];
+    
+                    // Handle file inputs
+                    $fileEntry = [
+                        'name' => $filename,
+                        'type' => $contentType,
+                        'tmp_name' => tempnam(sys_get_temp_dir(), 'upload_'),
+                        'error' => 0,
+                        'size' => strlen($body),
+                    ];
+    
+                    // Write file content to a temporary file
+                    file_put_contents($fileEntry['tmp_name'], $body);
+    
+                    // Handle multiple files (e.g., name="images[]")
+                    if (substr($name, -2) === '[]') {
+                        $name = substr($name, 0, -2); // Remove the []
+                        if (!isset($files[$name])) {
+                            $files[$name] = ['name' => [], 'type' => [], 'tmp_name' => [], 'error' => [], 'size' => []];
+                        }
+                        $files[$name]['name'][] = $fileEntry['name'];
+                        $files[$name]['type'][] = $fileEntry['type'];
+                        $files[$name]['tmp_name'][] = $fileEntry['tmp_name'];
+                        $files[$name]['error'][] = $fileEntry['error'];
+                        $files[$name]['size'][] = $fileEntry['size'];
+                    } else {
+                        $files[$name] = $fileEntry;
+                    }
+                } else {
+                    // Handle regular form inputs
+                    if (substr($name, -2) === '[]') {
+                        $name = substr($name, 0, -2); // Remove the []
+                        if (!isset($post[$name])) {
+                            $post[$name] = [];
+                        }
+                        $post[$name][] = $body;
+                    } else {
+                        $post[$name] = $body;
+                    }
+                }
+            }
+        }
+    
+        return ['post' => $post, 'files' => $files];
     }
     
 

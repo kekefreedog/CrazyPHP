@@ -72,6 +72,7 @@ class Process {
             "bool",
         ],
         "FILE"      =>  [
+            "storeInLocalAndGetPath"
         ]
     ];
 
@@ -1193,6 +1194,59 @@ class Process {
         }
 
         # Return result
+        return $result;
+
+    }
+
+    /**
+     * Store In Local And Get Path
+     * 
+     * @param mixed
+     * @return string|null
+     */
+    public static function storeInLocalAndGetPath(mixed $input):string|null {
+
+        # Set result
+        $result = null;
+
+        # Check if file content
+        if(
+            is_array($input) && 
+            File::isFileArray($input) &&
+            $input["type"] ?? false &&
+            array_key_exists($input["type"], array_flip(File::EXTENSION_TO_MIMETYPE))
+        ){
+
+            # Get folder min
+            $folderLower = array_flip(File::EXTENSION_TO_MIMETYPE)[$input["type"]];
+
+            # Get folder
+            $folder = ucfirst($folderLower);
+
+            # Get tmp file
+            $filename = "upload_".time();
+
+            # Set path
+            $path = "@app_root/assets/$folder/Local";
+
+            # Check folder exists
+            if(!File::exists($path))
+
+                # Create dir
+                File::createDirectory($path);
+
+            # Copy file
+            $success = File::copy($input["tmp_name"], "$path/$filename");
+
+            # Check sucess
+            if($success)
+
+                # Set success
+                $result = "/asset/local/$folderLower/$filename";
+            
+        }
+
+        # Return null
         return $result;
 
     }
