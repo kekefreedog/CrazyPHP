@@ -49,3 +49,4 @@ export {default as Crazyurl} from "./Library/Crazyurl";
 export {default as Form} from "./Library/Utility/Form";
 export {default as Hash} from "./Library/Utility/Hash";
 export {default as DomRoot} from "./Library/Dom/Root";
+export {default as State} from './Library/State';

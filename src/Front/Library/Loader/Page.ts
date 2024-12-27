@@ -18,6 +18,7 @@ import Pageregister from './../Pageregister';
 import Crazycolor from '../Crazycolor';
 import Crazyurl from '../Crazyurl';
 import DomRoot from '../Dom/Root';
+import State from '../State';
 
 /**
  * Crazy Page Loader
@@ -555,6 +556,9 @@ export default class Page {
             // Get state
             stateObject = await options.scriptLoaded.loadPageState();
 
+            // Set page state
+            options.name && State.set().page(stateObject, options.name);
+
             // check options status
             if(options.status && options.status === null){
 
@@ -667,8 +671,17 @@ export default class Page {
         // Get document
         let doc = document;
 
+        // Set state stored
+        let pageState = options.name
+            ? State.get().page(null, options.name)
+            : null
+        ;
+
         // Set state
-        let state = {...await options.scriptLoaded?.loadPageState()};
+        let state = pageState
+            ? pageState
+            : {...await options.scriptLoaded?.loadPageState("", false)}
+        ;
 
         // Get potential overide source
         // @ts-ignore

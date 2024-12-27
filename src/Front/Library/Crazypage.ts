@@ -13,9 +13,9 @@
  */
 import Pageregister from "./Pageregister";
 import Crazyrequest from "./Crazyrequest";
-import { Crazyobject } from "../Types";
 import Arrays from "./Utility/Arrays";
 import Crazyurl from './Crazyurl';
+import State from "./State";
 
 /**
  * Crazy Page
@@ -539,29 +539,56 @@ export default abstract class Crazypage {
      * Load current page state
      * 
      * @param url:string
+     * @param updateState:boolean
      * @return Promise(Object|Array<any>)
      */
-    public static loadPageState = async (url:string = ""):Promise<PageState> => { 
+    public static loadPageState = async (url:string = "", updateState:boolean = true):Promise<PageState> => { 
+
+        // Check state stored
+        let internStoreState = State.get().page();
+
+        // Check internStoreState
+        if(internStoreState){
+
+            // Return
+            return internStoreState;
+
+        }else{
             
-        // Check url
-        if(!url)
+            // Check url
+            if(!url)
 
-            // Get current url
-            url = Crazyurl.get(true);
+                // Get current url
+                url = Crazyurl.get(true);
 
-        // New query
-        let query = new Crazyrequest(
-            `${url}?catch_state=true`,
-            {
-                method: "get",
-                cache: false,
-                responseType: "json",
-                from: "internal"
-            }
-        );
+            // New query
+            let query = new Crazyrequest(
+                `${url}?catch_state=true`,
+                {
+                    method: "get",
+                    cache: false,
+                    responseType: "json",
+                    from: "internal"
+                }
+            );
 
-        // Rerurn result
-        return query.fetch();
+            // Rerurn result
+            return query.fetch()
+                .then((value:any) => {
+
+                    // Check value
+                    if(updateState && value && Object.keys(value))
+
+                        // Set page state
+                        State.set().page(value);
+
+                    // Return value
+                    return value;
+
+                })
+            ;
+
+        }
         
     }
 
