@@ -1039,7 +1039,7 @@ class File {
         $result = "";
 
         # Fetch the image content from the URL
-        $content = file_get_contents($url);
+        $content = @file_get_contents($url);
 
         # Check content
         if($content === false)
