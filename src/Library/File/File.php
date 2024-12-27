@@ -1031,8 +1031,9 @@ class File {
      * @param string $url The URL of the image to download.
      * @param string $tempFileName The prefix for the temporary file name.
      * @return string The path to the saved temporary file or an error message.
+     * @param array $errors Collection of potential errors
      */
-    public static function downloadToTmp(string $url = "", string $tempFileName = "tmp"):string {
+    public static function downloadToTmp(string $url = "", string $tempFileName = "tmp", array &$errors = []):string {
 
         # Set result
         $result = "";
@@ -1044,13 +1045,13 @@ class File {
         if($content === false)
 
             # New Exception
-            throw new CrazyException(
+            $errors[] = [
                 "Could not download the image from the URL: $url",
                 500,
                 [
                     "custom_code"   =>  "file-002",
                 ]
-            );
+            ];
 
         # Create a temporary file in the system's temp directory
         $tempFile = tempnam(sys_get_temp_dir(), "__".($tempFileName ? $tempFileName : "tmp"));
@@ -1059,13 +1060,13 @@ class File {
         if($tempFile === false)
 
             # New Exception
-            throw new CrazyException(
+            $errors[] = [
                 "Could not create a temporary file.",
                 500,
                 [
                     "custom_code"   =>  "file-003",
                 ]
-            );
+            ];
 
         # Write the image content to the temporary file
         $result = file_put_contents($tempFile, $content);
@@ -1074,13 +1075,13 @@ class File {
         if($result === false)
 
             # New Exception
-            throw new CrazyException(
+            $errors[] = [
                 "Could not write to the temporary file: $tempFile",
                 500,
                 [
                     "custom_code"   =>  "file-003",
                 ]
-            );
+            ];
 
         # Return the path to the temporary file
         return $tempFile;
