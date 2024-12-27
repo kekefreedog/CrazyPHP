@@ -152,4 +152,25 @@ export default class Strings {
 
     }
 
+    /**
+     * Decode Html
+     * 
+     * HTML Entity Decoder
+     * 
+     * @param html
+     * @returns {string}
+     */
+    public static decodeHTML = (html:string):string => {
+
+        // Set dom parser
+        const parser = new DOMParser();
+
+        // Parse from string
+        const dom = parser.parseFromString(html, 'text/html');
+
+        // Return text result
+        return dom.documentElement.textContent ?? "";
+
+    }
+
 }

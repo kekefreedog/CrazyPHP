@@ -1452,5 +1452,45 @@ class Helpers {
         return sprintf("#%06X", $randomColor);
 
     }
+    /**
+     * Format Currency
+     * 
+     * Returns the string in formatted as currency
+     * 
+     * @param mixed $value Number to use
+     * @param mixed $currency "dollar" or "euro"
+     * @return string
+     */
+    public static function formatCurrency($value, $currency, $option) {
+
+        # Set result
+        $result = $value;
+
+        # Set number
+        $number = floatval($result);
+
+        # Check currency
+        if(!$currency || !is_string($currency))
+
+            # Set currency
+            $currency = "dollar";
+        
+        # Format based on the currency type
+        switch (strtolower($currency)) {
+            # Case euro
+            case 'euro':
+                $result = number_format($number, 2, ',', ' ') . ' €';
+                break;
+            # Default case dollar
+            case 'dollar':
+            default:
+                $result = '$ ' . number_format($number, 2, ',', '.');
+                break;
+        }
+    
+        # Return result
+        return $result;
+
+    }
 
 }
