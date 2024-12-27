@@ -31,7 +31,8 @@ export default class State {
     /** @var defaultSchema */
     public static defaultSchema:Record<string,any>|any[] = {
         "_page": {},
-        "_global": {}
+        "_global": {},
+        "_partial": {},
     };
 
     /** Private parameters
@@ -233,6 +234,56 @@ export default class State {
 
         // Set key
         let key = `_page.${page}`;
+
+        // Check if get
+        if(State._trigger === "set" && typeof value !== "undefined"){
+
+            // Set state
+            this._store.setState((state:Record<string,any>|any[]) => (this._setValueByKeyPath(state, key, value)));
+
+        }else
+        // If get
+        if(State._trigger === "get"){
+        
+            // Return data
+            result = this._getValueByKeyPath(this._store.getState(), key);
+  
+        }else
+        // If delete
+        if(State._trigger === "delete"){
+
+            // Delete all
+            this._store.setState((state:Record<string,any>|any[]) => (this._removeValueByKeyPath(state, key)))
+
+        }
+
+        // Return result
+        return result;
+
+    }
+
+    /**
+     * Global Partial
+     * 
+     * Get or set data
+     * 
+     * @param key 
+     * @param value 
+     * @returns {any}
+     */
+    public globalPartial = (partialName:string, value?:any):any => {
+
+        // Declare result
+        let result:any = null;
+
+        // Check page
+        if(!partialName)
+
+            // Stop
+            return result;
+
+        // Set key
+        let key = `_partial.${partialName}`;
 
         // Check if get
         if(State._trigger === "set" && typeof value !== "undefined"){
