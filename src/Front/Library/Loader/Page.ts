@@ -554,7 +554,7 @@ export default class Page {
         if(options.scriptLoaded && options.scriptLoaded !== null){
             
             // Get state
-            stateObject = await options.scriptLoaded.loadPageState();
+            stateObject = await options.scriptLoaded.loadPageState(options.url?.href);
 
             // Set page state
             options.name && State.set().page(stateObject, options.name);
@@ -569,6 +569,32 @@ export default class Page {
                 options.status.hasState = true;
 
             }
+
+        }
+
+        // Set i
+        let i = 0;
+
+        // Check state match with current page
+        // @ts-ignore
+        while(stateObject._context.routes.current.name !== options.name){
+
+            if(i>1)
+
+                throw "Error loading state";
+
+            if(i>0)
+
+                // @ts-ignore
+                stateObject = await options.scriptLoaded.loadPageState(options.url?.href);
+
+            else
+
+                // Update state object
+                stateObject = State.get().page(null, options.name as string);
+
+            // Increment i
+            i++;
 
         }
 

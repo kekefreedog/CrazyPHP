@@ -545,7 +545,7 @@ export default abstract class Crazypage {
     public static loadPageState = async (url:string = "", updateState:boolean = true):Promise<PageState> => { 
 
         // Check state stored
-        let internStoreState = State.get().page();
+        /* let internStoreState = State.get().page();
 
         // Check internStoreState
         if(internStoreState){
@@ -553,7 +553,7 @@ export default abstract class Crazypage {
             // Return
             return internStoreState;
 
-        }else{
+        }else{ */
             
             // Check url
             if(!url)
@@ -588,7 +588,7 @@ export default abstract class Crazypage {
                 })
             ;
 
-        }
+        /* } */
         
     }
 
