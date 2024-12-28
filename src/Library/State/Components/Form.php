@@ -75,6 +75,7 @@ class Form {
         "select"        =>  [],
         "default"       =>  null,
         "multiple"      =>  false,
+        "depends"       =>  null,
         "_style"        =>  [],
     ];
 

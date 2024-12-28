@@ -185,17 +185,15 @@
             name="{{item.name}}"
             {{#if item._style.customClass.input}}class="{{item._style.customClass.input}}"{{/if}}
             {{#if item.disabled}}disabled=""{{else}}{{#if ../form.onready}}disabled="loading"{{/if}}{{/if}}
-            type="number"
+            type="text"
+            data-type="number"
             {{#if item.placeholder}}placeholder="{{item.placeholder}}"{{else}}placeholder=" "{{/if}}
             {{#if item.readonly}}readonly=""{{/if}}
             {{#if item.default includeZero=false}}value="{{item.default}}" default="{{item.default}}"{{/if}}
             {{#if item.select.[0].value includeZero=false}}min="{{item.select.[0].value}}"{{/if}}
             {{#if item.select.[1].value includeZero=false}}max="{{item.select.[1].value}}"{{/if}}
             {{#if item.required}}required=""{{/if}}
-            {{#if item._style.number.decimal}}
-            step=".01" inputmode="numeric"{{else}}
-            data-maska="N" data-maska-tokens="N:[0-9]:multiple" inputmode="numeric"{{/if}}
-
+            {{#if item._style.number.decimal}}step=".01"{{/if}}
         >
         {{#if item.label}}<label for="{{../form.id}}_{{item.name}}">{{#if item.required}}<b>{{/if}}{{item.label}}{{#if item.required}}</b>*{{/if}}</label>{{/if}}
 
@@ -230,6 +228,7 @@
                 {{#if item._style.customClass.input}}class="{{item._style.customClass.input}}"{{/if}}
                 {{#if item.disabled}}disabled=""{{else}}{{#if radioItem.disabled}}disabled=""{{else}}disabled="loading"{{/if}}{{/if}}
                 {{#if item.default}}checked="" default="true"{{/if}}
+                {{#if item.depends}}data-depends="{{#isArray item.depends}}{{join "," item.depends}}{{else}}{{item.depends}}{{/isArray}}" default="true"{{/if}}
             >
             <span class="lever"></span>
             On

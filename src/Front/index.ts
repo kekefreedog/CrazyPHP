@@ -16,6 +16,7 @@ export {default as Componentregister} from "./Library/Componentregister";
 export {default as NavigatorClient} from "./Library/Navigator/Client";
 export {default as UtilityDateTime} from "./Library/Utility/DateTime";
 export {default as ColorSchema} from "./Library/Utility/ColorSchema";
+export {default as UtilityBoolean} from "./Library/Utility/Boolean";
 export {default as UtilityProcess} from "./Library/Utility/Process";
 export {default as UtilityObjects} from "./Library/Utility/Objects";
 export {default as UtilityStrings} from "./Library/Utility/Strings";

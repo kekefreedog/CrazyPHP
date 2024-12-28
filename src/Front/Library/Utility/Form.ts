@@ -18,6 +18,7 @@ import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
 import IMask, { MaskedOptions, MaskedNumberOptions } from 'imask';
 import {default as PageError} from './../Error/Page';
 import {default as UtilityStrings} from './Strings';
+import UtilityBoolean from '../Utility/Boolean';
 import Crazyrequest from '../Crazyrequest';
 import fr_FR from 'filepond/locale/fr-fr';
 import * as FilePond from 'filepond';
@@ -738,6 +739,9 @@ export default class Form {
      */
     private _onSubmitCreate = async (entityValue:string, formData:FormData):Promise<any> => {
 
+        // Check submit before
+        this._options.onBeforeSubmit && this._options.onBeforeSubmit(entityValue, formData);
+
         // Prepare request
         let request = new Crazyrequest(`/api/v2/${entityValue}/create`, {
             method: "POST",
@@ -764,6 +768,9 @@ export default class Form {
      */
     private _onSubmitUpdate = async (entityValue:string, valueID:string, formData:FormData):Promise<any> => {
 
+        // Check submit before
+        this._options.onBeforeSubmit && this._options.onBeforeSubmit(entityValue, formData);
+
         // Prepare request
         let request = new Crazyrequest(`/api/v2/${entityValue}/update/${valueID}`, {
             method: "PUT",
@@ -789,6 +796,20 @@ export default class Form {
      * @returns {Promise<any>}
      */
     private _onSubmiDelete = async (entityValue:string, valueID:string):Promise<any> => {
+
+        // Check event
+        if(this._options.onBeforeSubmit){
+
+            // New formdata
+            let formData = new FormData();
+
+            // Append if to formdata
+            formData.append("id", valueID);
+
+            // Check submit before
+            this._options.onBeforeSubmit(entityValue, formData);
+
+        }
 
         // Prepare request
         let request = new Crazyrequest(`/api/v2/${entityValue}/delete/${valueID}`, {
@@ -1011,6 +1032,9 @@ export default class Form {
                         ? inputEl.dataset.type
                         : inputEl.type
                     ;
+
+                    // Check depends
+                    inputEl.dataset.depends && this._addDependencies(inputEl, inputEl.dataset.depends);
 
                     // Get init method name
                     let initMethodName:string = `_init${UtilityStrings.ucfirst(inputType.toLowerCase())}Input`;
@@ -2730,6 +2754,157 @@ export default class Form {
                         
 
                 })
+
+            }
+
+        }
+
+    }
+
+    /** Private methods | Depends
+     ******************************************************
+     */
+
+    /**
+     * Add Dependencies
+     * 
+     * @param inputEl 
+     * @param dependencies 
+     */
+    private _addDependencies = (
+        inputEl:HTMLInputElement|HTMLSelectElement,
+        dependencies:string|string[],
+    ):void => {
+        
+        // Check depends
+        if(typeof dependencies === "string"){
+
+            // Convert it to array
+            dependencies = dependencies.split(",");
+
+        // Remove duplicates
+        dependencies = <string[]>[...new Set(dependencies)];
+
+        // Check dependencies
+        if(dependencies.length){
+
+            // Get type of input el
+            let inputType = inputEl.dataset.type
+                ? inputEl.dataset.type
+                : inputEl.type
+            ;
+
+            // Check inputType
+            if(inputType){
+
+                // Iteration of dependencies
+                for(let dependency of dependencies){
+
+                    // Search el
+                    let dependencyEl:HTMLInputElement|HTMLSelectElement|null = !dependency
+                        ? null
+                        : this._formEl.querySelector(`input[name="${dependency}"], select[name="${dependency}"`)
+                    ;
+
+                    // Check dependency
+                    if(dependencyEl){
+
+                        // Get type of input el
+                        let dependencyType = dependencyEl.dataset.type
+                            ? dependencyEl.dataset.type
+                            : dependencyEl.type
+                        ;
+
+                        // Check if method to retrieve value is set
+                        if(dependencyType && typeof this[`${dependencyType}Retrieve`] === "function"){
+                    
+                                // Set result
+                                let retrieveMethold = this[`${dependencyType}Retrieve`];
+
+                                // Add event change on dependencyEl
+                                dependencyEl.addEventListener(
+                                    "change",
+                                    (e:Event):void => {
+
+                                        // Get current element
+                                        let currentTarget = e.currentTarget;
+
+                                        // Check if select or input
+                                        if(currentTarget instanceof HTMLSelectElement || currentTarget instanceof HTMLInputElement){
+
+                                            // Retrieve value of the current target
+                                            let result:null|Array<any> = retrieveMethold(currentTarget);
+
+                                            // Check if already disabled
+                                            if(
+                                                inputEl.disabled &&
+                                                inputEl.hasAttribute("disabled") && 
+                                                inputEl.getAttribute("disabled") != "depends"
+                                            ){
+
+                                                // Stop
+                                                return;
+
+                                            }else
+                                            // Check if result is null
+                                            if(
+                                                result === null
+                                            ){
+
+                                                // Remove disabled
+                                                if(inputEl.disabled){
+
+                                                    // Remove disabled
+                                                    inputEl.disabled = false;
+
+                                                    // Remove attribute
+                                                    inputEl.removeAttribute("disabled");
+
+                                                }
+
+                                                // Stop
+                                                return;
+
+                                            }
+
+                                            // Check result is false
+                                            if(
+                                                result.length !== 2 ||
+                                                // Case checkbox
+                                                (
+                                                    inputType === "checkbox" &&
+                                                    UtilityBoolean.check(result[1]) == false
+                                                )
+                                                // ...
+                                            ){
+
+                                                // Disable input El
+                                                inputEl.disabled = true;
+
+                                                // Add value to attribute
+                                                inputEl.setAttribute("disabled", "depends")
+
+                                                // Unchecked check box
+                                                inputEl instanceof HTMLInputElement && inputType === "checkbox" && (inputEl.checked = false);
+
+                                            }else{
+
+                                                // Disable input El
+                                                inputEl.disabled = false;
+                                                
+                                            }
+
+                                        }
+
+                                    }
+                                )
+
+                        }
+
+
+                    }
+
+                }
 
             }
 
