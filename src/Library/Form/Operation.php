@@ -74,18 +74,24 @@ class Operation {
         "[]" => [ 
            "name" => "between",
            "operation" => "[]",
-           "regex" => '/^\[\s*(\d+)\s*:\s*(\d+)\s*\]$/'
+           "regex" => '/^\[\s*(\d+)\s*:\s*(\d+)\s*\]$/' # REGEX NOT WORKING 🔴
         ],
         "![]" => [ 
            "name" => "notBetween",
            "operation" => "![]",
-           "regex" => "/^!\[\s*(.+?):\s*(.+?)\s*\]$/"
+           "regex" => "/^!\[\s*(.+?):\s*(.+?)\s*\]$/" # REGEX NOT WORKING 🔴
         ],
         "*" => [ 
            "name" => "like",
            "operation" => "*",
-           "regex" => "/^(\*)?(.*?)(\*)?$/"
+           "regex" => "/^(\*)?(.*?)(\*)?$/" # REGEX WORKING BUT CATCHING [10:10] or [!10:10] 🔴
         ],
+    ];
+
+    /** @param array $_options */
+    public $options = [
+        "prefix"    =>  "",
+        "suffix"    =>  ''
     ];
 
     /** Private parameters
@@ -101,9 +107,16 @@ class Operation {
      * Construct and prepare instance
      * 
      * @param string|array $Operation Exemple ["=", "[]"] or ["contains", "between"] or "@>" or "contains" or "@all" (for all operations)
+     * @param array $options [
+     *      suffix:string
+     *      prefix:string
+     * ]
      * @return self
      */
-    public function __construct(string|array $operations = "@all"){
+    public function __construct(string|array $operations = "@all", $options = []){
+
+        # Ingest options
+        $this->_ingestOptions($options);
 
         # Set operations
         $this->set($operations);
@@ -209,8 +222,18 @@ class Operation {
      * Process input value
      * 
      * @param string|array $input
+     * @param array $options OVerride existing options
      */
-    final public function run(string|array $input):mixed {
+    final public function run(string|array $input, array $options = []):mixed {
+
+        # Get options
+        $runOptions = $this->options;
+
+        # Check options
+        if(!empty($options))
+
+            # Set options
+            $this->_ingestOptions($options, $runOptions);
 
         # Set result
         $result = null;
@@ -239,7 +262,7 @@ class Operation {
             foreach($input as $v)
 
                 # Iteration of current operations
-                foreach($this->_currentOperations as $operation)
+                foreach($this->_currentOperations as $operation){
 
                     # Check regex
                     if(
@@ -263,17 +286,19 @@ class Operation {
                             if($isString)
 
                                 # Run method found
-                                $result = $this->{$methodName}($matches, $operation);
+                                $result = $this->{$methodName}($matches, $operation, $runOptions);
 
                             else
 
                                 # Run method found
-                                $result[] = $this->{$methodName}($matches, $operation);
+                                $result[] = $this->{$methodName}($matches, $operation, $runOptions);
 
                         # Continue
-                        continue 2;
+                        break 2;
 
                     }
+
+                }
             
         }else
         # check is string
@@ -346,9 +371,10 @@ class Operation {
      * 
      * @param string|array $input 
      * @param array $operation
+     * @param array $options
      * @return mixed
      */
-    public function parseEqual(string|array $input, array $operation):mixed {
+    public function parseEqual(string|array $input, array $operation, array $options = []):mixed {
 
         # Push input in operations
         $operation["value"] = $input;
@@ -366,9 +392,10 @@ class Operation {
      * 
      * @param string|array $input 
      * @param array $operation
+     * @param array $options
      * @return mixed
      */
-    public function parseNotEqual(string|array $input, array $operation):mixed {
+    public function parseNotEqual(string|array $input, array $operation, array $options = []):mixed {
 
         # Push input in operations
         $operation["value"] = $input;
@@ -386,9 +413,10 @@ class Operation {
      * 
      * @param string|array $input 
      * @param array $operation
+     * @param array $options
      * @return mixed
      */
-    public function parseLessThanOrEqual(string|array $input, array $operation):mixed {
+    public function parseLessThanOrEqual(string|array $input, array $operation, array $options = []):mixed {
 
         # Push input in operations
         $operation["value"] = $input;
@@ -406,9 +434,10 @@ class Operation {
      * 
      * @param string|array $input 
      * @param array $operation
+     * @param array $options
      * @return mixed
      */
-    public function parseGreaterThanOrEqual(string|array $input, array $operation):mixed {
+    public function parseGreaterThanOrEqual(string|array $input, array $operation, array $options = []):mixed {
 
         # Push input in operations
         $operation["value"] = $input;
@@ -426,9 +455,10 @@ class Operation {
      * 
      * @param string|array $input 
      * @param array $operation
+     * @param array $options
      * @return mixed
      */
-    public function parseSmaller(string|array $input, array $operation):mixed {
+    public function parseSmaller(string|array $input, array $operation, array $options = []):mixed {
 
         # Push input in operations
         $operation["value"] = $input;
@@ -446,9 +476,10 @@ class Operation {
      * 
      * @param string|array $input 
      * @param array $operation
+     * @param array $options
      * @return mixed
      */
-    public function parseGreater(string|array $input, array $operation):mixed {
+    public function parseGreater(string|array $input, array $operation, array $options = []):mixed {
 
         # Push input in operations
         $operation["value"] = $input;
@@ -466,9 +497,10 @@ class Operation {
      * 
      * @param string|array $input 
      * @param array $operation
+     * @param array $options
      * @return mixed
      */
-    public function parseBetween(string|array $input, array $operation):mixed {
+    public function parseBetween(string|array $input, array $operation, array $options = []):mixed {
 
         # Push input in operations
         $operation["value"] = $input;
@@ -486,9 +518,10 @@ class Operation {
      * 
      * @param string|array $input 
      * @param array $operation
+     * @param array $options
      * @return mixed
      */
-    public function parseNotBetween(string|array $input, array $operation):mixed {
+    public function parseNotBetween(string|array $input, array $operation, array $options = []):mixed {
 
         # Push input in operations
         $operation["value"] = $input;
@@ -505,9 +538,10 @@ class Operation {
      * 
      * @param string|array $input 
      * @param array $operation
+     * @param array $options
      * @return mixed
      */
-    public function parseDefault(string|array $input):mixed {
+    public function parseDefault(string|array $input, array $options = []):mixed {
 
         # Push input in operations
         $operation = [
@@ -528,9 +562,10 @@ class Operation {
      * 
      * @param string|array $input 
      * @param array $operation
+     * @param array $options
      * @return mixed
      */
-    public function parseLike(string|array $input, array $operation):mixed {
+    public function parseLike(string|array $input, array $operation, array $options = []):mixed {
 
         # Push input in operations
         $operation["value"] = $input;
@@ -588,6 +623,49 @@ class Operation {
 
         # Return input
         return $operation;
+
+    }
+
+    /** Private methods
+     ******************************************************
+     */
+
+    /**
+     * Ingest Options
+     * 
+     * @param array $options
+     * @param array|null $tempOptions (set options if is array)
+     * @return void
+     */
+    private function _ingestOptions($options = [], array|null &$tempOptions = null):void {
+
+        # Check options
+        if(!empty($options))
+
+            # Iteration options
+            foreach($this->options as $k => $v)
+
+                # Check key exists in options
+                if(array_key_exists($k, $options)){
+
+                    # Check temp options
+                    if(is_array($tempOptions))
+
+                        # Set temp options
+                        $tempOptions[$k] = $options[$k];
+
+                    # Fill instance option
+                    else
+
+                        # Push value in instance option
+                        $this->options[$k] = $options[$k];
+
+                }else
+                # Check temp options
+                if(is_array($tempOptions))
+
+                    # Fill only temp options
+                    $tempOptions[$k] = $this->options[$k];
 
     }
 

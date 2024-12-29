@@ -31,6 +31,13 @@ use MongoDB\BSON\Regex;
  */
 class SqlOperation extends Operation {
 
+    /** Private parameters
+     ******************************************************
+     */
+
+    /** @var string $entity Table to add as prefix */
+    private string $entity = "";
+
     /**
      * Constructor
      * 
@@ -39,10 +46,12 @@ class SqlOperation extends Operation {
      * @param string|array $Operation Exemple ["=", "[]"] or ["contains", "between"] or "@>" or "contains" or "*" (for all operations)
      * @return self
      */
-    public function __construct(string|array $operations = ["*"]){
+    public function __construct(string|array $operations = "@all", string $entity = ""){
 
         # Parent
-        parent::__construct($operations);
+        parent::__construct($operations, [
+            "prefix"    =>  $entity ? trim($entity)."." : $entity
+        ]);
 
     }
 
@@ -58,15 +67,22 @@ class SqlOperation extends Operation {
      * 
      * @param string|array $input 
      * @param array $operation
+     * @param array $options
      * @return mixed
      */
-    public function parseEqual(string|array $input, array $operation):mixed {
+    public function parseEqual(string|array $input, array $operation, array $options = []):mixed {
 
         # Set result of parent
         $parentResult = parent::parseEqual($input, $operation);
 
+        # Get value
+        $value = $parentResult["value"][1] ?? "";
+
+        # Process options
+        $this->_processOptions($value, $options);
+
         # Push input in operations
-        $result = '= "'.$parentResult["value"].'"';
+        $result = "= `$value`";
 
         # Return input
         return $result;
@@ -81,15 +97,22 @@ class SqlOperation extends Operation {
      * 
      * @param string|array $input 
      * @param array $operation
+     * @param array $options
      * @return mixed
      */
-    public function parseNotEqual(string|array $input, array $operation):mixed {
+    public function parseNotEqual(string|array $input, array $operation, array $options = []):mixed {
 
         # Set result of parent
         $parentResult = parent::parseNotEqual($input, $operation);
 
+        # Get value
+        $value = $parentResult["value"][1] ?? "";
+
+        # Process options
+        $this->_processOptions($value, $options);
+
         # Push input in operations
-        $result = '<> "'.$parentResult["value"].'"';
+        $result = "<> `$value`";
 
         # Return input
         return $result;
@@ -104,24 +127,32 @@ class SqlOperation extends Operation {
      * 
      * @param string|array $input 
      * @param array $operation
+     * @param array $options
      * @return mixed
      */
-    public function parseLessThanOrEqual(string|array $input, array $operation):mixed {
+    public function parseLessThanOrEqual(string|array $input, array $operation, array $options = []):mixed {
 
         # Set result of parent
         $parentResult = parent::parseLessThanOrEqual($input, $operation);
 
+        # Get value
+        $value = $parentResult["value"][1] ?? "";
+
+        # Process options
+        $this->_processOptions($value, $options);
+
         # Check is numeric
-        if(is_numeric($parentResult["value"]))
+        if(is_numeric($value))
 
             # Push input in operations
-            $result = '<= '.floatval($parentResult["value"]);
+            $result = '<= '.floatval($value);
 
+        # Error
         else
 
             # Error
             throw new CrazyException(
-                "\"".$parentResult["value"]."\" value cannot be less than or equal...",
+                "\"".$parentResult["value"][1]."\" value cannot be less than or equal...",
                 500,
                 [
                     "custom_code"   =>  "sqloperator-001"
@@ -141,18 +172,25 @@ class SqlOperation extends Operation {
      * 
      * @param string|array $input 
      * @param array $operation
+     * @param array $options
      * @return mixed
      */
-    public function parseGreaterThanOrEqual(string|array $input, array $operation):mixed {
+    public function parseGreaterThanOrEqual(string|array $input, array $operation, array $options = []):mixed {
 
         # Set result of parent
         $parentResult = parent::parseGreaterThanOrEqual($input, $operation);
 
+        # Get value
+        $value = $parentResult["value"][1] ?? "";
+
+        # Process options
+        $this->_processOptions($value, $options);
+
         # Check is numeric
-        if(is_numeric($parentResult["value"]))
+        if(is_numeric($value))
 
             # Push input in operations
-            $result = '>= '.floatval($parentResult["value"]);
+            $result = '>= '.floatval($value);
 
         else
 
@@ -178,18 +216,25 @@ class SqlOperation extends Operation {
      * 
      * @param string|array $input 
      * @param array $operation
+     * @param array $options
      * @return mixed
      */
-    public function parseSmaller(string|array $input, array $operation):mixed {
+    public function parseSmaller(string|array $input, array $operation, array $options = []):mixed {
 
         # Set result of parent
         $parentResult = parent::parseSmaller($input, $operation);
 
+        # Get value
+        $value = $parentResult["value"][1] ?? "";
+
+        # Process options
+        $this->_processOptions($value, $options);
+
         # Check is numeric
-        if(is_numeric($parentResult["value"]))
+        if(is_numeric($value))
 
             # Push input in operations
-            $result = '< '.floatval($parentResult["value"]);
+            $result = '< '.floatval($value);
 
         else
 
@@ -215,18 +260,25 @@ class SqlOperation extends Operation {
      * 
      * @param string|array $input 
      * @param array $operation
+     * @param array $options
      * @return mixed
      */
-    public function parseGreater(string|array $input, array $operation):mixed {
+    public function parseGreater(string|array $input, array $operation, array $options = []):mixed {
 
         # Set result of parent
         $parentResult = parent::parseGreater($input, $operation);
 
+        # Get value
+        $value = $parentResult["value"][1] ?? "";
+
+        # Process options
+        $this->_processOptions($value, $options);
+
         # Check is numeric
-        if(is_numeric($parentResult["value"]))
+        if(is_numeric($value))
 
             # Push input in operations
-            $result = '> '.floatval($parentResult["value"]);
+            $result = '> '.floatval($value);
 
         else
 
@@ -252,15 +304,31 @@ class SqlOperation extends Operation {
      * 
      * @param string|array $input 
      * @param array $operation
+     * @param array $options
      * @return mixed
      */
-    public function parseNotBetween(string|array $input, array $operation):mixed {
+    public function parseNotBetween(string|array $input, array $operation, array $options = []):mixed {
 
         # Set result of parent
         $parentResult = parent::parseNotBetween($input, $operation);
 
+        # Get value A
+        $valueA = $parentResult["value"][2];
+
+        # Get value B
+        $valueA = $parentResult["value"][3];
+
+        # Process options on value A
+        $this->_processOptions($valueA, $options);
+
+        # Process options on value B
+        $this->_processOptions($valueB, $options);
+
         # Push input in operations
-        $result = 'NOT BETWEEN '.$parentResult[0].' AND '.$parentResult[1];
+        $result = is_numeric($valueA) && is_numeric($valueB)
+            ? "NOT BETWEEN ".floatval($valueA)." AND ".floatval($valueB)
+            : "NOT BETWEEN `$valueA` AND `$valueB`"
+        ;
 
         # Return input
         return $result;
@@ -275,9 +343,10 @@ class SqlOperation extends Operation {
      * 
      * @param string|array $input 
      * @param array $operation
+     * @param array $options
      * @return mixed
      */
-    public function parseBetween(string|array $input, array $operation):mixed {
+    public function parseBetween(string|array $input, array $operation, array $options = []):mixed {
 
         # Set result of parent
         $parentResult = parent::parseBetween($input, $operation);
@@ -297,9 +366,10 @@ class SqlOperation extends Operation {
      * 
      * @param string|array $input 
      * @param array $operation
+     * @param array $options
      * @return mixed
      */
-    public function parseDefault(string|array $input):mixed {
+    public function parseDefault(string|array $input, array $options = []):mixed {
 
         # Set result of parent
         $parentResult = parent::parseDefault($input);
@@ -320,9 +390,10 @@ class SqlOperation extends Operation {
      * 
      * @param string|array $input 
      * @param array $operation
+     * @param array $options
      * @return mixed
      */
-    public function parseLike(string|array $input, array $operation):mixed {
+    public function parseLike(string|array $input, array $operation, array $options = []):mixed {
 
         # Set result of parent
         $parentResult = parent::parseLike($input, $operation);
@@ -349,6 +420,32 @@ class SqlOperation extends Operation {
 
         # Return regex result
         return $result ;
+
+    }
+
+    /** Private parameters
+     ******************************************************
+     */
+
+    /**
+     * Process Options
+     * 
+     * @param array &$result
+     * @param array $options
+     */
+    private function _processOptions(&$result, $options):void {
+
+        # Check prefix
+        if($options["prefix"] ?? false)
+
+            # Set prefix in result
+            $result = $options["prefix"].$result;
+
+        # Check suffix
+        if($options["suffix"] ?? false)
+
+            # Set prefix in result
+            $result = $result.$options["suffix"];
 
     }
 

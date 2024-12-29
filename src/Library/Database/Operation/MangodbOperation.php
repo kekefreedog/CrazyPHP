@@ -54,11 +54,12 @@ class MangodbOperation extends Operation {
      * Exemple : `*value`
      * Description : Performs a pattern match (like SQL's LIKE)
      * 
-     * @param string|array $input 
+     * @param string|array $input
      * @param array $operation
+     * @param array $options
      * @return mixed
      */
-    public function parseLike(string|array $input, array $operation):mixed {
+    public function parseLike(string|array $input, array $operation, array $options = []):mixed {
 
         # Set result of parent
         $parentResult = parent::parseLike($input, $operation);
