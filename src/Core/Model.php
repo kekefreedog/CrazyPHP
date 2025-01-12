@@ -93,6 +93,18 @@ class Model implements CrazyModel {
 
     }
 
+    /**
+     * Create Table
+     * 
+     * @return void
+     */
+    public function createTable():void {
+
+        # Create table
+        $this->driver->createTable();
+
+    }
+
     /** Public methods | Id 
      ******************************************************
      */

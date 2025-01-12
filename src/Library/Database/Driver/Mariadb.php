@@ -1173,6 +1173,166 @@ class Mariadb implements CrazyDatabaseDriver {
 
     }
 
+    /** Public Static Methods | Audit (catch event on CREATE | UPDATE | DELETE)
+     ******************************************************
+     */
+     
+    /**
+     * Create Audit Table
+     * 
+     * Create audit table and create trigger based on operation and table to fill audit table automatically
+     * 
+     * @param string|array $tables to audit
+     * @param string|array $column to retrieve on audit
+     * @param string|array $operations to audit ['INSERT'|'UPDATE'|'DELETE']
+     * @param string $auditLogTableName audit table name (:-Audit_log)
+     * @return void
+     */
+    public static function createAuditTable(
+        string|array $tables,
+        string|array $columns,
+        string|array $operations = ['INSERT', 'UPDATE', 'DELETE'],
+        string $auditLogTableName = 'Audit_log'
+    ):void {
+
+        # Check operation
+        if(!is_array($operations))
+        
+            # Set operation
+            $operations = [$operations];
+
+        # Check columns
+        if(!is_array($columns))
+        
+            # Set operation
+            $columns = [$columns];
+
+        # Check tables
+        if(!is_array($tables))
+        
+            # Set tables
+            $tables = [$tables];
+
+        # Check audit log table name
+        if(!$auditLogTableName)
+
+            # Set default name
+            $auditLogTableName = 'Audit_log';
+     
+        # Create the audit_log table if it does not exist
+        $createAuditTableSQL = "
+            CREATE TABLE IF NOT EXISTS `$auditLogTableName` (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                table_name VARCHAR(255) NOT NULL,
+                operation_type ENUM('INSERT', 'UPDATE', 'DELETE') NOT NULL,
+                old_data JSON NULL,
+                new_data JSON NULL,
+                changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        ";
+
+        # Get pdo
+        $pdo = MariadbConnection::getInstance();
+
+        # Create audiot table is not exists
+        $pdo->exec($createAuditTableSQL);
+
+        # Check tables
+        if(!empty($tables) && !empty($operations))
+        
+            # Generate triggers for each table and operation
+            foreach($tables as $table)
+
+                # Check table
+                if($table)
+
+                    # Iteration operations
+                    foreach($operations as $operation){
+
+                        # Set Trigger name
+                        $triggerName = "{$table}_after_".strtolower($operation);
+            
+                        # Check if the trigger already exists
+                        $checkTriggerSQL = "
+                            SELECT COUNT(*) AS trigger_exists
+                            FROM information_schema.TRIGGERS
+                            WHERE TRIGGER_NAME = :trigger_name
+                            AND EVENT_OBJECT_TABLE = :table_name
+                            AND TRIGGER_SCHEMA = DATABASE();
+                        ";
+            
+                        # Prepare request
+                        $stmt = $pdo->prepare($checkTriggerSQL);
+
+                        # Execute request
+                        $stmt->execute([
+                            'trigger_name' => $triggerName,
+                            'table_name' => $table,
+                        ]);
+            
+                        # Get result
+                        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+                        # Check if exists
+                        if($result['trigger_exists'] > 0)
+
+                            # Trigger already exists, skip creation
+                            continue;
+            
+                        # Generate JSON_OBJECT for old_data
+                        $oldDataParts = [];
+
+                        # Generate JSON_OBJECT for new_data
+                        $newDataParts = [];
+
+                        # Iteration column needed
+                        foreach($columns as $column)
+
+                            # Check column
+                            if($column){
+
+                                # Push into old column
+                                $oldDataParts[] = "'$column', OLD.$column";
+
+                                # Push into new column
+                                $newDataParts[] = "'$column', NEW.$column";
+
+                            }
+
+                        # Set old data json schema
+                        $oldDataJson = count($oldDataParts) > 0 
+                            ? "JSON_OBJECT(" . implode(', ', $oldDataParts) . ")" 
+                            : "NULL"
+                        ;
+
+                        # Set new data json schema
+                        $newDataJson = count($newDataParts) > 0 
+                            ? "JSON_OBJECT(" . implode(', ', $newDataParts) . ")" 
+                            : "NULL"
+                        ;
+            
+                        # Build SQL for the trigger
+                        $triggerSQL = "
+                            CREATE TRIGGER `$triggerName`
+                            AFTER $operation ON `$table`
+                            FOR EACH ROW
+                            BEGIN
+                                INSERT INTO `$auditLogTableName` (table_name, operation_type, old_data, new_data)
+                                VALUES ('$table', '$operation', 
+                                    " . ($operation !== 'INSERT' ? $oldDataJson : 'NULL') . ", 
+                                    " . ($operation !== 'DELETE' ? $newDataJson : 'NULL') . "
+                                );
+                            END;
+                        ";
+            
+                        # Execute the trigger creation SQL
+                        $pdo->exec($triggerSQL);
+
+                    }
+
+    }
+     
+
     /** Public Static Methods | Utilities
      ******************************************************
      */

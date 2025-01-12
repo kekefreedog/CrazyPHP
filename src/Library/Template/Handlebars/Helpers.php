@@ -22,6 +22,7 @@ use CrazyPHP\Library\Form\Process;
 use ReflectionMethod;
 use ReflectionClass;
 use Exception;
+use IntlDateFormatter;
 
 /**
  * Helpers
@@ -1452,6 +1453,7 @@ class Helpers {
         return sprintf("#%06X", $randomColor);
 
     }
+
     /**
      * Format Currency
      * 
@@ -1491,6 +1493,160 @@ class Helpers {
         # Return result
         return $result;
 
+    }
+
+    /**
+     * Days of month
+     * 
+     * Handlebars helper to get all days of a given month and year 
+     * 
+     * @param int $year  The year (e.g., 2025).
+     * @param int $month The month (1 for January, 12 for December).
+     * @return array An array of days in the format YYYY-MM-DD.
+     */
+    public static function daysOfMonth($year, $month, $option) {
+
+        # Get current date
+        $now = new DateTime();
+
+        # Validate year
+        $year = (is_int($year) && $year > 0) 
+            ? $year 
+            : (int)$now->format('Y')
+        ;
+
+        # Validate month
+        $month = (is_int($month) && $month >= 1 && $month <= 12) 
+            ? $month 
+            : (int)$now->format('n')
+        ;
+
+        # Get the number of days in the given month and year
+        $daysInMonth = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+    
+        $days = [];
+        for ($day = 1; $day <= $daysInMonth; $day++) {
+            // Format the date as YYYY-MM-DD
+            $formattedDate = sprintf('%04d-%02d-%02d', $year, $month, $day);
+            $days[] = $formattedDate;
+        }
+    
+        return $days;
+
+    }
+
+    /**
+     * Is Current Day
+     * 
+     * Returns true if value (2025-01-05) is the current day
+     * 
+     * @param input like 2025-01-12
+     * @return boolean
+     */
+    public static function isCurrentDay($input, $option) {
+
+        # Set result
+        $result = is_string($input) && $input && $input === date('Y-m-d')
+            ? $option['fn']()
+            : $option['inverse']()
+        ;
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Is Weekend
+     * 
+     * Returns true if value (2025-01-05) is the weekend
+     * 
+     * @param input like 2025-01-12
+     * @return boolean
+     */
+    public static function isWeekend($input, $option) {
+
+        # Set result
+        $result = false;
+
+        # Check input
+        if(is_string($input) && $input){
+
+            # Set timestamp
+            $timestamp = strtotime($input);
+
+            # Get week day 1 = Monday, 7 = Sunday
+            $dayOfWeek = date('N', $timestamp);
+
+            # Check if saturday of sunday
+            if($dayOfWeek == 6 || $dayOfWeek == 7)
+
+                # Set result
+                $result = true;
+
+        }
+
+        # Set result
+        return $result
+            ? $option['fn']()
+            : $option['inverse']()
+        ;
+
+    }
+
+    /**
+     * Date To Local Format
+     * 
+     * Return date to local format Vendredi 13 Janvier
+     * 
+     * @param mixed $input
+     * @param mixed $locale exemple : 
+     * @param mixed options
+     */
+    public static function dateToLocalFormat($input, $locale, $option) {
+
+        # Set result
+        $result = $input;
+
+        # Check input
+        if(is_string($input) && $input && is_string($locale) && $locale){
+
+            # Set timestamp
+            $timestamp = strtotime($input);
+
+            # Define weekday and month names for supported locales
+            $locales = [
+                'en_US' => [
+                    'weekdays' => ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+                    'months' => ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+                ],
+                'fr_FR' => [
+                    'weekdays' => ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
+                    'months' => ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
+                ],
+                # Add more locales as needed
+            ];
+
+            # Fallback to 'en_US' if the locale is not supported
+            $localeData = $locales[$locale] ?? $locales['en_US'];
+
+            # 'w' gives the day index (0 = Sunday)
+            $weekday = $localeData['weekdays'][date('w', $timestamp)]; 
+            
+            # Day of the month without leading zeros
+            $day = date('j', $timestamp); 
+
+            # 'n' gives 1-based month
+            $month = $localeData['months'][date('n', $timestamp) - 1];
+
+            # Combine and return the formatted date
+            $result = "{$weekday} {$day} {$month}";
+
+        }
+
+        # Return result
+        return $result;
+        
     }
 
 }

@@ -33,6 +33,7 @@
         "filepond-plugin-image-preview": "^4.6.12",
         "imask": "^7.6.1",
         "killa": "^1.9.1",
+        "reconnecting-websocket": "^4.4.0",
         "tom-select": "^2.3.1"
     }
 }

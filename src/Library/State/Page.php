@@ -21,13 +21,13 @@ use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Form\Validate;
 use CrazyPHP\Exception\CatchState;
 use CrazyPHP\Library\Array\Arrays;
+use CrazyPHP\Library\String\Color;
 use CrazyPHP\Library\File\Config;
-use CrazyPHP\Library\File\File;
+use CrazyPHP\Library\String\Url;
 use CrazyPHP\Library\Form\Query;
+use CrazyPHP\Library\File\File;
 use CrazyPHP\Core\ApiResponse;
 use CrazyPHP\Core\Controller;
-use CrazyPHP\Library\String\Color;
-use CrazyPHP\Library\String\Url;
 use CrazyPHP\Model\Context;
 use CrazyPHP\Model\Env;
 use Exception;
@@ -433,6 +433,12 @@ class Page {
 
         # Check code
         if($options["code"] ?? false){
+
+            # Check code is string
+            if(is_string($options["code"]))
+
+                # Set code as int
+                $options["code"] = 500;
 
             # Get error
             $errorContent = HttpStatusCode::get($options["code"], $options);

@@ -2777,7 +2777,7 @@ export default class Form {
     ):void => {
         
         // Check depends
-        if(typeof dependencies === "string"){
+        if(typeof dependencies === "string")
 
             // Convert it to array
             dependencies = dependencies.split(",");
@@ -2900,7 +2900,6 @@ export default class Form {
                                 )
 
                         }
-
 
                     }
 

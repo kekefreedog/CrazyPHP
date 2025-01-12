@@ -26,6 +26,7 @@ use CrazyPHP\Library\File\Docker;
 use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\File\File;
 use splitbrain\phpcli\Options;
+use CrazyPHP\Core\Websocket;
 use League\CLImate\CLImate;
 use splitbrain\phpcli\CLI;
 use CrazyPHP\Cli\Form;
@@ -141,7 +142,28 @@ class Core extends CLI {
                 "help"          =>  "Run migration of your crazy application."
             ]
         ],
-
+        # CrazyWebsocket
+        "CrazyWebsocket"    =>  [
+            # Run
+            [
+                "type"          =>  "command",
+                "long"          =>  "run",
+                "help"          =>  "Run the websocket server of your crazy application.",
+            ],
+            # Stop
+            [
+                "type"          =>  "command",
+                "long"          =>  "stop",
+                "help"          =>  "Stop the websocket server of your crazy application."
+            ],
+            # Yes
+            [
+                "type"          =>  "option",
+                "long"          =>  "yes",
+                "short"         =>  "y",
+                "help"          =>  "Assume yes on all prompt"
+            ]
+        ]
     ];
 
     /** Arguments
@@ -244,9 +266,9 @@ class Core extends CLI {
 
                 # Set input
                 $input = [
-                    /* "opts"  =>  $options->getOpts, */
                     "args"  =>  $options->getArgs(),
-                    "cmd"   =>  $options->getCmd()
+                    "cmd"   =>  $options->getCmd(),
+                    "opt"  =>  $options->getOpt()
                 ];
 
                 # Try
@@ -1605,6 +1627,155 @@ class Core extends CLI {
 
     }
 
+    /** Protected Methods Action | For CrazyWebsocket
+     ******************************************************
+     */
+
+    /** 
+     * Action Websocket Run
+     * 
+     * Run websocket server
+     * 
+     * @param array $inputs Collection of inputs with opts, args & cmd
+     */
+    protected function actionCrazyWebsocketRun(array $inputs = []){
+
+        # Is Yes
+        $isYes = $this->_checkOpt($inputs, 'yes');
+
+        # New climate
+        $climate = new CLImate();
+
+        # Add asci folder
+        $climate->addArt(self::ASCII_ART["crazyphp"]);
+        
+        # Draw crazy php logo
+        $climate->draw('crazyphp');
+
+        # Title of current action
+        $climate->backgroundBlue()->out("🚀 Run Websocket Server")->br();
+          
+        # Check command is in router
+        $this->_checkInRouter($inputs);
+
+        # Check not is yes
+        if(!$isYes){
+
+            # Message
+            $input = $climate
+                ->lightBlue()
+                ->bold()
+                ->confirm('✅ Do you want run websocket server ? ✅')
+            ;
+            
+            # Check action confirmed
+            if (!$input->confirmed()){
+
+                # Stop message
+                $climate
+                    ->br()
+                    ->bold()
+                    ->red("✋ Action canceled ✋")
+                    ->br()
+                ;
+
+                # Stop action
+                return;
+
+            }
+
+            # Title of current action
+            $climate
+                ->br()
+                ->backgroundBlue()
+                ->out("🚀 Run websocket")->br()
+            ;
+        
+        }
+
+        # Run websocket
+        (new Websocket)->run();
+
+        # Success message
+        $climate
+            ->br()
+            ->lightGreen()
+            ->bold()
+            ->out("🎉 Websocket ran with success 🎉")
+            ->br()
+        ;
+
+    }
+
+    /**
+     * Action Crazy Weboscket Stop
+     * 
+     * Action for stop websocket server
+     * 
+     * @param array $inputs Collection of inputs with opts, args & cmd
+     * @return void
+     */
+    protected function actionCrazyWebsocketStop(array $inputs = []):void {
+
+        # New climate
+        $climate = new CLImate();
+
+        # Add asci folder
+        $climate->addArt(self::ASCII_ART["crazyphp"]);
+        
+        # Draw crazy php logo
+        $climate->draw('crazyphp');
+
+        # Title of current action
+        $climate->backgroundOrange()->out("🚀 Stop Websocket Server")->br();
+          
+        # Check command is in router
+        $this->_checkInRouter($inputs);
+
+        # Message
+        $input = $climate
+            ->lightBlue()
+            ->bold()
+            ->confirm('✅ Do you want stop websocket server ? ✅')
+        ;
+        
+        # Check action confirmed
+        if (!$input->confirmed()){
+
+            # Stop message
+            $climate
+                ->br()
+                ->bold()
+                ->red("✋ Action canceled ✋")
+                ->br()
+            ;
+
+            # Stop action
+            return;
+
+        }
+
+        # Title of current action
+        $climate
+            ->br()
+            ->backgroundBlue()
+            ->out("🚀 Run stop websocket")->br()
+        ;
+
+        # Run websocket
+        (new Websocket)->run();
+
+        # Success message
+        $climate
+            ->br()
+            ->lightGreen()
+            ->bold()
+            ->out("🎉 Websocket stopped with success 🎉")
+            ->br()
+        ;
+
+    }
+
     /** Private methods
      ******************************************************
      */
@@ -1653,6 +1824,37 @@ class Core extends CLI {
                     "custom_code"   =>  "core-005",
                 ]
             );  
+
+    }
+
+    /**
+     * Check Opt
+     * 
+     * Check if option given is in inputs
+     * 
+     * @param array $inputs
+     * @param string $name
+     * @param bool $expected
+     * @return bool
+     */
+    private function _checkOpt(array $inputs, string $name, bool $expected = true):bool {
+
+        # Set reslut
+        $result = false;
+
+        # Check
+        if(
+            !empty($inputs) &&
+            $name &&
+            is_array($inputs["opt"] ?? false) &&
+            ($inputs["opt"][$name] ?? false) == ($expected ? 1 : 0)
+        )
+
+            # Set result
+            $result = true;
+
+        # Return result
+        return $result;
 
     }
 

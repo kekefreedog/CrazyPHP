@@ -577,7 +577,7 @@ export default class Page {
 
         // Check state match with current page
         // @ts-ignore
-        while(stateObject._context.routes.current.name !== options.name){
+        while("_context" in stateObject && typeof stateObject._context === "object" && stateObject._context && stateObject._context?.routes.current.name !== options.name){
 
             if(i>1)
 

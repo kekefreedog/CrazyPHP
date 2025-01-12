@@ -11,6 +11,8 @@ package-lock.json
 
 # Etc
 .DS_Store
+bin/*.pid
+bin/*.log
 
 # PHPUnit (PHP)
 .phpunit.result.cache

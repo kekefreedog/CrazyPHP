@@ -24,6 +24,7 @@ import Crazyevents from "./../Library/Crazyevents";
 import Crazyalert from "./../Library/Crazyalert";
 import Crazystate from "./../Library/Crazystate";
 import Crazypage from "./../Library/Crazypage";
+import Websocket from 'reconnecting-websocket';
 import Hash from './../Library/Utility/Hash';
 
 /**
@@ -101,6 +102,7 @@ export default class Crazyobject {
             .then(this.registerPageInit)    // Init Register Page
             .then(this.currentPageInit)     // Init Current Page
             .then(this.consoleInit)         // Init Current Page
+            .then(this.websocketInit)       // Init Websocket
         ;
 
     }
@@ -287,6 +289,45 @@ export default class Crazyobject {
 
         // New Config Register
         this.console = new Crazyconsole();
+
+        // Return input
+        return input;
+
+    }
+
+    /**
+     * Websocket Init
+     * 
+     * Init console
+     * 
+     * @returns Promise<void>
+     */
+    private websocketInit = async(input:CrazyObjectInput):Promise<CrazyObjectInput> => {
+
+        // Check websocket into input
+        if(input.websocket){
+
+            console.log(`Weboscket init ${input.websocket}`)
+
+            const rws = new Websocket(input.websocket);
+
+            // Listen for messages
+            rws.addEventListener('message', (event) => {
+                console.log('Websocket | Message from server:', event.data);
+            });
+
+            // Send a message
+            rws.addEventListener('open', () => {
+                rws.send('Websocket | Hello Server!');
+            });
+
+            // Handle errors
+            rws.addEventListener('error', (error) => {
+                console.error('Websocket | WebSocket error:', error);
+            });
+
+
+        }
 
         // Return input
         return input;

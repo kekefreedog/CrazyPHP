@@ -97,6 +97,7 @@ declare global {
         globalPartials?:Object
         glabalAlerts?:Record<string, typeof CrazyAlertDriver>,
         forceTheme?:"dark"|"light",
+        websocket?:string,
     }
 
     /**

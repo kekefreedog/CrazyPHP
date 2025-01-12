@@ -15,16 +15,17 @@ namespace CrazyPHP\Library\Html;
 /** 
  * Dependances
  */
+use Pelago\Emogrifier\HtmlProcessor\CssToAttributeConverter;
+use Pelago\Emogrifier\HtmlProcessor\HtmlPruner;
 use CrazyPHP\Library\Template\Handlebars;
 use CrazyPHP\Exception\CrazyException;
 use Symfony\Component\Finder\Finder;
-use CrazyPHP\Library\Form\Validate;
-use CrazyPHP\Library\Form\Process;
+use CrazyPHP\Library\String\Color;
 use CrazyPHP\Library\Array\Arrays;
+use Pelago\Emogrifier\CssInliner;
 use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\Html\Head;
 use CrazyPHP\Library\File\File;
-use CrazyPHP\Library\String\Color;
 use CrazyPHP\Model\Context;
 
 /**
@@ -560,6 +561,90 @@ class Structure {
 
         # Set body with template render
         $this->setBodyContent($renderedTemplate);
+
+        # Return current instance
+        return $this;
+
+    }
+
+    /**
+     * Set Body Email Template
+     * 
+     * Set Body Hbs Template format for email 
+     * 
+     * @param string|array|null $template Template to load
+     * @param $preset Preset of the template
+     * @param ?array $data Data for template
+     * @param ?string customNameForTemplateCache
+     * @return self
+     */
+    public function setBodyEmailTemplate(string|array|null $template = null, $preset = null, ?array $data = [], null|string|array $cssFiles = null, ?string $customNameForTemplateCache = null):self {
+
+        # Check template
+        if(!$template || empty($template))
+
+            # Return current instance
+            return $this;
+
+        # Check extension of template
+        if(in_array(strtolower(pathinfo($template, PATHINFO_EXTENSION)), Handlebars::EXTENSIONS))
+
+            # Set instance
+            $instance = "CrazyPHP\Library\Template\Handlebars";
+
+        # Check preset
+        if($preset)
+
+            # Prepare option
+            $option = [
+                'template'  =>  $preset,
+                'partials'  =>  Handlebars::loadAppPartials()
+            ];
+
+        # Else
+        else
+
+            # Set option
+            $option = [
+                'partials'  =>  Handlebars::loadAppPartials()
+            ];
+
+        # Prepare template
+        $templateInstance = new $instance($option);
+
+        # Load template
+        $templateInstance->load($template, $customNameForTemplateCache ? $customNameForTemplateCache : Context::get("routes.current.name"));
+
+        # Rendered template in html
+        $renderedTemplate = $templateInstance->render($data);
+
+        # css inliner
+        $cssInliner = CssInliner::fromHtml($renderedTemplate);
+
+        # Check css
+        if(!empty($cssFiles)){
+
+            # ->inlineCss($renderedTemplate)
+
+        }
+
+        # Dom Document
+        $domDocument = $cssInliner->getDomDocument();
+        
+        # Clean html
+        HtmlPruner::fromDomDocument($domDocument)
+            ->removeElementsWithDisplayNone()
+            ->removeRedundantClassesAfterCssInlined($cssInliner)
+        ;
+
+        # Convert attribute if needed
+        $finalHtml = CssToAttributeConverter::fromDomDocument($domDocument)
+            # ->convertCssToVisualAttributes()
+            ->renderBodyContent()
+        ;
+
+        # Set body with template render
+        $this->setBodyContent($finalHtml);
 
         # Return current instance
         return $this;
