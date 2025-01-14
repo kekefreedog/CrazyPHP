@@ -53,6 +53,12 @@ export default class Form {
      ******************************************************
      */
 
+    /**
+     * Constructor
+     * 
+     * @param form 
+     * @param options 
+     */
     constructor(form:string|HTMLFormElement, options:Partial<FormOptions> = {}){
 
         // Ingest options
@@ -664,6 +670,21 @@ export default class Form {
     
                     }
                 );
+
+        // Else if just a form where retreive data and that's all
+        }else{
+
+            // Unlock target
+            this.lock();
+
+            // Check submit done
+            if(this._options.onSubmitDone)
+
+                // Call it
+                this._options.onSubmitDone({}, "", formData);
+
+            // Unlock target
+            this.unlock();
 
         }
 
@@ -2524,6 +2545,12 @@ export default class Form {
                         
                     ).then(
                         value => {
+
+                            // Check if dataKey
+                            if(typeof remoteData.dataKey === "string" && remoteData.dataKey)
+
+                                // Set right value 
+                                value.results = remoteData.dataKey.split('.').reduce((acc:any, key:any) => acc && acc[key], value.results);
                             
                             // Check value results
                             if(
@@ -2568,6 +2595,12 @@ export default class Form {
                     // Add options found
                     ).then(
                         value => {
+
+                            // Check if dataKey
+                            if(typeof remoteData.dataKey === "string" && remoteData.dataKey)
+
+                                // Set right value 
+                                value.results = remoteData.dataKey.split('.').reduce((acc:any, key:any) => acc && acc[key], value.results);
 
                             // Check value results
                             if(
