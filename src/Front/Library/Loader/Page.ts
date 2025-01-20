@@ -685,7 +685,7 @@ export default class Page {
         window.Crazyobject.historyPage.register({
             href: urlString,
             loader: Page.resetOptions(options),
-            state: options.name ? State.get().page(options.name) : null;
+            state: options.name ? State.get().page(options.name) : null
         })
 
         // Return options
