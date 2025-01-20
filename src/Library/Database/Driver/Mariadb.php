@@ -1009,7 +1009,25 @@ class Mariadb implements CrazyDatabaseDriver {
                 # Iteration filters
                 foreach($filters as $key => $value){
 
-                    $filterStacked[] = "$alias.$key $value";
+                    # Set operation
+                    $operation = "AND";
+
+                    # check if key started with ||
+                    if(substr($key, 0, 2) == "||" || substr($key, 0, 2) == "!!"){
+
+                        # Update $key
+                        $key = substr($key, 2);
+
+                        # Set operation
+                        $operation = "OR";
+
+                    }
+
+                    # Fill filter stacked
+                    $filterStacked[] = [
+                        "operation" =>  "$alias.$key $value",
+                        "condition" =>  $operation
+                    ];
 
                 }
 
@@ -1019,8 +1037,21 @@ class Mariadb implements CrazyDatabaseDriver {
                     # Push where
                     $query .= " WHERE";
 
-                    # Push filter stacked
-                    $query .= " ".join(" AND ", $filterStacked);
+                    # Iteration of filterStacked
+                    for($i = 1; $i <= count($filterStacked); $i++){
+
+                        # Check if first
+                        if($i === 1)
+
+                            # Push in query
+                            $query .= " ".$filterStacked[$i-1]["operation"];
+
+                        else
+
+                            # Push in query
+                            $query .= " ".$filterStacked[$i-1]["condition"]." ".$filterStacked[$i-1]["operation"];
+
+                    }
 
                 }
 
