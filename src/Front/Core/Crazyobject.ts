@@ -307,8 +307,10 @@ export default class Crazyobject {
         // Check websocket into input
         if(input.websocket){
 
-            console.log(`Weboscket init ${input.websocket}`)
+            // Dev
+            console.log(`[DEV] Weboscket init ${input.websocket}`)
 
+            // New repeated websocket instance
             const rws = new Websocket(input.websocket);
 
             // Listen for messages

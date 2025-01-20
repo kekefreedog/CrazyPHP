@@ -61,6 +61,10 @@ export default class Page {
                 Page.updateUrl
             )
             .then(
+                // Load page State
+                Page.loadPageState
+            )
+            .then(
                 // Update Title
                 Page.updateTitle
             )
@@ -83,6 +87,7 @@ export default class Page {
             .then(
                 (options:LoaderPageOptions) => {
                     // Check ready state
+                    // Page loading from back
                     if(document.readyState !== 'loading') {
                         // Load Content
                         Page.applyColorSchema(options)
@@ -104,6 +109,7 @@ export default class Page {
                             ).catch(
                                 Page.catchError
                             );
+                    // Page loading from front
                     }else{
                         // Event listener
                         document.addEventListener('DOMContentLoaded', () => {
@@ -235,7 +241,7 @@ export default class Page {
             // Set url
             let url:string = `/dist/page/app/${options.name}.${hash}.js`;
     
-            // Load script
+            // Load script (will registerd by itself)
             let script = await LoaderScript.load(url, options.name, true);
 
             // Get registered
@@ -285,10 +291,20 @@ export default class Page {
     public static loadUrl = async(options:LoaderPageOptions):Promise<LoaderPageOptions> =>  {
 
         // Check status
-        if(options.status?.urlLoaded === true)
+        if(options.status?.urlLoaded === true){
+
+            // Check url
+            if(!options.url){
+
+                // Get current url
+                options.url = new URL(Crazyurl.get(true));
+
+            }
 
             // Stop function
             return options;
+
+        }
 
         // Check url is empty
         if("url" in options && options.url !== null)
@@ -389,6 +405,54 @@ export default class Page {
 
             // Stop promise chain
             throw 'Page open in new tab.';
+
+        }
+
+        // Return options
+        return options; 
+
+    }
+
+    /**
+     * Load Page State
+     * 
+     * Load current page state
+     * 
+     * @param options:LoaderPageOptions Options with all page details
+     * @return Promise<LoaderPageOptions>
+     */
+    public static loadPageState = async(options:LoaderPageOptions):Promise<LoaderPageOptions> =>  {
+
+        // Check name and url
+        if(options.url && options.name){
+
+            // New query
+            let query = new Crazyrequest(
+                `${options.url}?catch_state=true`,
+                {
+                    method: "get",
+                    cache: false,
+                    responseType: "json",
+                    from: "internal"
+                }
+            );
+
+            // Get state page
+            let pageState = await query.fetch();
+
+            // Push into state
+            State.set().page(options.name, pageState);
+
+            // check options status
+            if(options.status && options.status === null){
+
+                // Set options status
+                options.status = {};
+
+                // Set status
+                options.status.hasState = true;
+
+            }
 
         }
 
@@ -540,69 +604,14 @@ export default class Page {
             // Stop function
             return options;
 
-        // Declare state
-        let stateObject:Object = {};
-
-        // Prepare stateObject
-        if(options.status?.hasState){
-
-            // Set state
-            stateObject = options.state as object;
-
-        }else
-        // Check options.scriptLoaded
-        if(options.scriptLoaded && options.scriptLoaded !== null){
-            
-            // Get state
-            stateObject = await options.scriptLoaded.loadPageState(options.url?.href);
-
-            // Set page state
-            options.name && State.set().page(stateObject, options.name);
-
-            // check options status
-            if(options.status && options.status === null){
-
-                // Set options status
-                options.status = {};
-
-                // Set status
-                options.status.hasState = true;
-
-            }
-
-        }
-
-        // Set i
-        let i = 0;
-
-        // Check state match with current page
-        // @ts-ignore
-        while("_context" in stateObject && typeof stateObject._context === "object" && stateObject._context && stateObject._context?.routes.current.name !== options.name){
-
-            if(i>1)
-
-                throw "Error loading state";
-
-            if(i>0)
-
-                // @ts-ignore
-                stateObject = await options.scriptLoaded.loadPageState(options.url?.href);
-
-            else
-
-                // Update state object
-                stateObject = State.get().page(null, options.name as string);
-
-            // Increment i
-            i++;
-
-        }
-
         // Check content
-        if("content" in options && typeof options.content === "function"){
+        if(options.name && "content" in options && typeof options.content === "function"){
+
+            // Get page state
+            let pageState = State.get().page(options.name);
 
             // Get content
-            let content:string = options.content(stateObject);
+            let content:string = options.content(pageState);
 
             // Set content of dom root
             DomRoot.setContent(content);
@@ -676,7 +685,7 @@ export default class Page {
         window.Crazyobject.historyPage.register({
             href: urlString,
             loader: Page.resetOptions(options),
-            state: {}
+            state: options.name ? State.get().page(options.name) : null;
         })
 
         // Return options
@@ -697,66 +706,54 @@ export default class Page {
         // Get document
         let doc = document;
 
-        // Set state stored
-        let pageState = options.name
-            ? State.get().page(null, options.name)
-            : null
-        ;
+        // Check name
+        if(options.name){
 
-        // Set state
-        let state = pageState
-            ? pageState
-            : {...await options.scriptLoaded?.loadPageState("", false)}
-        ;
+            // Set state stored
+            let pageState = State.get().page(options.name);
 
-        // Get potential overide source
-        // @ts-ignore
-        let newSource = state._ui?.materialDynamicColors?.source;
+            // Get potential overide source
+            // @ts-ignore
+            let newSource = typeof pageState === "object" && pageState
+                ? pageState._ui?.materialDynamicColors?.source
+                : null
+            ;
 
-        // Get body
-        let bodyEl = document.body;
+            // Get body
+            let bodyEl = document.body;
 
-        // Check new source
-        if(typeof newSource === "string" && newSource){
+            // Check new source
+            if(typeof newSource === "string" && newSource){
 
-            // Set dataset
-            bodyEl.dataset.crazyColor = newSource;
+                // Set dataset
+                bodyEl.dataset.crazyColor = newSource;
 
 
-        }else
-        // Check if default
-        if("defaultColor" in bodyEl.dataset){
+            }else
+            // Check if default
+            if("defaultColor" in bodyEl.dataset){
 
-            // Get default color
-            let defaultSource = bodyEl.dataset.defaultColor;
+                // Get default color
+                let defaultSource = bodyEl.dataset.defaultColor;
 
-            // Check defaultSource
-            if(typeof defaultSource === "string" && defaultSource)
+                // Check defaultSource
+                if(typeof defaultSource === "string" && defaultSource)
 
-                // Set crazy color
-                bodyEl.dataset.crazyColor = defaultSource;
+                    // Set crazy color
+                    bodyEl.dataset.crazyColor = defaultSource;
 
-        }
+            }
 
-        // Scan crazy color
-        let result = Crazycolor.scanCrazyColor(doc);
-        
-        // Check
-        if(result?.length)
-
-            // Set status
-            options = this.setStatus(options, "hasColorApplied", true);
-        
-        // Check colors
-        /* if(options.status?.hasColor && options.color){
-
-            // Apply theme
-            if(options.color.applyTheme())
+            // Scan crazy color
+            let result = Crazycolor.scanCrazyColor(doc);
+            
+            // Check
+            if(result?.length)
 
                 // Set status
                 options = this.setStatus(options, "hasColorApplied", true);
-
-        } */
+       
+        }
 
         // Return options
         return options

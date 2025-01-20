@@ -84,7 +84,7 @@ class Operation {
         "*" => [ 
            "name" => "like",
            "operation" => "*",
-           "regex" => "/^(\*)?(.*?)(\*)?$/" # REGEX WORKING BUT CATCHING [10:10] or [!10:10] 🔴
+           "regex" => "/\*(.*?)\*/" # REGEX WORKING BUT CATCHING [10:10] or [!10:10] 🔴
         ],
     ];
 
@@ -258,6 +258,9 @@ class Operation {
         # Iteration of current operation
         if(!empty($input) && !empty($this->_currentOperations)){
 
+            # Operation found
+            $operationFound = false;
+
             # Iterations inputs
             foreach($input as $v)
 
@@ -293,12 +296,21 @@ class Operation {
                                 # Run method found
                                 $result[] = $this->{$methodName}($matches, $operation, $runOptions);
 
+                        # Set operation found
+                        $operationFound = true;
+
                         # Continue
                         break 2;
 
                     }
 
                 }
+            
+            # Check operation found
+            if(!$operationFound)
+
+                # Set result
+                $result = $this->parseDefault($v);
             
         }else
         # check is string

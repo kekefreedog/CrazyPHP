@@ -36,7 +36,7 @@ module.exports = function(input, locale, options) {
             const options = { weekday: 'long', day: 'numeric', month: 'long' };
         
             // Set result
-            result = date.toLocaleDateString(locale, options);
+            result = date.toLocaleDateString(locale.replace("_", "-"), options);
 
         }
 

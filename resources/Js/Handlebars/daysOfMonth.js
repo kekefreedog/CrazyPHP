@@ -20,6 +20,9 @@
  */
 module.exports = function(year, month, options) {
 
+    // New date
+    let now = new Date();
+
     // Check year
     year = Number.isInteger(year) && year > 0 
         ? year 

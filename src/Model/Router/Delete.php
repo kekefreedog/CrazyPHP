@@ -238,7 +238,7 @@ class Delete extends CrazyModel implements CrazyCommand {
                     );
 
                     # Remove this config from router config
-                    Config::removeValue("Router.app.$setRouterKey");
+                    Config::removeValue("Router.".$router["type"].".$setRouterKey");
 
                 }
 
@@ -374,7 +374,7 @@ class Delete extends CrazyModel implements CrazyCommand {
             # Set index path
             $controllerPath = 
                 Router::getControllerPath()."/".
-                ucfirst($router["type"]).
+                ucfirst($router["type"] == "Asset" ? "Assets" : $router["type"]).
                 (
                     $router["type"] == "api" ? 
                         "/v1" :

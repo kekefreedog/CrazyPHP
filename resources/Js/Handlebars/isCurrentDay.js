@@ -19,7 +19,7 @@
 module.exports = function(input, options) {
 
     // Return result
-    return typeof input === "string" && input && inputDate === (new Date().toISOString().split('T')[0])
+    return typeof input === "string" && input && input === (new Date().toISOString().split('T')[0])
         ? options.fn(this) 
         : options.inverse(this)
     ;

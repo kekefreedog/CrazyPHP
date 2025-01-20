@@ -181,6 +181,25 @@ class Page {
     }
 
     /**
+     * Push Results
+     * 
+     * Push results in content
+     * 
+     * @param mixed $results
+     * @param string $entity
+     * @return Page
+     */
+    public function pushResultsWithKey(string $key, mixed $result = []):Page {
+
+        # Set value
+        Arrays::setKey($this->result, $key, $result);
+
+        # Return self
+        return $this;
+
+    }
+
+    /**
      * Get Results
      * 
      * @param string $key
@@ -242,6 +261,42 @@ class Page {
 
         # Push in ui
         $this->pushUiContent("forms.$formId", $formRender);
+
+        # Return self
+        return $this;
+
+    }
+
+    /**
+     * Push Partial State
+     * 
+     * Push partial state in content
+     * 
+     * @param string $partialId Partial id
+     * @param mixed $data
+     * @return Page
+     */
+    public function pushPartialState(string $partialId = "", mixed $data = []):self {
+
+        # Check id
+        if(!$partialId)
+
+            # Set from id
+            $partialId = empty($this->ui["partials"])
+                ? "A"
+                : (
+                    is_string($lastKey = array_key_last($this->ui["partials"]))
+                        ? $lastKey++
+                        : (
+                            is_int($lastKey)
+                                ? strval($lastKey++)
+                                : "A"
+                        )
+                )
+            ;
+
+        # Push in ui
+        $this->pushUiContent("partials.$partialId", $data);
 
         # Return self
         return $this;

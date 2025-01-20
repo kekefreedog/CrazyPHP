@@ -1128,6 +1128,8 @@ class File {
         "webp"  =>  "image/webp",
         # Env
         "env"   =>  "text/plain",
+        # Sse
+        "sse"   =>  "text/event-stream",
         # TBC ...
     ];
 

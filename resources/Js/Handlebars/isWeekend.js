@@ -25,7 +25,7 @@ module.exports = function(input, options) {
     if(typeof input === "string" && input){
 
         // Set date
-        const date = new Date(inputDate);
+        const date = new Date(input);
 
         // Get day in week 0 = Sunday, 6 = Saturday
         const day = date.getDay();

@@ -12,6 +12,7 @@
  * Dependances
  */
 import { createStore, Store } from 'killa';
+import Crazypage from './Crazypage';
 
 /**
  * State
@@ -51,6 +52,13 @@ export default class State {
     /** @var _trigger:Set<string> dynamic methods */
     private static _trigger:"set"|"get"|"delete" = "get";
 
+    /** @var _eventRegister */
+    private _eventRegister:Record<string, {
+        name:string,
+        callback:(state:any,prevState:any)=>void,
+        selector?:(state:any)=>any,
+    }> = {};
+
     /**
      * Constructor
      */
@@ -81,7 +89,7 @@ export default class State {
             State._instance = new State();
 
             // Set default schema
-            State._instance._store.setState((state:Record<string,any>|any[]) => State.defaultSchema)
+            State._instance._store.setState((state:Record<string,any>|any[]) => State.defaultSchema);
 
         }
 
@@ -215,7 +223,7 @@ export default class State {
      * @param value 
      * @returns {any}
      */
-    public page = (value?:any, page?:string):any => {
+    public page = (page?:string, value?:any):any => {
 
         // Declare result
         let result:any = null;
@@ -244,6 +252,12 @@ export default class State {
         }else
         // If get
         if(State._trigger === "get"){
+
+            // Check if value
+            if(value)
+
+                // Push it into key
+                key += `.${value}`;
         
             // Return data
             result = this._getValueByKeyPath(this._store.getState(), key);
@@ -422,6 +436,207 @@ export default class State {
             this._dynamicMethods.clear();
 
         }
+
+    }
+
+    /**
+     * Event
+     * 
+     * Get or set event
+     * 
+     * @param key 
+     * @param value 
+     * @returns {any}
+     */
+    public event = (
+        name?:string,
+        callback?:(state:any,prevState:any)=>void,
+        selector?:string,
+        options?:Partial<{
+            context?:"page",
+            target?:string // Target of context if needed
+        }>
+    ):any => {
+
+        // Declare result
+        let result:any = null;
+
+        // Check if get
+        if(State._trigger === "set"){
+
+            // Check name
+            if(name && callback){
+
+                // Declare process callback
+                let processedCallback = callback;
+
+                // Check context page
+                if(options?.context && options?.context === "page"){
+
+                    // set processedCallback
+                    processedCallback = (state:any, prevState:any) => {
+
+                        // Get page name
+                        let pageName = options.target 
+                            ? options.target
+                            : window.Crazyobject.currentPage.get()?.name as string
+                        ;
+
+                        // If pageName
+                        if(pageName){
+
+                            // Process state
+                            let processedState = this._getValueByKeyPath(state, `_page.${pageName}`);
+
+                            // Process prev state
+                            let processedPrevState = this._getValueByKeyPath(prevState, `_page.${pageName}`);
+
+                            // Process calback as is
+                            callback(processedState, processedPrevState);
+
+                        }else{
+
+                            // Process calback as is
+                            callback(state, prevState);
+
+                        }
+
+                    };
+
+                }
+
+                // Check if name already in _eventRegister
+                if(name in this._eventRegister){
+
+                    // Remove all event current event
+                    this._store.destroy();
+
+                    // Push name into event register
+                    this._eventRegister[name] = selector 
+                        ? {
+                            name: name,
+                            callback: processedCallback,
+                            selector: (state:any)=>(this._getValueByKeyPath(state, selector))
+                        }
+                        : {
+                            name: name,
+                            callback: processedCallback
+                        }
+                    ;
+
+                    // Iteration of all events in register
+                    for(let k in this._eventRegister){
+
+                        // Register new event
+                        this._eventRegister[k].selector
+                            ? this._store.subscribe(
+                                this._eventRegister[k].callback,
+                                this._eventRegister[k].selector
+                            )
+                            : this._store.subscribe(
+                                this._eventRegister[k].callback,
+                            )
+                        ;
+
+                    }
+
+                }else{
+
+                    // Push name into event register
+                    this._eventRegister[name] = selector 
+                        ? {
+                            name: name,
+                            callback: processedCallback,
+                            selector: (state:any)=>(this._getValueByKeyPath(state, selector))
+                        }
+                        : {
+                            name: name,
+                            callback: processedCallback
+                        }
+                    ;
+
+                    // Register new event
+                    selector 
+                        ? this._store.subscribe(
+                            processedCallback,
+                            selector
+                        )
+                        : this._store.subscribe(
+                            processedCallback,
+                        )
+                    ;
+                    
+
+                }
+
+            }
+
+        }else
+        // If get
+        if(State._trigger === "get"){
+
+            // Check name
+            if(name){ 
+                
+                // Check name in register
+                if(name in this._eventRegister)
+
+                    // Return event register matching
+                    result = this._eventRegister[name];
+
+            // Return all event
+            }else{
+
+                // Return all event
+                result = this._eventRegister;
+
+            }
+  
+        }else
+        // If delete
+        if(State._trigger === "delete"){
+
+            // Check name
+            if(!name){
+
+                // Destroy all events
+                this._store.destroy();
+
+                // Clear event
+                this._eventRegister = {};
+
+            }else
+            // Check name in register
+            if(name in this._eventRegister){
+
+                // Destroy all events
+                this._store.destroy();
+
+                // Clear event
+                delete this._eventRegister[name];
+
+                // Iteration of all events in register
+                for(let k in this._eventRegister){
+
+                    // Register events excepted deleted one
+                    this._eventRegister[k].selector
+                        ? this._store.subscribe(
+                            this._eventRegister[k].callback,
+                            this._eventRegister[k].selector
+                        )
+                        : this._store.subscribe(
+                            this._eventRegister[k].callback,
+                        )
+                    ;
+
+                }
+
+            }
+
+        }
+
+        // Return result
+        return result;
 
     }
 

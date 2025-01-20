@@ -1,0 +1,25 @@
+# #
+# Shotgrid
+#
+# Properties of the shotgrid extension
+#
+# YAML version 1.2
+#
+# @package    kzarshenas/crazyphp
+# @author     kekefreedog <kevin.zarshenas@gmail.com>
+# @copyright  2022-2024 Kévin Zarshenas
+# #
+Shotgrid:
+  name: CrazyWebsocket
+  description: Modal extension for create websocket service between back and front
+  version: 1.0.0
+  scripts:
+    Dockerfile:
+      source: "@crazyphp_root/resources/Extensions/CrazyWebsocket/Scripts/Docker/php-websocket/Dockerfile"
+      destination: "@app_root/docker/php-websocket/Dockerfile"
+    start-websocket.sh:
+      source: "@crazyphp_root/resources/Extensions/CrazyWebsocket/Scripts/Docker/php-websocket/start-websocket.sh"
+      destination: "@app_root/docker/php-websocket/start-websocket.sh"
+  dependencies:
+    composer:
+      guzzlehttp/guzzle: ^7.8

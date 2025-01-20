@@ -37,7 +37,6 @@ export default abstract class Crazypage {
      */
     private pageRegister:Pageregister|null = null;
 
-
     /** 
      * @param className:string 
      * Duplicate of the class name because build change name of class
@@ -66,6 +65,18 @@ export default abstract class Crazypage {
      * @param options:LoaderPageOptions
      */
     public options:LoaderPageOptions|null;
+
+    /**
+     * @param statePageEvents
+     * List of event attach to the current page state
+     */
+    public statePageEvents?:stateEvent[];
+
+    /**
+     * @param pageState:any
+     * State of the page
+     */
+    public pageState:any = null;
 
     /**
      * Constructor
@@ -123,7 +134,47 @@ export default abstract class Crazypage {
      */
     private setCurrentPage = ():void => {
 
-        
+        // Check name
+        if(this.options?.name){
+
+            // Set page state
+            this.pageState = State.get().page(this.options.name);
+
+        }
+
+    }
+
+    /** Private methods | Utilities
+     ******************************************************
+     */
+
+    /**
+     * Register Events
+     * 
+     * @returns {void}
+     */
+    public registerEvents = (events:stateEvent[]):void => {
+
+        // Check page events
+        if(this.options?.name && this.statePageEvents && this.statePageEvents.length)
+
+            // Iteration of page event
+            for(let event of this.statePageEvents){
+
+                // Push event into state
+                State.set().event(
+                    `${this.options.name}_${event.name}`,
+                    event.callback,
+                    `_page.${this.options.name}.${event.selector}`,
+                    {
+                        context: 'page',
+                        target: this.options.name 
+                    }
+                );
+
+                console.log(`${event.name} (${this.options.name}_${event.name}) registered`);
+
+            }
 
     }
 
@@ -134,9 +185,7 @@ export default abstract class Crazypage {
      *  
      * @return void
      */
-    private dispatchEvents = ():void => {
-
-
+    public dispatchEvents = ():void => {
 
     }
 

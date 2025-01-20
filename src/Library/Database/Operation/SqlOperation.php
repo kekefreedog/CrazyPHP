@@ -360,6 +360,47 @@ class SqlOperation extends Operation {
     }
 
     /**
+     * Like
+     * 
+     * Exemple : `*value`
+     * Description : Performs a pattern match (like SQL's LIKE)
+     * 
+     * @param string|array $input 
+     * @param array $operation
+     * @param array $options
+     * @return mixed
+     */
+    public function parseLike(string|array $input, array $operation, array $options = []):mixed {
+
+        # Set result of parent
+        $parentResult = parent::parseLike($input, $operation);
+
+        # Check position
+        if($parentResult["position"] == "start"){
+
+            # Set result
+            $result = 'LIKE "'.$parentResult["value"][1].'%"';
+
+        }else
+        if($parentResult["position"] == "end"){
+
+            # Set result
+            $result = 'LIKE "%'.$parentResult["value"][1].'"';
+
+        }else
+        if($parentResult["position"] == "start,end"){
+
+            # Set result
+            $result = 'LIKE "%'.$parentResult["value"][1].'%"';
+
+        }
+
+        # Return regex result
+        return $result;
+
+    }
+
+    /**
      * Parse Default
      * 
      * Description : No operations found
@@ -379,47 +420,6 @@ class SqlOperation extends Operation {
 
         # Return input
         return $result;
-
-    }
-
-    /**
-     * Like
-     * 
-     * Exemple : `*value`
-     * Description : Performs a pattern match (like SQL's LIKE)
-     * 
-     * @param string|array $input 
-     * @param array $operation
-     * @param array $options
-     * @return mixed
-     */
-    public function parseLike(string|array $input, array $operation, array $options = []):mixed {
-
-        # Set result of parent
-        $parentResult = parent::parseLike($input, $operation);
-
-        # Check position
-        if($operation["position"] == "start"){
-
-            # Set result
-            $result = 'LIKE "'.$parentResult["value"].'%"';
-
-        }else
-        if($operation["position"] == "end"){
-
-            # Set result
-            $result = 'LIKE "%'.$parentResult["value"].'"';
-
-        }else
-        if($operation["position"] == "start,end"){
-
-            # Set result
-            $result = 'LIKE "%'.$parentResult["value"].'%"';
-
-        }
-
-        # Return regex result
-        return $result ;
 
     }
 

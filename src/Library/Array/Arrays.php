@@ -573,7 +573,7 @@ class Arrays{
 	/**
 	 * Set Key
 	 * 
-	 * Extract key in array
+	 * Push value bases on key into array
 	 * 
 	 * @param array &$array Array to process
 	 * @param string $key Key of the item to extract "titi.toto"

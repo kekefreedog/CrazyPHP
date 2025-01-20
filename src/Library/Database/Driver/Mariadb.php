@@ -997,18 +997,38 @@ class Mariadb implements CrazyDatabaseDriver {
             # Check filters
             if(!empty($filters)){
 
-                # Set instance
-                $instance = $this->manager->from($table);
+                # Set alias
+                $alias = "a";
+
+                # Prepare query
+                $query = "SELECT * FROM $table AS $alias";
+
+                # Set filterStacked
+                $filterStacked = [];
 
                 # Iteration filters
                 foreach($filters as $key => $value){
 
-                    $instance->where($key, $value);
+                    $filterStacked[] = "$alias.$key $value";
+
+                }
+
+                # Check filterStacked
+                if(!empty($filterStacked)){
+
+                    # Push where
+                    $query .= " WHERE";
+
+                    # Push filter stacked
+                    $query .= " ".join(" AND ", $filterStacked);
 
                 }
 
                 # Update table
-                $result = $instance->fetchAll();
+                $statment = $this->client->query($query);
+
+                # Set result
+                $result = $statment->fetchAll(PDO::FETCH_ASSOC);
 
             }else{
 

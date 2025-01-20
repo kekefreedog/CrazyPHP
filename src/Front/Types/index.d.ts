@@ -413,7 +413,7 @@ declare global {
      */
     interface RunnerOption {
         errors?:?Array<CrazyError>,
-        result:Object|Array<any>|string|null,
+        result:Record<string,any>|Array<any>|string|null,
         _info:{
             status:"Waiting"|"Ready"|"In Progress"|"Error"|"Complete",
             name:string,
@@ -546,6 +546,13 @@ declare global {
     /** Interface | State
      ******************************************************
      */
+
+    // State Event 
+    interface stateEvent {
+        name:string,
+        callback:(state:any,prevState:any)=>void,
+        selector:string
+    }
 
     // Define the state shape
     interface StatePage extends object {

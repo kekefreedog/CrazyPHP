@@ -133,5 +133,24 @@ services:
             - backend
 {{/if}}
 
+    {{!-- Websocket --}}
+{{#if websocket}}
+    # WEBSOCKETS
+    php-websocket:
+        build: docker/php-websocket
+        restart: always
+        working_dir: '${PWD}'
+        ports:
+            - '${CRAZY_WEBSOCKET_PORT:-2346}:2346'
+        volumes:
+            - '.:${PWD}'
+            - './vendor/kzarshenas/crazyphp:/Users/kzarshenas/Sites/CrazyProject/CrazyPHP'
+        command: './docker/php-websocket/start-websocket.sh'
+        environment:
+            - PHP_DISPLAY_ERRORS=1
+        networks:
+            - backend
+{{/if}}
+
 networks:
     backend: {}
