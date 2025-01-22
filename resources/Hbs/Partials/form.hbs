@@ -165,13 +165,18 @@
             name="{{item.name}}"
             {{#if item._style.customClass.input}}class="{{item._style.customClass.input}}"{{/if}}
             {{#if item.disabled}}disabled=""{{else}}{{#if ../form.onready}}disabled="loading"{{/if}}{{/if}}
-            type="date"
+            type="{{#is item._style.date.picker "easepick"}}text{{else}}date{{/is}}"
+            {{#is item._style.date.picker "easepick"}}data-type="date"{{/is}}
             {{#if item.placeholder}}placeholder="{{item.placeholder}}"{{else}}placeholder=" "{{/if}}
             {{#if item.readonly}}readonly=""{{/if}}
             {{#if item.default}}value="{{item.default}}" default="{{item.default}}"{{/if}}
             {{#if item.select.[0].value}}min="{{item.select.[0].value}}"{{/if}}
             {{#if item.select.[1].value}}max="{{item.select.[1].value}}"{{/if}}
             {{#if item.required}}required=""{{/if}}
+            {{!-- Easepick --}}
+            {{#if item._style.date.picker}}data-date-picker="easepick"{{/if}}
+            {{#if item._style.date.format}}data-date-format="{{item._style.date.format}}"{{/if}}
+            {{#if item._style.date.lang}}data-date-lang="{{item._style.date.lang}}"{{/if}}
         >
         {{#if item.label}}<label for="{{../form.id}}_{{item.name}}">{{#if item.required}}<b>{{/if}}{{item.label}}{{#if item.required}}</b>*{{/if}}</label>{{/if}}
         

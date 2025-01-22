@@ -16,9 +16,12 @@ import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type';
 import { TomSettings, RecursivePartial } from 'tom-select/dist/types/types';
 import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
 import IMask, { MaskedOptions, MaskedNumberOptions } from 'imask';
+import { IPickerConfig } from '@easepick/core/dist/types';
 import {default as PageError} from './../Error/Page';
 import {default as UtilityStrings} from './Strings';
+import { AmpPlugin } from '@easepick/amp-plugin';
 import UtilityBoolean from '../Utility/Boolean';
+import { easepick } from '@easepick/bundle';
 import Crazyrequest from '../Crazyrequest';
 import fr_FR from 'filepond/locale/fr-fr';
 import * as FilePond from 'filepond';
@@ -2340,6 +2343,7 @@ export default class Form {
         }
 
     }
+    
     /**
      * Init Number Input
      * 
@@ -2369,6 +2373,61 @@ export default class Form {
 
         // Set instance
         IMask(inputEl, options);
+
+    }
+
+    /**
+     * Init Date Input
+     * 
+     * @param inputEl 
+     * @returns {void}
+     */
+    private _initDateInput = (inputEl:HTMLSelectElement|HTMLInputElement):void => {
+
+        // Check input
+        if(inputEl instanceof HTMLInputElement && "datePicker" in inputEl.dataset && inputEl.dataset.datePicker == "easepick"){
+
+            // Prepare options
+            let options:IPickerConfig = {
+                element: inputEl,
+                css: [
+                  'https://cdn.jsdelivr.net/npm/@easepick/bundle@1.2.1/dist/index.css',
+                ],
+                zIndex: 1,
+                plugins: [AmpPlugin],
+                AmpPlugin: {
+                    dropdown: {
+                        months: true,
+                        years: true,
+                    },
+                },
+            }
+
+            // Check format
+            if("dateFormat" in inputEl.dataset && inputEl.dataset.dateFormat)
+
+                // Push in options format
+                options.format = inputEl.dataset.dateFormat;
+
+            // Check lang
+            if("dateLang" in inputEl.dataset && inputEl.dataset.dateLang)
+
+                // Push in options format
+                options.lang = inputEl.dataset.dateLang;
+
+            // Check if required
+            if(!inputEl.required && options.AmpPlugin)
+
+                // Enable reset btn
+                options.AmpPlugin.resetButton = true;
+
+            // New picker instance
+            const picker = new easepick.create(options);
+            
+            console.log("datepicker");
+            console.log(inputEl);
+
+        }
 
     }
 

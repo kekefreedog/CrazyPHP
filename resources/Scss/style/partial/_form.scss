@@ -8,8 +8,25 @@
 /// @copyright  2022-2024 Kévin Zarshenas
 /// /// /// 
 
+/* Import Form Enhancement */
+@import '../enhancement/form_materializecss.scss';
+
 /* Import Tom Select */
 @import 'tom-select/dist/scss/tom-select.scss';
 
 /* Import Tom Select */
 @import '../enhancement/tomselect_materializecss.scss';
+
+/* Import pickr */
+@import '@simonwep/pickr/dist/themes/classic.min.css', '@simonwep/pickr/dist/themes/monolith.min.css', '@simonwep/pickr/dist/themes/nano.min.css';
+@import '../enhancement/pickr_materializecss.scss';
+
+/* Import filepond */
+@import 'filepond/dist/filepond.min.css';
+@import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
+
+/* Import File Pond Enhancement */
+@import '../enhancement/filepond_materializecss.scss';
+
+/* Import ease picker Enhancement */
+@import '../enhancement/easepick_materializecss.scss';

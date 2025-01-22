@@ -1,0 +1,18 @@
+/// /// ///
+/// Enhancement - Crazy Content
+///
+/// Ease pick ft. Materialize
+///
+/// @package    kzarshenas/crazyphp
+/// @author     kekefreedog <kevin.zarshenas@gmail.com>
+/// @copyright  2022-2024 Kévin Zarshenas
+/// /// /// 
+
+// Label
+.easepick-wrapper ~ label[for] {
+
+    // Fix scale
+    transform: scale(0.75);
+    top: 8px;
+
+}

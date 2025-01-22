@@ -25,6 +25,7 @@
         "tslib": "^2.4.1"
     },
     "dependencies": {
+        "@easepick/bundle": "^1.2.1",
         "@material/material-color-utilities": "^0.3.0",
         "@simonwep/pickr": "^1.9.1",
         "filepond": "^4.32.6",
