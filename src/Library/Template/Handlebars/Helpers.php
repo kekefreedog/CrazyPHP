@@ -1649,4 +1649,84 @@ class Helpers {
         
     }
 
+    /**
+     * Date To Local Format Month Year 
+     * 
+     * Return date to local format Janvier 2025
+     * 
+     * @param mixed $input
+     * @param mixed $locale exemple : 
+     * @param mixed options
+     */
+    public static function dateToLocalFormatMonthYear($month, $year, $locale, $option) {
+
+        # Set result
+        $result = "";
+
+        # Set input
+        $input = "$year-$month-01";
+
+        # Check input
+        if(is_string($input) && $input && is_string($locale) && $locale){
+
+            # Set timestamp
+            $timestamp = strtotime($input);
+
+            # Define weekday and month names for supported locales
+            $locales = [
+                'en_US' => [
+                    'months' => ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+                ],
+                'fr_FR' => [
+                    'months' => ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
+                ],
+                # Add more locales as needed
+            ];
+
+            # Fallback to 'en_US' if the locale is not supported
+            $localeData = $locales[$locale] ?? $locales['en_US'];
+
+            # 'n' gives 1-based month
+            $month = $localeData['months'][date('n', $timestamp) - 1];
+
+            # Set year
+            $year = date("Y", $timestamp);
+
+            # Combine and return the formatted date
+            $result = "{$month} {$year}";
+
+        }
+
+        # Return result
+        return $result;
+        
+    }
+
+    /**
+     * Date To Local Format Month Year 
+     * 
+     * Return date to local format Janvier 2025
+     * 
+     * @param mixed $input
+     * @param mixed $locale exemple : 
+     * @param mixed options
+     */
+    public static function dateToYYYYMMDD($year, $month, $day, $options = []) {
+        
+        // Create a DateTime object
+        $date = new DateTime();
+        
+        // Set the year, month, and day
+        $date->setDate($year, $month, $day); // No need to add 1 to $month since PHP months are 1-indexed
+    
+        // Format the year, month, and day as strings
+        $formattedYear = $date->format('Y'); // Get the full year
+        $formattedMonth = str_pad($date->format('n'), 2, '0', STR_PAD_LEFT); // Month as two digits
+        $formattedDay = str_pad($date->format('j'), 2, '0', STR_PAD_LEFT); // Day as two digits
+    
+        // Return the formatted string
+        return $formattedYear ."-". $formattedMonth ."-". $formattedDay;
+    
+    }
+
 }

@@ -85,7 +85,7 @@ export default class Crazyurl {
      * Get all query parameters from the current URL.
      * @returns {Record<string, string>} An object with key-value pairs representing query parameters.
      */
-    public static getQueryParameters = ():Record<string, string> => {
+    public static getQueryParameters = (names?:string[]):Record<string, string> => {
 
         // Set result
         let result:Record<string, string> = {};
@@ -94,12 +94,31 @@ export default class Crazyurl {
         const searchParams = new URLSearchParams(window.location.search);
 
         // Iteration params
-        searchParams.forEach((value, key) => {
+        if(!names || !Array.isArray(names)) searchParams.forEach((value, key) => {
 
-            // Fill result
-            result[key] = value;
+                // Fill result
+                result[key] = value;
 
-        });
+            });
+    
+        // Iteration params
+        else {
+
+            // Check names
+            if(names.length)
+            
+                // Iteration params
+                searchParams.forEach((value, key) => {
+
+                    // Check if key in names
+                    if(names.includes(key))
+
+                        // Fill result
+                        result[key] = value;
+
+                });
+
+        }
 
         // Return result
         return result;

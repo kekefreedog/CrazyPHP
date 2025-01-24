@@ -192,18 +192,12 @@ class Docker{
 
         # Check collection
         if(empty($collection))
-            
-            # New error
-            throw new CrazyException(
-                "No ports defined in docker compose for key \"services.webserver.ports\"...", 
-                500,
-                [
-                    "custom_code"   =>  "Docker-001",
-                ]
-            );
+
+            # Set result
+            $result = null;
 
         # Iteration of collection
-        foreach($collection as $port){
+        else foreach($collection as $port){
 
             # Split port
             $currentSource = explode(":", $port);

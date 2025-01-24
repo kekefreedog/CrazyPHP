@@ -61,6 +61,12 @@ export default abstract class Crazypage {
      */
     public static readonly parameters:string[] = [];
 
+    /** 
+     * @param queryParameters:string 
+     * List of parameters needed for this page
+     */
+    public static readonly queryParameters:string[] = [];
+
     /**
      * @param options:LoaderPageOptions
      */
@@ -329,9 +335,11 @@ export default abstract class Crazypage {
     /**
      * Get Partial By Name
      * 
+     * @param name Name of the partial
+     * @param reverse Reverse partials list before search in
      * @returns {Object|null}
      */
-    public getPartial = (name:string):RegisterPartialScanned|null => {
+    public getPartial = (name:string, reverse:boolean = false):RegisterPartialScanned|null => {
 
         // Prepare result
         let result:RegisterPartialScanned|null = null;
@@ -341,6 +349,11 @@ export default abstract class Crazypage {
 
             // Get partials
             let partials = this.getAllPartials();
+
+            // Check if reverse
+            if(reverse)
+
+                partials = partials.reverse();
 
             // Filter
             let filtered = Arrays.filterByKey(partials, "name", name);

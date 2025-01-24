@@ -336,7 +336,9 @@ declare global {
         target:Element
         callable:Crazypartial,
         id:number,
-        scriptRunning?:Crazypartial
+        scriptRunning?:Crazypartial,
+        page?:Crazypage,
+        html?:CallableFunction|html|null
     }
 
     /** Interface | History

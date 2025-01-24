@@ -9,7 +9,7 @@
 # @author     kekefreedog <kevin.zarshenas@gmail.com>
 # @copyright  2022-2024 Kévin Zarshenas
 # #
-Shotgrid:
+CrazyWebsocket:
   name: CrazyWebsocket
   description: Modal extension for create websocket service between back and front
   version: 1.0.0

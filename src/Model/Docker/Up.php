@@ -297,30 +297,6 @@ class Up implements CrazyCommand {
         # Get port
         $port = Docker::getLocalHostPort();
 
-        # Check port
-        if($port === null)
-            
-            # New error
-            throw new CrazyException(
-                "Docker compose doesn't have any port defined.",
-                500,
-                [
-                    "custom_code"   =>  "up-010",
-                ]
-            );
-
-        # Check if port is available
-        /* if(Port::isTaken("localhost", $port))
-
-            # New error
-            throw new CrazyException(
-                "Port $port is already taken by your localhost.",
-                500,
-                [
-                    "custom_code"   =>  "up-010",
-                ]
-            );*/
-
         # Echo successfull message
         echo "✅ Port $port is available".PHP_EOL;
         

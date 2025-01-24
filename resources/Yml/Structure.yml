@@ -161,16 +161,20 @@ Structure:
                             source: "@crazyphp_root/resources/Scss/style/component/_navigation_rail.scss"
                       enhancement:
                         files:
-                          jspreadsheet_materializecss.scss:
-                            source: "@crazyphp_root/resources/Scss/style/enhancement/jspreadsheet_materializecss.scss"
-                          form_materializecss.scss:
-                            source: "@crazyphp_root/resources/Scss/style/enhancement/form_materializecss.scss"
-                          tomselect_materializecss.scss:
-                            source: "@crazyphp_root/resources/Scss/style/enhancement/tomselect_materializecss.scss"
-                          pickr_materializecss.scss:
-                            source: "@crazyphp_root/resources/Scss/style/enhancement/pickr_materializecss.scss"
+                          easepick_materializecss.scss:
+                            source: "@crazyphp_root/resources/Scss/style/enhancement/easepick_materializecss.scss"
                           filepond_materializecss.scss:
                             source: "@crazyphp_root/resources/Scss/style/enhancement/filepond_materializecss.scss"
+                          form_materializecss.scss:
+                            source: "@crazyphp_root/resources/Scss/style/enhancement/form_materializecss.scss"
+                          jspreadsheet_materializecss.scss:
+                            source: "@crazyphp_root/resources/Scss/style/enhancement/jspreadsheet_materializecss.scss"
+                          pickr_materializecss.scss:
+                            source: "@crazyphp_root/resources/Scss/style/enhancement/pickr_materializecss.scss"
+                          sweetalert_materializecss.scss:
+                            source: "@crazyphp_root/resources/Scss/style/enhancement/sweetalert_materializecss.scss"
+                          tomselect_materializecss.scss:
+                            source: "@crazyphp_root/resources/Scss/style/enhancement/tomselect_materializecss.scss"
                       partial:
                         files:
                           _preloader_linear_indeterminate.scss:

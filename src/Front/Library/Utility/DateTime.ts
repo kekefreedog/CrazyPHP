@@ -411,4 +411,61 @@ export default class DateTime {
         return day === 0 || day === 6; // Returns true if Saturday or Sunday
     }
 
+    /**
+     * Merge date
+     * 
+     * Merge year, month and day as YYYY-MM-DD
+     * 
+     * @param year:int|string
+     * @param month:int|string
+     * @param day:int|string
+     * @return string
+     */
+    public static mergeDate = (year:string|number, month:string|number, day:string|number):string => {
+
+        // Check year is string
+        typeof year === "string" && (year = Number(year));
+        typeof month === "string" && (month = Number(month));
+        typeof day === "string" && (day = Number(day));
+
+        // Validate inputs to ensure they create a valid date
+        const date = new Date(year, month - 1, day); // JavaScript months are 0-indexed
+    
+        if (
+            date.getFullYear() !== year ||
+            date.getMonth() + 1 !== month ||
+            date.getDate() !== day
+        ) {
+            throw new Error("Invalid date provided.");
+        }
+    
+        // Format the date to YYYY-MM-DD
+        return `${year.toString().padStart(4, '0')}-${month
+            .toString()
+            .padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+
+    }
+
+    /**
+     * Explode Date
+     * 
+     * Explode YYYY-MM-DD to array with [year, month, day]
+     * 
+     * @param date 
+     * @returns {string[]}
+     */
+    public static explodeDate = (date:string):number[] => {
+
+        // Split the date by hyphens
+        const parts = date.split("-");
+    
+        // Ensure the parts array has exactly 3 elements
+        if (parts.length !== 3)
+            
+            throw new Error("Invalid date format. Expected YYYY-MM-DD.");
+    
+        // Convert parts to integers and return as an array
+        return parts.map(part => parseInt(part, 10));
+    }
+
 }

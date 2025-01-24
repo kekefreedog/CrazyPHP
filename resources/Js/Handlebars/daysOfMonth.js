@@ -21,43 +21,40 @@
 module.exports = function(year, month, options) {
 
     // New date
-    let now = new Date();
+    const now = new Date();
 
     // Check year
     year = Number.isInteger(year) && year > 0 
         ? year 
-        : now.getFullYear()
-    ;
+        : now.getFullYear();
 
     // Check month
     month = Number.isInteger(month) && month >= 1 && month <= 12 
         ? month 
-        : now.getMonth() + 1
-    ;
+        : now.getMonth() + 1;
 
     // Adjust for JavaScript's 0-based months
     const adjustedMonth = month - 1;
 
-    // Get number of days in the month
-    const daysInMonth = new Date(year, month, 0).getDate(); 
+    // Get number of days in the given month
+    const daysInMonth = new Date(year, adjustedMonth + 1, 0).getDate();
 
     // Get days
     const days = [];
 
-    // Iteration days in month
-    for(let day = 1; day <= daysInMonth; day++){
-
-        // Set date
+    // Iterate through all days in the month
+    for (let day = 2; day <= daysInMonth + 1; day++) {
+        // Create a date object
         const date = new Date(year, adjustedMonth, day);
 
-        // Set formated date
+        // Format the date as YYYY-MM-DD
         const formattedDate = date.toISOString().split('T')[0];
 
-        // Push in result
+        // Push the formatted date to the array
         days.push(formattedDate);
     }
 
-    // Return days
+    // Return the list of days
     return days;
 
 }

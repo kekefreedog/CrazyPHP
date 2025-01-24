@@ -428,7 +428,7 @@ export default class Page {
 
             // New query
             let query = new Crazyrequest(
-                `${options.url}?catch_state=true`,
+                `${options.url}`,
                 {
                     method: "get",
                     cache: false,
@@ -437,8 +437,17 @@ export default class Page {
                 }
             );
 
+            // Get params allowed by the page
+            let queryParams = options.url.href == Crazyurl.get(true)
+                ? Crazyurl.getQueryParameters(options.scriptLoaded?.queryParameters)
+                : {}
+            ;
+
             // Get state page
-            let pageState = await query.fetch();
+            let pageState = await query.fetch({
+                catch_state: true,
+                ...queryParams
+            });
 
             // Push into state
             State.set().page(options.name, pageState);
@@ -653,7 +662,7 @@ export default class Page {
             for(let partial in options.partials){
 
                 // Run partial script
-                let instance = new options.partials[partial].callable(options.partials[partial]);
+                let instance = new options.partials[partial].callable({...options.partials[partial], page:options.scriptLoaded});
 
                 // Push instance in options
                 options.partials[partial].scriptRunning = instance;

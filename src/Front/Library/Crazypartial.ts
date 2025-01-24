@@ -63,6 +63,12 @@ export default abstract class Crazypartial {
             // Set id on target
             this.input.target.dataset.partialId = this.input.id.toString();
 
+        // Check if html
+        if(this.input.callable.html)
+
+            // Set html
+            this.html = this.input.callable.html;
+
     }
 
     /** Protected methods
@@ -161,6 +167,31 @@ export default abstract class Crazypartial {
      * Enable
      */
     public disable = () => {
+
+    }
+
+    /** Public methods | Utilities
+     ******************************************************
+     */
+
+    /**
+     * Get Current Page Name
+     */
+    public getCurrentPageName = ():string => {
+
+        // Set result
+        let result:string = "";
+
+        // Check page
+        if(this.input.page){
+
+            // Set result
+            result = this.input.page["name"] as string;
+
+        }
+
+        // Return result
+        return result;
 
     }
 
