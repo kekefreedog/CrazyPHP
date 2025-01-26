@@ -161,6 +161,9 @@ class Package{
         "handlebars-loader"                         =>  "*",
         "svg-inline-loader"                         =>  "*",
         "svg-loader"                                =>  "*",
+        "css-minimizer-webpack-plugin"              =>  "^7.0.0",
+        "terser-webpack-plugin"                     =>  "^5.3.11",
+        "mini-css-extract-plugin"                   =>  "^2.9.2",
         # Custom file
         "js-yaml"                                   =>  "*",
         "repair"                                    =>  "*",

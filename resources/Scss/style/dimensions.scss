@@ -68,6 +68,13 @@
     // Position
     display: flex;
 
+    /* Screen flex important */
+    &.screen-flex-important {
+
+        display: flex!important;
+
+    }
+
     /* Brothers */
 
     // Place element in the center of the view window

@@ -13,7 +13,9 @@
  */
 const ForkTsCheckerNotifierWebpackPlugin = require('fork-ts-checker-notifier-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
-var helpers = require('handlebars-helpers')(["comparison", "object"]);
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
+const { DefinePlugin } = require('webpack');
 const yaml = require('js-yaml');
 const path = require('path');
 const fs = require('fs');
@@ -28,6 +30,7 @@ const routersCollection = routers.load(yaml, fs);
  * Config
  */
 module.exports = {
+    mode: 'production',
     entry: {
         "index": "./app/Front/index.ts",
         ...routersCollection
@@ -87,13 +90,21 @@ module.exports = {
             {
                 test: /\.svg$/,
                 loader: 'svg-inline-loader'
-                /* generator: {
-                    filename: 'svg/[name].svg',
-                }, */
             },
         ],
     },
     optimization: {
+        minimize: true,
+        minimizer: [
+            new TerserPlugin({
+                terserOptions: {
+                    compress: {
+                        drop_console: true,
+                    },
+                },
+            }),
+            new CssMinimizerPlugin(),
+        ],
         moduleIds: 'deterministic',
         runtimeChunk: 'single',
         splitChunks: {
@@ -111,6 +122,9 @@ module.exports = {
         new ForkTsCheckerNotifierWebpackPlugin({
             title: 'TypeScript',
             excludeWarnings: false,
+        }),
+        new DefinePlugin({
+            'process.env.NODE_ENV': JSON.stringify('production'),
         })
     ]
 };

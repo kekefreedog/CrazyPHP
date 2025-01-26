@@ -186,7 +186,7 @@ export default abstract class Crazypartial {
         if(this.input.page){
 
             // Set result
-            result = this.input.page["name"] as string;
+            result = this.input.page["className"] as string;
 
         }
 
