@@ -303,8 +303,57 @@ export default class Objects {
 
         return sortedObject;
     }
+
+    /**
+     * Set Value
+     * 
+     * Set Value into object
+     * 
+     * @param obj 
+     * @param path 
+     * @param value 
+     */
+    public static setValue =(
+      obj:UnknownObject,
+      path:string|string[],
+      value:any,
+      separator:null|string = "."
+    ):void => {
+
+        // Check path
+        if(!Array.isArray(path))
+
+            // Set path
+            path = separator 
+                ? path.split(separator)
+                : [path]
+            ;
+
+        // Reduce
+        path.reduce((current, key, index) => {
+            // If this is the last key
+            if(index === path.length - 1)
+
+                // set the value
+                current[key] = value;
+
+            else
+            
+            // If the key doesn't exist or isn't an object
+            if(!current[key] || typeof current[key] !== 'object')
+
+                // Initialize it as an object
+                current[key] = {};
+            
+            // Return
+            return current[key];
+
+        }, obj);
+    }
     
 }
+
+export type UnknownObject = Record<string, any>;
 
 interface Item {
     [key: string]: any;
