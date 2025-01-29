@@ -11,6 +11,7 @@
 /**
  * Dependances
  */
+import Arrays from "./Arrays";
 
 /**
  * Arrays
@@ -349,6 +350,23 @@ export default class Objects {
             return current[key];
 
         }, obj);
+
+    }
+
+    /**
+     * Equals 
+     * 
+     * Check if two array are equals
+     * 
+     * @param value1
+     * @param value2
+     * @returns {boolean}
+     */
+    public static equal = (value1:any, value2:any):boolean => {
+
+        // Return eqal from array
+        return Arrays.equal(value1, value2);
+
     }
     
 }

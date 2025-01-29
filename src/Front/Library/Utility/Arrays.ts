@@ -156,6 +156,56 @@ export default class Arrays {
 
     }
 
+    /**
+     * Equals 
+     * 
+     * Check if two array are equals
+     * 
+     * @param value1
+     * @param value2
+     * @returns {boolean}
+     */
+    public static equal = (value1:any, value2:any):boolean => {
+
+        // Direct match (including primitives)
+        if(value1 === value2) return true;
+        
+        // If either is not an object or is null, they must be strictly equal
+        if(typeof value1 !== "object" || typeof value2 !== "object" || value1 === null || value2 === null) return false; 
+      
+        // If are arrays
+        if(Array.isArray(value1) && Array.isArray(value2)){
+
+            // Different lengths
+            if (value1.length !== value2.length) return false; 
+            
+            // Recursively compare elements
+            return value1.every((el, i) => Arrays.equal(el, value2[i]));
+
+        }
+      
+        // If object
+        if(Object.prototype.toString.call(value1) === "[object Object]" && Object.prototype.toString.call(value2) === "[object Object]"){
+
+            // Get key 1
+            const keys1 = Object.keys(value1);
+
+            // Get key 2
+            const keys2 = Object.keys(value2);
+      
+            // Different number of keys
+            if (keys1.length !== keys2.length) return false; 
+
+            // Recursively compare object properties
+            return keys1.every((key) => Arrays.equal(value1[key], value2[key]));
+
+        }
+      
+        // If one is an array and the other isn't, or different types
+        return false;
+        
+      }
+
     /** Private static methods
      ******************************************************
      */

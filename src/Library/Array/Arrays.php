@@ -151,6 +151,32 @@ class Arrays{
 
 	}
 
+    /**
+     * Filter array by nested key value multidimensional
+     *
+     * @param array $array Array to process
+     * @param string $key Nested key using separator (default ".")
+     * @param mixed $keyValue Value to filter
+     * @param string $separator Separator for nested keys (default ".")
+     * @return array Filtered array
+     */
+    public static function filterByKeyMD(array $array = [], string $key = "", mixed $keyValue = "", string $separator = "."): array {
+        return array_filter($array, function ($item) use ($key, $keyValue, $separator) {
+            $keys = explode($separator, $key);
+            $value = self::getNestedValue($item, $keys);
+            return $value === $keyValue;
+        });
+    }
+    private static function getNestedValue(array $array, array $keys) {
+        foreach ($keys as $key) {
+            if (!is_array($array) || !array_key_exists($key, $array)) {
+                return null;
+            }
+            $array = $array[$key];
+        }
+        return $array;
+    }
+
 	/**
 	 * Remove By Key
 	 * 

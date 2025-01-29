@@ -72,6 +72,25 @@ class Query {
     }
 
     /**
+     * Get For Id
+     * 
+     * Get query parameters for controller id
+     * 
+     * @return array
+     */
+    public static function getForId():array {
+
+        # Set result
+        $result = [
+            0   =>  $_GET["option"] ?? $_GET["options"] ?? null,    # Option
+        ];
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
      * Get For Filters From Array
      * 
      * Get query parameters for controller filters from array given

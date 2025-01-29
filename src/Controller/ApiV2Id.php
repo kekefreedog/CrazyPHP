@@ -21,6 +21,7 @@ use CrazyPHP\Core\ApiResponse;
 use CrazyPHP\Core\Controller;
 use CrazyPHP\Model\Context;
 use CrazyPHP\Core\Model;
+use CrazyPHP\Library\Form\Query;
 
 /**
  * Api V2 By Id
@@ -49,8 +50,11 @@ class ApiV2Id extends Controller {
         # Get id
         $id = self::getParametersUrl("id");
 
+        # Filters parameters
+        $filtersParameters = Query::getForId();
+
         # Declare content
-        $content = $model->readById((string) $id);
+        $content = $model->readById((string) $id, ...$filtersParameters);
 
         # Get last modified date of model config
         $lastModified = FileConfig::getLastModified("Model");

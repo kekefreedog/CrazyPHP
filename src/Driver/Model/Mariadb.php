@@ -513,6 +513,56 @@ class Mariadb implements CrazyDriverModel {
                     "id"    =>  " = ".$this->id
                 ]
             ]);
+
+            # Load reference
+            if($this->arguments["loadReference"])
+
+                # Process
+                $result = $this->_loadReferenceProcess($result);
+    
+            # check arguments
+            if($this->arguments["sqlPrefix"])
+    
+                # Check result
+                if(!empty($result))
+    
+                    # Iteration result
+                    foreach($result as &$row){
+
+                        # Get id
+                        $id = $row["id"] ?? null;
+    
+                        # Process value
+                        $row = $this->_sqlPrefixProcess($row);
+
+                        # Check id
+                        if($id)
+
+                            # Push id in row
+                            $row["id"] = $id;
+
+                        # Push table
+                        $row["entity"] = $this->arguments["table"];
+
+                    }
+    
+            # check arguments
+            if($this->arguments["unflatten"])
+    
+                # Check result
+                if(!empty($result))
+    
+                    # Iteration result
+                    foreach($result as &$row)
+    
+                    # Set result
+                    $row = Arrays::unflatten($row, "_");
+    
+            # check arguments
+            if($this->arguments["pageStateProcess"])
+    
+                # Process value
+                $result = $this->_pageStateProcess($result);
             
         }else
         # Insert to mariadb Check schema

@@ -632,4 +632,31 @@ class ArraysTest extends TestCase{
 
     }
 
+    /**
+     * Test filter by key multidimensional
+     * 
+     * @return void
+     */
+    public function testFilterByKeyMD():void {
+
+        # Set input
+        $input = [
+            ["user" => ["id" => 1, "name" => "Alice"]],
+            ["user" => ["id" => 2, "name" => "Bob"]],
+            ["user" => ["id" => 3, "name" => "Charlie"]],
+        ];
+
+        # Set ouput
+        $output = [
+            1 => ["user" => ["id" => 2, "name" => "Bob"]],
+        ];
+        
+        # Filter where "user.id" is 2
+        $result = Arrays::filterByKeyMD($input, "user.id", 2);
+
+        # Check
+        $this->assertEquals($output, $result);
+
+    }
+
 }
