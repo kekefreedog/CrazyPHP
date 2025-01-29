@@ -15,6 +15,7 @@ namespace  CrazyPHP\Cli;
 /**
  * Dependances
  */
+use CrazyPHP\Library\Extension\Extension;
 use CrazyPHP\Library\Migration\Migration;
 use CrazyPHP\Exception\MongodbException;
 use CrazyPHP\Exception\CrazyException;
@@ -155,6 +156,28 @@ class Core extends CLI {
                 "type"          =>  "command",
                 "long"          =>  "stop",
                 "help"          =>  "Stop the websocket server of your crazy application."
+            ],
+            # Yes
+            [
+                "type"          =>  "option",
+                "long"          =>  "yes",
+                "short"         =>  "y",
+                "help"          =>  "Assume yes on all prompt"
+            ]
+        ],
+        # CrazyWorkers
+        "CrazyWorkers"    =>  [
+            # Run
+            [
+                "type"          =>  "command",
+                "long"          =>  "run",
+                "help"          =>  "Run workers server of your crazy application.",
+            ],
+            # Stop
+            [
+                "type"          =>  "command",
+                "long"          =>  "stop",
+                "help"          =>  "Stop workers server of your crazy application."
             ],
             # Yes
             [
@@ -1773,6 +1796,187 @@ class Core extends CLI {
             ->out("🎉 Websocket stopped with success 🎉")
             ->br()
         ;
+
+    }
+
+    /** Protected Methods Action | For CrazyWorkers
+     ******************************************************
+     */
+
+    /** 
+     * Action Workers Run
+     * 
+     * Run workers server
+     * 
+     * @param array $inputs Collection of inputs with opts, args & cmd
+     */
+    protected function actionCrazyWorkersRun(array $inputs = []){
+
+        # Is Yes
+        $isYes = $this->_checkOpt($inputs, 'yes');
+
+        # New climate
+        $climate = new CLImate();
+
+        # Add asci folder
+        $climate->addArt(self::ASCII_ART["crazyphp"]);
+        
+        # Draw crazy php logo
+        $climate->draw('crazyphp');
+
+        # Check CrazyWorkers extensions is installed
+        if(Extension::getInstalledByName('CrazyWorkers') === null){
+
+            # Stop message
+            $climate
+                ->br()
+                ->bold()
+                ->red("🛑 Crazy workers is not installed 🛑")
+                ->br()
+            ;
+
+
+        }else{
+
+            # Title of current action
+            $climate->backgroundBlue()->out("🚀 Run Workers Server")->br();
+          
+            # Check command is in router
+            $this->_checkInRouter($inputs);
+
+            # Check not is yes
+            if(!$isYes){
+
+                # Message
+                $input = $climate
+                    ->lightBlue()
+                    ->bold()
+                    ->confirm('✅ Do you want run workers server ? ✅')
+                ;
+                
+                # Check action confirmed
+                if (!$input->confirmed()){
+
+                    # Stop message
+                    $climate
+                        ->br()
+                        ->bold()
+                        ->red("✋ Action canceled ✋")
+                        ->br()
+                    ;
+
+                    # Stop action
+                    return;
+
+                }
+
+                # Title of current action
+                $climate
+                    ->br()
+                    ->backgroundBlue()
+                    ->out("🚀 Run workers")->br()
+                ;
+            
+            }
+
+            # Run workers
+            class_exists("\App\Library\CrazyWorker") && (new \App\Library\CrazyWorker())->run();
+
+            # Success message
+            $climate
+                ->br()
+                ->lightGreen()
+                ->bold()
+                ->out("🎉 Workers ran with success 🎉")
+                ->br()
+            ;
+
+        }
+
+    }
+
+    /**
+     * Action Crazy Weboscket Stop
+     * 
+     * Action for stop workers server
+     * 
+     * @param array $inputs Collection of inputs with opts, args & cmd
+     * @return void
+     */
+    protected function actionCrazyWorkersStop(array $inputs = []):void {
+
+        # New climate
+        $climate = new CLImate();
+
+        # Add asci folder
+        $climate->addArt(self::ASCII_ART["crazyphp"]);
+        
+        # Draw crazy php logo
+        $climate->draw('crazyphp');
+
+        # Check CrazyWorkers extensions is installed
+        if(Extension::getInstalledByName('CrazyWorkers') === null){
+
+            # Stop message
+            $climate
+                ->br()
+                ->bold()
+                ->red("🛑 Crazy workers is not installed 🛑")
+                ->br()
+            ;
+
+
+        }else{
+
+            # Title of current action
+            $climate->backgroundOrange()->out("🚀 Stop Workers Server")->br();
+          
+            # Check command is in router
+            $this->_checkInRouter($inputs);
+
+            # Message
+            $input = $climate
+                ->lightBlue()
+                ->bold()
+                ->confirm('✅ Do you want stop workers server ? ✅')
+            ;
+            
+            # Check action confirmed
+            if (!$input->confirmed()){
+
+                # Stop message
+                $climate
+                    ->br()
+                    ->bold()
+                    ->red("✋ Action canceled ✋")
+                    ->br()
+                ;
+
+                # Stop action
+                return;
+
+            }
+
+            # Title of current action
+            $climate
+                ->br()
+                ->backgroundBlue()
+                ->out("🚀 Run stop workers")->br()
+            ;
+
+            # Run workers
+            # (new Websocket)->run();
+
+            # Success message
+            $climate
+                ->br()
+                ->lightGreen()
+                ->bold()
+                ->out("🎉 Workers stopped with success 🎉")
+                ->br()
+            ;
+
+        }
 
     }
 

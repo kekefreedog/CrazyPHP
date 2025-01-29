@@ -246,6 +246,9 @@ class Extension {
             # Get from config
             $result = Config::getValue("Extension.installed.$name");
 
+        # check result is null
+        is_array($result) && empty($result) && ($result = null);
+
         # Return result
         return $result;
 

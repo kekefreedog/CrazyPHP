@@ -1,0 +1,29 @@
+# #
+# CrazyWorkers
+#
+# Properties of the workers extension
+#
+# YAML version 1.2
+#
+# @package    kzarshenas/crazyphp
+# @author     kekefreedog <kevin.zarshenas@gmail.com>
+# @copyright  2022-2024 Kévin Zarshenas
+# #
+CrazyWorkers:
+  name: CrazyWorkers
+  description: Modal extension for manage workers
+  version: 1.0.0
+  scripts:
+    Workers.yml:
+      source: "@crazyphp_root/resources/Extensions/CrazyWorkers/config/Workers.yml"
+      destination: "@app_root/config/Workers.yml"
+    CrazyTimerInterface.php:
+      source: "@crazyphp_root/resources/Extensions/CrazyWorkers/interface/CrazyTimerInterface.php"
+      destination: "@app_root/app/Library/Interface/CrazyTimerInterface.php"
+    CrazyWorker.php:
+      source: "@crazyphp_root/resources/Extensions/CrazyWorkers/script/CrazyWorker.php"
+      destination: "@app_root/app/Library/CrazyWorker.php"
+  dependencies:
+    composer:
+      workerman/workerman: ^5.0
+      # Monolog\Logger: ^3.8
