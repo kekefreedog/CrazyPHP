@@ -306,7 +306,7 @@ class Router extends VendorRouter {
         if($this->cache->hasUpToDate($key, $lastModifiedDate) && false){
 
             # Get cached data
-            list($coreMiddlewares, $appMiddlewares) = $this->cache->get($key);
+            list($coreMiddlewares, $appMiddlewares, $apiMiddlewares) = $this->cache->get($key);
             
         }else{
 
@@ -316,10 +316,14 @@ class Router extends VendorRouter {
             # Get app middlewares
             $appMiddlewares = Middleware::getAllFromApp();
 
+            # Get api middlewares
+            $apiMiddlewares = Middleware::getAllFromApi();
+
             # Put on Cache
             $this->cache->set($key, [
                 $coreMiddlewares,
-                $appMiddlewares
+                $appMiddlewares,
+                $apiMiddlewares
             ]);
 
         }
@@ -338,11 +342,14 @@ class Router extends VendorRouter {
                     }
                 );
 
+        # Set app api middlewares
+        $appApiMiddlewares = (is_array($appMiddlewares) ? $appMiddlewares : []) + (is_array($apiMiddlewares) ? $apiMiddlewares : []);
+
         # Check not empty
-        if(!empty($appMiddlewares))
+        if(!empty($appApiMiddlewares))
 
             # Iteration middleware
-            foreach($appMiddlewares as $pattern => $middlewares)
+            foreach($appApiMiddlewares as $pattern => $middlewares)
 
                 # Check middlewares
                 if(!empty($middlewares))

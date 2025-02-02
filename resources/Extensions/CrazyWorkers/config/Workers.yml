@@ -13,3 +13,4 @@ Workers:
   list: null
   log:
     path: "@app_root/logs/workers"
+  processes: auto

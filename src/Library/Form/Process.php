@@ -73,6 +73,8 @@ class Process {
         ],
         "FILE"      =>  [
             "storeInLocalAndGetPath"
+        ],
+        "JSON"      =>  [
         ]
     ];
 
@@ -121,6 +123,12 @@ class Process {
 
                 # Action for bool
                 $this->_actionFile($input);
+                
+            # Type Boolean
+            elseif(strtoupper(substr(trim($input['type']), 0, 4)) == "JSON")
+
+                # Action for bool
+                $this->_actionJson($input);
 
         endforeach;
 
@@ -353,6 +361,49 @@ class Process {
 
             }
 
+
+    }
+
+    /**
+     * Action for json
+     * 
+     * @return void
+     */
+    private function _actionJson(array &$input = []):void {
+
+        # Check value is same type
+        if(!is_string($input['value']) && !is_numeric($input['value']))
+
+            # Stop function
+            return;
+
+        # Check process
+        if(!empty($input['process'] ?? null))
+
+            # Iteration process
+            foreach($input['process'] as $process)
+
+                # Check methods exists
+                if(
+                    $process &&
+                    in_array($process, $this->dispatch["JSON"]) &&
+                    method_exists($this, $process)
+                ){
+
+                    # Process value
+                    $input['value'] = $this->{$process}($input['value']);
+
+                }else
+                # Check is callable
+                if(
+                    $process &&
+                    is_callable($process)
+                ){
+
+                    # Process value
+                    $input['value'] = $process($input['value']);
+
+                }
 
     }
 

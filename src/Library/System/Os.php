@@ -17,6 +17,8 @@ namespace  CrazyPHP\Library\System;
  */
 use CrazyPHP\Exception\CrazyException;
 
+use function PHPUnit\Framework\returnSelf;
+
 /**
  * Form
  *
@@ -271,6 +273,63 @@ class Os {
 
         # Check the result
         return $return_var === 0;  
+    }
+
+    /**
+     * Get CPU Number
+     * 
+     * @return int
+     */
+    public static function getCpuNumber():int {
+
+        # Set result
+        $result = 1;
+
+        # Get os
+        $os = static::getOs();
+
+        # Command
+        $command = "";
+
+        # Check os
+        if($os === "linux")
+
+            # Set command
+            $command = "nproc";
+
+        else
+        # Check mac
+        if($os == "mac")
+
+            # Set command
+            $command = "sysctl -n hw.ncpu";
+
+        else
+        # Check windows
+        if($os == "windows")
+
+            # Set command
+            $command = "for /f \"tokens=2 delims==\" %A in ('wmic cpu get NumberOfCores /value ^| find \"=\"') do @echo %A";
+
+        # Check command
+        if($command){
+
+            # Get result of command
+            $commandResult = intval(shell_exec($command));
+
+            # Check result
+            if($commandResult > 0){
+
+                # Set result
+                $result = $commandResult;
+
+            }
+
+        }
+
+        # Return result
+        return $result;
+
     }
 
     /** Public Constants

@@ -19,6 +19,7 @@ use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\File\File;
+use CrazyPHP\Library\File\Json;
 use Exception;
 
 /**
@@ -67,6 +68,8 @@ class Validate {
         ],
         "FILE"      =>  [
             "isValidFile"
+        ],
+        "JSON"      =>  [
         ]
     ];
 
@@ -131,6 +134,12 @@ class Validate {
 
                 # Action for varchar
                 $this->_actionVarchar($input);
+
+            # Type varchar
+            if(strtoupper(substr(trim($input['type']), 0, 4)) == "JSON")
+
+                # Action for json
+                $this->_actionJson($input);
 
     }
 
@@ -397,6 +406,56 @@ class Validate {
             }
 
         }
+
+    }
+
+    /**
+     * Action for json
+     * 
+     * @return void
+     */
+    private function _actionJson(array &$input = []):void {
+
+        # Check value is same type
+        if(!is_string($input['value']) && Json::check($input["value"]))
+
+            # New Exception
+            throw new CrazyException(
+                "Value of \”".$input["name"]."\” isn't a correct json...",
+                500,
+                [
+                    "custom_code"   =>  "validate-020",
+                ]
+            );
+
+        # Check process
+        if(!empty($input['process'] ?? null))
+
+            # Iteration process
+            foreach($input['process'] as $process){
+
+                # Prepare method name
+                $methodName = "_is".ucfirst($process);
+
+                # Check methods exists
+                if(
+                    method_exists($this, $methodName) && 
+                    in_array($process, $this->dispatch['JSON'])
+                )
+
+                    # Process value
+                    $input['value'] = $this->{$methodName}($input);
+
+            }
+
+        # Check if required
+        if( ( $input["required"] ?? false ) && !$input['value'])
+
+            # If default value
+            if($input['default'] ?? false)
+
+                # Set default value
+                $input['value'] = Process::setDefault($input["default"]);
 
     }
 

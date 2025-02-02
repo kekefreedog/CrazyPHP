@@ -13,6 +13,7 @@
 namespace  App\Library;
 
 use CrazyPHP\Library\File\Config;
+use CrazyPHP\Library\System\Os;
 use Workerman\Worker;
 use Workerman\Timer;
 use ReflectionClass;
@@ -58,6 +59,9 @@ class CrazyWorker {
 
         # Setup workers
         $this->_setupWorkers();
+
+        # Set processes
+        $this->_setProcesses();
 
     }
 
@@ -219,6 +223,48 @@ class CrazyWorker {
             }
 
         };
+
+    }
+
+    /**
+     * Set Processes
+     * 
+     * Set proccesses number based on config
+     * 
+     * @return void
+     */
+    private function _setProcesses():void {
+
+        # Setup worker instance
+        $this->_workerInstance === null && ($this->_workerInstance = new Worker());
+
+        # Set result
+        $result = 1;
+
+        # Get worker config
+        $workerConfig = Config::get("Workers");
+
+        # Get processes workers parameter
+        $processes = $workerConfig["Workers"]["processes"] ?? "auto";
+
+        # Check processes
+        if($processes == "auto"){
+
+            # Set result
+            $result = Os::getCpuNumber();
+
+            # Check result
+            if($result < 1) $result = 1;
+
+        }elseif(intval($processes) > 1){
+
+            # Set result
+            $result = $processes;
+
+        }
+        
+        # Set processes
+        $this->_workerInstance->count = $result;
 
     }
 

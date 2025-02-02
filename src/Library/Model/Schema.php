@@ -349,6 +349,12 @@ class Schema {
             
                             # Set value
                             $item["value"] = null;
+                            
+                        # Type Json
+                        elseif(strtoupper(substr(trim($item['type']), 0, 4)) == "JSON")
+            
+                            # Set value
+                            $item["value"] = null;
 
                     }
 

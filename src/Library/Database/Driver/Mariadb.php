@@ -529,6 +529,22 @@ class Mariadb implements CrazyDatabaseDriver {
                     : ''
                 ;
 
+            }else
+            # If file
+            if($columnTypeTemp == "JSON"){
+
+                # Set column type
+                $columnType = "JSON";
+
+                # Set required
+                $required = isset($attribute['required']) && $attribute['required'] 
+                    ? "NOT NULL, CHECK (JSON_VALID($columnName))"
+                    : 'NULL'
+                ;
+
+                # Set default
+                $default = "";
+
             }
 
             # Clean column type

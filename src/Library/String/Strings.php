@@ -81,6 +81,42 @@ class Strings {
         # Return result
         return $result;
 
-      }
+    }
+
+    /**
+     * Generate Secure Password
+     * 
+     * @param int $length
+     * @return string
+     */
+    public static function generateSecurePassword($length = 12):string {
+
+        # Define character pools
+        $uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $lowercase = 'abcdefghijklmnopqrstuvwxyz';
+        $digits = '0123456789';
+        $specialChars = '!@#$%^&*()-_=+<>?';
+    
+        # Ensure at least one character from each category
+        $password = [
+            $uppercase[random_int(0, strlen($uppercase) - 1)],
+            $lowercase[random_int(0, strlen($lowercase) - 1)],
+            $digits[random_int(0, strlen($digits) - 1)],
+            $specialChars[random_int(0, strlen($specialChars) - 1)]
+        ];
+    
+        # Merge all character sets
+        $allCharacters = $uppercase . $lowercase . $digits . $specialChars;
+    
+        # Generate the remaining characters
+        for($i = 4; $i < $length; $i++) $password[] = $allCharacters[random_int(0, strlen($allCharacters) - 1)];
+    
+        # Shuffle the password to ensure randomness
+        shuffle($password);
+    
+        # Convert array to string and return
+        return implode('', $password);
+
+    }
 
 }

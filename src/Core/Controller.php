@@ -287,101 +287,13 @@ class Controller {
                 # Process the raw data
                 $parsedData = static::parseMultipartData($rawData);
 
-                // Simulate $_POST and $_FILES
+                # Simulate $_POST and $_FILES
                 $_POST = $parsedData['post'];
                 
+                # Get files
                 $_FILES = $parsedData['files'];
 
-                # Check if formdata
-                /* if(strpos($rawData, 'Content-Disposition: form-data;') !== false){
-
-                    /**
-                     * @source https://stackoverflow.com/questions/5483851/manually-parse-raw-multipart-form-data-data-with-php
-                     *//*
-
-                    // read incoming data
-                    $input = file_get_contents('php://input');
-
-                    print_r($toto = static::parseMultipartData($input));
-                    print_r(getimagesize($toto["image"]["tmp_name"]));
-                    exit;
-                    
-                    // grab multipart boundary from content type header
-                    preg_match('/boundary=(.*)$/', $_SERVER['CONTENT_TYPE'], $matches);
-                    $boundary = $matches[1];
-                    
-                    // split content by boundary and get rid of last -- element
-                    $a_blocks = preg_split("/-+$boundary/", $input);
-                    array_pop($a_blocks);
-   
-                    # Set i
-                    $i = 0;
-
-                    # loop data blocks
-                    foreach($a_blocks as $id => $block){
-                        
-                        # Check block
-                        if(empty($block))
-
-                            # Continue iteration
-                            continue;
-                      
-                        // you'll have to var_dump understand this and maybe replace \n or \r with a visibile char
-                      
-                        // parse uploaded files
-                        if(strpos($block, 'application/octet-stream') !== false){
-
-                            # match "name", then everything after "stream" (optional) except for prepending newlines 
-                            preg_match('/name=\"([^\"]*)\".*stream[\n|\r]+([^\n\r].*)?$/s', $block, $matches);
-
-                        }else
-                        # parse all other fields
-                        {
-                        
-                            # match "name" and optional value in between newline sequences
-                            preg_match('/name=\"([^\"]*)\"[\n|\r]+([^\n\r].*)?\r$/s', $block, $matches);
-
-                        }
-
-                        # Catch name
-                        preg_match('/name="([^"]*)"/', $block, $matchesName);
-
-                        # Catch mime type
-                        preg_match('/Content-Type:\s*([\w\/\-\.]+)/i', $block, $matchesMime);
-
-                        # $data[$matchesName[1] ?? $matches[1]] = $matches[2] ?? "";
-
-                        # Create tmp file
-                        $tmpFilePath = tempnam(sys_get_temp_dir(), 'php');
-
-                        # Put data
-                        file_put_contents($tmpFilePath, $block ?? "");
-
-                        # Set data
-                        $data[$matchesName[1] ?? $i] = [
-                            "name"      =>  $matches[1],
-                            "type"      =>  $matchesMime[1],
-                            "tmp_name"  =>  $tmpFilePath,
-                            "error"     =>  0,
-                            "size"      =>  filesize($tmpFilePath),
-                            "isJpeg"    =>  getimagesize($tmpFilePath)
-                        ];
-
-                        # Increment i
-                        $i++;
-                      
-                    } 
-
-                }else{
-
-                    # Parse value from input
-                    parse_str($rawData, $data);
-
-                }
-
-                # Set result
-                $result = $data; */
-
+                # Get result
                 $result = $_POST + $_FILES;
                 
                 # Break

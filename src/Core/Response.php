@@ -27,6 +27,7 @@ use CrazyPHP\Exception\CatchState;
 use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\State\Page;
 use CrazyPHP\Library\File\File;
+use CrazyPHP\Model\Context;
 use CrazyPHP\Model\Env;
 
 /**
@@ -59,6 +60,9 @@ class Response {
     /** @var array */
     public $header = [];
 
+    /** @var array */
+    private array $postResponseCollection = [];
+
     /**
      * Constructor
      * 
@@ -74,6 +78,9 @@ class Response {
 
         # Extra Infos In Header
         $this->extraInfoInHeader();
+
+        # Check Post Response (onTerminate) 
+        $this->checkPostResponse();
         
     }
 
@@ -375,6 +382,9 @@ class Response {
         # Emit result
         (new SapiEmitter())->emit($this->response);
 
+        # Run post response
+        $this->runPostResponse();
+
     }
 
     /** Private methods
@@ -395,6 +405,52 @@ class Response {
 
         # Add crazy hash
         $this->header["Crazy-Hash"] = Config::getValue("Front.lastBuild.hash");
+
+    }
+
+    /**
+     * Check Post Response
+     * 
+     * Check if post response event (onTerminate)
+     * 
+     * @return void
+     */
+    private function checkPostResponse():void {
+
+        # Get on terminates
+        $onTerminates = Context::getCurrentRoute("onterminate");
+
+        # Iteration on terminates
+        if($onTerminates) foreach($onTerminates as $onTerminate) if($onTerminate && is_callable($onTerminate))
+
+            # Push into collection
+            $this->postResponseCollection[] = $onTerminate;
+        
+
+    }
+
+    /**
+     * Run Post Response
+     * 
+     * Run post response stored in collection
+     * 
+     * @return void
+     */
+    private function runPostResponse():void {
+
+        # Iteration post response
+        if(!empty($this->postResponseCollection)) foreach($this->postResponseCollection as $onTerminate){
+
+            # Call callable event
+            $result = $onTerminate($this->response);
+
+            # Check result
+            if($result !== null)
+
+                # Update response
+                $this->response = $result;
+
+        }
 
     }
 
