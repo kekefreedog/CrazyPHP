@@ -6,8 +6,8 @@
   cacheDirectory=".cache/phpunit"
   displayDetailsOnTestsThatTriggerWarnings="true"
   displayDetailsOnTestsThatTriggerDeprecations="true"
-  colors="true"
-  testdox="true"
+  colors="false"
+  testdox="false"
 >
   <testsuites>
     <testsuite name="Crazy PHP | Library tests">

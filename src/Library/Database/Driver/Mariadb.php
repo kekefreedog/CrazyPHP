@@ -1071,6 +1071,9 @@ class Mariadb implements CrazyDatabaseDriver {
 
                 }
 
+                # Append sort
+                $query .= static::appendSort($options["sort"] ?? null, $alias);
+
                 # Update table
                 $statment = $this->client->query($query);
 
@@ -1544,6 +1547,56 @@ class Mariadb implements CrazyDatabaseDriver {
 
         # Get result
         $result = $this->config["database"][0];
+
+        # Return result
+        return $result;
+
+    }
+
+    /** Public Static Methods
+     ******************************************************
+     */
+
+    /**
+     * Append Sort
+     * 
+     * @param array|null $sort
+     * @param string $alias
+     * @return string
+     */
+    public static function appendSort(array|string|null $sort, string $alias = ""):string {
+
+        # Set result
+        $result = "";
+
+        # Check sort
+        if($sort !== null){
+
+            # Check string
+            if(is_string($sort)) $sort = [$sort];
+
+            # Iteration sort
+            if(!empty($sort)) foreach($sort as $field) if($field){
+
+                # Check if first character is "-"
+                if($field[0] == "-"){
+
+                    # Push field
+                    $result .= ", ".($alias ? "$alias." : "").ltrim($field, "-")." DESC";
+
+                }else{
+
+                    # Push field
+                    $result .= ", ".($alias ? "$alias." : "")."$field ASC";
+
+                }
+
+            }
+
+        }
+
+        # Append ORDER BY
+        if($result) $result = " ORDER BY".ltrim($result, ",");
 
         # Return result
         return $result;

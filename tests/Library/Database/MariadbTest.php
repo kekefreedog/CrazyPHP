@@ -163,4 +163,35 @@ class MariadbTest extends TestCase {
 
     }
 
+    /**
+     * Test Append Sort
+     * 
+     * @return void
+     */
+    public function testAppendSort():void {
+
+        # Set input
+        $input = [
+            "field1",
+            "-field2",
+            "toto"
+        ];
+
+        # Get result A
+        $resultA = Mariadb::appendSort($input);
+
+        # Expected A
+        $expectedA = " ORDER BY field1 ASC, field2 DESC, toto ASC";
+
+        # Get result B
+        $resultB = Mariadb::appendSort($input, "a");
+
+        # Expected B
+        $expectedB = " ORDER BY a.field1 ASC, a.field2 DESC, a.toto ASC";
+
+        # Assert
+        $this->assertEquals($expectedB, $resultB);
+
+    }
+
 }

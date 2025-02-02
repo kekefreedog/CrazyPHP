@@ -72,6 +72,9 @@ class Mariadb implements CrazyDriverModel {
     /** @var null|array conditions */
     private array|null $conditions = null;
 
+    /** @var null|array sort */
+    private array|null $sort = null;
+
     /** @var bool conditions */
     private bool $optionAlreadyLoaded = false;
 
@@ -208,6 +211,20 @@ class Mariadb implements CrazyDriverModel {
 
         # Ingest options
         $this->_ingestOptions($options);
+
+        # Check sort
+        if($sort !== null){
+
+            # Convert to array
+            if(is_string($sort)) $sort = [$sort];
+
+            # Iteration sort
+            if(!empty($sort)) foreach($sort as $item) if(is_string($sort) && $sort)
+
+                # Set sort
+                $this->sort[] = $sort;
+
+        }
 
         # Return self
         return $this;
@@ -642,7 +659,8 @@ class Mariadb implements CrazyDriverModel {
                     $this->arguments["table"], 
                     "",
                     [
-                        "filters"   =>  $this->conditions
+                        "filters"   =>  $this->conditions,
+                        'sort'      =>  $this->sort,
                     ]
                 );
 
