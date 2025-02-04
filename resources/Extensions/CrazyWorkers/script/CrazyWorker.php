@@ -241,7 +241,7 @@ class CrazyWorker {
         # Set result
         $result = 1;
 
-        # Get worker config
+        /* # Get worker config
         $workerConfig = Config::get("Workers");
 
         # Get processes workers parameter
@@ -261,7 +261,7 @@ class CrazyWorker {
             # Set result
             $result = $processes;
 
-        }
+        } */
         
         # Set processes
         $this->_workerInstance->count = $result;
