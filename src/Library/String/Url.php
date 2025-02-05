@@ -15,7 +15,7 @@ namespace  CrazyPHP\Library\String;
 /**
  * Form
  *
- * Methods for generate CLI form
+ * Methods for manipulate Url
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
@@ -225,6 +225,37 @@ class Url {
 
         # Return inverse of is external
         return !static::isExternal($url, $host);
+
+    }
+
+    /**
+     * Get Current
+     * 
+     * Get current url based on $_SERVER
+     * 
+     * @return string
+     */
+    public static function getCurrent():string {
+
+        # Set result
+        $result = "";
+
+        # Check HTTP_HOST
+        if($_SERVER["HTTP_HOST"] ?? false){
+
+            # Push into result
+            $result = $_SERVER["HTTP_HOST"];
+
+            # Check Schema
+            if($_SERVER["REQUEST_SCHEME"] ?? false)
+
+                # Push into result
+                $result = $_SERVER["REQUEST_SCHEME"]."://".$result;
+
+        }
+
+        # Return result
+        return $result;
 
     }
 
