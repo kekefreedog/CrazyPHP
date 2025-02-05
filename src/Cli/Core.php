@@ -1905,6 +1905,9 @@ class Core extends CLI {
      */
     protected function actionCrazyWorkersStop(array $inputs = []):void {
 
+        # Is Yes
+        $isYes = $this->_checkOpt($inputs, 'yes');
+
         # New climate
         $climate = new CLImate();
 
@@ -1934,38 +1937,43 @@ class Core extends CLI {
             # Check command is in router
             $this->_checkInRouter($inputs);
 
-            # Message
-            $input = $climate
-                ->lightBlue()
-                ->bold()
-                ->confirm('✅ Do you want stop workers server ? ✅')
-            ;
-            
-            # Check action confirmed
-            if (!$input->confirmed()){
+            # Check not is yes
+            if(!$isYes){
 
-                # Stop message
+                # Message
+                $input = $climate
+                    ->lightBlue()
+                    ->bold()
+                    ->confirm('✅ Do you want stop workers server ? ✅')
+                ;
+                
+                # Check action confirmed
+                if (!$input->confirmed()){
+
+                    # Stop message
+                    $climate
+                        ->br()
+                        ->bold()
+                        ->red("✋ Action canceled ✋")
+                        ->br()
+                    ;
+
+                    # Stop action
+                    return;
+
+                }
+
+                # Title of current action
                 $climate
                     ->br()
-                    ->bold()
-                    ->red("✋ Action canceled ✋")
-                    ->br()
+                    ->backgroundBlue()
+                    ->out("🚀 Run stop workers")->br()
                 ;
-
-                # Stop action
-                return;
-
+            
             }
 
-            # Title of current action
-            $climate
-                ->br()
-                ->backgroundBlue()
-                ->out("🚀 Run stop workers")->br()
-            ;
-
             # Run workers
-            # (new Websocket)->run();
+            class_exists("\App\Library\CrazyWorker") && (new \App\Library\CrazyWorker())->stop();
 
             # Success message
             $climate
