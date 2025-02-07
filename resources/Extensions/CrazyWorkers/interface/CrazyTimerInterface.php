@@ -15,8 +15,8 @@ namespace  CrazyPHP\Library\Interface;
 /**
  * Dependances
  */
+use CrazyPHP\Library\System\Logger;
 use Workerman\Worker;
-use Workerman\Timer;
 
 /**
  * Crazy Timer Interface
@@ -39,9 +39,10 @@ interface CrazyTimerInterface {
      * Merhod call on worker start
      * 
      * @param Worker $worker
+     * @param ?Logger $logger
      * @return void
      */
-    public static function onStart(Worker $worker):void;
+    public static function onStart(Worker $worker, ?Logger $logger = null):void;
 
     /**
      * Timer
@@ -50,9 +51,10 @@ interface CrazyTimerInterface {
      * 
      * @param float $duration Monitor duration
      * @param float $interval Repeat delay duration
+     * @param ?Logger $logger
      * @return void
      */
-    public static function timer(float $duration, float $interval):void;
+    public static function timer(float $duration, float $interval, ?Logger $logger = null):void;
 
     /**
      * On Stop
@@ -60,8 +62,9 @@ interface CrazyTimerInterface {
      * Merhod call on worker stop
      * 
      * @param Worker $worker
+     * @param ?Logger $logger
      * @return void
      */
-    public static function onStop(Worker $worker):void;
+    public static function onStop(Worker $worker, ?Logger $logger = null):void;
 
 }

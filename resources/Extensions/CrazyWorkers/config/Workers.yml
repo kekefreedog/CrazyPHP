@@ -11,6 +11,5 @@
 # #
 Workers:
   list: null
-  log:
-    path: "@app_root/logs/workers"
+  log: true
   processes: auto

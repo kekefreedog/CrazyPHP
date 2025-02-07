@@ -12,8 +12,8 @@
  */
 namespace  App\Library;
 
+use CrazyPHP\Library\System\Logger;
 use CrazyPHP\Library\File\Config;
-use CrazyPHP\Library\System\Os;
 use Workerman\Worker;
 use Workerman\Timer;
 use ReflectionClass;
@@ -47,6 +47,18 @@ class CrazyWorker {
     /** @var $_workerInstance */
     private ?Worker $_workerInstance = null;
 
+    /** @var array $_workerAlreadyRetrieved */
+    private $_workerAlreadyRetrieved = [];
+
+    /** @var bool $_loggerInstance */
+    private bool $_loggerNeeded = false;
+
+    /** @var Logger[] $_loggerInstance */
+    private array $_loggerInstances = [];
+
+    /** @var ?Logger $_loggerInstance */
+    private ?Logger $_loggerInstance = null;
+
     /**
      * Constructor
      * 
@@ -56,6 +68,9 @@ class CrazyWorker {
 
         # Retrieve workers
         $this->_retrieveWorkers();
+
+        # Prepare Logger
+        $this->_prepareLogger();
 
         # Setup workers
         $this->_setupWorkers();
@@ -95,6 +110,9 @@ class CrazyWorker {
      */
     public function stop():void {
 
+        # Log
+        $this->_loggerInstance && $this->_loggerInstance->info("Crazy Workers stopped");
+
         # Run worker
         Worker::stopAll();
 
@@ -108,6 +126,9 @@ class CrazyWorker {
      * @return void
      */
     public function restart():void {
+
+        # Log
+        $this->_loggerInstance && $this->_loggerInstance->info("Crazy Workers restarted");
 
         # Set command
         Worker::$command = 'restart';
@@ -128,9 +149,6 @@ class CrazyWorker {
      */
     private function _retrieveWorkers():void {
 
-        # Declare workerAlreadyRetrieved
-        $workerAlreadyRetrieved = [];
-
         # Get worker config
         $workerConfig = Config::get("Workers");
 
@@ -138,7 +156,7 @@ class CrazyWorker {
         $workersList = $workerConfig["Workers"]["list"] ?? [];
 
         # Iteration list
-        if(!empty($workersList)) foreach($workersList as $worker) if($worker['name'] ?? false && !in_array($worker['name'], $workerAlreadyRetrieved)){
+        if(!empty($workersList)) foreach($workersList as $worker) if($worker['name'] ?? false && !in_array($worker['name'], $this->_workerAlreadyRetrieved)){
 
             # Get type
             $type = $worker['type'] ?? "";
@@ -149,9 +167,36 @@ class CrazyWorker {
             # Check method exits
             (new ReflectionClass($this))->hasMethod($methodName) && $this->{$methodName}($worker);
 
-
             # Push name in worker already retireved
-            $workerAlreadyRetrieved[] = $worker['name'];
+            $this->_workerAlreadyRetrieved[] = $worker['name'];
+
+        }
+
+    }
+
+    /**
+     * Prepare Logger
+     * 
+     * @return void
+     */
+    private function _prepareLogger():void {
+
+        # Get worker config
+        $workerConfig = Config::get("Workers");
+
+        # check log
+        if($workerConfig["Workers"]["log"] ?? false){
+
+            # New crazy logger
+            $this->_loggerNeeded = true;
+
+            # Set workers logger
+            $this->_loggerInstance = new Logger("CrazyWorkers", [
+                "type"      =>  "Worker",
+                "handlers"  =>  [
+                    "StreamHandler" =>  Logger::STREAMHANDLER_TEMPLATE
+                ]
+            ]);
 
         }
 
@@ -170,6 +215,22 @@ class CrazyWorker {
         # Set onWorkerStart
         $this->_workerInstance->onWorkerStart = function(){
 
+            # Push info
+            $this->_loggerInstance && $this->_loggerInstance->info("Crazy Workers logger started");
+
+            # Check logger
+            if($this->_loggerNeeded && !empty($this->_workerAlreadyRetrieved)) foreach($this->_workerAlreadyRetrieved as $name){
+
+                # Set logger
+                $this->_loggerInstances[$name] = new Logger($name, [
+                    "type"      =>  "Worker",
+                    "handlers"  =>  [
+                        "StreamHandler" =>  Logger::STREAMHANDLER_TEMPLATE
+                    ]
+                ]);
+
+            }
+
             # Get on start
             $onStartTimerCollection = $this->_timerCollection["onStart"];
 
@@ -180,7 +241,7 @@ class CrazyWorker {
                 if(is_callable($item["function"] ?? false))
 
                     # Call function
-                    $item["function"]($this->_workerInstance);
+                    $item["function"]($this->_workerInstance, ($this->_loggerInstances[$item["log"]] ?? null));
 
 
             }
@@ -191,11 +252,24 @@ class CrazyWorker {
             # Iteration foreach
             if(!empty($timerCollection)) foreach($timerCollection as $item) {
 
+                # Set arguments
+                $arguments = $item["arguments"] ?? [];
+
+                # Check 
+                if(isset($this->_loggerInstances[$item["log"]])) $arguments += ["logger" => $this->_loggerInstances[$item["log"]] ?? null];
+
                 # Check function
                 if(is_callable($item["function"] ?? false)){
 
                     # Add timezone_transitions_get
-                    Timer::add($item["arguments"]["interval"] ?? 10, $item["function"], $item["arguments"] ?? []);
+                    Timer::add(
+                        $item["arguments"]["interval"] ?? 10, 
+                        $item["function"], 
+                        $arguments
+                    );
+
+                    # Log
+                    $this->_loggerInstance && $this->_loggerInstance->info("\"".$item["log"]."\" worker loaded");
 
                 }
 
@@ -217,7 +291,7 @@ class CrazyWorker {
                 if(is_callable($item["function"] ?? false))
 
                     # Call function
-                    $item["function"]($this->_workerInstance);
+                    $item["function"]($this->_workerInstance, ($this->_loggerInstances[$item["log"]] ?? null));
 
 
             }
@@ -241,8 +315,8 @@ class CrazyWorker {
         # Set result
         $result = 1;
 
-        /* # Get worker config
-        $workerConfig = Config::get("Workers");
+        # Get worker config
+        /* $workerConfig = Config::get("Workers");
 
         # Get processes workers parameter
         $processes = $workerConfig["Workers"]["processes"] ?? "auto";
@@ -291,7 +365,8 @@ class CrazyWorker {
                 # Append method 
                 $this->_timerCollection[$method][] = [
                     "arguments" =>  $worker["arguments"] ?? [],
-                    "function"  =>  "$class::$method"
+                    "function"  =>  "$class::$method",
+                    "log"       =>  $worker["name"] ?? "worker"
                 ];
             
         }

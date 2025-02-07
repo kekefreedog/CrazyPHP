@@ -12,7 +12,7 @@
 CrazyWorkers:
   name: CrazyWorkers
   description: Modal extension for manage workers
-  version: 1.1.0
+  version: 1.2.0
   scripts:
     Workers.yml:
       source: "@crazyphp_root/resources/Extensions/CrazyWorkers/config/Workers.yml"
@@ -26,4 +26,3 @@ CrazyWorkers:
   dependencies:
     composer:
       workerman/workerman: ^5.0
-      # Monolog\Logger: ^3.8
