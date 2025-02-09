@@ -353,8 +353,11 @@ class Up implements CrazyCommand {
         # Exec command
         $result = Command::exec($command);
 
-        # Check result.output.0 is json
-        if(!Json::check($result["output"][0] ?? false))
+        # Set data
+        $data = [];
+
+        # Check result is not empty (meaning service is down)
+        if(empty($result["output"]))
             
             # New error
             throw new CrazyException(
@@ -365,8 +368,14 @@ class Up implements CrazyCommand {
                 ]
             );
 
-        # Open json
-        $data = json_decode($result["output"][0], true);
+        # Iteration services
+        foreach($result["output"] as $item) 
+
+            # Check is json
+            if(Json::check($item))
+
+                # Push it into data
+                $data[] = Json::decode($item);
 
         # Decalre Content
         $content = [];

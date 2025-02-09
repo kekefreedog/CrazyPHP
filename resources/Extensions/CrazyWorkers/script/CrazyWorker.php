@@ -212,11 +212,14 @@ class CrazyWorker {
         # Setup worker instance
         $this->_workerInstance === null && ($this->_workerInstance = new Worker());
 
+        # Push info
+        ($this->_loggerInstance && $this->_loggerInstance->info("---------- New crazy worker instance"));
+
         # Set onWorkerStart
         $this->_workerInstance->onWorkerStart = function(){
 
-            # Push info
-            $this->_loggerInstance && $this->_loggerInstance->info("Crazy Workers logger started");
+            # Debug
+            ($this->_loggerInstance && $this->_loggerInstance->info("Crazy Workers is starting"));
 
             # Check logger
             if($this->_loggerNeeded && !empty($this->_workerAlreadyRetrieved)) foreach($this->_workerAlreadyRetrieved as $name){
@@ -247,7 +250,7 @@ class CrazyWorker {
             }
 
             # Get on start
-            $timerCollection = $this->_timerCollection["timer"];
+            $timerCollection = $this->_timerCollection["timer"]; ($this->_loggerInstance && $this->_loggerInstance->info("Timers found", $timerCollection));
 
             # Iteration foreach
             if(!empty($timerCollection)) foreach($timerCollection as $item) {
@@ -276,10 +279,16 @@ class CrazyWorker {
 
             }
 
+            # Debug
+            ($this->_loggerInstance && $this->_loggerInstance->info("Crazy Workers started"));
+
         };
 
         # Set onWorkerStop
         $this->_workerInstance->onWorkerStop = function(){
+
+            # Push info
+            ($this->_loggerInstance && $this->_loggerInstance->info("Crazy Workers logger is stoping"));
 
             # Get on start
             $onStopTimerCollection = $this->_timerCollection["onStop"];
@@ -295,6 +304,9 @@ class CrazyWorker {
 
 
             }
+            
+            # Debug
+            ($this->_loggerInstance && $this->_loggerInstance->info("Crazy Workers stopped ----------"));
 
         };
 
