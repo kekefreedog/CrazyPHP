@@ -27,6 +27,8 @@
     sudo port install php83-openssl
     # Curl
     sudo port install php83-curl
+    # FTP
+    sudo port install php83-ftp
     ```
 
 And voilà 🎉
