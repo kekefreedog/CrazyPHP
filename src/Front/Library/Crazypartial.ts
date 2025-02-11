@@ -170,6 +170,17 @@ export default abstract class Crazypartial {
 
     }
 
+    /**
+     * On Change
+     * 
+     * @param callable
+     * @param options
+     * @return any
+     */
+    public onChange = (callable:(result:any)=>void, options:Record<any, any>):any => {
+
+    }
+
     /** Public methods | Utilities
      ******************************************************
      */

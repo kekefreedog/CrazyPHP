@@ -11,6 +11,7 @@
 /**
  * Dependances
  */
+import { formOnChangeOptions, formOnChangeResult } from "crazyphp/src/Front/Library/Utility/Form";
 const html = require("./../../../assets/Hbs/partials/form.hbs");
 import { Crazypartial, Form as UtilityForm} from "crazyphp";
 
@@ -50,6 +51,24 @@ export default class Form extends Crazypartial {
 
         // Prepare form
         this._form = new UtilityForm(UtilityForm.isHTMLFormElement(this.input.target) ? this.input.target : "", options);
+
+    }
+    
+    /** Public methods
+     ******************************************************
+     */
+
+    /**
+     * On Change
+     * 
+     * @param callable
+     * @param options
+     * @return any
+     */
+    public onChange = (callable:(result:formOnChangeResult)=>void, options:Partial<formOnChangeOptions>):any => {
+
+        // Set on change on form instance
+        this._form.setOnChange(callable, options);
 
     }
     

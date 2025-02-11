@@ -371,6 +371,39 @@ export default abstract class Crazypage {
 
     }
 
+    /**
+     * Get Partial By Id
+     * 
+     * @param id Id of the partial
+     * @returns {Object|null}
+     */
+    public getPartialById = (id:number):RegisterPartialScanned|null => {
+
+        // Prepare result
+        let result:RegisterPartialScanned|null = null;
+
+        // Check name
+        if(id){
+
+            // Get partials
+            let partials = this.getAllPartials();
+
+            // Filter
+            let filtered = Arrays.filterByKey(partials, "id", id);
+
+            // Check filtered
+            if(Array.isArray(filtered) && filtered.length)
+
+                // Get first element found
+                result = filtered.shift();
+
+        }
+
+        // Return result
+        return result;
+
+    }
+
     /** Public methods
      ******************************************************
      */

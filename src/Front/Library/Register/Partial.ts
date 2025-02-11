@@ -195,7 +195,7 @@ export default class Register {
                                     name: partialValue,
                                     target: resultEl,
                                     callable: tempValue,
-                                    id: Date.now()
+                                    id: Date.now() + Math.floor(Math.random() * 1000)
                                 };
 
                                 // Push temp result in result

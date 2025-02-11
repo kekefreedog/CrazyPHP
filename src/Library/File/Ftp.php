@@ -15,10 +15,10 @@ namespace CrazyPHP\Library\File;
 /** Dependances
  * 
  */
-
-use CrazyPHP\Library\Form\Process;
-use phpseclib3\Net\SFTP as DriverSFTP;
-use phpseclib3\Net\FTP as DriverFTP;
+use League\Flysystem\Ftp\FtpConnectionOptions;
+use League\Flysystem\Sftp\SftpAdapter;
+use League\Flysystem\Ftp\FtpAdapter;
+use League\Flysystem\Filesystem;
 
 /**
  * Ftp
@@ -36,10 +36,12 @@ class Ftp{
      */
 
     /** @var array $_options */
-    private array $_options = [];
+    private array $_options = [
+        
+    ];
 
     /** @var array $_driver */
-    private DriverFt|DriverSFTP $_driver = [];
+    private SftpAdapter|FtpAdapter $_driver;
 
     /**
      * Constructor
@@ -54,11 +56,19 @@ class Ftp{
         ?string $username = null,
         ?string $password = null,
         bool $isFTPs = false,
+        int $port = 22,
         ?string $rootPath = null,
     ){
 
         # Ingest options
-        $this->_ingestOptions();
+        $this->_ingestOptions([
+            "host"      =>  $host,
+            "username"  =>  $username,
+            "password"  =>  $password,
+            "isFTPs"    =>  $isFTPs,
+            "port"      =>  $port,
+            "rootPath"  =>  $rootPath
+        ]);
 
         # Load driver
         $this->_loadDriver();
@@ -81,7 +91,7 @@ class Ftp{
      * 
      * @return void
      */
-    private function _ingestOptions(...$arguments):void {
+    private function _ingestOptions(array $arguments = []):void {
 
         # Push arguments into options
         $this->_options += $arguments;
@@ -93,23 +103,45 @@ class Ftp{
      * 
      * @return void
      */
-    private function _loadDriver(...$arguments):void {
+    private function _loadDriver():void {
 
-        # Get is ftp
-        if(Process::bool($this->_options["isFTPs"] ?? false))
+        # Check secure or not
+        if($this->_options["isFTPs"]){        
 
-            # Set driver
-            $this->_driver = new DriverSFTP();
+            // Define FTP connection options using `FtpConnectionOptions`
+            $options = FtpConnectionOptions::fromArray([
+                'host'     =>   $this->_options["host"],
+                'username' =>   $this->_options["username"],
+                'password' =>   $this->_options["password"],
+                'root'     =>   $this->_options["rootPath"],
+                'passive'  =>   true,
+                'ssl'      =>   false,
+                'timeout'  =>   30,
+            ]);  
 
-        # Not secure 
-        else
+            # Prepare adapteur
+            $adapter = new FtpAdapter($options);  
 
-            # Set driver
-            $this->_driver = new DriverFTP();
+        }else{
 
+            // Define FTP connection options using `FtpConnectionOptions`
+            $options = FtpConnectionOptions::fromArray([
+                'host'     =>   $this->_options["host"],
+                'username' =>   $this->_options["username"],
+                'password' =>   $this->_options["password"],
+                'root'     =>   $this->_options["rootPath"],
+                'passive'  =>   true,
+                'ssl'      =>   false,
+                'timeout'  =>   30,
+            ]);  
 
+            # Prepare adapteur
+            $adapter = new FtpAdapter($options);
 
+        }
 
+        # Set driver
+        $this->_driver = 
 
     }
 

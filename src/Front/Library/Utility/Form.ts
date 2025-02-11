@@ -11,9 +11,12 @@
 /**
  * Dependances
  */
+// @ts-ignore
 import FilePondPluginImageExifOrientation from 'filepond-plugin-image-exif-orientation';
+// @ts-ignore
 import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type';
 import { TomSettings, RecursivePartial } from 'tom-select/dist/types/types';
+// @ts-ignore
 import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
 import IMask, { MaskedOptions, MaskedNumberOptions } from 'imask';
 import { IPickerConfig } from '@easepick/core/dist/types';
@@ -52,6 +55,18 @@ export default class Form {
     /** @var _options */
     private _options:Partial<FormOptions>;
 
+    /** Parameters | on change
+     ******************************************************
+     */
+
+    /** @var _onChangeCallable */
+    private _onChangeCallable:null|((result:formOnChangeResult)=>void) = null;
+
+    /** @var _onChangeCallable */
+    private _onChangeOptions:Partial<formOnChangeOptions> = {
+        eventType: "change",
+    };
+
     /** Construct
      ******************************************************
      */
@@ -77,6 +92,8 @@ export default class Form {
                 this._initEventOnSubmit
             ).then(
                 this._initEventOnReset
+            ).then(
+                this._initEventOnChange
             )
         ;
 
@@ -130,6 +147,23 @@ export default class Form {
 
         // Return
         return result;
+
+    }
+
+    /**
+     * Set On Change
+     * 
+     * @param callable
+     * @param options
+     * @return void
+     */
+    public setOnChange = (callable:(result:formOnChangeResult)=>void, options:Partial<formOnChangeOptions>) => {
+
+        // Set on change
+        this._onChangeOptions = {...this._onChangeOptions, ...options};
+
+        // Set on change event
+        this._onChangeCallable = callable;
 
     }
 
@@ -1213,7 +1247,44 @@ export default class Form {
         this._formEl.addEventListener(
             "reset",
             this.eventOnReset
-        )
+        );
+
+    }
+
+    /**
+     * Init Event on change
+     * 
+     * Event On Change on form
+     * 
+     * @returns {void}
+     */
+    private _initEventOnChange = async():Promise<void> => {
+
+        // Iteration evenType
+        for(let eventType of ["change", "input"])
+
+            // Change
+            this._formEl.addEventListener(eventType, (event) => {
+
+                // Set current target
+                const currentTarget = event.currentTarget;
+
+                // Get target
+                const target = event.target;
+
+                // Check options
+                if(this._onChangeCallable && currentTarget && target && currentTarget instanceof HTMLFormElement && ( target instanceof HTMLInputElement || target instanceof HTMLSelectElement ) && this._onChangeOptions.eventType === eventType){
+
+                    // Call callable
+                    this._onChangeCallable({
+                        formEl: currentTarget,
+                        formData: this.getFormData(currentTarget),
+                        itemEl: target,
+                        type: eventType
+                    });
+
+                }
+            });
 
     }
 
@@ -3087,4 +3158,25 @@ export default class Form {
         return element instanceof HTMLFormElement;
     }
 
+}
+    
+/** Interface
+ ******************************************************
+ */
+
+/**
+ * Form On Change Options
+ */
+export interface formOnChangeResult {
+    formEl:HTMLFormElement,
+    itemEl:HTMLInputElement|HTMLSelectElement,
+    formData:FormData,
+    type: formOnChangeOptions["eventType"]
+}
+
+/**
+ * Form On Change Options
+ */
+export interface formOnChangeOptions {
+    eventType:"change"|"input",
 }
