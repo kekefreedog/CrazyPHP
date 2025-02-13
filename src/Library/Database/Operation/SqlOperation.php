@@ -299,7 +299,7 @@ class SqlOperation extends Operation {
     /**
      * Not Between
      * 
-     * Exemple : `![1,10]`
+     * Exemple : `![1:10]`
      * Description : Checks if a value is not between 1 and 10
      * 
      * @param string|array $input 
@@ -313,10 +313,10 @@ class SqlOperation extends Operation {
         $parentResult = parent::parseNotBetween($input, $operation);
 
         # Get value A
-        $valueA = $parentResult["value"][2];
+        $valueA = $parentResult["value"][1];
 
         # Get value B
-        $valueA = $parentResult["value"][3];
+        $valueB = $parentResult["value"][2];
 
         # Process options on value A
         $this->_processOptions($valueA, $options);
@@ -327,7 +327,7 @@ class SqlOperation extends Operation {
         # Push input in operations
         $result = is_numeric($valueA) && is_numeric($valueB)
             ? "NOT BETWEEN ".floatval($valueA)." AND ".floatval($valueB)
-            : "NOT BETWEEN `$valueA` AND `$valueB`"
+            : "NOT BETWEEN '$valueA' AND '$valueB'"
         ;
 
         # Return input
@@ -338,7 +338,7 @@ class SqlOperation extends Operation {
     /**
      * Between
      * 
-     * Exemple : `[1,10]`
+     * Exemple : `[1:10]`
      * Description : Checks if a value is between 1 and 10 (inclusive)
      * 
      * @param string|array $input 
@@ -351,8 +351,26 @@ class SqlOperation extends Operation {
         # Set result of parent
         $parentResult = parent::parseBetween($input, $operation);
 
+        # Get value A
+        $valueA = $parentResult["value"][1];
+
+        # Get value B
+        $valueB = $parentResult["value"][2];
+
+        # Process options on value A
+        $this->_processOptions($valueA, $options);
+
+        # Process options on value B
+        $this->_processOptions($valueB, $options);
+
+        # Set result of parent
+        $parentResult = parent::parseBetween($input, $operation);
+
         # Push input in operations
-        $result = 'BETWEEN '.$parentResult[0].' AND '.$parentResult[1];
+        $result = is_numeric($valueA) && is_numeric($valueB)
+            ? "BETWEEN ".floatval($valueA)." AND ".floatval($valueB)
+            : "BETWEEN '$valueA' AND '$valueB'"
+        ;
 
         # Return input
         return $result;

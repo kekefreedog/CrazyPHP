@@ -203,7 +203,7 @@ class SqlOperationTest extends TestCase {
      * 
      * @return void
      */
-    public function _testParseBetween_():void {
+    public function testParseBetween():void {
 
         # Get result A
         $resultA = static::$sqlOperation->run("[1:10]");
@@ -215,7 +215,7 @@ class SqlOperationTest extends TestCase {
         $resultB = static::$sqlOperation->run("[A:Z]");
 
         # Check result B
-        $this->assertEquals("BETWEEN A AND Z", $resultB);
+        $this->assertEquals("BETWEEN 'A' AND 'Z'", $resultB);
 
     }
 
@@ -226,7 +226,7 @@ class SqlOperationTest extends TestCase {
      * 
      * @return void
      */
-    public function _testParseNotBetween_():void {
+    public function testParseNotBetween():void {
 
         # Get result A
         $resultA = static::$sqlOperation->run("![1:10]");
@@ -238,7 +238,7 @@ class SqlOperationTest extends TestCase {
         $resultB = static::$sqlOperation->run("![A:Z]");
 
         # Check result B
-        $this->assertEquals("NOT BETWEEN A AND Z", $resultB);
+        $this->assertEquals("NOT BETWEEN 'A' AND 'Z'", $resultB);
 
     }
 

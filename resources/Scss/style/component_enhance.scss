@@ -55,6 +55,9 @@ ul.collection {
         // Color
         background: var(--md-sys-color-surface-variant);
 
+        // Select
+        user-select: none;
+
     }
 
 }

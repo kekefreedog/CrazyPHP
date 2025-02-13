@@ -23,6 +23,7 @@ import { IPickerConfig } from '@easepick/core/dist/types';
 import {default as PageError} from './../Error/Page';
 import {default as UtilityStrings} from './Strings';
 import { AmpPlugin } from '@easepick/amp-plugin';
+import { RangePlugin } from '@easepick/bundle';
 import UtilityBoolean from '../Utility/Boolean';
 import { easepick } from '@easepick/bundle';
 import Crazyrequest from '../Crazyrequest';
@@ -430,6 +431,7 @@ export default class Form {
         // Declare var
         let formEl:HTMLElement|null;
         let itemResult:Array<string|Blob>|null;
+        let itemResults:[Array<string|Blob>]|null;
 
         // Check form name
         if(typeof formName == "string"){
@@ -460,9 +462,12 @@ export default class Form {
             // Iteration items
             for (let i = 0; i < items.length; i++){
 
+                // Get current item
+                let currentItem = items[i];
+
                 // Get multiple
-                let mutliple = "mutliple" in items[0] && typeof items[0].mutliple === "boolean" 
-                    ? items[0].mutliple
+                let mutliple = (currentItem instanceof HTMLInputElement || currentItem instanceof HTMLSelectElement) && currentItem.multiple
+                    ? currentItem.getAttribute("multiple") ? currentItem.getAttribute("multiple") : true
                     : false
                 ;
 
@@ -477,6 +482,27 @@ export default class Form {
 
                         // Push value of current input
                         result.append(itemResult[0] as string, itemResult[1]);
+
+                }else
+                // If multiple
+                {
+
+                    // Get result
+                    itemResults = this.extractKeyMultipleValue(items[i] as HTMLElement);
+
+                    // Check itemResult
+                    if(itemResults !== null && Array.isArray(itemResults) && itemResults.length)
+
+                        // Iteration result
+                        for(let itemResult of itemResults) if(itemResult !== null && itemResult[0] !== ""){
+
+                            // Get name
+                            let name = itemResult[0] as string;
+
+                            // Push value of current input
+                            result.append(name, itemResult[1]);
+
+                        }
 
                 }
 
@@ -1450,6 +1476,49 @@ export default class Form {
         return result;
 
     }
+    
+    /**
+     * Extract Key Multiple Value
+     * 
+     * @param itemEl:HTMLElement
+     * @param multiple Multiple item
+     * @return FormObjectForFormDataAppend
+     */
+    private extractKeyMultipleValue = (itemEl:HTMLElement, multiple:boolean = false):null|[Array<any>] => {
+
+        // Declare result
+        let result = null;
+
+        // Get type
+        let type:string|null = null;
+
+        // Get type of input el
+        if("type" in itemEl && itemEl.type && typeof itemEl.type === "string")
+
+            // Set type
+            type = itemEl.type;
+
+        // Get type of input el
+        if("type" in itemEl.dataset && itemEl.dataset.type && typeof itemEl.dataset.type === "string")
+
+            // Set type
+            type = itemEl.dataset.type;
+
+
+        // Check type
+        if(typeof type === "string" && typeof this[`${type}RetrieveMultiple`] === "function")
+
+            // Set result
+            result = this[`${type}RetrieveMultiple`](itemEl);
+
+        // Return null
+        return result;
+
+    }
+
+    /** Private methods | Retrieve Text
+     ******************************************************
+     */
 
     /**
      * Retrieve Text
@@ -1479,6 +1548,39 @@ export default class Form {
         return result;
 
     }
+
+    /**
+     * Retrieve Multiple Text
+     * 
+     * @param itemEl:HTMLElement
+     * @return null|Array<any>[]
+     */
+    private textRetrieveMultiple = (itemEl:HTMLElement):null|Array<any>[] => {
+
+        // Set result
+        let result:null|Array<any>[] = null;
+
+        // Check value
+        if("value" in itemEl && "name" in itemEl){
+
+            let key:string = itemEl.name as string;
+
+            // Set result
+            let value:string = itemEl.value as string;
+
+            // Push in result
+            result = [[key, value]];
+
+        }
+
+        // Return result
+        return result;
+
+    }
+
+    /** Private methods | Retrieve checkbox
+     ******************************************************
+     */
 
     /**
      * Retrieve checkbox
@@ -1527,6 +1629,56 @@ export default class Form {
     }
 
     /**
+     * Retrieve Multiple checkbox
+     * 
+     * @param itemEl:HTMLElement
+     * @return null|Array<any>[]
+     */
+    private checkboxRetrieveMultiple = (itemEl:HTMLElement):null|Array<any>[] => {
+
+        // Set result
+        let result:null|Array<any>[] = null;
+
+        // Check value
+        if("value" in itemEl && "name" in itemEl && itemEl instanceof HTMLInputElement){
+
+            // Declare value
+            let value:string = "";
+
+            // Declare key
+            let key:string = itemEl.name as string;
+
+            // Set result
+            let rawValue:boolean = itemEl.checked;
+
+            // Check raw value is on
+            if(rawValue){
+
+                // Set value
+                value = "true"
+
+            }else{
+
+                // Set value
+                value = "false";
+
+            }
+
+            // Push in result
+            result = [[key, value]];
+
+        }
+
+        // Return result
+        return result;
+
+    }
+
+    /** Private methods | Retrieve Select
+     ******************************************************
+     */
+
+    /**
      * Retrieve Select
      * 
      * @param itemEl:HTMLElement
@@ -1554,6 +1706,103 @@ export default class Form {
         return result;
 
     }
+
+    /**
+     * Retrieve Multiple Select
+     * 
+     * @param itemEl:HTMLElement
+     * @return null|Array<any>[]
+     */
+    private selectRetrieveMultiple = (itemEl:HTMLElement):null|Array<any>[] => {
+
+        // Set result
+        let result:null|Array<any>[] = null;
+
+        // Declare value
+        let value:any[] = [];
+
+        // Check value
+        if("value" in itemEl && "name" in itemEl){
+
+            // Set key
+            let key:string = itemEl.name as string;
+
+            // Check if tomselect
+            if("tomselect" in itemEl && itemEl.tomselect instanceof TomSelect){
+
+                // Get values
+                let valueRaw = itemEl.tomselect.getValue();
+
+                // Set value
+                if(typeof valueRaw === "string") valueRaw = [valueRaw];
+
+                // Check value raw
+                if(valueRaw.length) for(let currentValue of valueRaw) if(currentValue !== null){
+                    
+                    // Push value
+                    value.push(currentValue);
+
+                }
+
+            }else
+            // Check if from materialize
+            if("M_Dropdown" in itemEl && itemEl.M_Dropdown){
+
+                // Get valueRaw
+                let valueRaw = itemEl.value as string;
+
+                // Check value raw
+                if(valueRaw){
+
+                    // Explode value
+                    let explodedValue = valueRaw.split(", ");
+
+                    // Iteration exploded value 
+                    if(explodedValue.length) for(let explodValue of explodedValue) if(explodValue !== null){
+                        
+                        // Push value
+                        value.push(explodValue);
+
+                    }
+
+                }
+
+
+            // Default case
+            }else{
+
+                // Set result
+                value = Array.isArray(itemEl.value) 
+                    ? itemEl.value 
+                    : [itemEl.value as string]
+                ;
+
+            }
+
+            // Iteration value
+            if(value.length) for(let currentValue of value) if(currentValue !== null){
+
+                // Check result
+                if(result === null) result = [];
+
+                // Push value
+                result.push([key, currentValue]);
+
+            }
+
+            // Push in result
+            result = [[key, value]];
+
+        }
+
+        // Return result
+        return result;
+
+    }
+
+    /** Private methods | Retrieve checkbox
+     ******************************************************
+     */
 
     /**
      * Retrieve Date
@@ -1585,7 +1834,78 @@ export default class Form {
     }
 
     /**
-     * Number Date
+     * Retrieve Multiple Date
+     * 
+     * @param itemEl:HTMLElement
+     * @return null|Array<any>[]
+     */
+    private dateRetrieveMultiple = (itemEl:HTMLElement):null|Array<any>[] => {
+
+        // Set result
+        let result:null|Array<any>[] = null;
+
+        // Check value
+        if("value" in itemEl && "name" in itemEl){
+
+            // Get key
+            let key:string = itemEl.name as string;
+
+            // Set result
+            let value:string = itemEl.value as string;
+
+            if(itemEl instanceof HTMLInputElement && "datePicker" in itemEl.dataset && itemEl.dataset.datePicker == "easepick"){
+
+                // Split by separator
+                let splitedValue = value.split(" - ");
+
+                // Iteration 
+                if(splitedValue.length){
+
+                    // check if two value, meaning range
+                    if(splitedValue.length == 2){
+
+                        // Set range value
+                        let rangeValue:string = `[${splitedValue[0]}:${splitedValue[1]}]`
+
+                        // Check result
+                        if(result === null) result = [];
+
+                        // Push to result
+                        result.push([key.replace("[]", ""), rangeValue])
+
+                    // Iteration value
+                    }else for(let splitValue of splitedValue) if(splitValue !== null) {
+
+                        // Check result
+                        if(result === null) result = [];
+
+                        // Push to result
+                        result.push([key, splitValue])
+
+                    }
+
+                }
+
+            }else{
+
+                // Push in result
+                result = [[key, value]];
+
+            }
+
+        }
+
+        // Return result
+        return result;
+
+    }
+
+    /** Private methods | Retrieve number
+     ******************************************************
+     */
+
+    /**
+     * Retrieve Number
      * 
      * @param itemEl:HTMLElement
      * @return null|Array<any>
@@ -1612,6 +1932,39 @@ export default class Form {
         return result;
 
     }
+
+    /**
+     * Retrieve Multiple Number
+     * 
+     * @param itemEl:HTMLElement
+     * @return null|Array<any>[]
+     */
+    private numberRetrieveMultiple = (itemEl:HTMLElement):null|Array<any>[] => {
+
+        // Set result
+        let result:null|Array<any>[] = null;
+
+        // Check value
+        if("value" in itemEl && "name" in itemEl){
+
+            let key:string = itemEl.name as string;
+
+            // Set result
+            let value:number = itemEl.value as number;
+
+            // Push in result
+            result = [[key, value]];
+
+        }
+
+        // Return result
+        return result;
+
+    }
+
+    /** Private methods | Retrieve number
+     ******************************************************
+     */
 
     /**
      * Retrieve Email
@@ -1643,6 +1996,39 @@ export default class Form {
     }
 
     /**
+     * Retrieve Multiple Email
+     * 
+     * @param itemEl:HTMLElement
+     * @return null|Array<any>[]
+     */
+    private emailRetrieveMultiple = (itemEl:HTMLElement):null|Array<any>[] => {
+
+        // Set result
+        let result:null|Array<any>[] = null;
+
+        // Check value
+        if("value" in itemEl && "name" in itemEl){
+
+            let key:string = itemEl.name as string;
+
+            // Set result
+            let value:string = itemEl.value as string;
+
+            // Push in result
+            result = [[key, value]];
+
+        }
+
+        // Return result
+        return result;
+
+    }
+
+    /** Private methods | Retrieve color
+     ******************************************************
+     */
+
+    /**
      * Retrieve Color
      * 
      * @param itemEl:HTMLElement
@@ -1672,7 +2058,40 @@ export default class Form {
     }
 
     /**
-     * Password Text
+     * Retrieve Multiple Color
+     * 
+     * @param itemEl:HTMLElement
+     * @return null|Array<any>[]
+     */
+    private colorRetrieveMultiple = (itemEl:HTMLElement):null|Array<any>[] => {
+
+        // Set result
+        let result:null|Array<any>[] = null;
+
+        // Check value
+        if("value" in itemEl && "name" in itemEl){
+
+            let key:string = itemEl.name as string;
+
+            // Set result
+            let value:string = itemEl.value as string;
+
+            // Push in result
+            result = [[key, value]];
+
+        }
+
+        // Return result
+        return result;
+
+    }
+
+    /** Private methods | Retrieve password
+     ******************************************************
+     */
+
+    /**
+     * Retrieve Password
      * 
      * @param itemEl:HTMLElement
      * @return null|Array<any>
@@ -1701,10 +2120,43 @@ export default class Form {
     }
 
     /**
+     * Retrieve Multiple Password
+     * 
+     * @param itemEl:HTMLElement
+     * @return null|Array<any>[]
+     */
+    private passwordRetrieveMultiple = (itemEl:HTMLElement):null|Array<any>[] => {
+
+        // Set result
+        let result:null|Array<any>[] = null;
+
+        // Check value
+        if("value" in itemEl && "name" in itemEl){
+
+            let key:string = itemEl.name as string;
+
+            // Set result
+            let value:string = itemEl.value as string;
+
+            // Push in result
+            result = [[key, value]];
+
+        }
+
+        // Return result
+        return result;
+
+    }
+
+    /** Private methods | Retrieve file
+     ******************************************************
+     */
+
+    /**
      * File Retrieve
      * 
      * @param itemEl:HTMLElement
-     * @return null|Array<any>
+     * @return null|Array<any>[]
      */
     private fileRetrieve = (itemEl:HTMLElement):null|Array<any> => {
 
@@ -1742,6 +2194,74 @@ export default class Form {
 
                 // Set result
                 result = [key, files.length ? files[0].file as File : ""];
+
+            }
+
+        }
+
+        // Return result
+        return result;
+
+    }
+
+    /**
+     * File Retrieve Multiple
+     * 
+     * @param itemEl:HTMLElement
+     * @return null|Array<any>[]
+     */
+    private fileRetrieveMultiple = (itemEl:HTMLElement):null|Array<any>[] => {
+
+        // Set result
+        let result:null|Array<any>[] = null;
+
+        // Check value
+        if("name" in itemEl && itemEl instanceof HTMLInputElement && itemEl.files?.length){
+
+            let key:string = itemEl.name as string;
+
+            // Set result
+            let files = Array.from(itemEl.files);
+
+            // Check files
+            if(files.length) for(let currentFile of files) if(currentFile instanceof File){
+
+                // Check result
+                if(result === null) result = [];
+
+                // Push in result
+                result.push([key, currentFile]);
+
+            }
+
+        }else
+        // Check if pond instance
+        if(itemEl.dataset.pondId && itemEl instanceof HTMLInputElement){
+
+            // Search el
+            let pondEl = itemEl.closest("form")?.querySelector(`div#${itemEl.dataset.pondId}`);
+
+            // Check pond el
+            if(pondEl instanceof HTMLDivElement){
+
+                let key:string = itemEl.name as string;
+
+                // Get pond instance
+                let pondInstance = FilePond.find(pondEl);
+
+                // Get files
+                let files = pondInstance.getFiles();
+
+                // Check files
+                if(files.length) for(let currentFile of files) if(currentFile instanceof File){
+    
+                    // Check result
+                    if(result === null) result = [];
+    
+                    // Push in result
+                    result.push([key, currentFile]);
+    
+                }
 
             }
 
@@ -2472,6 +2992,25 @@ export default class Form {
                         years: true,
                     },
                 },
+                setup: (picker) => {
+
+                    // Init event input
+                    picker.on("preselect", () => {
+
+                        // Dispatch
+                        inputEl.dispatchEvent(new Event("input", {bubbles: true}));
+
+                    })
+
+                    // Init event change
+                    picker.on("select", () => {
+
+                        // Dispatch
+                        inputEl.dispatchEvent(new Event("change", {bubbles: true}));
+
+                    })
+
+                } 
             }
 
             // Check format
@@ -2492,11 +3031,21 @@ export default class Form {
                 // Enable reset btn
                 options.AmpPlugin.resetButton = true;
 
+            // Check if input multiple
+            if(inputEl.multiple){
+
+                // Enable Range Plugin
+                options.plugins?.push(RangePlugin);
+
+                // Push config
+                options.RangePlugin = {
+                    repick: true
+                }
+
+            }
+
             // New picker instance
             const picker = new easepick.create(options);
-            
-            console.log("datepicker");
-            console.log(inputEl);
 
         }
 

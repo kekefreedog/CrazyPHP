@@ -70,16 +70,15 @@ class Operation {
            "operation" => ">",
            "regex" => "/^>(.*)$/"
         ],
-        # [1:10]
-        "[]" => [ 
-           "name" => "between",
-           "operation" => "[]",
-           "regex" => '/^\[\s*(\d+)\s*:\s*(\d+)\s*\]$/' # REGEX NOT WORKING 🔴
-        ],
         "![]" => [ 
            "name" => "notBetween",
            "operation" => "![]",
-           "regex" => "/^!\[\s*(.+?):\s*(.+?)\s*\]$/" # REGEX NOT WORKING 🔴
+           "regex" => "/!\[([^:\[\]]*):([^\[\]]+)\]/"
+        ],
+        "[]" => [ 
+           "name" => "between",
+           "operation" => "[]",
+           "regex" => '/\[([^:\[\]]*):([^\[\]]+)\]/'
         ],
         "*" => [ 
            "name" => "like",
@@ -504,7 +503,7 @@ class Operation {
     /**
      * Between
      * 
-     * Exemple : `[1,10]`
+     * Exemple : `[1:10]`
      * Description : Checks if a value is between 1 and 10 (inclusive)
      * 
      * @param string|array $input 
@@ -525,7 +524,7 @@ class Operation {
     /**
      * Not Between
      * 
-     * Exemple : `![1,10]`
+     * Exemple : `![1:10]`
      * Description : Checks if a value is not between 1 and 10
      * 
      * @param string|array $input 
