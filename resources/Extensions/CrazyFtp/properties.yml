@@ -1,0 +1,24 @@
+# #
+# CrazyFtp
+#
+# Properties of the ftp extension
+#
+# YAML version 1.2
+#
+# @package    kzarshenas/crazyphp
+# @author     kekefreedog <kevin.zarshenas@gmail.com>
+# @copyright  2022-2024 Kévin Zarshenas
+# #
+CrazyFtp:
+  name: CrazyFtp
+  description: Extension for manage FTP
+  version: 1.0.0
+  scripts:
+    Ftp.php:
+      source: "@crazyphp_root/resources/Extensions/CrazyFtp/script/Ftp.php"
+      destination: "@app_root/app/Library/File/Ftp.php"
+  dependencies:
+    composer:
+      league/flysystem: ^3.29,
+      league/flysystem-ftp: ^3.29
+      league/flysystem-sftp-v3: ^3.29

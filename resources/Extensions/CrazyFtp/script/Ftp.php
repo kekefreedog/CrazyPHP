@@ -10,7 +10,7 @@
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2024 Kévin Zarshenas
  */
-namespace CrazyPHP\Library\File;
+namespace App\Library\File;
 
 /** Dependances
  * 
@@ -29,7 +29,7 @@ use League\Flysystem\Filesystem;
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2024 Kévin Zarshenas
  */
-class Ftp{
+class Ftp {
 
     /** Parameters
      ******************************************************
@@ -141,7 +141,7 @@ class Ftp{
         }
 
         # Set driver
-        $this->_driver = 
+        # $this->_driver = 
 
     }
 

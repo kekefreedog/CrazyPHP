@@ -43,152 +43,6 @@ use CrazyPHP\Cli\Form;
  */
 class Core extends CLI {
 
-    /** Constants
-     ******************************************************
-     */
-
-    # Options to register
-    protected const REGISTER_OPTIONS = [
-        # Application
-        "CrazyCommand"  =>  [
-            # Version
-            [
-                "type"          =>  "command",
-                "long"          =>  "version",
-                "help"          =>  "Print version of CrazyPHP",
-            ],
-            # New Project
-            [
-                "type"          =>  "command",
-                "long"          =>  "new",
-                "help"          =>  "New crazy entity (project, page, component...)",
-            ],
-            # Update Project
-            [
-                "type"          =>  "command",
-                "long"          =>  "update",
-                "help"          =>  "Update crazy entity (project, page, component...)",
-            ],
-            # Delete Project
-            [
-                "type"          =>  "command",
-                "long"          =>  "delete",
-                "help"          =>  "Delete crazy entity (project, page, component...)",
-            ],
-            # Arguments
-            [
-                "type"          =>  "argument",
-                "long"          =>  "entity",
-                "help"          =>  "Entity (project, page, component...)",
-                "command"       =>  ["new", "update", "delete"]
-            ],
-        ],
-        # Docker
-        "CrazyDocker"   =>  [
-            # New
-            [
-                "type"          =>  "command",
-                "long"          =>  "new",
-                "help"          =>  "Install docker compose for your crazy project",
-            ],
-            # Delete
-            [
-                "type"          =>  "command",
-                "long"          =>  "delete",
-                "help"          =>  "Delete docker compose from your crazy project",
-            ],
-            # Up
-            [
-                "type"          =>  "command",
-                "long"          =>  "up",
-                "help"          =>  "Up docker composer",
-            ],
-            # Down
-            [
-                "type"          =>  "command",
-                "long"          =>  "down",
-                "help"          =>  "Shut down compose instance",
-            ],
-        ],
-        # Asset
-        "CrazyAsset"    =>  [
-            # Register Config
-            [
-                "type"          =>  "command",
-                "long"          =>  "register",
-                "help"          =>  "Register config asset in your crazy application"
-            ]
-        ],
-        # Front
-        "CrazyFront"    =>  [
-            # Register Config
-            [
-                "type"          =>  "command",
-                "long"          =>  "run",
-                "help"          =>  "Register config asset in your crazy application"
-            ]
-        ],
-        # Migration
-        "CrazyMigration"    =>  [
-            # Check migration
-            [
-                "type"          =>  "command",
-                "long"          =>  "check",
-                "help"          =>  "Check if migration is required."
-            ],
-            # Run migration
-            [
-                "type"          =>  "command",
-                "long"          =>  "run",
-                "help"          =>  "Run migration of your crazy application."
-            ]
-        ],
-        # CrazyWebsocket
-        "CrazyWebsocket"    =>  [
-            # Run
-            [
-                "type"          =>  "command",
-                "long"          =>  "run",
-                "help"          =>  "Run the websocket server of your crazy application.",
-            ],
-            # Stop
-            [
-                "type"          =>  "command",
-                "long"          =>  "stop",
-                "help"          =>  "Stop the websocket server of your crazy application."
-            ],
-            # Yes
-            [
-                "type"          =>  "option",
-                "long"          =>  "yes",
-                "short"         =>  "y",
-                "help"          =>  "Assume yes on all prompt"
-            ]
-        ],
-        # CrazyWorkers
-        "CrazyWorkers"    =>  [
-            # Run
-            [
-                "type"          =>  "command",
-                "long"          =>  "run",
-                "help"          =>  "Run workers server of your crazy application.",
-            ],
-            # Stop
-            [
-                "type"          =>  "command",
-                "long"          =>  "stop",
-                "help"          =>  "Stop workers server of your crazy application."
-            ],
-            # Yes
-            [
-                "type"          =>  "option",
-                "long"          =>  "yes",
-                "short"         =>  "y",
-                "help"          =>  "Assume yes on all prompt"
-            ]
-        ]
-    ];
-
     /** Arguments
      ******************************************************
      */
@@ -209,11 +63,14 @@ class Core extends CLI {
      */
     protected function setup(Options $options){
 
+        # Get register options
+        $registeredOptions = File::open(static::CLI_REGISTERED_PATH)["CliRegister"] ?? [];
+
         # Get current name of file name
         $this->scriptName = pathinfo($_SERVER['SCRIPT_NAME'], PATHINFO_FILENAME);
 
         # Check if script name is in REGISTER_OPTIONS
-        if(!array_key_exists($this->scriptName, self::REGISTER_OPTIONS))
+        if(!array_key_exists($this->scriptName, $registeredOptions))
 
             # Exit
             exit("🔴 Current script doesn't have any options associated...");
@@ -222,7 +79,7 @@ class Core extends CLI {
         $options->setHelp(Composer::read("description"));
 
         # Iteration REGISTER_OPTIONS
-        foreach(self::REGISTER_OPTIONS[$this->scriptName] as $option)
+        foreach($registeredOptions[$this->scriptName] as $option)
 
             # Option
             if($option['type'] == "option")
@@ -2117,5 +1974,10 @@ class Core extends CLI {
      * Router Collection
      */
     public const ROUTERS_PATH = "@crazyphp_root/resources/Yml/CliRouter.yml";
+
+    /**
+     * Cli Registerd path
+     */
+    public const CLI_REGISTERED_PATH = "@crazyphp_root/resources/Yml/CliRegister.yml";
 
 }
