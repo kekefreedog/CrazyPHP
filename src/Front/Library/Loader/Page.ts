@@ -208,6 +208,15 @@ export default class Page {
             // Stop function
             return options;
 
+        // Get global pre action
+        let globalPreAction = Page.getGlobalPreAction();
+
+        // Check globalPreAction
+        if(globalPreAction !== null)
+
+            // Call preaction
+            options = globalPreAction(options);
+
         // Check if preAction is callable
         if(typeof options.preAction === "function")
 
@@ -823,6 +832,15 @@ export default class Page {
             // Stop function
             return options;
 
+        // Get global pre action
+        let globalPostAction = Page.getGlobalPostAction();
+
+        // Check globalPreAction
+        if(globalPostAction !== null)
+
+            // Call preaction
+            options = globalPostAction(options);
+
         // Check if preAction is callable
         if(typeof options.postAction === "function")
 
@@ -920,5 +938,66 @@ export default class Page {
 
     }
 
+    /** Public static | Global
+     ******************************************************
+     */
+
+    /**
+     * Set Global Pre Action
+     * 
+     * @param callable 
+     */
+    public static setGlobalPreAction = (callable:null|(((options:LoaderPageOptions)=>LoaderPageOptions))=null):void => {
+
+        // Set globalPreAction
+        Page.globalPreAction = callable;
+
+    }
+
+    /**
+     * Set Global Pre Action
+     * 
+     * @param callable 
+     */
+    public static getGlobalPreAction = ():(null|(((options:LoaderPageOptions)=>LoaderPageOptions))) => {
+
+        // Set globalPreAction
+        return Page.globalPreAction;
+
+    }
+
+    /**
+     * Set Global Post Action
+     * 
+     * @param callable 
+     */
+    public static setGlobalPostAction = (callable:null|(((options:LoaderPageOptions)=>LoaderPageOptions))=null):void => {
+
+        // Set globalPreAction
+        Page.globalPostAction = callable;
+
+    }
+
+    /**
+     * Set Global Pre Action
+     * 
+     * @param callable 
+     */
+    public static getGlobalPostAction = ():(null|(((options:LoaderPageOptions)=>LoaderPageOptions))) => {
+
+        // Set globalPreAction
+        return Page.globalPostAction;
+
+    }
+
+    /** Private static | Global
+     ******************************************************
+     */
+
+    /** @var globalPreAction */
+    private static globalPreAction:null|(((options:LoaderPageOptions)=>LoaderPageOptions)) = null;
+
+    /** @var globalPostAction */
+    private static globalPostAction:null|(((options:LoaderPageOptions)=>LoaderPageOptions)) = null;
 
 }

@@ -1,0 +1,25 @@
+# #
+# CrazyFtp
+#
+# Properties of the ftp extension
+#
+# YAML version 1.2
+#
+# @package    kzarshenas/crazyphp
+# @author     kekefreedog <kevin.zarshenas@gmail.com>
+# @copyright  2022-2024 Kévin Zarshenas
+# #
+CrazyTest:
+  name: CrazyTest
+  description: Extension for manage php test
+  version: 1.0.0
+  scripts:
+    phpunit.xml:
+      source: "@crazyphp_root/resources/Extensions/CrazyTest/config/phpunit.xml"
+      destination: "@app_root/phpunit.xml"
+    DryTest.php:
+      source: "@crazyphp_root/resources/Extensions/CrazyTest/script/DryTest.php"
+      destination: "@app_root/tests/Basic/DryTest.php"
+  dependencies:
+    composer:
+      phpunit/phpunit: ^12

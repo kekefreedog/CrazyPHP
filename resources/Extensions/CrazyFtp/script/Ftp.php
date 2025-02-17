@@ -15,8 +15,9 @@ namespace App\Library\File;
 /** Dependances
  * 
  */
+use League\Flysystem\PhpseclibV3\SftpConnectionProvider;
 use League\Flysystem\Ftp\FtpConnectionOptions;
-use League\Flysystem\Sftp\SftpAdapter;
+use League\Flysystem\PhpseclibV3\SftpAdapter;
 use League\Flysystem\Ftp\FtpAdapter;
 use League\Flysystem\Filesystem;
 
@@ -41,7 +42,7 @@ class Ftp {
     ];
 
     /** @var array $_driver */
-    private SftpAdapter|FtpAdapter $_driver;
+    private Filesystem $_driver;
 
     /**
      * Constructor
@@ -72,9 +73,6 @@ class Ftp {
 
         # Load driver
         $this->_loadDriver();
-
-        # Set root
-        $this->setRoot();
 
     }
 
@@ -109,18 +107,18 @@ class Ftp {
         if($this->_options["isFTPs"]){        
 
             // Define FTP connection options using `FtpConnectionOptions`
-            $options = FtpConnectionOptions::fromArray([
-                'host'     =>   $this->_options["host"],
-                'username' =>   $this->_options["username"],
-                'password' =>   $this->_options["password"],
-                'root'     =>   $this->_options["rootPath"],
-                'passive'  =>   true,
-                'ssl'      =>   false,
-                'timeout'  =>   30,
+            $options = SftpConnectionProvider::fromArray([
+                'host'      =>  $this->_options["host"],
+                'username'  =>  $this->_options["username"],
+                'password'  =>  $this->_options["password"],
+                'port'      =>  $this->_options["port"],
             ]);  
 
+            # Set rootpath
+            $rootPath = $this->_options["rootPath"] ?? "/";
+
             # Prepare adapteur
-            $adapter = new FtpAdapter($options);  
+            $adapter = new SftpAdapter($options, $rootPath);
 
         }else{
 
@@ -129,10 +127,8 @@ class Ftp {
                 'host'     =>   $this->_options["host"],
                 'username' =>   $this->_options["username"],
                 'password' =>   $this->_options["password"],
+                'port'      =>  $this->_options["port"],
                 'root'     =>   $this->_options["rootPath"],
-                'passive'  =>   true,
-                'ssl'      =>   false,
-                'timeout'  =>   30,
             ]);  
 
             # Prepare adapteur
@@ -141,7 +137,7 @@ class Ftp {
         }
 
         # Set driver
-        # $this->_driver = 
+        $this->_driver = new Filesystem($adapter);
 
     }
 

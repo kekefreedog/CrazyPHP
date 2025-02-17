@@ -19,6 +19,6 @@ CrazyFtp:
       destination: "@app_root/app/Library/File/Ftp.php"
   dependencies:
     composer:
-      league/flysystem: ^3.29,
+      league/flysystem: ^3.29
       league/flysystem-ftp: ^3.29
       league/flysystem-sftp-v3: ^3.29
