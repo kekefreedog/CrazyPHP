@@ -614,6 +614,44 @@ class Model implements CrazyModel {
     }
 
     /**
+     * Exists
+     * 
+     * Check Model Exists
+     * 
+     * @param string $name
+     * @return bool
+     */
+    public static function exists(string $name):bool {
+
+        # Set result
+        $result = false;
+
+        # Check name
+        if($name){
+
+            # Get all model available
+            $modelConfig = Config::getValue("Model");
+
+            # Check model config
+            if(is_array($modelConfig) && !empty($modelConfig))
+    
+                # Iteration model config
+                foreach($modelConfig as $item)
+
+                    # Check name
+                    if(isset($item["name"]) && $item["name"] && $item["name"] == $name)
+
+                        # Set result
+                        $result = true;
+
+        }
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
      * Check Entity in Entity
      * 
      * @return Model return controller of the current model found

@@ -77,6 +77,30 @@ export default class Root {
             // New error
             throw new PageError(`Element "#${id}" does not exist in the dom.`);
 
+        // Return result
+        return result;
+
+    }
+
+    /**
+     * Check El
+     * 
+     * Check Root Element
+     * 
+     * @return HTMLElement
+     */
+    public static checkEl = ():boolean => {
+
+        // Get id
+        const id:string = Root.id;
+
+        // Get el
+        let result:boolean = false;
+
+        // Check result is null
+        if(document.getElementById(id) instanceof HTMLElement) result = true;
+
+        // Return result
         return result;
 
     }

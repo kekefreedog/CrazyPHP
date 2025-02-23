@@ -173,4 +173,33 @@ export default class Strings {
 
     }
 
+    /**
+     * Get Data Attriute Name
+     * 
+     * @param input
+     * @returns {string}
+     */
+    public static getDataAttributeName = (input:string):string => {
+
+        // Set result
+        let result = "";
+
+        // Check input
+        if(input.startsWith("data-")){
+
+            // Set result
+            result = input
+                // Remove "data-" prefix
+                .replace(/^data-/, '')
+                // Process oher value
+                .replace(/-([a-z])/g, (_, letter) => letter.toUpperCase())
+            ;
+
+        }
+
+        // Return result
+        return result;
+
+    }
+
 }

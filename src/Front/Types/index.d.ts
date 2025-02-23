@@ -42,6 +42,7 @@ export {default as Pageregister} from "./../Library/Pageregister";
 export {default as Crazypartial} from "./../Library/Crazypartial";
 export {default as CurrentPage} from "./../Library/Current/Page";
 export {default as HistoryPage} from "./../Library/History/Page";
+export {default as DomRedirect} from "./../Library/Dom/Redirect";
 export {default as Crazyevents} from "./../Library/Crazyevents";
 export {default as LoaderPage} from "./../Library/Loader/Page";
 export {default as UtilityCsv} from "./../Library/Utility/Csv";
@@ -271,10 +272,29 @@ declare global {
      * Loader Event Redirection
      */
     interface LoaderEventRedirection {
-        type:"redirect",
+        type: "redirect",
         name?: string,
         url?: string,
         target?: "_blank"|null
+    };
+
+    /**
+     * Loader Event Alert
+     */
+    interface LoaderEventAlert {
+        type: "alert",
+        messageType: CrazyError["type"],
+        message?: string,
+        
+    };
+
+    /**
+     * Loader Event Wait
+     */
+    interface LoaderEventWait {
+        type: "wait",
+        second?: number,
+        
     };
 
     /** Interface | State

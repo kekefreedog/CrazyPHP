@@ -30,7 +30,7 @@ export default class Events {
      */
 
     /** @var _events:Array<LoaderEventRedirection> */
-    private _events:Array<LoaderEventRedirection> = [];
+    private _events:Array<LoaderEventRedirection|LoaderEventAlert|LoaderEventWait> = [];
 
     /**
      * Constructor
@@ -38,7 +38,7 @@ export default class Events {
      * @param options:LoaderPageOptions Options with all page details
      */
     public constructor(response:{
-        _events?: Array<LoaderEventRedirection>
+        _events?: Array<LoaderEventRedirection|LoaderEventAlert|LoaderEventWait>
     }){
 
         // Check events
@@ -64,7 +64,7 @@ export default class Events {
      * @param events 
      * @returns {void}
      */
-    private _ingestEvents = (events:Array<LoaderEventRedirection>):void => {
+    private _ingestEvents = (events:Array<LoaderEventRedirection|LoaderEventAlert|LoaderEventWait>):void => {
 
         // Iteration of events
         for(let event of events)
@@ -81,22 +81,58 @@ export default class Events {
      */
     private _runEvents = ():void => {
 
-        // Check events
-        if(this._events.length)
+        // Check length
+        if(this._events.length){
 
-            // Iteration of events
-            for(let event of this._events)
+            // New promise
+            let promiseChain = Promise.resolve();
+        
+            // Iteration events
+            for(const event of this._events) {
 
-                // Check if redirection
-                if(event.type == "redirect"){
+                // Set event
+                promiseChain = promiseChain.then(() => {
 
-                    // Run redirection
-                    this._runRedirection(event);
+                    // Check redirect
+                    if(event.type === "redirect")
 
-                    // Stop method
-                    break;
+                        // Return run redirection
+                        return this._runRedirection(event).then(() => Promise.reject("stop"));
 
-                }
+                    else
+                    // Check alert
+                    if (event.type === "alert")
+
+                        // Return run alert
+                        return this._runAlert(event);
+
+                    else
+                    // Check wait
+                    if(event.type === "wait")
+
+                        // Return wait
+                        return this._runWait(event);
+
+                // Catch error
+                }).catch(error => {
+
+                    // Check stop
+                    if(error === "stop")
+
+                        // Stop further execution
+                        return Promise.reject(error); 
+                    
+                    // Continue execution
+                    return Promise.resolve(); 
+
+                });
+
+            }
+        
+            // Handle any final promise rejection to prevent unhandled errors
+            promiseChain.catch(() => {});
+
+        }
 
     }
 
@@ -108,8 +144,9 @@ export default class Events {
      * Run redirection
      * 
      * @param event:LoaderEventRedirection
+     * @returns {Promise<void>}
      */
-    private _runRedirection = (event:LoaderEventRedirection):void => {
+    private _runRedirection = async (event:LoaderEventRedirection):Promise<void> => {
 
         // Prepare options
         let options:LoaderPageOptions = {};
@@ -172,6 +209,56 @@ export default class Events {
 
         }
             
+
+    }
+
+    /**
+     * Run Alert
+     * 
+     * @param event:LoaderEventAlert
+     * @returns {Promise<void>}
+     */
+    private _runAlert = async (event:LoaderEventAlert):Promise<void> => {
+
+        // Get alert instance
+        let alertInstance = window.Crazyobject.alert;
+
+        // Check message
+        if(event.message && event.messageType){
+
+            // Run event
+            // @ts-ignore
+            alertInstance[event.messageType]({
+                detail: event.message,
+                type: event.messageType, 
+            });
+
+        }
+
+    }
+
+    /**
+     * Run Wait
+     * 
+     * @param event:LoaderEventAlert
+     * @returns {Promise<void>}
+     */
+    private _runWait = async (event:LoaderEventWait):Promise<void> => {
+
+        // Set duration
+        let duration = 0;
+
+        // Check second
+        if(event.second)
+
+            // Set duration
+            duration = Number(event.second) * 1000;
+
+        // check duration
+        if(duration > 0)
+
+            // Set start
+            await new Promise(resolve => setTimeout(resolve, 5000));
 
     }
 
