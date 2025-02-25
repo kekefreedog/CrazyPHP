@@ -15,6 +15,8 @@ namespace CrazyPHP\Library\Database\Driver;
 /**
  * Dependances
  */
+
+use CrazyPHP\Core\Model;
 use CrazyPHP\Library\Database\Singleton\MariadbConnection;
 use CrazyPHP\Library\File\Config as FileConfig;
 use CrazyPHP\Interface\CrazyDatabaseDriver;
@@ -1039,6 +1041,49 @@ class Mariadb implements CrazyDatabaseDriver {
 
                     }
 
+                    # Check if contains []
+                    if(substr($key, 0, 2) == "<>"){
+
+                        # Update $key
+                        $key = substr($key, 2);
+
+                        # Clean "
+                        $value = trim($value, '"');
+
+                        # Clean '= '
+                        $value = ltrim($value, '= ');
+
+                        # Check if ? in value
+                        if(strpos($value, "?") !== false){
+
+                            # Explode current value
+                            $currentValue = explode($value, "?", 2);
+
+                            # Set table name
+                            $includeTableName = $currentValue[0];
+                            
+                            # Set extra arguments
+                            $includeExtraArguments = $currentValue[1] ?? null;
+
+                        }else{
+
+                            # Set table name
+                            $includeTableName = $value;
+                            
+                            # Set extra arguments
+                            $includeExtraArguments = null;
+
+
+                        }
+
+                        # Check if table exists
+                        if(!Model::exists($includeTableName))
+
+                            # Continue
+                            continue;
+
+                    }
+
                     # Fill filter stacked
                     $filterStacked[] = [
                         "operation" =>  "$alias.$key $value",
@@ -1070,6 +1115,9 @@ class Mariadb implements CrazyDatabaseDriver {
                     }
 
                 }
+
+                /* print_r($filterStacked);
+                exit; */
 
                 # Append sort
                 $query .= static::appendSort($options["sort"] ?? null, $alias);

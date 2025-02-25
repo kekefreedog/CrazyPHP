@@ -1516,6 +1516,68 @@ export default class Form {
 
     }
 
+    /** Private methods | Retrieve Hidden
+     ******************************************************
+     */
+
+    /**
+     * Retrieve Hidden
+     * 
+     * @param itemEl:HTMLElement
+     * @return null|Array<any>
+     */
+    private hiddenRetrieve = (itemEl:HTMLElement):null|Array<any> => {
+
+        // Set result
+        let result:null|Array<any> = null;
+
+        // Check value
+        if("value" in itemEl && "name" in itemEl){
+
+            let key:string = itemEl.name as string;
+
+            // Set result
+            let value:string = itemEl.value as string;
+
+            // Push in result
+            result = [key, value];
+
+        }
+
+        // Return result
+        return result;
+
+    }
+
+    /**
+     * Retrieve Multiple Hidden
+     * 
+     * @param itemEl:HTMLElement
+     * @return null|Array<any>[]
+     */
+    private hiddenRetrieveMultiple = (itemEl:HTMLElement):null|Array<any>[] => {
+
+        // Set result
+        let result:null|Array<any>[] = null;
+
+        // Check value
+        if("value" in itemEl && "name" in itemEl){
+
+            let key:string = itemEl.name as string;
+
+            // Set result
+            let value:string = itemEl.value as string;
+
+            // Push in result
+            result = [[key, value]];
+
+        }
+
+        // Return result
+        return result;
+
+    }
+
     /** Private methods | Retrieve Text
      ******************************************************
      */
