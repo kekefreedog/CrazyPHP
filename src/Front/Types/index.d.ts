@@ -86,7 +86,7 @@ declare global {
         responseEncoding?: "utf8",
         from?: "internal"|"external",
         ignoreHash?: boolean,
-        catchEvents?: true
+        catchEvents?: boolean
     }
 
     /**

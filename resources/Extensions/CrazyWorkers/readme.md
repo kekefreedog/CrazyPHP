@@ -20,3 +20,10 @@ Workers:
         logger: true        
     [...]
 ```
+
+### Command
+
+Run :
+```sh
+php vendor/kzarshenas/crazyphp/bin/CrazyWorkers run
+```
