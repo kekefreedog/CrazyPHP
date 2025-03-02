@@ -188,6 +188,23 @@ class Handlebars {
             # Set helpers
             $template["helpers"] = Helpers::listArray();
 
+            # Check if App\Library\Handlebars\Helpers is valid class
+            if(class_exists(static::APP_HELPERS) && method_exists(static::APP_HELPERS, "listArray")){
+
+                # Get app list array
+                $appListArray = static::APP_HELPERS::listArray();
+
+                # Check app list array
+                if(is_array($appListArray) && !empty($appListArray))
+
+                    # Set $template["helpers"]
+                    $template["helpers"] = is_array($template["helpers"])
+                        ? array_merge($template["helpers"], $appListArray)
+                        : $appListArray
+                    ;
+
+            }
+
         }
 
         # New cache instance
@@ -498,7 +515,12 @@ class Handlebars {
      * Directories of partials
      */
     public const PARTIAL_DIR = [
-        "@app_root/assets/Hbs/partials"
+        "@app_root/assets/Hbs/partials",
     ];
+
+    /**
+     * App Herlpers
+     */
+    public const APP_HELPERS = "\App\Library\Handlebars\Helpers";
 
 }

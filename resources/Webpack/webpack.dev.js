@@ -76,6 +76,7 @@ module.exports = {
                     ],
                     helperDirs: [
                         path.resolve(__dirname, "./vendor/kzarshenas/crazyphp/resources/Js/Handlebars"),
+                        path.resolve(__dirname, "./assets/Js/Handlebars"),
                     ],
                 },
             },

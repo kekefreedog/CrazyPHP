@@ -639,10 +639,15 @@ class Model implements CrazyModel {
                 foreach($modelConfig as $item)
 
                     # Check name
-                    if(isset($item["name"]) && $item["name"] && $item["name"] == $name)
+                    if(isset($item["name"]) && $item["name"] && $item["name"] == $name){
 
                         # Set result
                         $result = true;
+
+                        # Stop iteration
+                        break;
+
+                    }
 
         }
 

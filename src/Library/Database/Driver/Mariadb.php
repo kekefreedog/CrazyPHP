@@ -1018,6 +1018,9 @@ class Mariadb implements CrazyDatabaseDriver {
                 # Set alias
                 $alias = "a";
 
+                # Set extra alias
+                $extraAlias = "a";
+
                 # Prepare query
                 $query = "SELECT * FROM $table AS $alias";
 
@@ -1027,8 +1030,18 @@ class Mariadb implements CrazyDatabaseDriver {
                 # Iteration filters
                 foreach($filters as $key => $value){
 
+                    /**
+                     * AND Operation
+                     */
+
                     # Set operation
                     $operation = "AND";
+
+                    /**
+                     * OR Operation
+                     * 
+                     * Catcj || or !!
+                     */
 
                     # check if key started with ||
                     if(substr($key, 0, 2) == "||" || substr($key, 0, 2) == "!!"){
@@ -1041,6 +1054,12 @@ class Mariadb implements CrazyDatabaseDriver {
 
                     }
 
+                    /**
+                     * Include
+                     * 
+                     * Catch <> 
+                     */
+
                     # Check if contains []
                     if(substr($key, 0, 2) == "<>"){
 
@@ -1051,13 +1070,13 @@ class Mariadb implements CrazyDatabaseDriver {
                         $value = trim($value, '"');
 
                         # Clean '= '
-                        $value = ltrim($value, '= ');
+                        $value = ltrim($value, '= "');
 
                         # Check if ? in value
                         if(strpos($value, "?") !== false){
 
                             # Explode current value
-                            $currentValue = explode($value, "?", 2);
+                            $currentValue = explode("?", $value, 2);
 
                             # Set table name
                             $includeTableName = $currentValue[0];
@@ -1081,16 +1100,55 @@ class Mariadb implements CrazyDatabaseDriver {
 
                             # Continue
                             continue;
+                    
+                        # Increment extra alias
+                        $extraAlias++;
 
-                    }
+                        # Prepare includeQuery
+                        $includeQuery = "EXISTS (";
 
-                    # Fill filter stacked
-                    $filterStacked[] = [
-                        "operation" =>  "$alias.$key $value",
-                        "condition" =>  $operation
-                    ];
+                        # Push sub query
+                        $includeQuery .= "SELECT 1 FROM $includeTableName $extraAlias WHERE $extraAlias.".strtolower($table)."_$key = $alias.$key";
+
+                        # Check include extra arguments
+                        if($includeExtraArguments){
+
+                            # Explode extra aruments
+                            $includeExtraArguments = array_merge(...array_map(fn($pair) => [$k = explode(':', $pair, 2)[0] => is_numeric($v = explode(':', $pair, 2)[1]) ? (int)$v : $v], explode('?', $includeExtraArguments)));
+
+                            # Iteration of extra argument
+                            if(is_array($includeExtraArguments) && !empty($includeExtraArguments)) foreach($includeExtraArguments as $includeExtraArgumentKey => $includeExtraArgumentValue){
+
+                                # Push it into includeQuery
+                                $includeQuery .=  " AND $extraAlias.$includeExtraArgumentKey = ".(is_string($includeExtraArgumentValue) ? "'$includeExtraArgumentValue'" : $includeExtraArgumentValue);
+
+                            }
+
+                        }
+
+                        # Close includeQuery
+                        $includeQuery .= ")";
+
+                        # Fill filter stacked
+                        $filterStacked[] = [
+                            "operation" =>  $includeQuery,
+                            "condition" =>  $operation
+                        ];
+
+
+                    }else
+
+                        # Fill filter stacked
+                        $filterStacked[] = [
+                            "operation" =>  "$alias.$key $value",
+                            "condition" =>  $operation
+                        ];
 
                 }
+
+                # Display filter stacked
+                /* print_r($filterStacked);
+                exit; */
 
                 # Check filterStacked
                 if(!empty($filterStacked)){
@@ -1116,11 +1174,12 @@ class Mariadb implements CrazyDatabaseDriver {
 
                 }
 
-                /* print_r($filterStacked);
-                exit; */
-
                 # Append sort
                 $query .= static::appendSort($options["sort"] ?? null, $alias);
+
+                # Display query
+                /* print_r($query);
+                exit; */
 
                 # Update table
                 $statment = $this->client->query($query);

@@ -140,7 +140,12 @@ Structure:
           # Languages translation folder
           Language: null
           # Custom libraries
-          Library: null
+          Library:
+            folders:
+              Handlebars:
+                files:
+                  Helpers.php:
+                    source: "@crazyphp_root/resources/Php/app/Handlebars/Helpers.php"
           # Bridge with other api
           Bridge: null
           # Script JS / TS
