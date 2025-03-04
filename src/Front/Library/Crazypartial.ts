@@ -199,6 +199,25 @@ export default abstract class Crazypartial {
             // Set result
             result = this.input.page["className"] as string;
 
+        }else{
+
+            // Search for current page name
+            if(window.Crazyobject && window.Crazyobject.currentPage && window.Crazyobject.currentPage.get()){
+
+                // Get current page
+                let currentPage = window.Crazyobject.currentPage.get();
+
+                // Get page name
+                let currentPageName = currentPage?.name;
+
+                // Check current page name
+                if(currentPageName)
+
+                    // Set result
+                    result = currentPageName;
+
+            }
+
         }
 
         // Return result

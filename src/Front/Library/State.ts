@@ -739,6 +739,12 @@ export default class State {
      */
     private _removeValueByKeyPath = (data:Record<string,any>|any[], key:string, separator:string = "."):any => {
 
+        console.log("keu");
+        console.log(key);
+
+        console.log("before");
+        console.log({...data});
+
         // Set keys
         const keys = key.split(separator);
 
@@ -798,6 +804,9 @@ export default class State {
                 // Return true
                 return data;
             }
+
+            console.log("after");
+            console.log({...data});
         
     
         // Key not found, return false

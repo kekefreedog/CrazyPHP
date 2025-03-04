@@ -123,6 +123,7 @@
             autocomplete="off"
             {{#if item.placeholder}}placeholder="{{item.placeholder}}"{{/if}}
             {{#if item.disabled}}disabled=""{{else}}{{#if ../form.onready}}disabled="loading"{{/if}}{{/if}}
+            {{#if item.required}}required=""{{/if}}
             {{#if item.select.url}}data-select-remote="{{JSONstringify item.select}}"{{/if}}
         {{#if item._style.select.tag}}/>{{else}}>{{#if item.select}}{{#if item.select.url}}{{else}}
             {{#each item.select as |option|}}<option
