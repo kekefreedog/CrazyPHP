@@ -964,6 +964,12 @@ export default class Form {
                     items[i].setAttribute("readonly", "loading");
 
                 }else
+                if(items[i].tagName == "SELECT"){
+
+                    // Set Read only
+                    items[i].setAttribute("disabled", "loading");
+
+                }else
                 // Chech button
                 if(items[i].tagName == "BUTTON"){
 
@@ -1004,6 +1010,13 @@ export default class Form {
                 }else
                 // Check tag name
                 if(items[i].tagName == "INPUT" && items[i].hasAttribute("disabled") && items[i].getAttribute("disabled") == "loading"){
+
+                    // Set Read only
+                    items[i].removeAttribute("disabled");
+
+                }else
+                // Check tag name
+                if(items[i].tagName == "SELECT" && items[i].hasAttribute("disabled") && items[i].getAttribute("disabled") == "loading"){
 
                     // Set Read only
                     items[i].removeAttribute("disabled");

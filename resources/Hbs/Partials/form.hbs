@@ -122,7 +122,7 @@
             {{#if item.default includeZero=false}}default="{{#isArray item.default}}{{JSONstringify item.default}}{{else}}{{#isObject item.default}}{{JSONstringify item.default}}{{else}}{{item.default}}{{/isObject}}{{/isArray}}"{{/if}}
             autocomplete="off"
             {{#if item.placeholder}}placeholder="{{item.placeholder}}"{{/if}}
-            {{#if item.disabled}}disabled=""{{else}}{{#if ../form.onready}}disabled="loading"{{/if}}{{/if}}
+            {{#if item.disabled}}disabled=""{{/if}}
             {{#if item.required}}required=""{{/if}}
             {{#if item.select.url}}data-select-remote="{{JSONstringify item.select}}"{{/if}}
         {{#if item._style.select.tag}}/>{{else}}>{{#if item.select}}{{#if item.select.url}}{{else}}
