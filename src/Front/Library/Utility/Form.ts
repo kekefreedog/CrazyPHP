@@ -2967,6 +2967,34 @@ export default class Form {
                 }
             };
 
+            // Check locale
+            if(inputEl.dataset.colorLocale && ["fr-fr"].includes(inputEl.dataset.colorLocale)){
+
+                // Set i18n
+                options.i18n = {
+
+                    // Strings visible in the UI
+                   'ui:dialog': 'boîte de dialogue du sélecteur de couleur',
+                   'btn:toggle': 'basculer la boîte de dialogue du sélecteur de couleur',
+                   'btn:swatch': 'échantillon de couleur',
+                   'btn:last-color': 'utiliser la couleur précédente',
+                   'btn:save': 'Enregistrer',
+                   'btn:cancel': 'Annuler',
+                   'btn:clear': 'Effacer',
+                
+                   // Strings used for aria-labels
+                   'aria:btn:save': 'enregistrer et fermer',
+                   'aria:btn:cancel': 'annuler et fermer',
+                   'aria:btn:clear': 'effacer et fermer',
+                   'aria:input': 'champ de saisie de couleur',
+                   'aria:palette': 'zone de sélection des couleurs',
+                   'aria:hue': 'curseur de sélection de teinte',
+                   'aria:opacity': 'curseur de sélection d\'opacité'
+
+                }
+
+            }
+
             // Check if input has default
             if(inputEl.hasAttribute("value")){
 

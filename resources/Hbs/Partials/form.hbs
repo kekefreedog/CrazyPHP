@@ -96,6 +96,7 @@
                 data-color-picker="{{item._style.color.picker}}"
                 {{#if item._style.color.theme}}data-color-theme="{{item._style.color.theme}}"{{/if}}
                 data-color-opacity="{{item._style.color.opacity}}"
+                {{#if item._style.color.locale}}data-color-locale="{{item._style.color.locale}}"{{/if}}
             {{/if}}
             {{!-- data-type="color" --}}
             {{#if item.placeholder}}placeholder="{{item.placeholder}}"{{else}}placeholder=" "{{/if}}
@@ -163,7 +164,8 @@
         {{#if item._style.prefix}}<div class="prefix"><i class="{{item._style.prefix.class}}">{{item._style.prefix.text}}</i></div>{{/if}}
         <input
             id="{{../form.id}}_{{item.name}}" 
-            name="{{item.name}}"
+            name="{{item.name}}{{#if item.multiple}}[]{{/if}}"
+            {{#if item.multiple}}multiple=""{{/if}}
             {{#if item._style.customClass.input}}class="{{item._style.customClass.input}}"{{/if}}
             {{#if item.disabled}}disabled=""{{else}}{{#if ../form.onready}}disabled="loading"{{/if}}{{/if}}
             type="{{#is item._style.date.picker "easepick"}}text{{else}}date{{/is}}"
