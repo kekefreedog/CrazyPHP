@@ -461,6 +461,7 @@ declare global {
         onSubmitDone:(result:object, entity:string, formData:FormData)=>void,
         onError:(result:object, entity:string, formData:FormData)=>void,
         alertDriver:string,
+        filter:boolean,
     }
 
     /** Interface | Error

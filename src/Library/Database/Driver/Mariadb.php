@@ -16,13 +16,13 @@ namespace CrazyPHP\Library\Database\Driver;
  * Dependances
  */
 
-use CrazyPHP\Core\Model;
 use CrazyPHP\Library\Database\Singleton\MariadbConnection;
 use CrazyPHP\Library\File\Config as FileConfig;
 use CrazyPHP\Interface\CrazyDatabaseDriver;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Array\Arrays;
 use Envms\FluentPDO\Query;
+use CrazyPHP\Core\Model;
 use PDOException;
 use PDO;
 
@@ -1107,8 +1107,37 @@ class Mariadb implements CrazyDatabaseDriver {
                         # Prepare includeQuery
                         $includeQuery = "EXISTS (";
 
+                        # Check if key is id
+                        if(strpos($key, "_") !== false){
+
+                            # Set includeKey
+                            $includeKey = $key;
+
+                            # Check includeTableName in $key
+                            if(substr($includeKey, 0, strlen($includeTableName)+1) == strtolower($includeTableName)."_")
+
+                                $includeKey = str_replace(strtolower($includeTableName)."_", "", $includeKey);
+
+                            else
+
+                                # Set key target
+                                $includeKey = $key;
+
+                            # Set key target
+                            $includeKeyTarget = $key;
+
+                        }else{
+
+                            # Set include key
+                            $includeKey = strtolower($table)."_$key";
+
+                            # Set key target
+                            $includeKeyTarget = $key;
+
+                        }
+
                         # Push sub query
-                        $includeQuery .= "SELECT 1 FROM $includeTableName $extraAlias WHERE $extraAlias.".strtolower($table)."_$key = $alias.$key";
+                        $includeQuery .= "SELECT 1 FROM $includeTableName $extraAlias WHERE $extraAlias.$includeKey = $alias.$includeKeyTarget";
 
                         # Check include extra arguments
                         if($includeExtraArguments){

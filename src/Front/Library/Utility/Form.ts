@@ -86,6 +86,8 @@ export default class Form {
         // Scan current form
         this._ingestForm(form)
             .then(
+                this._initFilter
+            ).then(
                 this._initForm
             ).then(
                 this._initOnReady
@@ -1092,6 +1094,23 @@ export default class Form {
     }
 
     /**
+     * Init Filter
+     * 
+     * Check if form el is filter
+     * 
+     * @returns {Promise<void>}
+     */
+    private _initFilter = async():Promise<void> => {
+
+        // Check if filter
+        if(typeof this._formEl.dataset.formFilter === "string")
+
+            // Set filter option
+            this._options.filter = true;
+
+    }
+
+    /**
      * Init Form
      * 
      * Prepare form input
@@ -1756,6 +1775,9 @@ export default class Form {
     /**
      * Retrieve Select
      * 
+     * - Prefix : OK
+     * - Suffix : OK
+     * 
      * @param itemEl:HTMLElement
      * @return null|Array<any>
      */
@@ -1772,8 +1794,29 @@ export default class Form {
             // Set result
             let value:string = itemEl.value as string;
 
-            // Push in result
-            result = [key, value];
+            // Check filter
+            if(!this._options.filter || (this._options.filter && value)){
+
+                // Check prefix
+                if(typeof itemEl.dataset.formValuePrefix && itemEl.dataset.formValuePrefix){
+
+                    // Update value
+                    value = `${itemEl.dataset.formValuePrefix}${value}`;
+                    
+                }
+
+                // Check prefix
+                if(typeof itemEl.dataset.formValueSuffix && itemEl.dataset.formValueSuffix){
+
+                    // Update value
+                    value = `${value}${itemEl.dataset.formValueSuffix}`;
+                    
+                }
+
+                // Push in result
+                result = [key, value];
+
+            }
 
         }
 
@@ -1928,43 +1971,48 @@ export default class Form {
             // Set result
             let value:string = itemEl.value as string;
 
-            if(itemEl instanceof HTMLInputElement && "datePicker" in itemEl.dataset && itemEl.dataset.datePicker == "easepick"){
+            // Check filter
+            if(!this._options.filter || (this._options.filter && value)){
 
-                // Split by separator
-                let splitedValue = value.split(" - ");
+                if(itemEl instanceof HTMLInputElement && "datePicker" in itemEl.dataset && itemEl.dataset.datePicker == "easepick"){
 
-                // Iteration 
-                if(splitedValue.length){
+                    // Split by separator
+                    let splitedValue = value.split(" - ");
 
-                    // check if two value, meaning range
-                    if(splitedValue.length == 2){
+                    // Iteration 
+                    if(splitedValue.length){
 
-                        // Set range value
-                        let rangeValue:string = `[${splitedValue[0]}:${splitedValue[1]}]`
+                        // check if two value, meaning range
+                        if(splitedValue.length == 2){
 
-                        // Check result
-                        if(result === null) result = [];
+                            // Set range value
+                            let rangeValue:string = `[${splitedValue[0]}:${splitedValue[1]}]`
 
-                        // Push to result
-                        result.push([key.replace("[]", ""), rangeValue])
+                            // Check result
+                            if(result === null) result = [];
 
-                    // Iteration value
-                    }else for(let splitValue of splitedValue) if(splitValue !== null) {
+                            // Push to result
+                            result.push([key.replace("[]", ""), rangeValue])
 
-                        // Check result
-                        if(result === null) result = [];
+                        // Iteration value
+                        }else for(let splitValue of splitedValue) if(splitValue !== null) {
 
-                        // Push to result
-                        result.push([key, splitValue])
+                            // Check result
+                            if(result === null) result = [];
+
+                            // Push to result
+                            result.push([key, splitValue])
+
+                        }
 
                     }
 
+                }else{
+
+                    // Push in result
+                    result = [[key, value]];
+
                 }
-
-            }else{
-
-                // Push in result
-                result = [[key, value]];
 
             }
 

@@ -62,6 +62,9 @@ class Form {
     /** @var bool|string|array $_confirm */
     private bool|string|array $_confirm = true;
 
+    /** @var bool|string|array $_filter */
+    private bool $_filter = false;
+
     /** @var array $_items_schema Schema of an item */
     private array $_item_schema = [
         "name"          =>  "",
@@ -76,6 +79,8 @@ class Form {
         "default"       =>  null,
         "multiple"      =>  false,
         "depends"       =>  null,
+        "valuePrefix"   =>  "",
+        "valueSuffix"   =>  "",
         "_style"        =>  [],
     ];
 
@@ -283,6 +288,24 @@ class Form {
     }
 
     /**
+     * Set Filter
+     * 
+     * Set Filter
+     * 
+     * @param bool $confirm Confirm of the form
+     * @return Form
+     */
+    public function setFilter(bool $filter = false):Form {
+
+        # Set id
+        $this->_filter = $filter;
+
+        # Return self
+        return $this;
+
+    }
+
+    /**
      * Push Item
      * 
      * Push item of the form
@@ -413,6 +436,12 @@ class Form {
 
             # Push onready
             $result["confirm"] = $this->_confirm;
+
+        # Check onready
+        if(!$minimize || $this->_filter)
+
+            # Push onready
+            $result["filter"] = $this->_filter;
 
         # Check items
         if(!empty($this->_items))
