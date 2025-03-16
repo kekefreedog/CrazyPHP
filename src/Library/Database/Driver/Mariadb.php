@@ -1061,7 +1061,7 @@ class Mariadb implements CrazyDatabaseDriver {
                      */
 
                     # Check if contains []
-                    if(substr($key, 0, 2) == "<>"){
+                    if(substr($key, 0, 2) == "<>" || substr($key, 0, 2) == "@@"){
 
                         # Update $key
                         $key = substr($key, 2);
@@ -1205,10 +1205,6 @@ class Mariadb implements CrazyDatabaseDriver {
 
                 # Append sort
                 $query .= static::appendSort($options["sort"] ?? null, $alias);
-
-                # Display query
-                /* print_r($query);
-                exit; */
 
                 # Update table
                 $statment = $this->client->query($query);

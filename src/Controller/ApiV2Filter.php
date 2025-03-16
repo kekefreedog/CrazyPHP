@@ -58,7 +58,7 @@ class ApiV2Filter extends Controller {
         # Set response
         static::ApiResponse()
             ->addLastModified($lastModified)
-            ->setStatusCode(200)
+            ->setStatusCode()
             ->pushContent("results", $content)
             ->send();
 
