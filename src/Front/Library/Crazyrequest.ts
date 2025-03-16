@@ -74,7 +74,7 @@ export default class Crazyrequest{
     public constructor(url:string, options:CrazyFetchOption = {}) {
 
         // Set url
-        this.url = url;
+        this.url = this.prepareUrl(url);
     
         // Prepare options
         this.prepareGivenOptions(options);
@@ -216,6 +216,22 @@ export default class Crazyrequest{
     /** Private Methods
      ******************************************************
      */
+
+    /**
+     * Prepare Url
+     * 
+     * @param url:string
+     * @returns {string}
+     */
+    private prepareUrl = (url:string):string => {
+
+        // Set result
+        let result = url;
+
+        // Return result
+        return result;
+
+    }
 
     /**
      * Get Key
