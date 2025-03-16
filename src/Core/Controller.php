@@ -27,6 +27,7 @@ use CrazyPHP\Core\Response;
 use CrazyPHP\Model\Context;
 use CrazyPHP\Core\Model;
 use CrazyPHP\Library\File\File;
+use CrazyPHP\Library\State\Page;
 use CrazyPHP\Model\Env;
 
 /**
@@ -139,11 +140,8 @@ class Controller {
      */
     public static function Response():Response {       
         
-        # Check env
-        if(Env::has(State::ENV_CATCH_STATE) && Env::get(State::ENV_CATCH_STATE))
-
-            # New exception
-            throw new CatchState();
+        # Catch state if not done previously or no state
+        static::_catchState();
 
         # New structure
         $result = new Response();
@@ -530,6 +528,50 @@ class Controller {
         }
     
         return ['post' => $post, 'files' => $files];
+    }
+
+    /** Private static methods
+     ******************************************************
+     */
+
+    /**
+     * Catch State
+     * 
+     * Check catch state
+     * 
+     * @param array $result of the page state
+     * @return void
+     */
+    private static function _catchState(array $result = []):void {
+
+        # Check env
+        if(
+            Env::has(Page::ENV_CATCH_STATE) && 
+            Env::get(Page::ENV_CATCH_STATE)
+        )
+
+            # New exception
+            throw new CatchState("", 0, $result);
+
+        else
+        # Return state if env ?catch_state=true
+        if(
+            isset($_GET["catch_state"]) && 
+            $_GET["catch_state"]
+        ){
+
+            # Set response
+            (new ApiResponse())
+                ->setStatusCode(200)
+                ->pushContent("", $result)
+                # ->pushContext()
+                ->send();
+
+            # Stop script
+            exit;
+
+        }
+
     }
     
 
