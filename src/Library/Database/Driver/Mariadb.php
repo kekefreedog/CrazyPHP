@@ -1073,10 +1073,10 @@ class Mariadb implements CrazyDatabaseDriver {
                         $value = ltrim($value, '= "');
 
                         # Check if ? in value
-                        if(strpos($value, "?") !== false){
+                        if(strpos($value, "@") !== false){
 
                             # Explode current value
-                            $currentValue = explode("?", $value, 2);
+                            $currentValue = explode("@", $value, 2);
 
                             # Set table name
                             $includeTableName = $currentValue[0];
@@ -1143,7 +1143,7 @@ class Mariadb implements CrazyDatabaseDriver {
                         if($includeExtraArguments){
 
                             # Explode extra aruments
-                            $includeExtraArguments = array_merge(...array_map(fn($pair) => [$k = explode(':', $pair, 2)[0] => is_numeric($v = explode(':', $pair, 2)[1]) ? (int)$v : $v], explode('?', $includeExtraArguments)));
+                            $includeExtraArguments = array_merge(...array_map(fn($pair) => [$k = explode(':', $pair, 2)[0] => is_numeric($v = explode(':', $pair, 2)[1]) ? (int)$v : $v], explode('@', $includeExtraArguments)));
 
                             # Iteration of extra argument
                             if(is_array($includeExtraArguments) && !empty($includeExtraArguments)) foreach($includeExtraArguments as $includeExtraArgumentKey => $includeExtraArgumentValue){
