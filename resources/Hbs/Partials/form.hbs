@@ -45,7 +45,7 @@
                     type="file"
                     {{#if item.placeholder}}placeholder="{{item.placeholder}}"{{else}}placeholder=" "{{/if}}
                     {{#if item.readonly}}readonly=""{{/if}}
-                    {{#if item.default}}value="{{item.default}}" default="{{item.default}}"{{/if}}
+                    {{#unless form.onready}}{{#if item.default}}value="{{item.default}}" default="{{item.default}}"{{/if}}{{/unless}}
                     {{#if item.select.[0].value}}min="{{item.select.[0].value}}"{{/if}}
                     {{#if item.select.[1].value}}max="{{item.select.[1].value}}"{{/if}}
                     {{#if item.required}}required=""{{/if}}
@@ -70,7 +70,7 @@
                         type="file"
                         {{#if item.placeholder}}placeholder="{{item.placeholder}}"{{else}}placeholder=" "{{/if}}
                         {{#if item.readonly}}readonly=""{{/if}}
-                        {{#if item.default}}value="{{item.default}}" default="{{item.default}}"{{/if}}
+                        {{#unless form.onready}}{{#if item.default}}value="{{item.default}}" default="{{item.default}}"{{/if}}{{/unless}}
                         {{#if item.select.[0].value}}min="{{item.select.[0].value}}"{{/if}}
                         {{#if item.select.[1].value}}max="{{item.select.[1].value}}"{{/if}}
                         {{#if item.required}}required=""{{/if}}
@@ -103,7 +103,7 @@
             {{!-- data-type="color" --}}
             {{#if item.placeholder}}placeholder="{{item.placeholder}}"{{else}}placeholder=" "{{/if}}
             {{#if item.readonly}}readonly=""{{/if}}
-            {{#if item.default includeZero=false}}value="{{#is item.default "randomHex()"}}{{colorHexRandom}}{{else}}{{item.default}}{{/is}}" default="{{item.default}}"{{/if}}
+            {{#unless form.onready}}{{#if item.default includeZero=false}}value="{{#is item.default "randomHex()"}}{{colorHexRandom}}{{else}}{{item.default}}{{/is}}" default="{{item.default}}"{{/if}}{{/unless}}
             {{#if item.select.[0].value includeZero=false}}min="{{item.select.[0].value}}"{{/if}}
             {{#if item.select.[1].value includeZero=false}}max="{{item.select.[1].value}}"{{/if}}
             {{#if item.required}}required=""{{/if}}
@@ -122,17 +122,20 @@
             name="{{item.name}}{{#if item.multiple}}[]{{/if}}"
             {{#if item.multiple}}multiple=""{{/if}}
             {{#if item._style.select.tag}}{{#isArray item.default}}value="{{join item.default ","}}"{{/isArray}}{{/if}}
-            {{#if item.default includeZero=false}}default="{{#isArray item.default}}{{JSONstringify item.default}}{{else}}{{#isObject item.default}}{{JSONstringify item.default}}{{else}}{{item.default}}{{/isObject}}{{/isArray}}"{{/if}}
+            {{#unless form.onready}}{{#if item.default includeZero=false}}default="{{#isArray item.default}}{{JSONstringify item.default}}{{else}}{{#isObject item.default}}{{JSONstringify item.default}}{{else}}{{item.default}}{{/isObject}}{{/isArray}}"{{/if}}{{/unless}}
             autocomplete="off"
             {{#if item.placeholder}}placeholder="{{item.placeholder}}"{{/if}}
             {{#if item.disabled}}disabled=""{{/if}}
             {{#if item.required}}required=""{{/if}}
             {{#if item.select.url}}data-select-remote="{{JSONstringify item.select}}"{{/if}}
+            {{#if item.valuePrefix}}data-form-value-prefix="{{item.valuePrefix}}"{{/if}}
+            {{#if item.valueSuffix}}data-form-value-suffix="{{item.valueSuffix}}"{{/if}}
         {{#if item._style.select.tag}}/>{{else}}>{{#if item.select}}{{#if item.select.url}}{{else}}
+            {{!-- Iteration options --}}
             {{#each item.select as |option|}}<option
                 {{#if option.value includeZero=false}}value="{{option.value}}"{{/if}}
-                {{#if item.default includeZero=false}}{{#is item.default option.value}}selected=""{{/is}}{{else}}{{#if option.default}}selected=""{{/if}}{{/if}}
-                {{#if option.default}}default=""{{/if}}
+                {{#unless form.onready}}{{#if item.default includeZero=false}}{{#is item.default option.value}}selected=""{{/is}}{{else}}{{#if option.default}}selected=""{{/if}}{{/if}}{{/unless}}
+                {{#unless form.onready}}{{#if option.default}}default=""{{/if}}{{/unless}}
                 {{#if option.disabled}}disabled=""{{/if}}
             >{{option.label}}</option>{{/each}}
         {{/if}}{{/if}}</select>{{/if}}
@@ -152,7 +155,7 @@
             type="password"
             {{#if item.placeholder}}placeholder="{{item.placeholder}}"{{else}}placeholder=" "{{/if}}
             {{#if item.readonly}}readonly=""{{/if}}
-            {{#if item.default}}value="{{item.default}}" default="{{item.default}}"{{/if}}
+            {{#unless form.onready}}{{#if item.default}}value="{{item.default}}" default="{{item.default}}"{{/if}}{{/unless}}
             {{#if item._style.text.minlength includeZero=false}}minlength="{{item._style.text.minlength}}"{{/if}}
             {{#if item._style.text.maxlength includeZero=false}}maxlength="{{item._style.text.maxlength}}"{{/if}}
             {{#if item.required}}required=""{{/if}}
@@ -174,7 +177,7 @@
             {{#is item._style.date.picker "easepick"}}data-type="date"{{/is}}
             {{#if item.placeholder}}placeholder="{{item.placeholder}}"{{else}}placeholder=" "{{/if}}
             {{#if item.readonly}}readonly=""{{/if}}
-            {{#if item.default}}value="{{item.default}}" default="{{item.default}}"{{/if}}
+            {{#unless form.onready}}{{#if item.default}}value="{{item.default}}" default="{{item.default}}"{{/if}}{{/unless}}
             {{#if item.select.[0].value}}min="{{item.select.[0].value}}"{{/if}}
             {{#if item.select.[1].value}}max="{{item.select.[1].value}}"{{/if}}
             {{#if item.required}}required=""{{/if}}
@@ -199,7 +202,7 @@
             data-type="number"
             {{#if item.placeholder}}placeholder="{{item.placeholder}}"{{else}}placeholder=" "{{/if}}
             {{#if item.readonly}}readonly=""{{/if}}
-            {{#if item.default includeZero=false}}value="{{item.default}}" default="{{item.default}}"{{/if}}
+            {{#unless form.onready}}{{#if item.default includeZero=false}}value="{{item.default}}" default="{{item.default}}"{{/if}}{{/unless}}
             {{#if item.select.[0].value includeZero=false}}min="{{item.select.[0].value}}"{{/if}}
             {{#if item.select.[1].value includeZero=false}}max="{{item.select.[1].value}}"{{/if}}
             {{#if item.required}}required=""{{/if}}
@@ -220,7 +223,7 @@
                 max="{{#if item.select.[1].value}}{{item.select.[1].value}}{{else}}100{{/if}}"
                 class="pt-0{{#if item._style.customClass.input}} {{item._style.customClass.input}}{{/if}}"
                 {{#if item.disabled}}disabled=""{{else}}{{#if ../form.onready}}disabled="loading"{{/if}}{{/if}}
-                {{#if item.default includeZero=false}}value="{{item.default}}" default="{{item.default}}"{{/if}}
+                {{#unless form.onready}}{{#if item.default includeZero=false}}value="{{item.default}}" default="{{item.default}}"{{/if}}{{/unless}}
                 {{#if item._style.range.step}}step="{{item._style.range.step}}"{{/if}}
             />
         </p>
@@ -237,7 +240,7 @@
                 type="checkbox"
                 {{#if item._style.customClass.input}}class="{{item._style.customClass.input}}"{{/if}}
                 {{#if item.disabled}}disabled=""{{else}}{{#if radioItem.disabled}}disabled=""{{else}}disabled="loading"{{/if}}{{/if}}
-                {{#if item.default}}checked="" default="true"{{/if}}
+                {{#unless form.onready}}{{#if item.default}}checked="" default="true"{{/if}}{{/unless}}
                 {{#if item.depends}}data-depends="{{#isArray item.depends}}{{join "," item.depends}}{{else}}{{item.depends}}{{/isArray}}" default="true"{{/if}}
             >
             <span class="lever"></span>
@@ -258,11 +261,11 @@
                     class="filled-in{{#if item._style.customClass.input}} {{item._style.customClass.input}}{{/if}}"
                     {{#if item.disabled}}disabled=""{{else}}{{#if radioItem.disabled}}disabled=""{{else}}disabled="loading"{{/if}}{{/if}}
                     {{#if item.disabled}}disabled=""{{else}}{{#if ../form.onready}}disabled="loading"{{/if}}{{/if}}
-                    {{#if item.default includeZero=false}}
+                    {{#unless form.onready}}{{#if item.default includeZero=false}}
                         {{#is item.default radioItem.value}}checked="" default=""{{/is}}
                     {{else}}
                         {{#is radioItem.default radioItem.value}}checked="" default=""{{/is}}
-                    {{/if}}
+                    {{/if}}{{/unless}}
                     {{#if radioItem.value includeZero=false}}value="{{radioItem.value}}"{{/if}}
                 />
                 <span>{{radioItem.label}}{{#if radioItem.disabled}}<i class="material-icons ml-3">lock</i>{{/if}}</span>
@@ -274,9 +277,9 @@
                     {{#if item.required}}required=""{{/if}}
                     {{#if item._style.customClass.input}}class="{{item._style.customClass.input}}"{{/if}}
                     {{#if item.disabled}}disabled=""{{else}}{{#if radioItem.disabled}}disabled=""{{else}}disabled="loading"{{/if}}{{/if}}
-                    {{#if item.default includeZero=false}}{{#is item.default radioItem.value}}checked="" default=""{{/is}}{{else}}{{#if radioItem.default}}checked="" default=""{{/if}}{{/if}}
+                    {{#unless form.onready}}{{#if item.default includeZero=false}}{{#is item.default radioItem.value}}checked="" default=""{{/is}}{{else}}{{#if radioItem.default}}checked="" default=""{{/if}}{{/if}}{{/unless}}
                     {{#if radioItem.value}}value="{{radioItem.value}}"{{/if}}
-                    {{#if radioItem.default}}default=""{{/if}}
+                    {{#unless form.onready}}{{#if radioItem.default}}default=""{{/if}}{{/unless}}
                 />
                 <span>{{radioItem.label}}{{#if radioItem.disabled}}<i class="material-icons ml-3">lock</i>{{/if}}</span>
             </label></p>{{/if}}{{/each}}
@@ -292,7 +295,7 @@
                 type="checkbox"
                 {{#if item._style.customClass.input}}class="{{item._style.customClass.input}}"{{/if}}
                 {{#if item.disabled}}disabled=""{{else}}{{#if ../form.onready}}disabled="loading"{{/if}}{{/if}}
-                {{#if item.default}}checked="" default="true"{{/if}}
+                {{#unless form.onready}}{{#if item.default}}checked="" default="true"{{/if}}{{/unless}}
             />
             {{#if item.label}}<span>{{#if item.required}}<b>{{/if}}{{item.label}}{{#if item.required}}</b>*{{/if}}</span>{{/if}}
         </label></p>
@@ -311,7 +314,7 @@
             {{#if item.placeholder}}placeholder="{{item.placeholder}}"{{else}}placeholder=" "{{/if}}
             {{#if item.readonly}}readonly=""{{/if}}
             {{#if item.required}}required=""{{/if}}
-            {{#if item.default}}value="{{item.default}}" default="{{item.default}}"{{/if}}
+            {{#unless form.onready}}{{#if item.default}}value="{{item.default}}" default="{{item.default}}"{{/if}}{{/unless}}
             {{#if item._style.text.minlength includeZero=false}}minlength="{{item._style.text.minlength}}"{{/if}}
             {{#if item._style.text.maxlength includeZero=false}}maxlength="{{item._style.text.maxlength}}"{{/if}}
         >

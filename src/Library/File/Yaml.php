@@ -141,10 +141,12 @@ class Yaml{
     public static function open(string $filename = ""):array{
 
         # Set result
-        $result = null;
+        $result = [];
 
         # Check filename
         if(!$filename)
+
+            # Return result
             return $result;
 
         # Convert filename
@@ -186,6 +188,12 @@ class Yaml{
             );
 
         }
+
+        # Check result
+        if(!is_array($result))
+
+            # Set result
+            $result = [];
 
         # Return result
         return $result;

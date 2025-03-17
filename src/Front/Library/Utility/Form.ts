@@ -22,9 +22,10 @@ import IMask, { MaskedOptions, MaskedNumberOptions } from 'imask';
 import { IPickerConfig } from '@easepick/core/dist/types';
 import {default as PageError} from './../Error/Page';
 import {default as UtilityStrings} from './Strings';
+import UtilityDateTime from '../Utility/DateTime';
 import { AmpPlugin } from '@easepick/amp-plugin';
-import { RangePlugin } from '@easepick/bundle';
 import UtilityBoolean from '../Utility/Boolean';
+import { RangePlugin } from '@easepick/bundle';
 import { easepick } from '@easepick/bundle';
 import Crazyrequest from '../Crazyrequest';
 import fr_FR from 'filepond/locale/fr-fr';
@@ -1159,7 +1160,7 @@ export default class Form {
                     if(initMethodName in this){
 
                         // Run method
-                        this[initMethodName](inputEl);
+                        await this[initMethodName](inputEl);
 
                     }else
 
@@ -1204,12 +1205,6 @@ export default class Form {
             // Fetch request
             request.fetch()
                 .then(value => {
-
-                    // Check error
-                    if("errors" in value && Array.isArray(value.errors) && value.errors.length){
-
-                        alert("error");
-                    }
                     
                     // Unlock
                     this.unlock();
@@ -1224,7 +1219,7 @@ export default class Form {
             ;
 
         }else
-        // Check if is
+        // Check if id
         if(entityAttr && onreadyAttr && /^id\/[a-zA-Z0-9]+$/.test(onreadyAttr)){
 
             // Get id
@@ -1247,13 +1242,6 @@ export default class Form {
             // Fetch request
             request.fetch()
                 .then(value => {
-
-                    // Check error
-                    if("errors" in value && Array.isArray(value.errors) && value.errors.length){
-
-                        alert("error");
-
-                    }
                     
                     // Unlock
                     this.unlock();
@@ -2603,6 +2591,41 @@ export default class Form {
 
     }
 
+    /**
+     * Set Date
+     * 
+     * Set date in item
+     * 
+     * @param itemEl:HTMLElement
+     * @param value:string
+     * @return void
+     */
+    private dateSet = (itemEl:HTMLElement, value:string, valuesID:string|Object|null):void => {
+
+        // Check itemEl 
+        if(["INPUT", "SELECT"].includes(itemEl.tagName) && value !== null){
+
+            // Get date
+            let dateClean = UtilityDateTime.toYYYYMMDDFormat(new Date(value), "-");
+
+            // Check date
+            if(dateClean){
+
+                // Set value
+                itemEl.setAttribute("value", dateClean);
+
+                // Dispatch event change
+                itemEl.dispatchEvent(new Event("change"));
+
+                // Set id
+                this._setID(valuesID, itemEl);
+
+            }
+
+        }
+
+    }
+
     /** Private methods | Set value | Set Custom Data
      ******************************************************
      */
@@ -2955,7 +2978,7 @@ export default class Form {
      * @param inputEl 
      * @returns {void}
      */
-    private _initColorInput = (inputEl:HTMLSelectElement|HTMLInputElement):void => {
+    private _initColorInput = async (inputEl:HTMLSelectElement|HTMLInputElement):Promise<void> => {
 
         // Check pickr
         if(inputEl instanceof HTMLInputElement && "colorPicker" in inputEl.dataset && inputEl.dataset.colorPicker == "pickr"){
@@ -3135,7 +3158,7 @@ export default class Form {
      * @param inputEl 
      * @returns {void}
      */
-    private _initNumberInput = (inputEl:HTMLSelectElement|HTMLInputElement):void => {
+    private _initNumberInput = async (inputEl:HTMLSelectElement|HTMLInputElement):Promise<void> => {
 
         // Declare options
         let options:MaskedNumberOptions = {
@@ -3167,7 +3190,7 @@ export default class Form {
      * @param inputEl 
      * @returns {void}
      */
-    private _initDateInput = (inputEl:HTMLSelectElement|HTMLInputElement):void => {
+    private _initDateInput = async (inputEl:HTMLSelectElement|HTMLInputElement):Promise<void> => {
 
         // Check input
         if(inputEl instanceof HTMLInputElement && "datePicker" in inputEl.dataset && inputEl.dataset.datePicker == "easepick"){
@@ -3251,7 +3274,7 @@ export default class Form {
      * @param inputEl 
      * @returns {void}
      */
-    private _initPasswordInput = (inputEl:HTMLSelectElement|HTMLInputElement):void => {
+    private _initPasswordInput = async (inputEl:HTMLSelectElement|HTMLInputElement):Promise<void> => {
 
         // Check maska
         if(inputEl instanceof HTMLInputElement && inputEl.dataset && "passwordVisible" in inputEl.dataset && inputEl.parentNode){
@@ -3309,227 +3332,250 @@ export default class Form {
      * @param inputEl 
      * @returns {void}
      */
-    private _initSelectInput = (inputEl:HTMLSelectElement|HTMLInputElement):void => {
+    private _initSelectInput = async (inputEl:HTMLSelectElement|HTMLInputElement):Promise<void> => {
 
-        // Check maska
-        if(inputEl instanceof HTMLInputElement || inputEl instanceof HTMLSelectElement){
+        // Promise wrap
+        return new Promise<void>((resolve) => {
 
-            // Set option
-            let option:RecursivePartial<TomSettings> = {
-                persist: false,
-                createOnBlur: true,
-                create: true,
-                dropdownParent: "body",
-                plugins: {}
-            };
+            // Check maska
+            if(inputEl instanceof HTMLInputElement || inputEl instanceof HTMLSelectElement){
 
-            // Append create
-            option.create = false;
+                // Pending Requests
+                const pendingRequests:Promise<void>[] = [];
 
-            // Check clear
-            if(inputEl.dataset && "selectClear" in inputEl.dataset)
-
-                // Set plugin
-                // @ts-ignore
-                option.plugins["clear_button"] = {
-                    title: inputEl.dataset.selectClear
+                // Set option
+                let option:RecursivePartial<TomSettings> = {
+                    persist: false,
+                    createOnBlur: true,
+                    create: true,
+                    dropdownParent: "body",
+                    plugins: {}
                 };
 
-            // Check clear
-            if((inputEl.dataset && "selectTag" in inputEl.dataset) || ("multiple" in inputEl && inputEl.multiple)){
+                // Append create
+                option.create = false;
 
-                // Set plugin caret position
-                // @ts-ignore
-                option.plugins["caret_position"] = {};
+                // Check clear
+                if(inputEl.dataset && "selectClear" in inputEl.dataset)
 
-                // Set plugin drag drop
-                // @ts-ignore
-                option.plugins["drag_drop"] = {};
-
-            }
-
-            // Declare potential add option
-            let addOption:(()=>void)|null = null;
-
-            // Check if 
-            if(inputEl.dataset && "selectRemote" in inputEl.dataset && inputEl.dataset.selectRemote && UtilityStrings.isJson(inputEl.dataset.selectRemote)){
-
-                // Decode selectRemote
-                let remoteData = JSON.parse(inputEl.dataset.selectRemote);
-
-                // Set value
-                option.valueField = remoteData.value;
-
-                // Check label has {{}}
-                if(remoteData.label.includes("{{") && remoteData.label.includes("}}")){
-
-                    // Set render
-                    option.render = {
-                        option: (data:Record<string,any>, escape:(input:string)=>string):string => {
-                    
-                            // Declare result
-                            let result:string = remoteData.label.replace(/\{\{(.*?)\}\}/g, (i:any, match:any) => escape(data[match]))
-    
-                            // Append div after and before
-                            return `<div>${result}</div>` as string;
-                            
-                        },
-                        item: (data:Record<string,any>, escape:(input:string)=>string):string => {
-
-                            // Declare result
-                            let result:string = remoteData.label.replace(/\{\{(.*?)\}\}/g, (i:any, match:any) => escape(data[match]))
-    
-                            // Append div after and before
-                            return `<div>${result}</div>` as string;
-                            
-                        }
+                    // Set plugin
+                    // @ts-ignore
+                    option.plugins["clear_button"] = {
+                        title: inputEl.dataset.selectClear
                     };
 
-                }else{
+                // Check clear
+                if((inputEl.dataset && "selectTag" in inputEl.dataset) || ("multiple" in inputEl && inputEl.multiple)){
 
-                    // Set label
-                    option.labelField = remoteData.label;
+                    // Set plugin caret position
+                    // @ts-ignore
+                    option.plugins["caret_position"] = {};
+
+                    // Set plugin drag drop
+                    // @ts-ignore
+                    option.plugins["drag_drop"] = {};
 
                 }
 
-                // Set search
-                option.searchField = remoteData.search;
+                // Declare potential add option
+                let addOption:(()=>void)|null = null;
 
-                // option.allowEmptyOption = true;
+                // Check if 
+                if(inputEl.dataset && "selectRemote" in inputEl.dataset && inputEl.dataset.selectRemote && UtilityStrings.isJson(inputEl.dataset.selectRemote)){
 
-                // Set load
-                option.load = (selectQuery, callback) => {
+                    // Decode selectRemote
+                    let remoteData = JSON.parse(inputEl.dataset.selectRemote);
 
-                    // New query
-                    let query = new Crazyrequest(
-                        remoteData.url,
-                        {
-                            method: "get",
-                            cache: false,
-                            responseType: "json",
-                            from: "internal"
-                        }
-                    );
+                    // Set value
+                    option.valueField = remoteData.value;
 
-                    // Rerurn result
-                    query.fetch(
+                    // Check label has {{}}
+                    if(remoteData.label.includes("{{") && remoteData.label.includes("}}")){
+
+                        // Set render
+                        option.render = {
+                            option: (data:Record<string,any>, escape:(input:string)=>string):string => {
                         
-                        // Fetch all
-                        
-                    ).then(
-                        value => {
+                                // Declare result
+                                let result:string = remoteData.label.replace(/\{\{(.*?)\}\}/g, (i:any, match:any) => escape(data[match]))
+        
+                                // Append div after and before
+                                return `<div>${result}</div>` as string;
+                                
+                            },
+                            item: (data:Record<string,any>, escape:(input:string)=>string):string => {
 
-                            // Check if dataKey
-                            if(typeof remoteData.dataKey === "string" && remoteData.dataKey)
+                                // Declare result
+                                let result:string = remoteData.label.replace(/\{\{(.*?)\}\}/g, (i:any, match:any) => escape(data[match]))
+        
+                                // Append div after and before
+                                return `<div>${result}</div>` as string;
+                                
+                            }
+                        };
 
-                                // Set right value 
-                                value.results = remoteData.dataKey.split('.').reduce((acc:any, key:any) => acc && acc[key], value.results);
+                    }else{
+
+                        // Set label
+                        option.labelField = remoteData.label;
+
+                    }
+
+                    // Set search
+                    option.searchField = remoteData.search;
+
+                    // option.allowEmptyOption = true;
+
+                    // Set load
+                    option.load = (selectQuery, callback) => {
+
+                        // New query
+                        let query = new Crazyrequest(
+                            remoteData.url,
+                            {
+                                method: "get",
+                                cache: false,
+                                responseType: "json",
+                                from: "internal"
+                            }
+                        ).fetch(
                             
-                            // Check value results
-                            if(
-                                "results" in value && 
-                                Array.isArray(value.results) && 
-                                value.results.length
-                            )
+                            // Fetch all
+                            
+                        ).then(
+                            value => {
 
-                                // Iteration value
-                                for(let key in value.results)
+                                // Check if dataKey
+                                if(typeof remoteData.dataKey === "string" && remoteData.dataKey)
 
-                                    // Set key
-                                    value.results[key] = Objects.flatten(value.results[key], "", ".");
+                                    // Set right value 
+                                    value.results = remoteData.dataKey.split('.').reduce((acc:any, key:any) => acc && acc[key], value.results);
+                                
+                                // Check value results
+                                if(
+                                    "results" in value && 
+                                    Array.isArray(value.results) && 
+                                    value.results.length
+                                )
 
-                            // Callback with value retrieve
-                            callback(value.results);
+                                    // Iteration value
+                                    for(let key in value.results)
 
-                        }
-                    );
+                                        // Set key
+                                        value.results[key] = Objects.flatten(value.results[key], "", ".");
 
-                };
-
-                // Prepare add option
-                addOption = () => {
-
-                    // New query
-                    let query = new Crazyrequest(
-                        remoteData.url,
-                        {
-                            method: "get",
-                            cache: false,
-                            responseType: "json",
-                            from: "internal"
-                        }
-                    );
-
-                    // Rerurn result
-                    query.fetch(
-
-                        // Fetch all
-
-                    // Add options found
-                    ).then(
-                        value => {
-
-                            // Check if dataKey
-                            if(typeof remoteData.dataKey === "string" && remoteData.dataKey)
-
-                                // Set right value 
-                                value.results = remoteData.dataKey.split('.').reduce((acc:any, key:any) => acc && acc[key], value.results);
-
-                            // Check value results
-                            if(
-                                "results" in value && 
-                                Array.isArray(value.results) && 
-                                value.results.length
-                            )
-
-                                // Iteration value
-                                for(let key in value.results)
-
-                                    // Set key
-                                    value.results[key] = Objects.flatten(value.results[key], "", ".");
-
-                            // Add options to tom
-                            selectInstance.addOptions(value.results);
-
-                        }
-                    // Check default and set it
-                    ).then(
-                        () => {
-
-                            // Check default in input el
-                            if(inputEl.hasAttribute("default")){
-
-                                // Get default
-                                let defaultValue = inputEl.getAttribute("default");
-
-                                // Check type of default value
-                                if(typeof defaultValue === "string")
-
-                                    // Set value
-                                    selectInstance.setValue(defaultValue);
+                                // Callback with value retrieve
+                                callback(value.results);
 
                             }
+                        )
+                        .catch(() => callback([]))
+                        .finally(() => {
 
-                        }
-                    );
+                            // Remove completed request from pendingRequests
+                            pendingRequests.splice(pendingRequests.indexOf(query), 1);
+
+                        });
+
+                        // Track the request
+                        pendingRequests.push(query);
+
+                    };
+
+                    // Prepare add option
+                    addOption = () => {
+
+                        // New query
+                        let query = new Crazyrequest(
+                            remoteData.url,
+                            {
+                                method: "get",
+                                cache: false,
+                                responseType: "json",
+                                from: "internal"
+                            }
+                        );
+
+                        // Rerurn result
+                        query.fetch(
+
+                            // Fetch all
+
+                        // Add options found
+                        ).then(
+                            value => {
+
+                                // Check if dataKey
+                                if(typeof remoteData.dataKey === "string" && remoteData.dataKey)
+
+                                    // Set right value 
+                                    value.results = remoteData.dataKey.split('.').reduce((acc:any, key:any) => acc && acc[key], value.results);
+
+                                // Check value results
+                                if(
+                                    "results" in value && 
+                                    Array.isArray(value.results) && 
+                                    value.results.length
+                                )
+
+                                    // Iteration value
+                                    for(let key in value.results)
+
+                                        // Set key
+                                        value.results[key] = Objects.flatten(value.results[key], "", ".");
+
+                                // Add options to tom
+                                selectInstance.addOptions(value.results);
+
+                            }
+                        // Check default and set it
+                        ).then(
+                            () => {
+
+                                // Check default in input el
+                                if(inputEl.hasAttribute("default")){
+
+                                    // Get default
+                                    let defaultValue = inputEl.getAttribute("default");
+
+                                    // Check type of default value
+                                    if(typeof defaultValue === "string")
+
+                                        // Set value
+                                        selectInstance.setValue(defaultValue);
+
+                                }
+
+                            }
+                        );
+
+                    }
 
                 }
 
+                // Init maska
+                let selectInstance = new TomSelect(inputEl, option);
+
+                // Check addOption is callable
+                if(addOption !== null && typeof addOption === "function"){
+
+                    // Run function
+                    // @ts-ignore
+                    addOption();
+
+                }        
+                
+                // Wait for all pending requests to complete before resolving
+                Promise.all(pendingRequests).then(() => resolve());
+
+            }else{
+
+                // Resolve immediately if element is missing
+                resolve(); 
+
             }
 
-            // Init maska
-            let selectInstance = new TomSelect(inputEl, option);
-
-            // Check addOption is callable
-            if(addOption !== null && typeof addOption === "function"){
-
-                // Run function
-                // @ts-ignore
-                addOption();
-
-            }
-
-        }
+        });
 
     }
 
@@ -3539,7 +3585,7 @@ export default class Form {
      * @param inputEl 
      * @returns {void}
      */
-    private _initFileInput = (inputEl:HTMLSelectElement|HTMLInputElement):void => {
+    private _initFileInput = async (inputEl:HTMLSelectElement|HTMLInputElement):Promise<void> => {
 
         // Check maska
         if(inputEl instanceof HTMLInputElement){
