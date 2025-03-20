@@ -163,6 +163,12 @@ export default class Events {
                 // Add openInNewTab in options
                 options["openInNewTab"] = true;
 
+            // Check event arguments
+            if(event.arguments)
+
+                // Push to options
+                options.arguments = event.arguments;
+
             // Get global attributes
             window.Crazyobject.state.globalStore?.iterate((value, key)=>{
 

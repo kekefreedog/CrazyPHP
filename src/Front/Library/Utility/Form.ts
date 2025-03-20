@@ -1318,6 +1318,9 @@ export default class Form {
                 // Get target
                 const target = event.target;
 
+                console.log("--debug--");
+                console.log(target);
+
                 // Check options
                 if(this._onChangeCallable && currentTarget && target && currentTarget instanceof HTMLFormElement && ( target instanceof HTMLInputElement || target instanceof HTMLSelectElement ) && this._onChangeOptions.eventType === eventType){
 
@@ -3243,10 +3246,26 @@ export default class Form {
                 options.lang = inputEl.dataset.dateLang;
 
             // Check if required
-            if(!inputEl.required && options.AmpPlugin)
+            if(!inputEl.required && options.AmpPlugin){
 
                 // Enable reset btn
-                options.AmpPlugin.resetButton = true;
+                options.AmpPlugin.resetButton = () => {
+
+                    // Clear value
+                    inputEl.value = "";
+
+                    // Dispatch input event
+                    inputEl.dispatchEvent(new Event("input", {bubbles: true}));
+
+                    // Dispatch change event
+                    inputEl.dispatchEvent(new Event("change", {bubbles: true}));
+
+                    // Return true
+                    return true;
+
+                };
+
+            }
 
             // Check if input multiple
             if(inputEl.multiple){

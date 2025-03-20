@@ -275,7 +275,8 @@ declare global {
         type: "redirect",
         name?: string,
         url?: string,
-        target?: "_blank"|null
+        target?: "_blank"|null;
+        arguments?: object|null
     };
 
     /**

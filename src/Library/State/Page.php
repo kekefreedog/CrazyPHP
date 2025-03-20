@@ -309,9 +309,10 @@ class Page {
      * Push event of type redirection
      * @param string $nameOrUrl
      * @param bool $nameOrUrl Open into a new page
+     * @param ?array $arguments Arguments
      * @return self
      */
-    public function pushRedirection(string $nameOrUrl, bool $openInNewTab = false):self {
+    public function pushRedirection(string $nameOrUrl, bool $openInNewTab = false, ?array $arguments = null):self {
 
         # Set temp
         $temp = null;
@@ -326,10 +327,20 @@ class Page {
                 $temp["url"] = $nameOrUrl;
 
             # If is internal
-            else
+            else{
 
                 # Set url
                 $temp["name"] = $nameOrUrl;
+
+                # Check parameters
+                if(is_array($arguments) && !empty($arguments)){
+
+                    # Set arguments
+                    $temp["arguments"] = $arguments;
+
+                }
+
+            }
 
             # Check openInNewTab
             if($openInNewTab)
