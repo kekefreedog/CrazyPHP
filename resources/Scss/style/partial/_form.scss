@@ -30,3 +30,37 @@
 
 /* Import ease picker Enhancement */
 @import '../enhancement/easepick_materializecss.scss';
+
+
+/* Partial */
+[partial="form"] {
+
+    /* Progress after wrapper */
+    .ts-wrapper + .progress {
+
+        /* Postion */
+        position: absolute;
+
+        /* Dimension */
+        border-radius: 0 0 4px 4px;
+
+        /* Opacity */
+        opacity: 1;
+
+        /* Transition */
+        transition: 0.5;
+
+        /* Disabled */
+        &[disabled] {
+
+            /* Opacity */
+            opacity: 0;
+
+            /* Transition */
+            transition: .5s;
+
+        }
+
+    }
+
+}

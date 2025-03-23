@@ -138,7 +138,8 @@
                 {{#unless form.onready}}{{#if option.default}}default=""{{/if}}{{/unless}}
                 {{#if option.disabled}}disabled=""{{/if}}
             >{{option.label}}</option>{{/each}}
-        {{/if}}{{/if}}</select>{{/if}}
+        {{/if}}{{/if}}</select>
+        {{#if item.select.url}}<div class="progress mt-0 mb-0" data-select-id="{{../form.id}}_{{item.name}}"><div class="indeterminate"></div></div>{{/if}}{{/if}}
 
         {{!-- Password Input --}}
         {{else}}{{#is item.type "password"}}

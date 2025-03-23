@@ -1318,9 +1318,6 @@ export default class Form {
                 // Get target
                 const target = event.target;
 
-                console.log("--debug--");
-                console.log(target);
-
                 // Check options
                 if(this._onChangeCallable && currentTarget && target && currentTarget instanceof HTMLFormElement && ( target instanceof HTMLInputElement || target instanceof HTMLSelectElement ) && this._onChangeOptions.eventType === eventType){
 
@@ -2544,11 +2541,80 @@ export default class Form {
             // Check if tomselect in item
             if("tomselect" in itemEl && itemEl.tomselect instanceof TomSelect){
 
-                // Set value
-                itemEl.tomselect.setValue(value);
+                // Get progress bar
+                let progressEl:HTMLElement|null = itemEl.id 
+                    ? itemEl.parentElement?.querySelector(`.progress[data-select-id="${itemEl.id}"]`) as HTMLElement|null 
+                    : null
+                ;
 
-                // Set id
-                this._setID(valuesID, itemEl);
+                // Attribute to observe
+                let attributeToObserve = "disabled";
+
+                // Check if progress bar is not null and have disabled attribute
+                if(progressEl && progressEl.hasAttribute(attributeToObserve)){
+
+                    // Max iteration
+                    var maxIteration = 5;
+
+                    // Interval (ms)
+                    var interval = 200;
+
+                    // Tries
+                    let tries = 0;
+
+                    // Prepare function
+                    const check = () => {
+
+                        // Increment tries
+                        tries++;
+                  
+                        // Check disabled disparead
+                        if(!itemEl.hasAttribute('disabled')){
+
+                            // Set value
+                            itemEl.tomselect instanceof TomSelect && itemEl.tomselect.setValue(value);
+        
+                            // Set id
+                            this._setID(valuesID, itemEl);
+
+                            // Top function
+                            return;
+
+                        }
+                  
+                        if(tries < maxIteration)
+
+                            // Set timeout
+                            setTimeout(check, interval);
+
+                    };
+                  
+                    // Run check
+                    check();
+
+                }else{
+
+                    // Set value
+                    itemEl.tomselect.setValue(value);
+
+                    // Set id
+                    this._setID(valuesID, itemEl);
+
+                }
+
+                // Get setted value
+                let valueSet = itemEl.tomselect.getValue();
+
+                // Check if is expected value
+                if(valueSet != value){
+
+                    // Set value in attribute
+                    itemEl.dataset.selectValueToSet = JSON.stringify({
+                        value: value,
+                        valuesID: valuesID
+                    });
+
+                }
 
             }else{
 
@@ -3362,6 +3428,12 @@ export default class Form {
                 // Pending Requests
                 const pendingRequests:Promise<void>[] = [];
 
+                // Get progress
+                let progressEl:HTMLElement|null = inputEl.id 
+                    ? inputEl.parentElement?.querySelector(`.progress[data-select-id="${inputEl.id}"]`) as HTMLElement|null 
+                    : null
+                ;
+
                 // Set option
                 let option:RecursivePartial<TomSettings> = {
                     persist: false,
@@ -3448,6 +3520,9 @@ export default class Form {
                     // Set load
                     option.load = (selectQuery, callback) => {
 
+                        // Open progression
+                        progressEl?.removeAttribute("disabled");
+
                         // New query
                         let query = new Crazyrequest(
                             remoteData.url,
@@ -3484,10 +3559,39 @@ export default class Form {
                                         value.results[key] = Objects.flatten(value.results[key], "", ".");
 
                                 // Callback with value retrieve
-                                callback(value.results);
+                                let call = callback(value.results);
 
                             }
                         )
+                        .then(() => {
+
+                            // Open progression
+                            progressEl?.setAttribute("disabled", "");
+
+                            // Get value to set
+                            let selectValueToSet = inputEl.dataset.selectValueToSet;
+
+                            // Check value to set
+                            if(selectValueToSet){
+
+                                // Parse value
+                                let parsedValueToSet = JSON.parse(selectValueToSet);
+
+                                // Get value
+                                let value = parsedValueToSet.value;
+
+                                // Get value id
+                                let valueId = parsedValueToSet.valuesID;
+
+                                // Remove value to set
+                                delete inputEl.dataset.selectValueToSet;
+
+                                // Set value
+                                this.selectSet(inputEl, value, valueId);
+
+                            }
+
+                        })
                         .catch(() => callback([]))
                         .finally(() => {
 
@@ -3504,6 +3608,9 @@ export default class Form {
                     // Prepare add option
                     addOption = () => {
 
+                        // Open progression
+                        progressEl?.removeAttribute("disabled");
+
                         // New query
                         let query = new Crazyrequest(
                             remoteData.url,
@@ -3513,10 +3620,7 @@ export default class Form {
                                 responseType: "json",
                                 from: "internal"
                             }
-                        );
-
-                        // Rerurn result
-                        query.fetch(
+                        ).fetch(
 
                             // Fetch all
 
@@ -3566,7 +3670,42 @@ export default class Form {
                                 }
 
                             }
-                        );
+                        )
+                        .then(() => {
+
+                            // Open progression
+                            progressEl?.setAttribute("disabled", "");
+
+                            // Get value to set
+                            let selectValueToSet = inputEl.dataset.selectValueToSet;
+
+                            // Check value to set
+                            if(selectValueToSet){
+
+                                // Parse value
+                                let parsedValueToSet = JSON.parse(selectValueToSet);
+
+                                // Get value
+                                let value = parsedValueToSet.value;
+
+                                // Get value id
+                                let valueId = parsedValueToSet.valuesID;
+
+                                // Remove value to set
+                                delete inputEl.dataset.selectValueToSet;
+
+                                // Set value
+                                this.selectSet(inputEl, value, valueId);
+
+                            }
+
+                        })
+                        .finally(() => {
+
+                            // Remove completed request from pendingRequests
+                            pendingRequests.splice(pendingRequests.indexOf(query), 1);
+
+                        });
 
                     }
 

@@ -66,6 +66,12 @@ class Query {
             3   =>  $_GET["option"] ?? $_GET["options"] ?? null,    # Option
         ];
 
+        # Check 0 is array or null
+        if(!is_array($result[0]) || is_null($result[0]))
+
+            # Set filter
+            $result[0] = null;
+
         # Return result
         return $result;
 
