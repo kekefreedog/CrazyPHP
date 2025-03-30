@@ -64,6 +64,12 @@ export default class Form {
     /** @var _onChangeCallable */
     private _onChangeCallable:null|((result:formOnChangeResult)=>void) = null;
 
+    /** @var _onSubmitCallable */
+    private _onSubmitCallable:null|((result:formOnSubmitResult)=>void) = null;
+
+    /** @var _onSubmitCallable */
+    private _onResetCallable:null|((result:formOnResetResult)=>void) = null;
+
     /** @var _onChangeCallable */
     private _onChangeOptions:Partial<formOnChangeOptions> = {
         eventType: "change",
@@ -168,6 +174,34 @@ export default class Form {
 
         // Set on change event
         this._onChangeCallable = callable;
+
+    }
+
+    /**
+     * Set On Submit
+     * 
+     * @param callable
+     * @param options
+     * @return void
+     */
+    public setOnSubmit = (callable:(result:formOnSubmitResult)=>void) => {
+
+        // Set on change event
+        this._onSubmitCallable = callable;
+
+    }
+
+    /**
+     * Set On Reset
+     * 
+     * @param callable
+     * @param options
+     * @return void
+     */
+    public setOnReset = (callable:(result:formOnResetResult)=>void) => {
+
+        // Set on change event
+        this._onResetCallable = callable;
 
     }
 
@@ -548,7 +582,7 @@ export default class Form {
             return;
 
         // Set target
-        let target:HTMLElement = e.target as HTMLElement;
+        let target:HTMLFormElement = e.target as HTMLFormElement;
 
         // Get formdata
         let formData:FormData = this.getFormData(target);
@@ -561,6 +595,13 @@ export default class Form {
 
         // Get post
         let postUrl:Attr|null = target.attributes.getNamedItem("post");
+
+        // Call callable
+        this._onSubmitCallable && this._onSubmitCallable({
+            formEl: target,
+            formData: formData,
+            type: "submit"
+        });
 
         // Check entity or value id
         if(entity !== null && valueID !== null){
@@ -776,13 +817,27 @@ export default class Form {
         if(e.currentTarget instanceof HTMLFormElement){
 
             // Get target
-            let formEl = e.currentTarget;
+            let formEl:HTMLFormElement = e.currentTarget;
 
             // Get value_id
             let valueID:Attr|null = formEl.attributes.getNamedItem("value_id");
 
             // Get value_id
             let entity:Attr|null = formEl.attributes.getNamedItem("entity");
+
+            // Call callable
+            if(this._onResetCallable){
+
+                // Get form data
+                let formData = this.getFormData(formEl);
+                
+                this._onResetCallable({
+                    formEl: formEl,
+                    formData: formData,
+                    type: "reset"
+                });
+
+            }
 
             // Check valueID
             if(valueID && entity){
@@ -1330,6 +1385,7 @@ export default class Form {
                     });
 
                 }
+
             });
 
     }
@@ -2695,6 +2751,118 @@ export default class Form {
 
     }
 
+    /**
+     * Set File
+     * 
+     * Set file in item
+     * 
+     * @param itemEl:HTMLElement
+     * @param value:string
+     * @return void
+     */
+    private fileSet = (itemEl:HTMLElement, value:formFilePondValue|formFilePondValue[], valuesID:string|Object|null):void => {
+
+        // Check itemEl 
+        if(["INPUT", "SELECT"].includes(itemEl.tagName) && value !== null){
+
+            // Check if filepont
+            if(itemEl.classList.contains("filepond--browser") && itemEl.parentElement instanceof HTMLElement){
+
+                // Get pond instance
+                let pondInstance = FilePond.find(itemEl.parentElement);
+
+                // Check pondInstance
+                if(pondInstance){
+
+                    // Set files
+                    let files:File[] = [];
+
+                    // Check if value is array
+                    if(Array.isArray(value)){
+
+                        // Iteration value
+                        for(let item of value){
+
+                            // Set fake content
+                            let fakeContent = "";
+                            
+                            // Set fake content
+                            if(item.options.file.type == "application/json"){
+    
+                                // Set fakeContent
+                                fakeContent = JSON.stringify({});
+    
+                            }
+    
+                            // New blob
+                            const blob = new Blob(
+                                [fakeContent], 
+                                { type: item.options.file.type }
+                            );
+    
+                            // New file
+                            const currentFile = new File(
+                                [blob], 
+                                item.source, 
+                                { type: item.options.file.type }
+                            );
+
+                            // Push files
+                            files.push(currentFile);
+
+                        }
+
+                        // Add Files
+                        pondInstance.addFiles(files);
+
+                    }else{
+
+                        // Set fake content
+                        let fakeContent = "";
+                        
+                        // Set fake content
+                        if(value.options.file.type == "application/json"){
+
+                            // Set fakeContent
+                            fakeContent = JSON.stringify({});
+
+                        }
+
+                        // New blob
+                        const blob = new Blob(
+                            [fakeContent], 
+                            { type: value.options.file.type }
+                        );
+
+                        // New file
+                        const file = new File(
+                            [blob], 
+                            value.source, 
+                            { type: value.options.file.type }
+                        );
+
+                        // Add file
+                        pondInstance.addFile(file);
+
+                    }
+
+                    // Set value
+                    /* itemEl.setAttribute("value", value);
+    
+                    // Dispatch event change
+                    itemEl.dispatchEvent(new Event("change"));
+    
+                    // Set id
+                    this._setID(valuesID, itemEl); */
+
+                }
+
+            }
+
+        }
+
+    }
+
     /** Private methods | Set value | Set Custom Data
      ******************************************************
      */
@@ -3863,7 +4031,11 @@ export default class Form {
                     }
                         
 
-                })
+                });
+
+                // Push it into el
+                // @ts-ignore
+                inputEl.pondInstance = pondInstance;
 
             }
 
@@ -4126,4 +4298,37 @@ export interface formOnChangeResult {
  */
 export interface formOnChangeOptions {
     eventType:"change"|"input",
+}
+
+/**
+ * Form On Submit Result
+ */
+export interface formOnSubmitResult {
+    formEl:HTMLFormElement,
+    formData:FormData,
+    type: "submit"
+}
+
+/**
+ * Form On Reset Result
+ */
+export interface formOnResetResult {
+    formEl:HTMLFormElement,
+    formData:FormData,
+    type: "reset"
+}
+
+/**
+ * Form On Reset Result
+ */
+export interface formFilePondValue {
+    source:string,
+    options:{
+        type: "local",
+        file: {
+            name: string,
+            size?: number,
+            type: string
+        }
+    }
 }
