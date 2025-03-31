@@ -33,7 +33,8 @@
         "ozdemirburak/iris": "^3.1",
         "workerman/workerman": "^5.0",
         "pelago/emogrifier": "^7.3",
-        "monolog/monolog": "^3.8"
+        "monolog/monolog": "^3.8",
+        "illuminate/collections": "^12.4"
     },
     "require-dev": {
         "phpunit/phpunit": "^11"

@@ -90,7 +90,8 @@ class Operation {
     /** @param array $_options */
     public $options = [
         "prefix"    =>  "",
-        "suffix"    =>  ''
+        "suffix"    =>  "",
+        "key"       =>  "",
     ];
 
     /** Private parameters
