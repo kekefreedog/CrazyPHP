@@ -66,8 +66,18 @@ export default class Arrays {
      * @return A new array with the objects removed.
      */
     public static removeObjectsByKeyValue = (array: Array<any>, key: string, value: string|number):Array<any> => {
-        return array.filter(obj => this.getNestedValue(obj, key.split('.')) !== value);
+        return array.filter(obj => this.getNestedValue(obj, key.includes('.') ? key.split('.') : [key]) !== value);
     }
+
+    /**
+     * Remove by key
+     * 
+     * @param arr 
+     * @param key 
+     * @param value 
+     * @returns 
+     */
+    public static removeByKey = (arr: any[], key: string, value: any) => arr.filter(obj => obj[key] !== value);
 
     /**
      * Flattens a multi-dimensional object into a single-level object with a custom separator.

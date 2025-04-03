@@ -83,7 +83,8 @@ class Operation {
         "*" => [ 
            "name" => "like",
            "operation" => "*",
-           "regex" => "/\*(.*?)\*/" # REGEX WORKING BUT CATCHING [10:10] or [!10:10] 🔴
+           // "regex" => "/\*(.*?)\*/" # REGEX WORKING BUT CATCHING [10:10] or [!10:10] 🔴
+           "regex" => "/(?:\*([^*\n]+)\*|\*([^*\n]+)|([^*\n]+)\*)/" # REGEX WORKING BUT CATCHING [10:10] or [!10:10] 🔴
         ],
     ];
 
@@ -286,12 +287,12 @@ class Operation {
                         if(method_exists($this, $methodName))
 
                             # Check if isString
-                            if($isString)
+                            if($isString){
 
                                 # Run method found
                                 $result = $this->{$methodName}($matches, $operation, $runOptions);
 
-                            else
+                            }else
 
                                 # Run method found
                                 $result[] = $this->{$methodName}($matches, $operation, $runOptions);

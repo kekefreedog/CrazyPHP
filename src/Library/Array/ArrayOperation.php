@@ -372,7 +372,7 @@ class ArrayOperation extends Operation {
                 if($key && array_key_exists($key, $item))
 
                     # Set result
-                    $result = str_starts_with($item[$key], $parentResult["value"][1]);
+                    $result = str_ends_with($item[$key], $parentResult["value"][1]);
 
                 # Return result
                 return $result;
@@ -395,10 +395,12 @@ class ArrayOperation extends Operation {
                 $result = false;
 
                 # check key
-                if($key && array_key_exists($key, $item))
+                if($key && array_key_exists($key, $item)){
 
                     # Set result
-                    $result = str_ends_with($item[$key], $parentResult["value"][1]);
+                    $result = str_starts_with($item[$key], $parentResult["value"][1]);
+
+                }
 
                 # Return result
                 return $result;

@@ -536,4 +536,108 @@ class ArrayOperationTest extends TestCase {
 
     }
 
+    /**
+     * Test Like Start
+     * 
+     * Test parseLike function
+     * 
+     * @return void
+     */
+    public function testParseLikeStart():void {
+
+        # Set input
+        $input = [
+            # Item 1
+            [
+                "debug"     =>  "toto",
+                "second"    =>  [
+                    "third"     =>  "titi",
+                    "four"      =>  [
+                        "five"      =>  "tonton"
+                    ]  
+                ],
+                "six"   =>  12,
+                "seven" =>  null,
+                "height"=>  true
+            ],
+            # Item 2
+            [
+                "debug"     =>  "tata",
+                "second"    =>  [
+                    "third"     =>  "tutu",
+                    "four"      =>  [
+                        "five"      =>  "tictac"
+                    ]  
+                ],
+                "six"   =>  0,
+                "seven" =>  null,
+                "height"=>  false
+            ],
+        ];
+
+        # Set filter
+        $filter = [
+            "debug" =>  "tot*"
+        ];
+
+        # New ope
+        $filtered = ArrayOperation::filter($input, $filter);
+
+        # Check
+        $this->assertEquals([0=>$input[0]], $filtered);
+
+    }
+
+    /**
+     * Test Like End
+     * 
+     * Test parseLike function
+     * 
+     * @return void
+     */
+    public function testParseLikeEnd():void {
+
+        # Set input
+        $input = [
+            # Item 1
+            [
+                "debug"     =>  "toto",
+                "second"    =>  [
+                    "third"     =>  "titi",
+                    "four"      =>  [
+                        "five"      =>  "tonton"
+                    ]  
+                ],
+                "six"   =>  12,
+                "seven" =>  null,
+                "height"=>  true
+            ],
+            # Item 2
+            [
+                "debug"     =>  "tata",
+                "second"    =>  [
+                    "third"     =>  "tutu",
+                    "four"      =>  [
+                        "five"      =>  "tictac"
+                    ]  
+                ],
+                "six"   =>  0,
+                "seven" =>  null,
+                "height"=>  false
+            ],
+        ];
+
+        # Set filter
+        $filter = [
+            "debug" =>  "*ta"
+        ];
+
+        # New ope
+        $filtered = ArrayOperation::filter($input, $filter);
+
+        # Check
+        $this->assertEquals([1=>$input[1]], $filtered);
+
+    }
+
 }

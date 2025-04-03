@@ -27,6 +27,7 @@ use CrazyPHP\Core\Response;
 use CrazyPHP\Model\Context;
 use CrazyPHP\Core\Model;
 use CrazyPHP\Library\File\File;
+use CrazyPHP\Library\File\Json;
 use CrazyPHP\Library\State\Page;
 use CrazyPHP\Model\Env;
 
@@ -282,17 +283,27 @@ class Controller {
                 # Set raw data
                 $rawData = file_get_contents("php://input");
 
-                # Process the raw data
-                $parsedData = static::parseMultipartData($rawData);
+                # Check is json
+                if(Json::check($rawData)){
 
-                # Simulate $_POST and $_FILES
-                $_POST = $parsedData['post'];
-                
-                # Get files
-                $_FILES = $parsedData['files'];
+                    # Simulate $_POST and $_FILES
+                    $result = $_POST = Json::decode($rawData);
 
-                # Get result
-                $result = $_POST + $_FILES;
+                }else{
+
+                    # Process the raw data
+                    $parsedData = static::parseMultipartData($rawData);
+
+                    # Simulate $_POST and $_FILES
+                    $_POST = $parsedData['post'];
+                    
+                    # Get files
+                    $_FILES = $parsedData['files'];
+
+                    # Get result
+                    $result = $_POST + $_FILES;
+
+                }
                 
                 # Break
                 break;

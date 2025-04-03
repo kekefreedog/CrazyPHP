@@ -2597,6 +2597,20 @@ export default class Form {
             // Check if tomselect in item
             if("tomselect" in itemEl && itemEl.tomselect instanceof TomSelect){
 
+                // Let disabled
+                let disabled = false;
+
+                // Check if item disabled
+                if(itemEl instanceof HTMLSelectElement && itemEl.disabled){
+
+                    // Set disabled
+                    disabled = true;
+
+                    // Disabled Disabled
+                    itemEl.disabled = false;
+
+                }
+
                 // Get progress bar
                 let progressEl:HTMLElement|null = itemEl.id 
                     ? itemEl.parentElement?.querySelector(`.progress[data-select-id="${itemEl.id}"]`) as HTMLElement|null 
@@ -2669,6 +2683,14 @@ export default class Form {
                         value: value,
                         valuesID: valuesID
                     });
+
+                }
+
+                // Check if item disabled
+                if(itemEl instanceof HTMLSelectElement && disabled){
+
+                    // Disabled Disabled
+                    itemEl.disabled = true;
 
                 }
 
