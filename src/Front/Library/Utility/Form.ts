@@ -34,6 +34,7 @@ import Pickr from '@simonwep/pickr';
 import TomSelect from 'tom-select';
 import Objects from './Objects';
 import Root from '../Dom/Root';
+import Crazyurl from '../Crazyurl';
 
 
 /**
@@ -1476,8 +1477,6 @@ export default class Form {
                 // Prevent default
                 e.preventDefault();
     
-                console.log(e);
-    
             };
 
             // Set timer
@@ -2611,6 +2610,17 @@ export default class Form {
 
                 }
 
+                // Check if depends
+                if(itemEl.dataset.depends){
+
+                    // Set value into depends value
+                    itemEl.dataset.dependsValue = JSON.stringify({
+                        value: value,
+                        valuesID: valuesID
+                    });
+
+                }
+
                 // Get progress bar
                 let progressEl:HTMLElement|null = itemEl.id 
                     ? itemEl.parentElement?.querySelector(`.progress[data-select-id="${itemEl.id}"]`) as HTMLElement|null 
@@ -3713,20 +3723,31 @@ export default class Form {
                         // Open progression
                         progressEl?.removeAttribute("disabled");
 
+                        // Let result
+                        let result = Crazyurl.extractQueryAndUrl(`${window.location.origin}${remoteData.url}`);
+
+                        // Set queryParam
+                        let queryParam = result.query;
+
+                        // Get parent form
+                        let formEl = inputEl.closest(`form[partial="form"]`);
+
+                        // Check param
+                        if(Object.keys(queryParam).length)
+
+                            // Update query
+                            queryParam = this._processQueryParams(queryParam, formEl instanceof HTMLFormElement ? formEl : null);
+
                         // New query
                         let query = new Crazyrequest(
-                            remoteData.url,
+                            result.url,
                             {
                                 method: "get",
                                 cache: false,
                                 responseType: "json",
                                 from: "internal"
                             }
-                        ).fetch(
-                            
-                            // Fetch all
-                            
-                        ).then(
+                        ).fetch(queryParam).then(
                             value => {
 
                                 // Check if dataKey
@@ -3737,6 +3758,7 @@ export default class Form {
                                 
                                 // Check value results
                                 if(
+                                    value &&
                                     "results" in value && 
                                     Array.isArray(value.results) && 
                                     value.results.length
@@ -3782,6 +3804,40 @@ export default class Form {
                             }
 
                         })
+                        .then(() => {
+
+                            // Check depends
+                            if(inputEl.dataset.depends && inputEl.dataset.dependsValue){
+
+                                // Read inputEl.dataset.dependsValue
+                                let valueParsed = JSON.parse(inputEl.dataset.dependsValue);
+
+                                // Check parsed
+                                if(valueParsed.value && valueParsed.valuesID){
+
+                                    // Check if multiple
+                                    if(inputEl.multiple){
+
+
+                                    }
+                                    // Check if single
+                                    else{
+
+                                        // Check value already set
+                                        if(!inputEl.value){
+
+                                            // Set value
+                                            this.selectSet(inputEl, valueParsed.value, valueParsed.valuesID);
+
+                                        }
+
+                                    }
+                                
+                                }
+
+                            }
+
+                        })
                         .catch(() => callback([]))
                         .finally(() => {
 
@@ -3801,21 +3857,33 @@ export default class Form {
                         // Open progression
                         progressEl?.removeAttribute("disabled");
 
+                        // Let result
+                        let result = Crazyurl.extractQueryAndUrl(`${window.location.origin}${remoteData.url}`);
+
+                        // Set queryParam
+                        let queryParam = result.query;
+
+                        // Get parent form
+                        let formEl = inputEl.closest(`form[partial="form"]`);
+
+                        // Check param
+                        if(Object.keys(queryParam).length)
+
+                            // Update query
+                            queryParam = this._processQueryParams(queryParam, formEl instanceof HTMLFormElement ? formEl : null);
+
                         // New query
                         let query = new Crazyrequest(
-                            remoteData.url,
+                            result.url,
                             {
                                 method: "get",
                                 cache: false,
                                 responseType: "json",
                                 from: "internal"
                             }
-                        ).fetch(
-
-                            // Fetch all
-
+                        ).fetch(queryParam)
                         // Add options found
-                        ).then(
+                        .then(
                             value => {
 
                                 // Check if dataKey
@@ -3886,6 +3954,40 @@ export default class Form {
 
                                 // Set value
                                 this.selectSet(inputEl, value, valueId);
+
+                            }
+
+                        })
+                        .then(() => {
+
+                            // Check depends
+                            if(inputEl.dataset.depends && inputEl.dataset.dependsValue){
+
+                                // Read inputEl.dataset.dependsValue
+                                let valueParsed = JSON.parse(inputEl.dataset.dependsValue);
+
+                                // Check parsed
+                                if(valueParsed.value && valueParsed.valuesID){
+
+                                    // Check if multiple
+                                    if(inputEl.multiple){
+
+
+                                    }
+                                    // Check if single
+                                    else{
+
+                                        // Check value already set
+                                        if(!inputEl.value){
+
+                                            // Set value
+                                            this.selectSet(inputEl, valueParsed.value, valueParsed.valuesID);
+
+                                        }
+
+                                    }
+                                
+                                }
 
                             }
 
@@ -4089,8 +4191,8 @@ export default class Form {
         // Remove duplicates
         dependencies = <string[]>[...new Set(dependencies)];
 
-        // Check dependencies
-        if(dependencies.length){
+        // Check dependency
+        if(dependencies.length == 1){
 
             // Get type of input el
             let inputType = inputEl.dataset.type
@@ -4122,90 +4224,316 @@ export default class Form {
                         // Check if method to retrieve value is set
                         if(dependencyType && typeof this[`${dependencyType}Retrieve`] === "function"){
                     
-                                // Set result
-                                let retrieveMethold = this[`${dependencyType}Retrieve`];
+                            // Set result
+                            let retrieveMethold = this[`${dependencyType}Retrieve`];
 
-                                // Add event change on dependencyEl
-                                dependencyEl.addEventListener(
-                                    "change",
-                                    (e:Event):void => {
+                            // Add event change on dependencyEl
+                            dependencyEl.addEventListener(
+                                "change",
+                                (e:Event):void => {
 
-                                        // Get current element
-                                        let currentTarget = e.currentTarget;
+                                    // Get current element
+                                    let currentTarget = e.currentTarget;
 
-                                        // Check if select or input
-                                        if(currentTarget instanceof HTMLSelectElement || currentTarget instanceof HTMLInputElement){
+                                    // Check if select or input
+                                    if(currentTarget instanceof HTMLSelectElement || currentTarget instanceof HTMLInputElement){
 
-                                            // Retrieve value of the current target
-                                            let result:null|Array<any> = retrieveMethold(currentTarget);
+                                        // Retrieve value of the current target
+                                        let result:null|Array<any> = retrieveMethold(currentTarget);
 
-                                            // Check if already disabled
-                                            if(
-                                                inputEl.disabled &&
-                                                inputEl.hasAttribute("disabled") && 
-                                                inputEl.getAttribute("disabled") != "depends"
-                                            ){
+                                        // Check if already disabled
+                                        if(
+                                            inputEl.disabled &&
+                                            inputEl.hasAttribute("disabled") && 
+                                            inputEl.getAttribute("disabled") != "depends"
+                                        ){
 
-                                                // Stop
-                                                return;
+                                            // Stop
+                                            return;
 
-                                            }else
-                                            // Check if result is null
-                                            if(
-                                                result === null
-                                            ){
+                                        }else
+                                        // Check if result is null
+                                        if(
+                                            result === null
+                                        ){
+
+                                            // Remove disabled
+                                            if(inputEl.disabled){
 
                                                 // Remove disabled
-                                                if(inputEl.disabled){
-
-                                                    // Remove disabled
-                                                    inputEl.disabled = false;
-
-                                                    // Remove attribute
-                                                    inputEl.removeAttribute("disabled");
-
-                                                }
-
-                                                // Stop
-                                                return;
-
-                                            }
-
-                                            // Check result is false
-                                            if(
-                                                result.length !== 2 ||
-                                                // Case checkbox
-                                                (
-                                                    inputType === "checkbox" &&
-                                                    UtilityBoolean.check(result[1]) == false
-                                                )
-                                                // ...
-                                            ){
-
-                                                // Disable input El
-                                                inputEl.disabled = true;
-
-                                                // Add value to attribute
-                                                inputEl.setAttribute("disabled", "depends")
-
-                                                // Unchecked check box
-                                                inputEl instanceof HTMLInputElement && inputType === "checkbox" && (inputEl.checked = false);
-
-                                            }else{
-
-                                                // Disable input El
                                                 inputEl.disabled = false;
-                                                
+
+                                                // Remove attribute
+                                                inputEl.removeAttribute("disabled");
+
                                             }
+
+                                            // Stop
+                                            return;
 
                                         }
 
+                                        // Check result is false
+                                        if(
+                                            result.length !== 2 ||
+                                            // Case checkbox
+                                            (
+                                                inputType === "checkbox" &&
+                                                UtilityBoolean.check(result[1]) == false
+                                            )
+                                            // ...
+                                        ){
+
+                                            // Disable input El
+                                            inputEl.disabled = true;
+
+                                            // Add value to attribute
+                                            inputEl.setAttribute("disabled", "depends")
+
+                                            // Unchecked check box
+                                            inputEl instanceof HTMLInputElement && inputType === "checkbox" && (inputEl.checked = false);
+
+                                        }else{
+
+                                            // Disable input El
+                                            inputEl.disabled = false;
+                                            
+                                        }
+
                                     }
-                                )
+
+                                }
+                            )
 
                         }
 
                     }
+
+                }
+
+            }
+
+        }else
+        // Check dependencies
+        if(dependencies.length > 1){
+
+            // Get type of input el
+            let inputType = inputEl.dataset.type
+                ? inputEl.dataset.type
+                : inputEl.type
+            ;
+
+            // Check inputType
+            if(inputType){
+
+                // Get dependencyCollections
+                let dependencyCollections:{
+                    el:HTMLInputElement|HTMLSelectElement,
+                    type:string,
+                    method:any
+                }[] = [];
+
+                // Iteration of dependencies
+                for(let dependency of dependencies){
+
+                    // Search el
+                    let dependencyEl:HTMLInputElement|HTMLSelectElement|null = !dependency
+                        ? null
+                        : this._formEl.querySelector(`input[name="${dependency}"], select[name="${dependency}"`)
+                    ;
+
+                    // Check dependency
+                    if(dependencyEl){
+
+                        // Get type of input el
+                        let dependencyType = dependencyEl.dataset.type
+                            ? dependencyEl.dataset.type
+                            : dependencyEl.type
+                        ;
+
+                        // Check if multiple
+                        if(dependencyEl.multiple){
+
+                            // Check if method to retrieve value is set
+                            if(dependencyType && typeof this[`${dependencyType}Retrieve`] === "function"){
+                        
+                                // Set result
+                                let retrieveMethold = this[`${dependencyType}Retrieve`];
+
+                                // Fill dependencyCollections
+                                dependencyCollections.push({
+                                    el: dependencyEl,
+                                    type: dependencyType,
+                                    method: retrieveMethold
+                                });
+
+                            }
+
+                        }else{
+
+                            // Check if method to retrieve value is set
+                            if(dependencyType && typeof this[`${dependencyType}RetrieveMultiple`] === "function"){
+                        
+                                // Set result
+                                let retrieveMethold = this[`${dependencyType}RetrieveMultiple`];
+
+                                // Fill dependencyCollections
+                                dependencyCollections.push({
+                                    el: dependencyEl,
+                                    type: dependencyType,
+                                    method: retrieveMethold
+                                });
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+                // Check dependencyCollections
+                if(dependencyCollections.length){
+
+                    // Prepare function
+                    let dependenciesCheckFunction = ():void => {
+
+                        // Set new state
+                        let newState = true; 
+
+                        // Check dependencyCollections
+                        if(dependencyCollections.length) for(let dependency of dependencyCollections){
+
+                            // Retrieve value
+                            let result = dependency.method(dependency.el);
+
+                            // Check value
+                            if(
+                                // Case checkbox
+                                (
+                                    dependency.type === "checkbox" &&
+                                    UtilityBoolean.check(result[1]) == false
+                                ) ||
+                                // Case select
+                                (
+                                    dependency.type === "select" &&
+                                    (result[0][1][0] ?? "") === ""
+                                )
+                            ){
+
+                                // Set new state
+                                newState = false;
+
+                                // Break
+                                break;
+
+                            }
+
+                        }
+
+                        // Check new state
+                        if(!newState){
+
+                            // Check disabled
+                            if(!inputEl.disabled || (inputEl.disabled && inputEl.getAttribute("disabled") && inputEl.getAttribute("disabled") != "")){
+
+                                // Disable input El
+                                inputEl.disabled = true;
+
+                                // Add value to attribute
+                                inputEl.setAttribute("disabled", "depends");
+
+                                // Set data
+                                inputEl.dataset.dependsDisabled = "true";
+
+                            }
+
+                            // Enable dependancy button
+                            this._dependancySuffixEnable(inputEl);
+
+                            // Unchecked check box
+                            inputEl instanceof HTMLInputElement && inputType === "checkbox" && (inputEl.checked = false);
+
+                            // Select
+                            if((inputEl instanceof HTMLInputElement || inputEl instanceof HTMLSelectElement) && inputType === "select" && "tomselect" in inputEl){
+
+                                // Clear value
+                                // @ts-ignore
+                                inputEl.tomselect.clear();
+
+                                // Disable tomselect
+                                // @ts-ignore
+                                inputEl.tomselect.disable()
+
+                            }
+
+                        }else{
+
+                            // Check disabled
+                            if(
+                                (inputEl.disabled && inputEl.hasAttribute("disabled") && inputEl.getAttribute("disabled") != "") ||
+                                (inputEl.disabled && inputEl.dataset.dependsDisabled == "true")
+                            ){
+
+                                // Disable input El
+                                inputEl.disabled = false;
+
+                                // Add value to attribute
+                                inputEl.removeAttribute("disabled");
+
+                                // Delete dataset
+                                delete inputEl.dataset.dependsDisabled;
+
+                            }
+
+                            // Enable dependancy button
+                            this._dependancySuffixDisable(inputEl);
+
+                            // Select
+                            if((inputEl instanceof HTMLInputElement || inputEl instanceof HTMLSelectElement) && inputType === "select" && "tomselect" in inputEl){
+
+                                // Check if not already disabled
+                                if(!inputEl.disabled || (inputEl.disabled && inputEl.getAttribute("disabled") == "depends")){
+
+                                    // Enable tom select
+                                    // @ts-ignore
+                                    inputEl.tomselect.enable();
+
+                                }
+
+                                // Check select remote
+                                if(inputEl.dataset.selectRemote){
+
+                                    // Destory tom select
+                                    // @ts-ignore
+                                    inputEl.tomselect.destroy();
+
+                                    // Setup
+                                    this._initSelectInput(inputEl);
+
+                                    // Attach event
+                                    // inputEl.dataset.depends && this._addDependencies(inputEl, inputEl.dataset.depends.includes(",") ? inputEl.dataset.depends.split(",") : inputEl.dataset.depends);
+                                    
+                                }
+
+                            }
+
+                        }
+
+
+                    }
+
+                    // Apply function to dependies 
+                    if(dependencyCollections) for(let dependency of dependencyCollections)
+
+                        // Apply
+                        dependency.el.addEventListener(
+                            "change",
+                            dependenciesCheckFunction
+                        );
+
+                    // Run first time
+                    dependenciesCheckFunction();
 
                 }
 
@@ -4280,6 +4608,114 @@ export default class Form {
 
         // Return el
         return spanEl;
+
+    }
+
+    /** Private methods | Dependancy Suffix
+     ******************************************************
+     */
+
+    /**
+     * Dependancy Suffix Enable
+     * 
+     * @param inputEl 
+     * @returns {void}
+     */
+    private _dependancySuffixEnable = (inputEl:HTMLSelectElement|HTMLInputElement):void => {
+
+        // Search parent input-field
+        let parentEl = inputEl.closest(".input-field");
+
+        // check parent el
+        let dependencySuffixEl = parentEl?.querySelector("#dependency");
+
+        // Check dependencySuffixEl
+        dependencySuffixEl && dependencySuffixEl.classList.remove("hide");
+
+    }
+
+    /**
+     * Dependancy Suffix Disable
+     * 
+     * @param inputEl 
+     * @returns {void}
+     */
+    private _dependancySuffixDisable = (inputEl:HTMLSelectElement|HTMLInputElement):void => {
+
+        // Search parent input-field
+        let parentEl = inputEl.closest(".input-field");
+
+        // check parent el
+        let dependencySuffixEl = parentEl?.querySelector("#dependency");
+
+        // Check dependencySuffixEl
+        dependencySuffixEl && dependencySuffixEl.classList.add("hide");
+
+    }
+
+    /**
+     * Process Query Params
+     * 
+     * @param query 
+     * @returns {Record<string,string>}
+     */
+    private _processQueryParams = (query:Record<string,string>, formEl:HTMLFormElement|null = null):Record<string,string> => {
+
+        // Iteration query
+        if(formEl) for(let key in query) if(typeof query[key] === "string" && query[key]){
+
+            // Search string between "{{" "}}"
+            const matches = [...query[key].matchAll(/\{\{(.*?)\}\}/g)];
+
+            // Check matched
+            if(matches.length) for(let item of matches){
+
+                // Let valueToFound 
+                let valueToFound = item[1];
+
+                // Let value to replace
+                let valueToReplace = item[0];
+
+                // Seatch in form
+                let itemEl = formEl.querySelector(`[name="${valueToFound}"]`);
+
+                // Set result
+                let result = "";
+
+                // Check item
+                if(itemEl instanceof HTMLSelectElement || itemEl instanceof HTMLInputElement){
+
+                    // Get type
+                    let type = itemEl.dataset.type 
+                        ? itemEl.dataset.type
+                        : itemEl.type
+                    ;
+
+                    // Prepare Retrieve method
+                    if(type && typeof this[`${type}Retrieve`] === "function"){
+
+                        // Retrieve value of the current target
+                        let resultForm:null|Array<any> = this[`${type}Retrieve`](itemEl);
+
+                        // Set result
+                        result = Array.isArray(resultForm) 
+                            ? resultForm[1]
+                            : ""
+                        ;
+
+                    }
+
+                }
+
+                // Set result
+                query[key] = query[key].replace(valueToReplace, result);
+
+            }
+
+        }
+
+        // Return result
+        return query;
 
     }
 

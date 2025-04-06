@@ -111,6 +111,7 @@
 
         {{!-- Select Input --}}
         {{else}}{{#is item.type "select"}}
+        <div id="dependency" class="suffix suffix-tomselect hide"><i class="material-icons">link_off</i></div>
         {{#if item.disabled}}<div class="suffix suffix-tomselect"><i class="material-icons">lock</i></div>{{else}}
         {{#if item._style.suffix}}<div class="suffix suffix-tomselect"><i class="{{item._style.suffix.class}}">{{item._style.suffix.text}}</i></div>{{/if}}{{/if}}
         {{#if item.label}}{{#if item.required}}<b>{{/if}}{{item.label}}{{#if item.required}}</b>*{{/if}}{{/if}}
@@ -233,6 +234,7 @@
         {{else}}{{#is item.type "switch"}}
         {{#if item.label}}{{#if item.required}}<b>{{/if}}{{item.label}}{{#if item.required}}</b>*{{/if}}{{/if}}
         <div class="switch{{#if item.label}}  mt-4{{/if}}"><label>
+            <div class="suffix hide"><i class="material-icons">link_off</i></div>
             {{#if item.disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{/if}}
             Off
             <input
@@ -289,6 +291,7 @@
         {{!-- Checkbox Input --}}
         {{else}}{{#is item.type "checkbox"}}
         <p><label>
+            <div class="suffix hide"><i class="material-icons">link_off</i></div>
             {{#if item.disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{/if}}
             <input 
                 id="{{../form.id}}_{{item.name}}" 

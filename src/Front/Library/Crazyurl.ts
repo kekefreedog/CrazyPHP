@@ -83,6 +83,7 @@ export default class Crazyurl {
      * Qet Query Parameters
      * 
      * Get all query parameters from the current URL.
+     * 
      * @returns {Record<string, string>} An object with key-value pairs representing query parameters.
      */
     public static getQueryParameters = (names?:string[]):Record<string, string> => {
@@ -328,6 +329,47 @@ export default class Crazyurl {
             );
         }
         return str.join("&");
+
+    }
+
+    /**
+     * Extract Query And Url
+     * 
+     * @param inputUrl 
+     * @returns 
+     */
+    public static extractQueryAndUrl = (inputUrl: string):{url:string; query:Record<string,string>} => {
+
+        // Set result
+        let result:{url:string; query:Record<string,string>} = {
+            url: "",
+            query: {}
+        };
+
+        // Get url
+        const url = new URL(inputUrl);
+
+        // Prepare query
+        const query: Record<string, string> = {};
+      
+        // Iteration params
+        url.searchParams && url.searchParams.forEach((value, key) => {
+
+            // Append to query
+            query[key] = value;
+
+        });
+      
+        // Reconstruct URL without query string
+        const baseUrl = `${url.origin}${url.pathname}`;
+      
+        // Set url
+        result.url = baseUrl;
+
+        // Set query
+        result.query = query;
+
+        return result;
 
     }
 

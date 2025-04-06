@@ -8,8 +8,6 @@
  * @copyright  2022-2024 Kévin Zarshenas
  */
 
-const objectHash = require("object-hash");
-
 /**
  * Join
  * 
@@ -31,22 +29,26 @@ const objectHash = require("object-hash");
  */
 module.exports = function(array, separator) {
 
+    // Set intern array
+    let internArray = [];
+
     // Check is string
     if (typeof array === 'string') 
         
         // Return string
-        return array;
+        internArray = [array];
     
     // Check is object
     if(typeof array == "object" && !Array.isArray(array))
 
         // Push to array
-        array = Object.values(array);
- 
-    // Check if array
-    if(!Array.isArray(array)) 
+        internArray = Object.values(array);
 
-        return '';
+    // Check if array
+    if(Array.isArray(array))
+
+        // Set intern array
+        internArray = array;
 
     // Check separator
     separator = typeof separator === "string" 
@@ -55,6 +57,6 @@ module.exports = function(array, separator) {
     ;
 
     // Return result
-    return array.join(separator);
+    return internArray.join(separator);
 
 };
