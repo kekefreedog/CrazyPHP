@@ -202,4 +202,58 @@ export default class Strings {
 
     }
 
+    /**
+     * Clean
+     * 
+     * Clean a string by replacing accents, punctuation, spaces, etc.
+     * Equivalent of the PHP version using preg_replace.
+     * 
+     * @param input The string to clean
+     * @returns A cleaned, lowercase version of the input
+     */
+    public static clean = (input: string = ''):string => {
+
+        // Set rules
+        const rules: [RegExp, string][] = [
+            [/[áàâãªä]/gu, 'a'],
+            [/[ÁÀÂÃÄ]/gu, 'a'],
+            [/[íìîï]/gu, 'i'],
+            [/[ÍÌÎÏ]/gu, 'i'],
+            [/[éèêë]/gu, 'e'],
+            [/[ÉÈÊË]/gu, 'e'],
+            [/[óòôõºö]/gu, 'o'],
+            [/[ÓÒÔÕÖ]/gu, 'o'],
+            [/[úùûü]/gu, 'u'],
+            [/[ÚÙÛÜ]/gu, 'u'],
+            [/ç/gu, 'c'],
+            [/Ç/gu, 'c'],
+            [/ñ/gu, 'n'],
+            [/Ñ/gu, 'n'],
+            [/\s+/g, '_'],
+            [/–/g, '-'],                    // UTF-8 hyphen to ASCII hyphen
+            [/[’‘‹›‚]/gu, ' '],             // Single quotes variations to space
+            [/[“”«»„]/gu, ' '],             // Double quotes variations to space
+            [/[']/gu, ''],                  // Apostrophes to nothing
+            [/["“”‘’„«»]/gu, ''],           // Quotes to nothing
+            [/[()]/g, ''],                  // Remove round brackets
+            [/(_-_)/g, '_'],                // Normalize special underscores
+        ];
+    
+        // Set result
+        let result = input;
+    
+        // Iteration utiles
+        for (const [pattern, replacement] of rules) {
+
+            // Replace result
+            result = result.replace(pattern, replacement);
+
+        }
+    
+        // Return result
+        return result.toLowerCase();
+        
+    }
+  
+
 }
