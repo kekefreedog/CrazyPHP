@@ -3894,6 +3894,7 @@ export default class Form {
 
                                 // Check value results
                                 if(
+                                    value &&
                                     "results" in value && 
                                     Array.isArray(value.results) && 
                                     value.results.length
@@ -4192,7 +4193,7 @@ export default class Form {
         dependencies = <string[]>[...new Set(dependencies)];
 
         // Check dependency
-        if(dependencies.length == 1){
+        /* if(dependencies.length == 1){
 
             // Get type of input el
             let inputType = inputEl.dataset.type
@@ -4313,9 +4314,9 @@ export default class Form {
 
             }
 
-        }else
+        }else */
         // Check dependencies
-        if(dependencies.length > 1){
+        if(dependencies.length > 0){
 
             // Get type of input el
             let inputType = inputEl.dataset.type
@@ -4407,12 +4408,16 @@ export default class Form {
                             // Retrieve value
                             let result = dependency.method(dependency.el);
 
+                            /**
+                             * Multiple case
+                             */
+
                             // Check value
                             if(
                                 // Case checkbox
                                 (
                                     dependency.type === "checkbox" &&
-                                    UtilityBoolean.check(result[1]) == false
+                                    UtilityBoolean.check(result[0][1]) == false
                                 ) ||
                                 // Case select
                                 (

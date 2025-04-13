@@ -254,6 +254,48 @@ export default class Strings {
         return result.toLowerCase();
         
     }
+
+    /**
+     * Increment Character
+     * 
+     * @param input 
+     * @returns {string}
+     */
+    public static incrementCharacter = (input:string) => {
+
+        // Return next character
+        let result = String.fromCharCode(input.charCodeAt(0) + 1);
+
+    }
+
+    /**
+     * Increment Character (multi dimension)
+     * 
+     * Increment Character String (like Excel columns: A, B, ..., Z, AA, AB, ...)
+     *
+     * @param input
+     * @returns {string}
+     */
+    public static incrementCharacterMd = (input: string): string => {
+        const A_CODE = 'A'.charCodeAt(0);
+        const Z_CODE = 'Z'.charCodeAt(0);
+
+        let chars = input.toUpperCase().split('').map(char => char.charCodeAt(0) - A_CODE);
+        
+        for (let i = chars.length - 1; i >= 0; i--) {
+            if (chars[i] < 25) {
+                chars[i]++;
+                for (let j = i + 1; j < chars.length; j++) {
+                    chars[j] = 0;
+                }
+                return chars.map(n => String.fromCharCode(A_CODE + n)).join('');
+            }
+        }
+
+        // If all characters are 'Z', prepend 'A' and set rest to 'A'
+        return 'A'.repeat(chars.length + 1);
+    };
+
   
 
 }

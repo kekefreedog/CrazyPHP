@@ -11,7 +11,7 @@
 /**
  * Dependances
  */
-import { formOnChangeOptions, formOnChangeResult } from "crazyphp/src/Front/Library/Utility/Form";
+import { formOnChangeOptions, formOnChangeResult, formOnResetResult, formOnSubmitResult } from "crazyphp/src/Front/Library/Utility/Form";
 const html = require("./../../../assets/Hbs/partials/form.hbs");
 import { Crazypartial, Form as UtilityForm} from "crazyphp";
 
@@ -59,6 +59,36 @@ export default class Form extends Crazypartial {
      */
 
     /**
+     * Get Form Data
+     */
+    public getFormData = () => {
+
+        console.log("dev");
+        console.log(this._form);
+
+    }
+
+    /**
+     * On Submit
+     */
+    public onSubmit = (callable:(result:formOnSubmitResult)=>void) => {
+
+        // Set on submit
+        this._form.setOnSubmit(callable);
+
+    }
+
+    /**
+     * On Reset
+     */
+    public onReset = (callable:(result:formOnResetResult)=>void) => {
+
+        // Set on submit
+        this._form.setOnReset(callable);
+
+    }
+
+    /**
      * On Change
      * 
      * @param callable
@@ -69,20 +99,6 @@ export default class Form extends Crazypartial {
 
         // Set on change on form instance
         this._form.setOnChange(callable, options);
-
-    }
-    
-    /** Private methods
-     ******************************************************
-     */
-
-    /**
-     * Get Form Data
-     */
-    public getFormData = () => {
-
-        console.log("dev");
-        console.log(this._form);
 
     }
 

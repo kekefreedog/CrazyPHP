@@ -61,7 +61,7 @@ class Json{
      * @param mixed $string
      * @return bool
      */
-    public static function check(string $string = ""):bool {
+    public static function check(mixed $string = ""):bool {
         
         # Check if is string
         if(!is_string($string))

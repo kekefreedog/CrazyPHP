@@ -131,6 +131,7 @@
             {{#if item.select.url}}data-select-remote="{{JSONstringify item.select}}"{{/if}}
             {{#if item.valuePrefix}}data-form-value-prefix="{{item.valuePrefix}}"{{/if}}
             {{#if item.valueSuffix}}data-form-value-suffix="{{item.valueSuffix}}"{{/if}}
+            {{#if item.depends}}data-depends="{{#isArray item.depends}}{{join item.depends ","}}{{else}}{{item.depends}}{{/isArray}}" default="true"{{/if}}
         {{#if item._style.select.tag}}/>{{else}}>{{#if item.select}}{{#if item.select.url}}{{else}}
             {{!-- Iteration options --}}
             {{#each item.select as |option|}}<option
@@ -234,7 +235,7 @@
         {{else}}{{#is item.type "switch"}}
         {{#if item.label}}{{#if item.required}}<b>{{/if}}{{item.label}}{{#if item.required}}</b>*{{/if}}{{/if}}
         <div class="switch{{#if item.label}}  mt-4{{/if}}"><label>
-            <div class="suffix hide"><i class="material-icons">link_off</i></div>
+            <div id="dependency" class="suffix hide"><i class="material-icons">link_off</i></div>
             {{#if item.disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{/if}}
             Off
             <input
@@ -291,7 +292,7 @@
         {{!-- Checkbox Input --}}
         {{else}}{{#is item.type "checkbox"}}
         <p><label>
-            <div class="suffix hide"><i class="material-icons">link_off</i></div>
+            <div id="dependency" class="suffix hide"><i class="material-icons">link_off</i></div>
             {{#if item.disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{/if}}
             <input 
                 id="{{../form.id}}_{{item.name}}" 

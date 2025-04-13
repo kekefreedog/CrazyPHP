@@ -1359,13 +1359,16 @@ class Helpers {
     public static function isArray($input, $option) {
 
         # Set result
-        $result = array_is_list($input)
-            ? $option['fn']()
-            : $option['inverse']()
+        $result = is_array($input) 
+            ? array_is_list($input) 
+            : false
         ;
 
-        # Return result
-        return $result;
+        # Set result
+        return $result 
+            ? $option['fn']($input)
+            : $option['inverse']()
+        ;
 
     }
 
