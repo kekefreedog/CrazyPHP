@@ -31,10 +31,10 @@ import Crazyrequest from '../Crazyrequest';
 import fr_FR from 'filepond/locale/fr-fr';
 import * as FilePond from 'filepond';
 import Pickr from '@simonwep/pickr';
+import Crazyurl from '../Crazyurl';
 import TomSelect from 'tom-select';
 import Objects from './Objects';
 import Root from '../Dom/Root';
-import Crazyurl from '../Crazyurl';
 
 
 /**

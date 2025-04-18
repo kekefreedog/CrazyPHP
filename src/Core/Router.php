@@ -481,6 +481,22 @@ class Router extends VendorRouter {
                     ->send()
                 ;
 
+            }else
+            # Check is json
+            if($accept == "application/json"){
+
+                # Set response
+                (new ApiResponse())
+                    ->pushContent("_events", [
+                        # Redirect
+                        [
+                            "type"      =>  "redirect",
+                            "name"      =>  $routerName,
+                            "arguments" =>  $arguments
+                        ]
+                    ])
+                    ->send();
+
             }
 
             # Exit
