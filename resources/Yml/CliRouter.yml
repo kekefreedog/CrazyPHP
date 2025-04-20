@@ -26,10 +26,14 @@ CrazyCommand:
       router:
         class: \CrazyPHP\Model\Router\Create
         parameter: "router"
-      # Router
+      # Router Type
       routerType:
-        class: \|CrazyPHP\Model\RouterType\Create
+        class: \CrazyPHP\Model\RouterType\Create
         parameter: "router"
+      # Partial
+      partial:
+        class: \CrazyPHP\Model\Partial\Create
+        parameter: "partial"
   # Command delete
   delete:
     # Command

@@ -39,9 +39,11 @@ class Handlebars {
      */
     private $options = [
         # Template available "crazy_preset" or "performance_preset"
-        'template'  =>  self::CRAZY_PRESET,
+        'template'      =>  self::CRAZY_PRESET,
         # Enable helpers stored in "CrazyPHP\Library\Template\Handlebars\Helpers"
-        'helpers'   =>  true,
+        'helpers'       =>  true,
+        # Delimiters
+        'delimiters'    =>  ["{{", "}}"]
         # 'useCache'  =>  true, // Not working
         /**
          * If you don't want use cache, please set this env before to avoid mongo error
@@ -220,7 +222,9 @@ class Handlebars {
             $file = File::read($inputs);
 
             # Compile
-            $compile = $this->compile($file, $template);
+            $compile = $this->compile($file, [
+                "delimiters"    =>  $this->options["delimiters"] ?? ['{{', '}}']
+            ] + $template);
 
             # Set Cache
             $cache->set($this->key, $compile);

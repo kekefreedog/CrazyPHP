@@ -1,0 +1,74 @@
+/**
+ * Partials
+ *
+ * Front TS Scrips for partials components
+ *
+ * @package    kzarshenas/crazyphp
+ * @author     kekefreedog <kevin.zarshenas@gmail.com>
+ * @copyright  2022-2025 Kévin Zarshenas
+ */
+
+/**
+ * Dependances
+ */
+const html = require("./../../../assets/Hbs/partials/{{file}}.hbs");
+import { Crazypartial } from "crazyphp";
+
+/**
+ * {{Name}}
+ *
+ * Script of the partial {{Name}}
+ *
+ * @package    kzarshenas/crazyphp
+ * @author     kekefreedog <kevin.zarshenas@gmail.com>
+ * @copyright  2022-2023 Kévin Zarshenas
+ */
+export default class {{Name}} extends Crazypartial {
+    
+    /** Public parameters
+     ******************************************************
+     */
+    
+    /** 
+     * @param html:string 
+     * Duplicate of the class name because build change name of class
+     */
+    public html = html;
+
+    /** @par partialEl */
+    private _partialEl:HTMLDivElement;
+
+    /**
+     * Constructor
+     */
+    public constructor(input:RegisterPartialScanned){
+
+        // Parent constructor
+        super(input);
+
+        console.log("{{Name}}");
+
+        // Run on ready
+        this.onReady();
+    
+    }
+    
+    /** Public methods
+     ******************************************************
+     */
+
+    /**
+     * On Ready
+     */
+    public onReady = () => {
+
+        // Set partialel
+        this._partialEl = this.input.target as HTMLDivElement;
+
+    }
+    
+    /** ... methods
+     ******************************************************
+     */
+
+}
