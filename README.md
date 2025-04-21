@@ -56,6 +56,20 @@ Delete router type
 php vendor/kzarshenas/crazyphp/bin/CrazyCommand delete routerType
 ```
 
+## Partial
+
+New partial
+
+```sh
+php vendor/kzarshenas/crazyphp/bin/CrazyCommand new partial
+```
+
+Delete partials
+
+```sh
+php vendor/kzarshenas/crazyphp/bin/CrazyCommand delete partial
+```
+
 ## Extension
 
 New router type

@@ -26,6 +26,7 @@ use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Library\File\Json;
+use CrazyPHP\Library\File\Partial;
 use CrazyPHP\Model\Env;
 
 /**
@@ -314,12 +315,12 @@ class Create extends CrazyModel implements CrazyCommand {
      * 
      * @return void
      */
-    public function runScriptIntoIndex(): void {
+    public function runScriptIntoIndex():void {
 
         if (!File::exists(static::FRONT_TS_FILE)) return;
     
         # Get content
-        $contents = File::read("@app_root/app/Front/index.ts");
+        $contents = File::read(static::FRONT_TS_FILE);
     
         # Set nmae
         $name = $this->partial["Name"];
@@ -360,7 +361,7 @@ class Create extends CrazyModel implements CrazyCommand {
             usort($imports, fn($a, $b) => strlen($b) <=> strlen($a));
 
             # Reconstruct import block
-            $newImportBlock = $sectionHeader . "\n" . implode("\n", $imports) . "\n";
+            $newImportBlock = $sectionHeader . "\n" . implode("\n", $imports);
 
             # Replace old section with new one
             $contents = preg_replace($pattern, $newImportBlock, $contents);
@@ -411,7 +412,7 @@ class Create extends CrazyModel implements CrazyCommand {
     
         # Save updated content
         file_put_contents(File::path(static::FRONT_TS_FILE), $contents);
-        
+
     }
     
 
@@ -424,23 +425,94 @@ class Create extends CrazyModel implements CrazyCommand {
      */
     public function runStyleIntoIndex():void {
 
-        /* # Change key case
-        $router = Arrays::changeKeyCaseRecursively($this->router);
+        if(!File::exists(static::FRONT_SCSS_FILE)) return;
+    
+        # Get content
+        $contents = File::read(static::FRONT_SCSS_FILE);
+    
+        # Set nmae
+        $file = $this->file;
+    
+        # Explode content to lines
+        $lines = explode("\n", $contents);
+    
+        # Set partial start
+        $partialStart = null;
 
-        # Set type
-        $type = $router["type"];
+        # Partial end
+        $partialEnd = null;
+    
+        # Locate partial block
+        foreach ($lines as $i => $line){
 
-        # Remove type from router
-        unset($router["type"]);
+            # Checck commment is right one
+            if(preg_match('/^\s*\/\/\s*Partials\s*$/', $line)){
 
-        # Get router collection count
-        $routers = FileConfig::getValue("Router.".$type);
+                # Set partial start
+                $partialStart = $i + 1;
 
-        # Count routers
-        $routersKey = count($routers ?: []);
+            }else
+            # Set partial end
+            if($partialStart !== null && preg_match('/^\s*\/\/.*$/', $line)){
 
-        # Set value in config
-        FileConfig::setValue("Router.$type.$routersKey", $router); */
+                # Set partial end
+                $partialEnd = $i;
+
+                # Stop iteration
+                break;
+
+            }
+
+        }
+    
+        # Check partial start
+        if($partialStart !== null) {
+    
+            # If no end found, take to EOF
+            if($partialEnd === null) $partialEnd = count($lines);
+        
+            # Slice partial lines
+            $partialLines = array_slice($lines, $partialStart, $partialEnd - $partialStart);
+        
+            # Set partial imports
+            $partialImports = [];
+
+            # Iteration lines
+            foreach ($partialLines as $line) {
+
+                # Extract only @import './partial/…' lines
+                if (preg_match("/@import\s+['\"]\.\/partial\/(.+?)['\"]\s*;/", $line, $match)) {
+
+                    # Trim result
+                    $partialImports[] = trim($line);
+
+                }
+
+            }
+        
+            # Add new line if not already there
+            $newLine = "@import './partial/$file';";
+
+            # Check partial import in array
+            if(!in_array($newLine, $partialImports)) $partialImports[] = $newLine;
+        
+            # Sort by descending length
+            usort($partialImports, function ($a, $b) {
+                return strlen($b) - strlen($a);
+            });
+        
+            # Reconstruct lines
+            $newLines = array_merge(
+                array_slice($lines, 0, $partialStart),
+                $partialImports,
+                [""],
+                array_slice($lines, $partialEnd)
+            );
+        
+            # Write back
+            file_put_contents(File::path(static::FRONT_SCSS_FILE), implode("\n", $newLines));
+
+        }
 
     }
 
@@ -449,15 +521,18 @@ class Create extends CrazyModel implements CrazyCommand {
      */
 
     /** @var string PARTIAL_SCRIPT_DIR */
-    public const PARTIAL_SCRIPT_DIR = "@app_root/app/Environment/Partials/";
+    public const PARTIAL_SCRIPT_DIR = Partial::PARTIAL_SCRIPT_DIR;
 
     /** @var string PARTIAL_STYLE_DIR */
-    public const PARTIAL_STYLE_DIR = "@app_root/app/Front/style/scss/partial/";
+    public const PARTIAL_STYLE_DIR = Partial::PARTIAL_STYLE_DIR;
 
     /** @var string PARTIAL_TEMPLATE_DIR */
-    public const PARTIAL_TEMPLATE_DIR = "@app_root/assets/Hbs/partials/";
+    public const PARTIAL_TEMPLATE_DIR = Partial::PARTIAL_TEMPLATE_DIR;
 
     /** @var string FRONT_TS_FILE */
-    public const FRONT_TS_FILE = "@app_root/app/Front/index.ts";
+    public const FRONT_TS_FILE = Partial::FRONT_TS_FILE;
+
+    /** @var string FRONT_SCSS_FILE */
+    public const FRONT_SCSS_FILE = Partial::FRONT_SCSS_FILE;
 
 }

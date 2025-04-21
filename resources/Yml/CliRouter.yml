@@ -53,6 +53,10 @@ CrazyCommand:
       routerType:
         class: \CrazyPHP\Model\RouterType\Delete
         parameter: "router"
+      # Partial
+      partial:
+        class: \CrazyPHP\Model\Partial\Delete
+        parameter: "partial"
       # Trash
       trash:
         class: \CrazyPHP\Model\Trash\Delete
