@@ -68,6 +68,28 @@ export default class Crazylanguage {
                     // Set short
                     shortLanguage = tempShort;
 
+            }else
+            // Get languages
+            if(window.navigator.languages.length === 1){
+
+                // Get tempShort
+                let tempLong = window.navigator.languages.at(0);
+
+                // Get temp short
+                let tempShort = window.navigator.languages.at(0)?.split("-").at(0);
+
+                // Check temp long
+                if(typeof tempLong === "string" && tempLong)
+
+                    // Set long
+                    longLanguage = tempLong;
+
+                // Check temp short
+                if(typeof tempShort === "string" && tempShort)
+
+                    // Set short
+                    shortLanguage = tempShort;
+
             }
 
         }else
