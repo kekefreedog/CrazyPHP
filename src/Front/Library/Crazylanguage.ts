@@ -38,57 +38,50 @@ export default class Crazylanguage {
         let result:string = shortResponse ? "en" : "en-US";
 
         // Declare variables
-        let shortLanguage:string = "";
-        let longLanguage:string = "";
+        let shortLanguage:string = "en";
+        let longLanguage:string = "en-US";
 
         // Get current navigator
         let currentNavigator:string = Crazynavigator.get();
 
         // Check current Navigator
         if(["firefox"].includes(currentNavigator)){
+            
+            // Short already set
+            let shortÀlreadySet = false;
 
-            // Get languages
-            if(window.navigator.languages.length === 2){
+            // Check window.navigator.languages
+            if(window.navigator.languages.length){
 
-                // Get tempShort
-                let tempLong = window.navigator.languages.at(0);
+                // Iteration languages
+                for(let language of window.navigator.languages){
 
-                // Get temp short
-                let tempShort = window.navigator.languages.at(1);
+                    // Check if language has "-"
+                    if(language.includes("-")){
 
-                // Check temp long
-                if(typeof tempLong === "string" && tempLong)
+                        // Set long
+                        longLanguage = language;
 
-                    // Set long
-                    longLanguage = tempLong;
+                        // Set short
+                        if(!shortÀlreadySet) shortLanguage = language.split("-")?.at(0) 
+                            ? language.split("-").at(0) as string 
+                            : shortLanguage
+                        ;
 
-                // Check temp short
-                if(typeof tempShort === "string" && tempShort)
+                        // Break
+                        break;
 
-                    // Set short
-                    shortLanguage = tempShort;
+                    }else{
 
-            }else
-            // Get languages
-            if(window.navigator.languages.length === 1){
+                        // Set short
+                        shortLanguage = language;
 
-                // Get tempShort
-                let tempLong = window.navigator.languages.at(0);
+                        // Set short
+                        shortÀlreadySet = true;
 
-                // Get temp short
-                let tempShort = window.navigator.languages.at(0)?.split("-").at(0);
+                    }
 
-                // Check temp long
-                if(typeof tempLong === "string" && tempLong)
-
-                    // Set long
-                    longLanguage = tempLong;
-
-                // Check temp short
-                if(typeof tempShort === "string" && tempShort)
-
-                    // Set short
-                    shortLanguage = tempShort;
+                }
 
             }
 
