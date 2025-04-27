@@ -226,7 +226,7 @@ export default class DateTime {
      * @param format - Optional format for the returned date. Default is 'YYYY-MM-DD'.
      * @returns {string} The first date of the specified week in the given format.
      */
-    public static getFirstDateOfWeek = (weekOffset: number, format: string = 'YYYY-MM-DD'):string => {
+    public static getFirstDateOfWeek = (weekOffset: number, format:'YYYY-MM-DD'|'YYYYMMDD'|'MM/DD/YY'|'DD/MM/YYYY' = 'YYYY-MM-DD'):string => {
 
         // Get current date
         const today = new Date();
@@ -340,10 +340,20 @@ export default class DateTime {
      * Format a Date object into a string based on the given format.
      * 
      * @param date - The Date object to format.
-     * @param format - The format string.
+     * @param format - The format string :
+     * - YYYY-MM-DD
+     * - YYYYMMDD
+     * - MM/DD/YY
+     * - DD/MM/YYYY
      * @returns {string} The formatted date string.
      */
-    public static formatDate = (date: Date, format: string):string => {
+    public static formatDate = (date:Date|string, format:'YYYY-MM-DD'|'YYYYMMDD'|'MM/DD/YY'|'DD/MM/YYYY'):string => {
+
+        // Check date
+        if(typeof date === "string")
+
+            // Set date
+            date = new Date(date);
 
         // Get full year
         const year = date.getFullYear();
@@ -358,6 +368,8 @@ export default class DateTime {
         switch (format) {
             case 'YYYY-MM-DD':
                 return `${year}-${month}-${day}`;
+            case 'YYYYMMDD':
+                return `${year}${month}${day}`;
             case 'MM/DD/YY':
                 return `${month}/${day}/${year.toString().slice(-2)}`;
             case 'DD/MM/YYYY':

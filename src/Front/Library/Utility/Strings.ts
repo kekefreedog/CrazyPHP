@@ -296,6 +296,42 @@ export default class Strings {
         return 'A'.repeat(chars.length + 1);
     };
 
-  
+    /**
+     * Trim
+     * 
+     * @param str 
+     * @param stringToRemove 
+     * @returns {string}
+     */
+    public static trim = (str:string, stringToRemove:string = ""):string => {
+
+        // Set result
+        let result:string = str;
+
+        // Check string to remove
+        if(stringToRemove){
+
+            // Set excaped
+            const escaped = stringToRemove.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // Escape special regex characters
+
+            // Set regex
+            const regex = new RegExp(`^(${escaped})+|(${escaped})+$`, 'g');
+
+            // Replace regex
+            result = result.replace(regex, '');
+
+        }else
+        // Remove space
+        {
+
+            // Trim result
+            result = result.trim();
+
+        }
+
+        // Return result
+        return result;
+
+    }
 
 }
