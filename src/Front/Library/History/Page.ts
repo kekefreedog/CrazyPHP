@@ -11,8 +11,9 @@
 /**
  * Dependances
  */
-import Arrays from '../Utility/Arrays';
 import {default as PageError} from './../Error/Page';
+import PageLoader from '../Loader/Page';
+import Arrays from '../Utility/Arrays';
 
 /**
  * Crazy Page History
@@ -193,10 +194,19 @@ export default class Page {
         let search = Arrays.filterByKey(this._collection, "href", newHref);
 
         // Check search
-        /* if(search.length){
+        if(search.length){
+
+            // Get loader option
+            let loaderOption = search[0].loader as LoaderPageOptions;
+
+            // Iteration status
+            if(loaderOption && loaderOption.status) for(let statusItem in loaderOption.status) if(loaderOption.status[statusItem] !== false)
+
+                // Reset status
+                loaderOption.status[statusItem] = false;
 
             // Load
-
+            new PageLoader(loaderOption);
 
             // Stop function
             return;
@@ -211,7 +221,7 @@ export default class Page {
 
 
 
-        } */
+        }
 
     }
 
