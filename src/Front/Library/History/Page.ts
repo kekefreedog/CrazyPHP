@@ -220,7 +220,6 @@ export default class Page {
         if(searchBack.length){
 
 
-
         }
 
     }
