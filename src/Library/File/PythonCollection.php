@@ -202,5 +202,12 @@ class PythonCollection {
         return null;
 
     }
+    
+    /** Public constants
+     ******************************************************
+     */
+
+    /* Path */
+    public const FILE_EXT = "py";
 
 }

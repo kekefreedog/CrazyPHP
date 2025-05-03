@@ -453,5 +453,12 @@ class Yaml{
 
     }
     
+    /** Public constants
+     ******************************************************
+     */
+
+    /* Path */
+    public const FILE_EXT = "yml";
+    
 
 }

@@ -1098,47 +1098,52 @@ class File {
      */
     public const EXTENSION_TO_MIMETYPE = [
         # Html
-        "htm"   =>  "text/html",
-        "html"  =>  "text/html",
+        "htm"       =>  "text/html",
+        "html"      =>  "text/html",
         # Yml
-        "yml"   =>  "text/yaml",
-        "yaml"  =>  "text/yaml",
+        "yml"       =>  "text/yaml",
+        "yaml"      =>  "text/yaml",
         # Json
-        "json"  =>  "application/json",
+        "json"      =>  "application/json",
         # Php
-        "php"   =>  "text/php",
+        "php"       =>  "text/php",
         # Csv
-        "csv"   =>  "text/csv",
+        "csv"       =>  "text/csv",
         # Xlsx
-        "xlsx"  =>  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "xlsx"      =>  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         # Pdf
-        "pdf"   =>  "application/pdf",
+        "pdf"       =>  "application/pdf",
         # Zip
-        "zip"   =>  "application/zip",
+        "zip"       =>  "application/zip",
         # Js
-        "js"    =>  "application/javascript",
+        "js"        =>  "application/javascript",
         ## Media
         # Jpg
-        "jpg"   =>  "image/jpeg",
+        "jpg"       =>  "image/jpeg",
         # Jpeg
-        "jpeg"  =>  "image/jpeg",
+        "jpeg"      =>  "image/jpeg",
         # Png
-        "png"   =>  "image/png",
+        "png"       =>  "image/png",
         # WebP
-        "webp"  =>  "image/webp",
+        "webp"      =>  "image/webp",
         # Env
-        "env"   =>  "text/plain",
+        "env"       =>  "text/plain",
         # Sse
-        "sse"   =>  "text/event-stream",
+        "sse"       =>  "text/event-stream",
+        # Message pack
+        "msgpack"   =>  "application/msgpack",
         # TBC ...
     ];
 
     /* @var array MIMTYPE_TO_CLASS */
     public const MIMTYPE_TO_CLASS = [
         # Yaml
-        "text/yaml"         =>  "CrazyPHP\\Library\\File\\Yaml",
+        "text/yaml"             =>  "CrazyPHP\\Library\\File\\Yaml",
         # Json
-        "application/json"  =>  "CrazyPHP\\Library\\File\\Json",
+        "application/json"      =>  "CrazyPHP\\Library\\File\\Json",
+        # Message Pack
+        "application/msgpack"   =>  "CrazyPHP\\Library\\File\\MessagePack",
+        # TBC ...
     ];
 
 }

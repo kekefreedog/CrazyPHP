@@ -18,17 +18,21 @@ namespace CrazyPHP\Library\File;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\File\File;
+use MessagePack\BufferUnpacker;
+use MessagePack\Packer;
+use Throwable;
+use Closure;
 
 /**
- * Json
+ * MessagePack
  *
- * Methods for interacting with Json files
+ * Methods for interacting with MessagePack files
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2024 Kévin Zarshenas
  */
-class Json{
+class MessagePack {
 
     /** Public Static Methods
      ******************************************************
@@ -41,37 +45,86 @@ class Json{
      */
     public static function isConvertible($input):bool {
 
-        # Declare Reponse
-        $reponse = true;
+        # Check not is resource  or Closure
+        if (is_resource($input) || $input instanceof Closure)
 
-        # Check if is string
-        if(is_string($input) || is_numeric($input))
+            # Return false
+            return false;
+    
+        # Check is array
+        if(is_array($input) || is_object($input))
 
-            # Set reponse
-            $reponse = false;
-        
-        # Retorune reponse
-        return $reponse;
+            # Iteration input
+            foreach ((array) $input as $item)
+
+                # Check is convertible
+                if (!static::isConvertible($item))
+
+                    # Retrun false
+                    return false;
+    
+        # Return true
+        return true;
 
     }
 
     /** 
-     * Check if input is json
+     * Check if input is message pack
      * 
      * @param mixed $string
      * @return bool
      */
     public static function check(mixed $string = ""):bool {
         
-        # Check if is string
-        if(!is_string($string))
-            return false;
+        # If PECL extension is available
+        if(function_exists('msgpack_unpack')) {
 
-        # Decode string
-        json_decode($string);
+            # Try
+            try {
 
-        # Return error or not
-		return (json_last_error() == JSON_ERROR_NONE);
+                # Unpack
+                msgpack_unpack($string);
+
+                # Return true
+                return true;
+
+            # Catch error
+            } catch (Throwable $e) {
+
+                # Return false
+                return false;
+
+            }
+        }else
+        // If using rybakit/msgpack
+        if(class_exists(BufferUnpacker::class)) {
+
+            # Try
+            try {
+
+                # New unpacker
+                $unpacker = new BufferUnpacker();
+                
+                # New reset
+                $unpacker->reset($string);
+
+                # Try to decode
+                $unpacker->unpack(); 
+
+                # Return true
+                return true;
+
+            # Catch error
+            } catch (Throwable $e) {
+
+                # Return false
+                return false;
+
+            }
+        }
+
+        # throw new \RuntimeException('No MessagePack unpacker available.');
+        return false;
 
 	}
 
@@ -85,7 +138,7 @@ class Json{
      * @param string $header Custom header file
      * @return array|null
      */
-    public static function create(string $path = "", array $data = [], string $header = ""):array|null {
+    public static function create(string $path = "", array $data = []):array|null {
         
         # Check path
         if(empty($path))
@@ -96,28 +149,36 @@ class Json{
         # Check path
         $path = File::path($path);
         
-        # Create json
-        if(
-            file_put_contents(
-                $path, 
-                $header.json_encode(
-                    $data, 
-                    JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES
-                )
-            ) === false
-        )
+        # Encode the data
+        try {
 
-            # New Exception
-            throw new CrazyException(
-                "Json file \"".array_pop(explode("/", $path))."\" can't be created...",
-                403,
-                [
-                    "custom_code"   =>  "json-002",
-                ]
-            );
+            # Get binary
+            $binary = self::encode($data);
 
-        # Return data
-        return $data;
+        # Catch error
+        } catch (Throwable $e) {
+
+            # Return null
+            return null;
+
+        }
+
+        # Attempt to write the binary data to the file
+        $created = File::create($path, $binary);
+
+        # Check created
+        if(!$created)
+
+            # Return null
+            return null;
+
+        # Return result
+        return [
+            'path'      =>  $path,
+            'size'      =>  filesize($path),
+            'data'      =>  $data,
+            'encoded'   =>  true,
+        ];
 
 	}
 
@@ -130,49 +191,27 @@ class Json{
      * @param bool $arrayFormat decode as array (else as object)
      * @return array
      */
-    public static function open(string $filename = "", bool $arrayFormat = true):array|null{
+    public static function open(string $path = "", bool $arrayFormat = true):array|null{
 
         # Set result
         $result = null;
 
-        # Check filename
-        if(!$filename)
+        # Set path
+        $path = File::path($path);
 
-            # Return result
-            return $result;
+        # Check path
+        if(File::exists($path)){
 
-        # Check tokken in filename
-        $filename = File::path($filename);
-        
-        # Check if file exist
-        if(!file_exists($filename))
+            # Get binary
+            $binary = File::read($path);
 
-            # New Exception
-            throw new CrazyException(
-                "Json \"$filename\" doesn't exists...",
-                500,
-                [
-                    "custom_code"   =>  "json-001",
-                ]
-            );
+            # Check binary
+            if ($binary !== false)
 
-        # Get content of file
-        $content = file_get_contents($filename);
+                # Decode binary
+                $result = self::decode($binary);
 
-        # Check if content is json
-        if(!Json::check($content))
-
-            # New Exception
-            throw new CrazyException(
-                "Content of  \"$filename\" isn't json...",
-                500,
-                [
-                    "custom_code"   =>  "json-001",
-                ]
-            );
-
-        # Decode content
-        $result = json_decode($content, $arrayFormat);
+        }
 
         # Return result
         return $result;
@@ -246,10 +285,7 @@ class Json{
         if($old_value !== $result)
 
             # Put new json content in file
-            file_put_contents(
-                $path, 
-                json_encode($result, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES)
-            );
+            self::create($path, $result);
 
         # Return result
         return (array) $result;
@@ -279,7 +315,7 @@ class Json{
         if($old_value !== $result)
 
             # Put new json content in file
-            file_put_contents($path, json_encode(json_encode($result, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES)));
+            self::create($path, $result);
 
         # Return result
         return $result;
@@ -323,7 +359,7 @@ class Json{
         if($old_value !== $result)
 
             # Put new json content in file
-            file_put_contents($path, json_encode(json_encode($result, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES)));
+            self::create($path, $result);
 
         # Return result
         return $result;
@@ -351,25 +387,32 @@ class Json{
     /**
      * Encode
      * 
-     * Encode data to json
+     * Encode data to message pack
      * 
-     * @param string|bool|null|array $input Input to encode in Json
-     * @param bool $prettyPrint Give a pretty print result
+     * @param mixed $input Input to encode in Json
      * @return string
      */
-    public static function encode(string|bool|null|array $input = "", bool $prettyPrint = false):string {
+    public static function encode(mixed $input = ""):string {
 
         # Set result
-        $result = [];
+        $result = "";
 
-        # Check input
-        if(!is_array($input))
+        # Check msgpack_pack
+        if(function_exists('msgpack_pack')) {
 
-            # Set result
-            $input = [$input];
+            # Pack
+            $result = msgpack_pack($input);
 
-        # Encode result
-        $result = $prettyPrint ? json_encode($input, JSON_PRETTY_PRINT) : json_encode($input);
+        }else
+        # Check packer
+        if(class_exists(Packer::class)) {
+
+            # New pack
+            $packer = new Packer();
+
+            # Pack input
+            return $packer->pack($input);
+        }
 
         # Return result
         return $result;
@@ -385,39 +428,30 @@ class Json{
      * @param bool $decodeAsObject Decode as object, else as array
      * @return mixed
      */
-    public static function decode(string $jsonString, bool $decodeAsObject = false):mixed {
+    public static function decode(string $input, bool $decodeAsObject = false):mixed {
 
         # Set result
         $result = "";
 
-        # Check string
-        if(Json::check($jsonString))
+        # Check msgpack_pack
+        if(function_exists('msgpack_unpack')){
 
-            # Decode result
-            $result = json_decode($jsonString, ($decodeAsObject ? null : true));
+            # Set result
+            $result = msgpack_unpack($input);
 
-        # Return result
-        return $result;
+        }else
+        # Check unpacker
+        if(class_exists(BufferUnpacker::class)) {
 
-    }
+            # New unpacker
+            $unpacker = new BufferUnpacker();
 
+            # Reset
+            $unpacker->reset($input);
 
-    /**
-     * Extract header
-     * 
-     * Extrat header as 
-     * /*
-     *  *
-     *  *\/
-     * in yaml file
-     * 
-     * @param string $filename
-     * @return string
-     */
-    public static function extractHeader(string $filename = ""):string {
-
-        # Set result
-        $result = "";
+            # Unpack
+            $result = $unpacker->unpack();
+        }
 
         # Return result
         return $result;
@@ -429,6 +463,6 @@ class Json{
      */
 
     /* Path */
-    public const FILE_EXT = "json";
+    public const FILE_EXT = "msgpack";
 
 }

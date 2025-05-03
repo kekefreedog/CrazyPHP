@@ -149,5 +149,12 @@ class Edl {
         return $edl;
 
     }
+    
+    /** Public constants
+     ******************************************************
+     */
+
+    /* Path */
+    public const FILE_EXT = "edl";
 
 }
