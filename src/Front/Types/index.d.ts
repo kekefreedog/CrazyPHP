@@ -16,6 +16,7 @@ import Crazypartial from "./../Library/Crazypartial";
 /**
  * Dependances
  */
+export {default as UtilityMessagePack} from "./../Library/Utility/MessagePack";
 export {default as PythonCollection} from "./../Library/File/PythonCollection";
 export {default as Componentregister} from "./../Library/Componentregister";
 export {default as NavigatorClient} from "./../Library/Navigator/Client";
@@ -82,11 +83,12 @@ declare global {
         method?: "get"|"GET"|"post"|"POST"|"put"|"PUT"|"delete"|"DELETE",
         header?: object,
         cache?: "local"|"session"|boolean,
-        responseType?: "arraybuffer"|"document"|"json"|"text"|"stream"|boolean,
+        responseType?: "arraybuffer"|"document"|"json"|"text"|"stream"|"msgpack"|boolean,
+        requestType?: "json"|"msgpack",
         responseEncoding?: "utf8",
         from?: "internal"|"external",
         ignoreHash?: boolean,
-        catchEvents?: boolean
+        catchEvents?: boolean,
     }
 
     /**

@@ -431,7 +431,7 @@ class MessagePack {
     public static function decode(string $input, bool $decodeAsObject = false):mixed {
 
         # Set result
-        $result = "";
+        $result = null;
 
         # Check msgpack_pack
         if(function_exists('msgpack_unpack')){

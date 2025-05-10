@@ -22,13 +22,13 @@ use CrazyPHP\Library\Html\Structure;
 use CrazyPHP\Library\Time\DateTime;
 use CrazyPHP\Exception\CatchState;
 use CrazyPHP\Library\File\Config;
+use CrazyPHP\Library\State\Page;
+use CrazyPHP\Library\File\Json;
 use CrazyPHP\Core\ApiResponse;
 use CrazyPHP\Core\Response;
 use CrazyPHP\Model\Context;
 use CrazyPHP\Core\Model;
-use CrazyPHP\Library\File\File;
-use CrazyPHP\Library\File\Json;
-use CrazyPHP\Library\State\Page;
+use CrazyPHP\Library\File\MessagePack;
 use CrazyPHP\Model\Env;
 
 /**
@@ -266,9 +266,17 @@ class Controller {
 
                 # Check result
                 if(empty($result)){
-                    
-                    # Try to get data
-                    $result = json_decode(file_get_contents('php://input'), true);
+
+                    # Check HTTP_CONTENT_TYPE
+                    if(($_SERVER["HTTP_CONTENT_TYPE"] ?? false) === "application/msgpack"){
+
+                        # Get data
+                        $result = MessagePack::decode((string) file_get_contents('php://input'));
+    
+                    }else
+                
+                        # Try to get data
+                        $result = json_decode(file_get_contents('php://input'), true);
 
                 }
                 
@@ -283,6 +291,13 @@ class Controller {
                 # Set raw data
                 $rawData = file_get_contents("php://input");
 
+                # Check HTTP_CONTENT_TYPE
+                if(($_SERVER["HTTP_CONTENT_TYPE"] ?? false) === "application/msgpack"){
+
+                    # Get data
+                    $result = MessagePack::decode((string) file_get_contents('php://input'));
+
+                }else
                 # Check is json
                 if(Json::check($rawData)){
 

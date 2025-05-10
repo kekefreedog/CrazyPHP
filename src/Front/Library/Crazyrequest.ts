@@ -11,6 +11,7 @@
 /**
  * Dependances
  */
+import MessagePack from "./Utility/MessagePack";
 import LoaderEvents from "./Loader/Events";
 import Crazycache from "./Crazycache";
 import hash from "object-hash";
@@ -48,6 +49,7 @@ export default class Crazyrequest{
         responseEncoding: "utf8",
         from: "internal",
         catchEvents: true,
+        requestType: "json",
     };
 
     /** @var requestOptions */
@@ -177,6 +179,19 @@ export default class Crazyrequest{
 
                             // Return json
                             return result.json();
+
+                        }else
+                        // Check if message pack
+                        if(contentType !== null && contentType.includes("application/msgpack")){
+
+                            // This last response type
+                            this.lastResponseContentType = contentType;
+
+                            // Return data
+                            return result.arrayBuffer()
+                                .then(value => new Uint8Array(value))
+                                .then(value => MessagePack.parse(value))
+                            ;
 
                         }
 
@@ -431,17 +446,37 @@ export default class Crazyrequest{
                 // Push object
                 if(typeof body === "object"){
 
-                    // Fill body content
-                    bodyContent = JSON.stringify(body);
+                    // Check request type
+                    if(this.options.requestType === "msgpack"){
 
-                    // Check header is defined
-                    if(!(this.requestOptions.headers instanceof Headers))
+                        // Fill body content
+                        bodyContent = MessagePack.stringify(body);
 
-                        // Init headers
-                        this.requestOptions.headers = new Headers();
+                        // Check header is defined
+                        if(!(this.requestOptions.headers instanceof Headers))
 
-                    // Fill headers
-                    this.requestOptions.headers.set('Content-Type', 'application/json');
+                            // Init headers
+                            this.requestOptions.headers = new Headers();
+
+                        // Fill headers
+                        this.requestOptions.headers.set('Content-Type', 'application/msgpack');
+
+                    // Else
+                    }else{
+
+                        // Fill body content
+                        bodyContent = JSON.stringify(body);
+
+                        // Check header is defined
+                        if(!(this.requestOptions.headers instanceof Headers))
+
+                            // Init headers
+                            this.requestOptions.headers = new Headers();
+
+                        // Fill headers
+                        this.requestOptions.headers.set('Content-Type', 'application/json');
+
+                    }
 
                 }
     
@@ -469,17 +504,37 @@ export default class Crazyrequest{
                 // Push object
                 if(typeof body === "object"){
 
-                    // Fill body content
-                    bodyContent = JSON.stringify(body);
+                    // Check request type
+                    if(this.options.requestType === "msgpack"){
 
-                    // Check header is defined
-                    if(!(this.requestOptions.headers instanceof Headers))
+                        // Fill body content
+                        bodyContent = MessagePack.stringify(body);
 
-                        // Init headers
-                        this.requestOptions.headers = new Headers();
+                        // Check header is defined
+                        if(!(this.requestOptions.headers instanceof Headers))
 
-                    // Fill headers
-                    this.requestOptions.headers.set('Content-Type', 'application/json');
+                            // Init headers
+                            this.requestOptions.headers = new Headers();
+
+                        // Fill headers
+                        this.requestOptions.headers.set('Content-Type', 'application/msgpack');
+
+                    // Else
+                    }else{
+
+                        // Fill body content
+                        bodyContent = JSON.stringify(body);
+
+                        // Check header is defined
+                        if(!(this.requestOptions.headers instanceof Headers))
+
+                            // Init headers
+                            this.requestOptions.headers = new Headers();
+
+                        // Fill headers
+                        this.requestOptions.headers.set('Content-Type', 'application/json');
+
+                    }
 
                 }
     

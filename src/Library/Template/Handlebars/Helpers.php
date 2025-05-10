@@ -1730,4 +1730,84 @@ class Helpers {
     
     }
 
+    /**
+     * Background Gradient
+     * 
+     * Generate background color
+     * 
+     * Exemple: {{backgroundGradient colors smooth=true}}
+     * 
+     * @param mixed $value
+     * @param mixed options
+     */
+    public static function backgroundGradient($colors, $options) {    
+        
+        # Set smooth
+        $smooth = true;
+
+        // Chech hash smooth
+        if(isset($options['hash']['smooth']))
+
+            # Set smooth
+            $smooth = filter_var($options['hash']['smooth'], FILTER_VALIDATE_BOOLEAN);
+    
+        # Check colors
+        if(!is_array($colors) || count($colors) === 0) 
+
+            # Return empty string
+            return '';
+    
+        # Check color lenght
+        if(count($colors) === 1)
+
+            # Return simple background
+            return "background: rgb({$colors[0]});";
+    
+        # Check smotth
+        if($smooth){
+
+            # Set total
+            $total = count($colors) - 1;
+
+            # Array map
+            $parts = array_map(function($color, $i) use ($total) {
+
+                # Set pos
+                $pos = ($i / $total) * 100;
+
+                # Return style
+                return "rgba($color) {$pos}%";
+
+            }, $colors, array_keys($colors));
+
+        # If not smooth
+        }else{
+
+            # Set lenght
+            $len = count($colors);
+
+            # Set parts
+            $parts = array_map(function($color, $i) use ($len) {
+
+                # Set start
+                $start = ($i / $len) * 100;
+
+                # Set end
+                $end = $start + (100 / $len);
+
+                # Return style
+                return "rgba($color) {$start}%, rgba($color) {$end}%";
+
+            }, $colors, array_keys($colors));
+
+        }
+    
+        # Set gradient
+        $gradient = implode(', ', $parts);
+
+        # Return color
+        return "background: linear-gradient(to bottom, $gradient);";
+        
+    }
+
 }

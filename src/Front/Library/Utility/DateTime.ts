@@ -104,9 +104,9 @@ export default class DateTime {
      * Return in format YYYY/MM/DD
      * 
      * @param weekday
-     * @returns string
+     * @returns {string}
      */
-    public static getNextDay = (weekday:1|2|3|4|5|6|7) => {
+    public static getNextDay = (weekday:1|2|3|4|5|6|7, returnDate:boolean = false):string|Date => {
 
         // Check week day
         if (weekday < 1 || weekday > 7)
@@ -121,14 +121,24 @@ export default class DateTime {
     
         // Set the date to the next desired weekday
         today.setUTCDate(today.getUTCDate() + daysUntilNext);
+
+        // Check return date
+        if(returnDate){
+
+            // Return date
+            return today;
+
+        }else{
     
-        // Format the date as YYYY/MM/DD
-        const year = today.getUTCFullYear();
-        const month = (today.getUTCMonth() + 1).toString().padStart(2, '0'); // Months are zero-indexed
-        const day = today.getUTCDate().toString().padStart(2, '0');
-    
-        // Return date
-        return `${year}/${month}/${day}`;
+            // Format the date as YYYY/MM/DD
+            const year = today.getUTCFullYear();
+            const month = (today.getUTCMonth() + 1).toString().padStart(2, '0'); // Months are zero-indexed
+            const day = today.getUTCDate().toString().padStart(2, '0');
+        
+            // Return date
+            return `${year}/${month}/${day}`;
+
+        }
     }
 
     /**
