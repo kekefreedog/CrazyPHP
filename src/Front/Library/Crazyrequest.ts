@@ -368,7 +368,7 @@ export default class Crazyrequest{
         if(!this.requestOptions.headers.has("Accept") && typeof this.options.responseType === "string" && ["json", "msgpack"].includes(this.options.responseType))
 
             // Push accept on reques
-            this.requestOptions.headers.set("Accept", ["application/json", "application/msgpack"].join(", "));
+            this.requestOptions.headers.set("Accept", ["application/json", "application/x-msgpack"].join(", "));
 
         
 
