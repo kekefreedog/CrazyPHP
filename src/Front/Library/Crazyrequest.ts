@@ -182,7 +182,7 @@ export default class Crazyrequest{
 
                         }else
                         // Check if message pack
-                        if(contentType !== null && contentType.includes("application/msgpack")){
+                        if(contentType !== null && contentType.includes("application/x-msgpack")){
 
                             // This last response type
                             this.lastResponseContentType = contentType;
@@ -459,7 +459,7 @@ export default class Crazyrequest{
                             this.requestOptions.headers = new Headers();
 
                         // Fill headers
-                        this.requestOptions.headers.set('Content-Type', 'application/msgpack');
+                        this.requestOptions.headers.set('Content-Type', 'application/x-msgpack');
 
                     // Else
                     }else{
@@ -517,7 +517,7 @@ export default class Crazyrequest{
                             this.requestOptions.headers = new Headers();
 
                         // Fill headers
-                        this.requestOptions.headers.set('Content-Type', 'application/msgpack');
+                        this.requestOptions.headers.set('Content-Type', 'application/x-msgpack');
 
                     // Else
                     }else{
