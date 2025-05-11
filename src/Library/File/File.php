@@ -1131,7 +1131,7 @@ class File {
         # Sse
         "sse"       =>  "text/event-stream",
         # Message pack
-        "msgpack"   =>  "application/x-msgpack",
+        "msgpack"   =>  "application/msgpack",
         # TBC ...
     ];
 

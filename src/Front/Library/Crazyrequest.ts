@@ -182,7 +182,7 @@ export default class Crazyrequest{
 
                         }else
                         // Check if message pack
-                        if(contentType !== null && contentType.includes("application/x-msgpack")){
+                        if(contentType !== null && contentType.includes("application/msgpack")){
 
                             // This last response type
                             this.lastResponseContentType = contentType;
@@ -368,7 +368,7 @@ export default class Crazyrequest{
         if(!this.requestOptions.headers.has("Accept") && typeof this.options.responseType === "string" && ["json", "msgpack"].includes(this.options.responseType))
 
             // Push accept on reques
-            this.requestOptions.headers.set("Accept", ["application/json", "application/x-msgpack"].join(", "));
+            this.requestOptions.headers.set("Accept", ["application/json", "application/msgpack"].join(", "));
 
         
 
@@ -459,7 +459,7 @@ export default class Crazyrequest{
                             this.requestOptions.headers = new Headers();
 
                         // Fill headers
-                        this.requestOptions.headers.set('Content-Type', 'application/x-msgpack');
+                        this.requestOptions.headers.set('Content-Type', 'application/msgpack');
 
                     // Else
                     }else{
@@ -517,7 +517,7 @@ export default class Crazyrequest{
                             this.requestOptions.headers = new Headers();
 
                         // Fill headers
-                        this.requestOptions.headers.set('Content-Type', 'application/x-msgpack');
+                        this.requestOptions.headers.set('Content-Type', 'application/msgpack');
 
                     // Else
                     }else{
