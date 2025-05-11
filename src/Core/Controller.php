@@ -29,6 +29,7 @@ use CrazyPHP\Core\Response;
 use CrazyPHP\Model\Context;
 use CrazyPHP\Core\Model;
 use CrazyPHP\Library\File\MessagePack;
+use CrazyPHP\Library\System\Server;
 use CrazyPHP\Model\Env;
 
 /**
@@ -268,7 +269,7 @@ class Controller {
                 if(empty($result)){
 
                     # Check HTTP_CONTENT_TYPE
-                    if(($_SERVER["HTTP_CONTENT_TYPE"] ?? false) === "application/msgpack"){
+                    if(Server::hasContentType() && Server::getContentType() === "application/msgpack"){
 
                         # Get data
                         $result = MessagePack::decode((string) file_get_contents('php://input'));
