@@ -167,10 +167,10 @@ class Response {
      * Set content type of the response
      * 
      * @param string $name Type of content
-     * @param string $charset Character settings of the content type
+     * @param string|null $charset Character settings of the content type
      * @return self
      */
-    public function setContentType(string $name = "html", string $charset = "UTF-8"):self {
+    public function setContentType(string $name = "html", string|null $charset = "UTF-8"):self {
 
         # Check name
         if(!$name)
@@ -181,15 +181,16 @@ class Response {
         # Check name is in extenson to mimetype
         if(array_key_exists(strtolower($name), File::EXTENSION_TO_MIMETYPE))
 
-            #Set name
+            # Set name
             $name = File::EXTENSION_TO_MIMETYPE[$name];
 
         else
 
+            # Set name
             $name = $name;
 
         # Check charset
-        if($charset)
+        if($charset !== null)
 
             $name .= "; charset=$charset";
 

@@ -238,15 +238,32 @@ class ApiResponse extends Response {
         # Set default format
         $this->setContentType($responseFormat);
 
+    }
+
+    /**
+     * Set content type
+     * 
+     * Set content type of the response
+     * 
+     * @param string $name Type of content
+     * @param string|null $charset Character settings of the content type
+     * @return self
+     */
+    public function setContentType(string $name = "html", string|null $charset = "UTF-8"):self {
+
+        # Call parent
+        parent::setContentType($name, $charset);
+
+    
         # Get and set engine to use
-        $engine = File::MIMTYPE_TO_CLASS[File::EXTENSION_TO_MIMETYPE[$responseFormat] ?? null] ?? null;
+        $engine = File::MIMTYPE_TO_CLASS[File::EXTENSION_TO_MIMETYPE[$name] ?? null] ?? null;
 
         # Check engine
         if(!$engine || $engine === null)
 
             # New Exception
             throw new CrazyException(
-                "\"$responseFormat\" isn't supported yet by framework...",
+                "\"$name\" isn't supported yet by framework...",
                 500,
                 [
                     "custom_code"   =>  "apiResponse-003",
@@ -255,6 +272,9 @@ class ApiResponse extends Response {
 
         # Set engine
         $this->engineInstance = $engine;
+
+        # Return self
+        return $this;
 
     }
 
