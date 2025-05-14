@@ -372,7 +372,7 @@ class Json{
         $result = $prettyPrint ? json_encode($input, JSON_PRETTY_PRINT) : json_encode($input);
 
         # Return result
-        return $result;
+        return is_string($result) ? $result : "";
 
     }
 

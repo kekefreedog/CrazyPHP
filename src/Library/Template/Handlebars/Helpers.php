@@ -1743,7 +1743,7 @@ class Helpers {
     public static function backgroundGradient($colors, $options) {    
         
         # Set smooth
-        $smooth = true;
+        $smooth = false;
 
         // Chech hash smooth
         if(isset($options['hash']['smooth']))

@@ -20,7 +20,7 @@
 module.exports = function(colors, options) {
     
     // Set smotth (default: true)
-    const smooth = options.hash?.smooth !== false;
+    const smooth = options.hash?.smooth !== true;
 
     // Check colors
     if (!Array.isArray(colors) || colors.length === 0) 
