@@ -1578,8 +1578,7 @@ class Mariadb implements CrazyDatabaseDriver {
                     ? "port=".$options["port"].";"
                     : ""
             ).
-            "dbname=".$options["database"].
-            ";charset=utf8mb4"
+            "dbname=".$options["database"]
         ;
 
         # Check login
