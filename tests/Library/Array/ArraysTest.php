@@ -659,4 +659,40 @@ class ArraysTest extends TestCase{
 
     }
 
+    /**
+     * Test Utf 8 Decode Recursive
+     * 
+     * @return void
+     */
+    public function testUtf8DecodeRecursive():void {
+
+        # Set data
+        $data = [
+            "nom" => "JosÃ©",
+            "infos" => [
+                "ville" => "ParÃ­s",
+                "tags" => ["clichÃ©", "cafÃ©"]
+            ]
+        ];
+
+        # Decode
+        $decoded = Arrays::utf8DecodeRecursive($data);
+
+        # Set result
+        $result = [
+            "nom"   =>  "José",
+            "infos" => [
+                "ville" => "París",
+                "tags"  => [
+                    "cliché",
+                    "café",
+                ]
+            ]
+        ];
+
+        # Check result
+        $this->assertEquals($result, $decoded);
+
+    }
+
 }

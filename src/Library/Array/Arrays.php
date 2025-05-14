@@ -13,6 +13,7 @@
 namespace  CrazyPHP\Library\Array;
 
 use CrazyPHP\Library\File\File;
+use CrazyPHP\Library\String\Strings;
 
 /**
  * Dependances
@@ -937,6 +938,21 @@ class Arrays{
 			),
 			$array
 		);
+	}
+
+    /**
+     * Utf8 Decode Recursive
+     * 
+     * Recursively apply utf8_decode to each string value in the array
+     *
+     * @param mixed $input
+     * @return mixed
+     */
+    public static function utf8DecodeRecursive(mixed $input):mixed {
+		
+		# Return result
+		return Strings::utf8DecodeRecursive($input);
+
 	}
 
     /** Public Constants

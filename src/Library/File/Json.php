@@ -369,7 +369,19 @@ class Json{
             $input = [$input];
 
         # Encode result
-        $result = $prettyPrint ? json_encode($input, JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE|JSON_INVALID_UTF8_SUBSTITUTE) : json_encode($input, JSON_UNESCAPED_UNICODE|JSON_INVALID_UTF8_SUBSTITUTE);
+        $result = $prettyPrint ? json_encode($input, JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE) : json_encode($input, JSON_UNESCAPED_UNICODE);
+
+        # Check result
+        if($result === false && json_last_error() === 5){
+
+            # Clean utf 8 character
+            $input = Arrays::utf8DecodeRecursive($input);
+
+            # Encode result
+            $result = $prettyPrint ? json_encode($input, JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE|JSON_INVALID_UTF8_SUBSTITUTE) : json_encode($input, JSON_UNESCAPED_UNICODE|JSON_INVALID_UTF8_SUBSTITUTE);
+
+
+        }
 
         # Return result
         return is_string($result) ? $result : "";

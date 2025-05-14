@@ -119,4 +119,35 @@ class Strings {
 
     }
 
+    /**
+     * Utf8 Decode Recursive
+     * 
+     * Recursively apply utf8_decode to each string value in the array
+     *
+     * @param mixed $input
+     * @return mixed
+     */
+    public static function utf8DecodeRecursive(mixed $input):mixed {
+
+        # Set result
+        $result = $input;
+
+        # Check is array
+        if(is_array($input))
+
+            # Process array
+            $result = array_map([self::class, __FUNCTION__], $input);
+
+        else
+        # Is string
+        if(is_string($input))
+
+            # Process string
+            $result = mb_convert_encoding($input, 'ISO-8859-1', 'UTF-8');
+
+        # Return result
+        return $result;
+
+    }
+
 }
