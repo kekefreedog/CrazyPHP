@@ -98,11 +98,11 @@ class Json{
         
         # Create json
         if(
-            file_put_contents(
+            File::create(
                 $path, 
-                $header.json_encode(
+                $header.static::encode(
                     $data, 
-                    JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES
+                    true
                 )
             ) === false
         )
@@ -279,7 +279,7 @@ class Json{
         if($old_value !== $result)
 
             # Put new json content in file
-            file_put_contents($path, json_encode(json_encode($result, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES)));
+            self::create($path, $result);
 
         # Return result
         return $result;
@@ -323,7 +323,7 @@ class Json{
         if($old_value !== $result)
 
             # Put new json content in file
-            file_put_contents($path, json_encode(json_encode($result, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES)));
+            self::create($path, $result);
 
         # Return result
         return $result;
@@ -369,7 +369,7 @@ class Json{
             $input = [$input];
 
         # Encode result
-        $result = $prettyPrint ? json_encode($input, JSON_PRETTY_PRINT) : json_encode($input);
+        $result = $prettyPrint ? json_encode($input, JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE) : json_encode($input, JSON_UNESCAPED_UNICODE);
 
         # Return result
         return is_string($result) ? $result : "";
