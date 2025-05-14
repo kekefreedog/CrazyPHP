@@ -248,7 +248,7 @@ class Json{
             # Put new json content in file
             file_put_contents(
                 $path, 
-                json_encode($result, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES)
+                json_encode($result, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_INVALID_UTF8_SUBSTITUTE)
             );
 
         # Return result
@@ -369,7 +369,7 @@ class Json{
             $input = [$input];
 
         # Encode result
-        $result = $prettyPrint ? json_encode($input, JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE) : json_encode($input, JSON_UNESCAPED_UNICODE);
+        $result = $prettyPrint ? json_encode($input, JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE|JSON_INVALID_UTF8_SUBSTITUTE) : json_encode($input, JSON_UNESCAPED_UNICODE|JSON_INVALID_UTF8_SUBSTITUTE);
 
         # Return result
         return is_string($result) ? $result : "";

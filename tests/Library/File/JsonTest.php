@@ -112,7 +112,8 @@ class JsonTest extends TestCase {
             "fourth"    =>  true,
             "utf8"      =>  "База данни грешка.",
             "utf8_alt"  =>  "éè.",
-            "éè"        =>  "/\""
+            "éè"        =>  "/\"",
+            "Conge"     =>  "Cong�s"
         ];
 
         # Encode
