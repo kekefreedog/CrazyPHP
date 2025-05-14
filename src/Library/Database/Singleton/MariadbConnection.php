@@ -186,6 +186,9 @@ class MariadbConnection implements CrazySingleton {
             # Set client
             static::$_instances[$user] = new PDO(...$connectionArray);
 
+            # Keep native types
+            static::$_instances[$user]->setAttribute(PDO::ATTR_STRINGIFY_FETCHES, false);
+
         # Catch
         }catch(PDOException $e) {
 
