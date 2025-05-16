@@ -1095,7 +1095,7 @@ class Mariadb implements CrazyDriverModel {
             # New schema
             $schema = new Schema($this->arguments["schema"], $input, [
                 # "flatten"           =>  true,
-                # "skipEmptyValue"    =>  $this->isUpdate()
+                "skipEmptyValue"    =>  true
             ]);
 
             # Get result of schema
