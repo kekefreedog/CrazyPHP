@@ -341,7 +341,8 @@ class Process {
                 if(
                     $process &&
                     in_array($process, $this->dispatch["FILE"]) &&
-                    method_exists($this, $process)
+                    method_exists($this, $process) &&
+                    !is_string($input["value"])
                 ){
 
                     # Process value
@@ -351,7 +352,8 @@ class Process {
                 # Check is callable
                 if(
                     $process &&
-                    is_callable($process)
+                    is_callable($process) &&
+                    !is_string($input["value"])
                 ){
 
                     # Process value
