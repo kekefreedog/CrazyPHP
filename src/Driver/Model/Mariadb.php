@@ -1090,18 +1090,18 @@ class Mariadb implements CrazyDriverModel {
     private function _sanityCheck(array &$input):void {
 
         # Check result
-        /* if(!empty($input)){
+        if(!empty($input)){
 
             # New schema
             $schema = new Schema($this->arguments["schema"], $input, [
-                # "flatten"           =>  true,
+                "flatten"           =>  true,
                 "skipEmptyValue"    =>  true
             ]);
 
             # Get result of schema
             $input = $schema->getResultSummary();
 
-        } */
+        }
 
     }
 
