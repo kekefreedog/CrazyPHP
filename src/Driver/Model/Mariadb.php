@@ -672,6 +672,9 @@ class Mariadb implements CrazyDriverModel {
 
             }
 
+            # Check if sanity needed then run it
+            if($this->arguments["sanity"] ?? false) $this->_sanityCheck($result);
+
             ## Fields filter | end
     
             ## Process For Page State | Start
@@ -1078,13 +1081,38 @@ class Mariadb implements CrazyDriverModel {
 
     }
 
+    /**
+     * Sanity Check 
+     * 
+     * @param array &$input
+     * @return void
+     */
+    private function _sanityCheck(array &$input):void {
+
+        # Check result
+        if(!empty($input)){
+
+            # New schema
+            $schema = new Schema($this->arguments["schema"], $input, [
+                # "flatten"           =>  true,
+                # "skipEmptyValue"    =>  $this->isUpdate()
+            ]);
+
+            # Get result of schema
+            $input = $schema->getResultSummary();
+
+        }
+
+    }
+
     /** Public constants
      ******************************************************
      */
 
     /** @const array */
     public const ARGUMENTS = [
-        "table"        =>  "",
+        "table"             =>  "",
+        "sanity"            =>  false,
         "schema"            =>  [],
         "database"          =>  [],
         "pageStateProcess"  =>  false,
