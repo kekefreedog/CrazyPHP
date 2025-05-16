@@ -531,6 +531,9 @@ class Mariadb implements CrazyDriverModel {
                 ]
             ]);
 
+            # Check if sanity needed then run it
+            if($this->arguments["sanity"] ?? false) $this->_sanityCheck($result);
+
             # Load reference
             if($this->arguments["loadReference"])
 
