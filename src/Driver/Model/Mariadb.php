@@ -1090,7 +1090,7 @@ class Mariadb implements CrazyDriverModel {
     private function _sanityCheck(array &$input):void {
 
         # Check result
-        if(!empty($input)){
+        /* if(!empty($input)){
 
             # New schema
             $schema = new Schema($this->arguments["schema"], $input, [
@@ -1101,7 +1101,7 @@ class Mariadb implements CrazyDriverModel {
             # Get result of schema
             $input = $schema->getResultSummary();
 
-        }
+        } */
 
     }
 
