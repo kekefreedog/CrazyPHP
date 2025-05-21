@@ -1810,4 +1810,67 @@ class Helpers {
         
     }
 
+    /**
+     * Normalize
+     * 
+     * Returns the string in uppercase
+     * 
+     * @param mixed $value
+     * @param mixed options
+     */
+    public static function normalize($value) {
+
+        # Set result
+        $input = $value;
+
+        # Check if string
+        if(is_string($input)){
+
+            # Convert to UTF-8
+            $input = mb_convert_encoding($input, 'UTF-8', mb_list_encodings());
+
+            # Replace accented characters with ASCII equivalents
+            $input = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $input);
+
+            # Remove non-alphanumeric characters except space
+            $input = preg_replace('/[^a-zA-Z0-9\s]/', '', $input);
+
+            # Replace multiple spaces/tabs with a single space
+            $input = preg_replace('/\s+/', '_', $input);
+
+            # Lowercase and trim
+            $input = strtolower(trim($input, '_'));
+
+        }else
+        # check if array
+        if(is_array($input))
+
+            # Iteration value
+            foreach($input as &$v)
+
+                # Check if is string
+                if(is_string($v)){
+
+                    # Convert to UTF-8
+                    $v = mb_convert_encoding($v, 'UTF-8', mb_list_encodings());
+
+                    # Replace accented characters with ASCII equivalents
+                    $v = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $v);
+
+                    # Remove non-alphanumeric characters except space
+                    $v = preg_replace('/[^a-zA-Z0-9\s]/', '', $v);
+
+                    # Replace multiple spaces/tabs with a single space
+                    $v = preg_replace('/\s+/', '_', $v);
+
+                    # Lowercase and trim
+                    $v = strtolower(trim($v, '_'));
+
+                }
+
+        # Return result
+        return $input;
+        
+    }
+
 }

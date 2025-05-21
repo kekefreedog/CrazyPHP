@@ -49,6 +49,8 @@ class Process {
     private array $dispatch = [
         "INT"       =>  [
         ],
+        "DECIMAL"   =>  [
+        ],
         "SELECT"       =>  [
             "integer",
         ],
@@ -99,6 +101,12 @@ class Process {
 
                 # Action for varchar
                 $this->_actionInt($input);
+
+            # Type integer
+            if(strtoupper(substr(trim($input['type']), 0, 7)) == "DECIMAL")
+
+                # Action for decimal
+                $this->_actionDecimal($input);
 
             # Type varchar
             if(strtoupper(substr(trim($input['type']), 0, 7)) == "VARCHAR")
@@ -180,6 +188,68 @@ class Process {
                 if(
                     $process &&
                     in_array($process, $this->dispatch["INT"]) &&
+                    method_exists($this, $process)
+                ){
+
+                    # Process value
+                    $input['value'] = $this->{$process}($input['value']);
+
+                }else
+                # Check is callable
+                if(
+                    $process &&
+                    is_callable($process)
+                ){
+
+                    # Process value
+                    $input['value'] = $process($input['value']);
+
+                }
+
+    }
+
+    /**
+     * Action for decimal
+     * 
+     * @return void
+     */
+    private function _actionDecimal(array &$input = []):void {
+
+        # Check value is same type
+        if(!is_float($input['value']) && !preg_match('/^-?\d+\.\d+$/', (string) $input['value'])){
+
+            # Check requierd
+            if(
+                (
+                    isset($input['required']) &&
+                    $input['required'] == false
+                ) ||
+                !isset($input['required'])
+            ){
+
+                # Set value to null
+                $input['value'] = null;
+
+            }
+
+            # Stop function
+            return;
+
+        }
+
+        # Parse the value
+        $input['value'] = floatval($input['value']);
+
+        # Check process
+        if(!empty($input['process'] ?? null))
+
+            # Iteration process
+            foreach($input['process'] as $process)
+
+                # Check methods exists
+                if(
+                    $process &&
+                    in_array($process, $this->dispatch["DECIMAL"]) &&
                     method_exists($this, $process)
                 ){
 

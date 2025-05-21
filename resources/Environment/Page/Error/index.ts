@@ -99,7 +99,7 @@ export default class Home extends Crazypage {
         if(errorCarouselEl !== null)
 
             // New carousel instance
-            this.carouselInstance = new M.Carousel(
+            this.carouselInstance = new Carousel(
                 errorCarouselEl,
                 {
                     fullWidth: true,

@@ -81,6 +81,7 @@ class Form {
         "depends"       =>  null,
         "valuePrefix"   =>  "",
         "valueSuffix"   =>  "",
+        "extra"         =>  [],
         "_style"        =>  [],
     ];
 

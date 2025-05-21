@@ -25,6 +25,13 @@ module.exports = function(value, options) {
 
         // Return lenght
         return value.length;
+
+    else
+    // Is object
+    if(typeof value === "object" && value)
+
+        // Check is object
+        return Object.keys(value).length
     
     // Return 0
     return 0;
