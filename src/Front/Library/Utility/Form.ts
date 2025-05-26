@@ -552,6 +552,80 @@ export default class Form {
     }
 
     /**
+     * Is Valid
+     * 
+     * Is Form Valid
+     * 
+     * @param formName:string
+     * @returns {boolean}
+     */
+    public isValid = (formName:string|HTMLElement, formData?:FormData):boolean => {
+
+        // Declare var
+        let formEl:HTMLElement|null;
+
+        // Declare form data
+        let formDataTmp:FormData;
+
+        // Check form name
+        if(typeof formName == "string"){
+
+            // Get form
+            formEl = this.getForm(formName);
+
+            // Check form el
+            if(formEl === null)
+
+                // New error
+                throw new Error("Form do not exists");
+
+        }else
+
+            // Set form el
+            formEl = formName;
+
+        // Check form data
+        if(!formData){
+
+            // Set formdata
+            formDataTmp = this.getFormData(formEl);
+
+        }else
+
+            // Set with given value
+            formDataTmp = formData;
+
+        // Set result
+        let result = true;
+
+        // Get all select and input on form el
+        let items = formEl.querySelectorAll("select[name][required], input[name][required]");
+
+        // Check items
+        if(items.length) for(let item of Array.from(items)) if(item instanceof HTMLInputElement || item instanceof HTMLSelectElement){
+
+            // Let name
+            let name = `${item.name}${item.multiple ? "[]" : ""}`;
+
+            // Check formdata has value and is not empty
+            if(!formDataTmp.has(name) || !formDataTmp.get(name)){
+
+                // Set result
+                result = false;
+
+                // Break
+                break;
+
+            }
+
+        }
+
+        // Return result
+        return result;
+
+    }
+
+    /**
      * Clear values
      * 
      * Clear values from form
@@ -1382,7 +1456,8 @@ export default class Form {
                         formEl: currentTarget,
                         formData: this.getFormData(currentTarget),
                         itemEl: target,
-                        type: eventType
+                        type: eventType,
+                        valid: this.isValid(currentTarget),
                     });
 
                 }
@@ -4753,7 +4828,8 @@ export interface formOnChangeResult {
     formEl:HTMLFormElement,
     itemEl:HTMLInputElement|HTMLSelectElement,
     formData:FormData,
-    type: formOnChangeOptions["eventType"]
+    type:formOnChangeOptions["eventType"],
+    valid:boolean
 }
 
 /**
