@@ -219,10 +219,10 @@ class Mariadb implements CrazyDriverModel {
             if(is_string($sort)) $sort = [$sort];
 
             # Iteration sort
-            if(!empty($sort)) foreach($sort as $item) if(is_string($sort) && $sort)
+            if(!empty($sort)) foreach($sort as $item) if(is_string($item) && $item)
 
                 # Set sort
-                $this->sort[] = $sort;
+                $this->sort[] = $item;
 
         }
 
@@ -671,7 +671,9 @@ class Mariadb implements CrazyDriverModel {
             }else{
 
                 # Set result
-                $result = $this->mariadb->find($this->arguments["table"]);
+                $result = $this->mariadb->find($this->arguments["table"], "", [
+                    'sort'  =>  $this->sort,
+                ]);
 
             }
 

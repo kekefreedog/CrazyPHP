@@ -1203,8 +1203,13 @@ class Mariadb implements CrazyDatabaseDriver {
 
                 }
 
-                # Append sort
-                $query .= static::appendSort($options["sort"] ?? null, $alias);
+                # Check options sort
+                if(is_array($options["sort"] ?? false) && !empty($options["sort"])){
+
+                    # Append sort
+                    $query .= static::appendSort($options["sort"] ?? null, $alias);
+
+                } 
 
                 # Update table
                 $statment = $this->client->query($query);
@@ -1214,11 +1219,22 @@ class Mariadb implements CrazyDatabaseDriver {
 
             }else{
 
+                # Instance
+                $instance = $this->manager->from($table);
+
+                # Check options sort
+                if(is_array($options["sort"] ?? false) && !empty($options["sort"])){
+
+                    # Get sort
+                    $sort = static::prepareOrderBy($options["sort"] ?? []);
+
+                    # Update instance
+                    $sort && $instance->orderBy(static::prepareOrderBy($options["sort"] ?? []));
+
+                }
+
                 # Update table
-                $result = $this->manager
-                    ->from($table)
-                    ->fetchAll()
-                ;
+                $result = $instance->fetchAll();
 
             }
 
@@ -1710,6 +1726,19 @@ class Mariadb implements CrazyDatabaseDriver {
             # Iteration sort
             if(!empty($sort)) foreach($sort as $field) if($field){
 
+                # Check if asc
+                if(in_array($field, ["asc", "ASC"]))
+
+                    # Set item
+                    $field = "id";
+
+                else
+                # Check if asc
+                if(in_array($field, ["desc", "DESC"]))
+
+                    # Set item
+                    $field = "-id";
+
                 # Check if first character is "-"
                 if($field[0] == "-"){
 
@@ -1813,6 +1842,61 @@ class Mariadb implements CrazyDatabaseDriver {
 
         # Return result
         return rtrim(str_replace(", )", ")", $result), ", ");
+
+    }
+
+    /**
+     * Prepare Order By
+     * 
+     * Prepare Order By for fluent pdo
+     * 
+     * @param array $sort
+     * @return string
+     */
+    public static function prepareOrderBy(array $sort = []):string {
+
+        # Set result
+        $result = "";
+
+        # Set result temp;
+        $resultTemp = [];
+
+        # Iteratioon sort
+        if(!empty($sort)) foreach($sort as $item) if(is_string($item) && $item) {
+
+            # Check if asc
+            if(in_array($item, ["asc", "ASC"]))
+
+                # Set item
+                $item = "id";
+
+            else
+            # Check if asc
+            if(in_array($item, ["desc", "DESC"]))
+
+                # Set item
+                $item = "-id";
+
+            # Check if first character is "-"
+            if($item[0] == "-"){
+
+                # Set result temp
+                $resultTemp[] = ltrim($item, "-")." DESC";
+
+            }else{
+
+                # Set
+                $resultTemp[] = $item;
+
+            }
+
+        }
+
+        # Check resultTemp
+        if(!empty($resultTemp)) $result = implode(", ", $resultTemp);
+
+        # Return result
+        return $result;
 
     }
 

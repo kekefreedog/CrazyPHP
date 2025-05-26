@@ -401,6 +401,9 @@ class Process {
      */
     private function _actionFile(array &$input = []){
 
+        # Was not text
+        $wasNotText = false;
+
         # Check process
         if(!empty($input['process'] ?? null))
 
@@ -412,22 +415,28 @@ class Process {
                     $process &&
                     in_array($process, $this->dispatch["FILE"]) &&
                     method_exists($this, $process) &&
-                    !is_string($input["value"])
+                    (!is_string($input["value"]) || $wasNotText)
                 ){
 
                     # Process value
                     $input['value'] = $this->{$process}($input['value']);
+
+                    # Set was not text
+                    $wasNotText = true;
 
                 }else
                 # Check is callable
                 if(
                     $process &&
                     is_callable($process) &&
-                    !is_string($input["value"])
+                    (!is_string($input["value"]) || $wasNotText)
                 ){
 
                     # Process value
                     $input['value'] = $process($input['value']);
+
+                    # Set was not text
+                    $wasNotText = true;
 
                 }
 

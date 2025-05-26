@@ -194,4 +194,49 @@ class MariadbTest extends TestCase {
 
     }
 
+    /**
+     * Test Prepare Order By
+     * 
+     * @return void
+     */
+    public function testPrepareOrderBy():void {
+
+        # Set input 1
+        $input1 = ["test1"];
+
+        # Set expected
+        $expected1 = "test1";
+
+        # Set input 1
+        $input2 = ["-test2"];
+
+        # Set expected
+        $expected2 = "test2 DESC";
+
+        # Set input 1
+        $input3 = ["test3", "test4", "-test5"];
+
+        # Set expected
+        $expected3 = "test3, test4, test5 DESC";
+
+        # Set input 4
+        $input4 = [];
+
+        # Set expected
+        $expected4 = "";
+
+        # Test 1
+        $this->assertEquals($expected1, Mariadb::prepareOrderBy($input1));
+
+        # Test 2
+        $this->assertEquals($expected2, Mariadb::prepareOrderBy($input2));
+
+        # Test 3
+        $this->assertEquals($expected3, Mariadb::prepareOrderBy($input3));
+
+        # Test 4
+        $this->assertEquals($expected4, Mariadb::prepareOrderBy($input4));
+
+    }
+
 }
