@@ -259,6 +259,14 @@ class ApiResponse extends Response {
         $engine = File::MIMTYPE_TO_CLASS[File::EXTENSION_TO_MIMETYPE[$name] ?? null] ?? null;
 
         # Check engine
+        if($engine === null){
+
+            # Assume name is maybe correct mimetype
+            $engine = File::MIMTYPE_TO_CLASS[$name ?? null] ?? null;
+
+        }
+
+        # Check engine
         if(!$engine || $engine === null)
 
             # New Exception
