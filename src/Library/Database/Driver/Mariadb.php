@@ -1211,6 +1211,26 @@ class Mariadb implements CrazyDatabaseDriver {
 
                 } 
 
+                # Check options limit
+                if(is_numeric($options["limit"] ?? false) && intval($options["limit"]) > 0){
+
+                    # Append limit
+                    $query .= static::appendLimit($options["limit"] ?? 0);
+
+                    # Check options limit
+                    if(
+                        # Check offset
+                        (is_numeric($options["offset"] ?? false) && intval($options["offset"]) > 0) || 
+                        # Check page
+                        (is_numeric($options["page"] ?? false) && intval($options["page"]) > 0)
+                    ){
+
+                            # Append offset / page
+                            $query .= static::appendOffsetPage($options["offset"] ?? 0, $options["page"] ?? 0, $options["limit"] ?? 0);
+
+                    }
+                }
+
                 # Update table
                 $statment = $this->client->query($query);
 
@@ -1230,6 +1250,27 @@ class Mariadb implements CrazyDatabaseDriver {
 
                     # Update instance
                     $sort && $instance->orderBy(static::prepareOrderBy($options["sort"] ?? []));
+
+                }
+
+                # Check options limit
+                if(is_numeric($options["limit"] ?? false) && intval($options["limit"]) > 0){
+
+                    # Set limit
+                    $instance->limit($options["limit"]);
+
+                    # Check options limit
+                    if(
+                        # Check offset
+                        (is_numeric($options["offset"] ?? false) && intval($options["offset"]) > 0) || 
+                        # Check page
+                        (is_numeric($options["page"] ?? false) && intval($options["page"]) > 0)
+                    ){
+
+                        # Set limit
+                        $instance->offset(static::calculateOffsetPage($options["offset"] ?? 0, $options["page"] ?? 0, $options["limit"] ?? 0));
+
+                    }
 
                 }
 
@@ -1758,6 +1799,100 @@ class Mariadb implements CrazyDatabaseDriver {
 
         # Append ORDER BY
         if($result) $result = " ORDER BY".ltrim($result, ",");
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Append Limit
+     * 
+     * Append limit if not 0
+     * 
+     * @param int $limit
+     * @return string
+     */
+    public static function appendLimit(int $limit):string {
+
+        # Set result
+        $result = "";
+
+        # Check limit
+        if($limit > 0)
+
+            # Push to result
+            $result = " LIMIT $limit";
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Append Limit
+     * 
+     * Append limit if not 0
+     * 
+     * @param int $offset
+     * @param int $page
+     * @param int $limit
+     * @return string
+     */
+    public static function appendOffsetPage(int $offset, int $page, int $limit):string {
+
+        # Set result
+        $result = "";
+
+        # Calculate Offset
+        $calculatedOffset = static::calculateOffsetPage($offset, $page, $limit);
+
+        # Check calculated offset
+        if($calculatedOffset > 0){
+
+            # Push to result
+            $result = " OFFSET $calculatedOffset";
+
+        }
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Calculate Offset Page
+     * 
+     * @param int $offset
+     * @param int $page
+     * @param int $limit
+     * @return int
+     */
+    public static function calculateOffsetPage(int $offset, int $page, int $limit):int {
+
+        # Set result
+        $result = 0;
+
+        # Check limit
+        if($limit > 0){
+
+            # Check page
+            if($page > 0){
+
+                # Calculate offset
+                $result += ($page - 1) * $limit;
+
+            }
+
+            # Check offset
+            if($offset > 0){
+
+                # Calculate offset
+                $result += $offset;
+
+            }
+
+        }
 
         # Return result
         return $result;

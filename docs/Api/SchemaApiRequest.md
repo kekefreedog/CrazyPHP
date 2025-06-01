@@ -30,6 +30,8 @@ let body = {
     sort: "asc",
     options: [
         limit: 1 // Limit number of item by one,
+        offset: 1 // Offset on limit (can be cumulate with page)
+        page: 1 // Offset on limit (can be cumulate with offset)
         fields: string|Array<string>,
         arguments: {
             language: "fr"

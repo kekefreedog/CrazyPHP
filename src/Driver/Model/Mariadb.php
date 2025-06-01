@@ -75,6 +75,15 @@ class Mariadb implements CrazyDriverModel {
     /** @var null|array sort */
     private array|null $sort = null;
 
+    /** @var null|int limit */
+    private null|int $limit = null;
+
+    /** @var null|int page */
+    private null|int $page = null;
+
+    /** @var null|int offset */
+    private null|int $offset = null;
+
     /** @var bool conditions */
     private bool $optionAlreadyLoaded = false;
 
@@ -311,6 +320,15 @@ class Mariadb implements CrazyDriverModel {
             # Ingest load reference
             $this->_ingestLoadReference($options);
 
+            # Ingest limit
+            $this->_ingestLimit($options);
+
+            # Ingest offset
+            $this->_ingestOffset($options);
+
+            # Ingest page
+            $this->_ingestPage($options);
+
             # Set option already loaded
             $this->optionAlreadyLoaded = true;
 
@@ -331,6 +349,54 @@ class Mariadb implements CrazyDriverModel {
 
             # Switch value in arguments
             $this->arguments["pageStateProcess"] = true;
+
+    }
+
+    /**
+     * Ingest Limit
+     * 
+     * @param ?array $options
+     * @return void
+     */
+    private function _ingestLimit(?array $options = null):void {
+
+        # Check options
+        if($options !== null && isset($options["limit"]) && Process::integer($options["limit"]) > 0)
+
+            # Switch value in arguments
+            $this->limit = Process::integer($options["limit"]);
+
+    }
+
+    /**
+     * Ingest Offset
+     * 
+     * @param ?array $options
+     * @return void
+     */
+    private function _ingestOffset(?array $options = null):void {
+
+        # Check options
+        if($options !== null && isset($options["limit"]) && Process::integer($options["limit"]) > 0 && isset($options["offset"]) && Process::integer($options["offset"]) > 0)
+
+            # Switch value in arguments
+            $this->offset = Process::integer($options["offset"]);
+
+    }
+
+    /**
+     * Ingest Page
+     * 
+     * @param ?array $options
+     * @return void
+     */
+    private function _ingestPage(?array $options = null):void {
+
+        # Check options
+        if($options !== null && isset($options["limit"]) && Process::integer($options["limit"]) > 0 && isset($options["page"]) && Process::integer($options["page"]) > 0)
+
+            # Switch value in arguments
+            $this->page = Process::integer($options["page"]);
 
     }
 
@@ -528,7 +594,7 @@ class Mariadb implements CrazyDriverModel {
             $result = $this->mariadb->find($this->arguments["table"], "", [
                 "filters" =>  [
                     "id"    =>  " = ".$this->id
-                ]
+                ],
             ]);
 
             # Check if sanity needed then run it
@@ -663,7 +729,10 @@ class Mariadb implements CrazyDriverModel {
                     "",
                     [
                         "filters"   =>  $this->conditions,
-                        'sort'      =>  $this->sort,
+                        "sort"      =>  $this->sort,
+                        "limit"     =>  $this->limit,
+                        "offset"    =>  $this->offset,
+                        "page"      =>  $this->page,
                     ]
                 );
 
@@ -673,6 +742,9 @@ class Mariadb implements CrazyDriverModel {
                 # Set result
                 $result = $this->mariadb->find($this->arguments["table"], "", [
                     'sort'  =>  $this->sort,
+                    "limit"     =>  $this->limit,
+                    "offset"    =>  $this->offset,
+                    "page"      =>  $this->page,
                 ]);
 
             }
