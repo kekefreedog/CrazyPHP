@@ -538,4 +538,30 @@ export default class DateTime {
     
     };
 
+    /**
+     * 
+     * Is Before Today
+     * 
+     * @param dateToCheck 
+     * @returns 
+     */
+    public static isBeforeToday = (dateToCheck: Date):boolean => {
+
+        // Set todat
+        const today = new Date();
+
+        // Normalize today's date to 00:00:00
+        today.setHours(0, 0, 0, 0); 
+
+        // Set date to check
+        const inputDate = new Date(dateToCheck);
+
+        // Normalize the input date
+        inputDate.setHours(0, 0, 0, 0); 
+
+        // Return diff
+        return inputDate < today;
+
+    };
+
 }
