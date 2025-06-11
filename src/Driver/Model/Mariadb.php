@@ -393,7 +393,7 @@ class Mariadb implements CrazyDriverModel {
     private function _ingestPage(?array $options = null):void {
 
         # Check options
-        if($options !== null && isset($options["limit"]) && Process::integer($options["limit"]) > 0 && isset($options["page"]) && Process::integer($options["page"]) > 0)
+        if($options !== null && isset($options["limit"]) && Process::integer($options["limit"]) > 0 && isset($options["page"]) && Process::integer($options["page"]) != 0)
 
             # Switch value in arguments
             $this->page = Process::integer($options["page"]);
@@ -992,8 +992,68 @@ class Mariadb implements CrazyDriverModel {
             "records"   =>  $input
         ];
 
-        # Prepare metadata
-        $result["_metadata"]["records_total"] = count($input);
+        # Check limit
+        if($this->limit > 0){
+
+            # Prepare metadata
+            $result["_metadata"]["page_count"] = count($input);
+
+            # Set pagination
+            $result["_metadata"]["pagination"] = $this->limit;
+
+            # Check offset
+            if($this->offset > 0 || $this->page != 0){
+
+                # Calculate offset
+                $result["_metadata"]["page_offset"] = MariadbModel::calculateOffsetPage($this->offset ?: 0, $this->page ?: 0, $this->limit ?: 0);
+
+                # Check page
+                if($this->page != 0){
+
+                    # Set page
+                    $result["_metadata"]["page"] = $this->page ?: 0;
+
+                }
+
+            }else
+
+                # Set page
+                $result["_metadata"]["page"] = 1;
+
+            /**
+             * Set total
+             */
+
+            # Check conditions
+            if($this->conditions !== null){
+
+                # Set result
+                $result["_metadata"]["records_total"] = count($this->mariadb->find(
+                    $this->arguments["table"], 
+                    "",
+                    [
+                        "filters"   =>  $this->conditions,
+                        "sort"      =>  $this->sort,
+                    ]
+                ));
+
+
+            }else{
+
+                # Set result
+                $result["_metadata"]["records_total"] = count($this->mariadb->find($this->arguments["table"], "", [
+                    'sort'  =>  $this->sort,
+                ]));
+
+            }
+
+            # Set page count
+            $result["_metadata"]["page_count"] = ceil($result["_metadata"]["records_total"] / $this->limit);
+
+        }else
+
+            # Prepare metadata
+            $result["_metadata"]["records_total"] = count($input);
 
         # Return result
         return $result;

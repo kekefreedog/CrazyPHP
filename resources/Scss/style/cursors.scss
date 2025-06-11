@@ -52,4 +52,7 @@ $cursor-types: (
     .cursor-#{$name} {
         cursor: $value;
     }
+    .cursor-#{$name}-important {
+        cursor: $value!important;
+    }
 }

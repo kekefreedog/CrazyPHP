@@ -73,6 +73,7 @@
                 "page": 1,
                 "pagination": 25,
                 "page_count": 10,
+                "page_offset": 25,
                 "records_count": 10,
                 "records_total": 200,
                 "Links": {

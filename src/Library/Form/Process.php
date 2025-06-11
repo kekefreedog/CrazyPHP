@@ -1036,13 +1036,16 @@ class Process {
     /**
      * Integer
      * 
-     * @param string
+     * @param string|int
      * @return int
      */
-    public static function integer(string $input):int {
+    public static function integer(string|int $input):int {
 
         # Return result
-        return intval($input);
+        return is_int($input) 
+            ? $input 
+            : intval($input)
+        ;
 
     }
 

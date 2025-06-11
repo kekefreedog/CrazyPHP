@@ -1222,7 +1222,7 @@ class Mariadb implements CrazyDatabaseDriver {
                         # Check offset
                         (is_numeric($options["offset"] ?? false) && intval($options["offset"]) > 0) || 
                         # Check page
-                        (is_numeric($options["page"] ?? false) && intval($options["page"]) > 0)
+                        (is_numeric($options["page"] ?? false) && intval($options["page"]) != 0)
                     ){
 
                             # Append offset / page
@@ -1264,7 +1264,7 @@ class Mariadb implements CrazyDatabaseDriver {
                         # Check offset
                         (is_numeric($options["offset"] ?? false) && intval($options["offset"]) > 0) || 
                         # Check page
-                        (is_numeric($options["page"] ?? false) && intval($options["page"]) > 0)
+                        (is_numeric($options["page"] ?? false) && intval($options["page"]) != 0)
                     ){
 
                         # Set limit

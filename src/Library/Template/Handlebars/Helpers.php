@@ -1873,4 +1873,79 @@ class Helpers {
         
     }
 
+    /**
+     * Iterate Until
+     * 
+     * Injects a loop range into the template.
+     * 
+     * @param mixed $max
+     * @param mixed options
+     */
+    public static function iterateUntil($max, $options) {
+
+        # Get start at one
+        $startAtOne = true;
+
+        // Chech hash smooth
+        if(isset($options['hash']['startAtOne']))
+
+            # Set smooth
+            $startAtOne = filter_var($options['hash']['startAtOne'], FILTER_VALIDATE_BOOLEAN);
+
+
+        # Set start
+        $start = $startAtOne ? 1 : 0;
+
+        # Set buffer
+        $buffer = '';
+
+        # Set max
+        $maxCalculated = 0;
+
+        # Set maxCalculated
+        if(is_array(($max))){
+
+            # Set max
+            $maxCalculated = count($max);
+
+        }else
+        # Check is numeric
+        if(is_numeric($max)){
+
+            # Set max
+            $maxCalculated = is_int($max) ? $max : intval($max);
+
+        }else
+        # Check is string
+        if(is_string($max)){
+
+            # Set max
+            $maxCalculated = strlen($max);
+
+        }
+
+        # Set count
+        $count = $maxCalculated - $start + 1;
+
+        # Loop
+        for($i = $start; $i <= $maxCalculated; $i++) {
+
+            # Set
+            $currentIndex = $i - $start;
+
+            # Execute block with current 'i'
+            $buffer .= $options['fn']([
+                'i' => $i,
+                '@index' => $currentIndex,
+                '@first' => $currentIndex === 0,
+                '@last' => $currentIndex === ($count - 1),
+            ]);
+
+        }
+
+        # Return buffer
+        return $buffer;
+
+    }
+
 }
