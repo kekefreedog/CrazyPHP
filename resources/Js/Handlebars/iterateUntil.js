@@ -70,11 +70,12 @@ module.exports = function(max, options) {
         const currentIndex = i - start;
 
         // Set output
-        output += options.fn({
-            "i":i,
-            "@index": currentIndex,
-            "@first": currentIndex === 0,
-            "@last": currentIndex === count - 1,
+        output += options.fn({ i }, {
+            data: {
+                index: currentIndex,
+                first: currentIndex === 0,
+                last: currentIndex === count - 1,
+            }
         });
 
     }
