@@ -924,7 +924,7 @@ class Composer {
                         'version'     => $package['version'] ?? '',
                         'description' => $package['description'] ?? '',
                         'url'         => $package['homepage'] ?? $package['source']['url'] ?? '',
-                        'license'     => $package['license'] ?? [],
+                        'license'     => isset($data['license']) && $data['license'] ? (is_array($data['license']) ? $data['license'] : [$data['license']]) : [],
                         'type'        => $package['type'] ?? '',
                         'authors'     => $package['authors'] ?? [], // Optional, often helpful
                         'source'      => $package['source'] ?? [],

@@ -845,7 +845,7 @@ class Package{
                         'version'     => $data['version'] ?? '',
                         'description' => $data['description'] ?? '',
                         'url'         => isset($data['funding']['url']) ? str_replace(["?sponsor=1"], "", $data['funding']['url']) : (isset($data['funding'][0]['url']) ? str_replace(["?sponsor=1"], "", $data['funding'][0]['url']) : ''),
-                        'license'     => $data['license'] ?? '',
+                        'license'     => isset($data['license']) && $data['license'] ? (is_array($data['license']) ? $data['license'] : [$data['license']]) : [],
                         'type'        => 'npm',
                         'authors'     => [],
                         'source'      => [
