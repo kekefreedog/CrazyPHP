@@ -183,3 +183,12 @@ php vendor/phpunit/phpunit/phpunit
   - [Test](docs/Src/Test.md) : Test of the code
 - Structure
   - [Create Folder Structure](docs/Structure/CreateFolderStructure.md) : Tutoriel to learn how to create folder schema
+
+ ## License
+
+This framework is licensed under the [MPL 2.0](https://www.mozilla.org/MPL/2.0/).
+
+You are free to use, modify, and redistribute it, provided that any modified files are also distributed under the same license.
+
+For a commercial license or professional support, please contact [kevin.zashenas@gmail.com](mailto:kevin.zashenas@gmail.com).
+
