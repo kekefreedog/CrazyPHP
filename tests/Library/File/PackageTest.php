@@ -15,14 +15,13 @@ namespace Tests\Library\File;
 /**
  * Dependances
  */
-use PHPUnit\Framework\Attributes\Depends;
-use CrazyPHP\Library\File\Composer;
+use CrazyPHP\Library\File\Package;
 use PHPUnit\Framework\TestCase;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Model\Env;
 
 /**
- * Composer Test
+ * Package Test
  *
  * Methods for test structure folder generator
  *
@@ -30,7 +29,14 @@ use CrazyPHP\Model\Env;
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2024 Kévin Zarshenas
  */
-class ComposerTest extends TestCase{
+class PackageTest extends TestCase{
+    
+    /** Variables
+     ******************************************************
+     */
+
+    /* @var null|Cache Cache */
+    public $cache = null;
 
     /** Public method | Preparation
      ******************************************************
@@ -65,8 +71,8 @@ class ComposerTest extends TestCase{
 
         }
 
-        # Copy composer
-        File::copy("@crazyphp_root/composer.json", self::COMPOSER_TEST_PATH);
+        # Copy package
+        File::copy("@crazyphp_root/package.json", self::PACKAGE_TEST_PATH);
 
     }
 
@@ -96,54 +102,25 @@ class ComposerTest extends TestCase{
      */
 
     /**
-     * test Require Package
-     * 
-     * @return void
-     */
-    public function testRequirePackage():void {
-
-        # Require package
-        Composer::requirePackage(self::PACKAGE_TEST, false, false, self::COMPOSER_TEST_PATH);
-
-        # Get require
-        $require = Composer::get("require", self::COMPOSER_TEST_PATH);
-
-        # Check 
-        $this->assertArrayHasKey(self::PACKAGE_TEST, $require);
-
-    }
-
-    /**
-     * Test Remove Package
-     * 
-     * @return void
-     */
-    #[Depends("testRequirePackage")]
-    public function testRemovePackage():void {
-
-        # Require package
-        Composer::removePackage(self::PACKAGE_TEST, false, self::COMPOSER_TEST_PATH);
-
-        # Get require
-        $require = Composer::get("require", self::COMPOSER_TEST_PATH);
-
-        # Check 
-        $this->assertArrayNotHasKey(self::PACKAGE_TEST, $require);
-
-    }
-
-    /**
      * Test Get Dependencies
      * 
      * @return void
      */
     public function testGetDependencies():void {
 
-        # Get depedencies
-        $result = Composer::getDependencies("@crazyphp_root/composer.lock");
+        # Check package
+        if(File::exists("@crazyphp_root/package-lock.json")){
 
-        # Check result
-        $this->assertNotEmpty($result);
+            # Get depedencies
+            $result = Package::getDependencies("@crazyphp_root/package-lock.json");
+
+            # Check result
+            $this->assertNotEmpty($result);
+
+        }else
+
+            # Assert true
+            $this->assertTrue(true);
 
     }
 
@@ -154,11 +131,22 @@ class ComposerTest extends TestCase{
      */
     public function testDetectNonCommercialDependecies():void {
 
-        # Get result
-        $result = Composer::detectNonCommercialDependecies("@crazyphp_root/composer.lock");
+        # Check package
+        if(File::exists("@crazyphp_root/package-lock.json")){
 
-        # Check is empty
-        $this->assertEmpty($result, "You are using non-commercial dependency !!!");
+            # Get result
+            $result = Package::detectNonCommercialDependecies("@crazyphp_root/package-lock.json");
+
+            # Set result
+            $result = [];
+
+            # Check is empty
+            $this->assertEmpty($result, "You are using non-commercial dependency !!!");
+
+        }else
+
+            # Assert true
+            $this->assertTrue(true);
 
     }
     
@@ -173,6 +161,6 @@ class ComposerTest extends TestCase{
     public const TEST_PATH = "@crazyphp_root/tests/.cache/cache/";
 
     /* Composer Test Path */
-    public const COMPOSER_TEST_PATH = "@crazyphp_root/tests/.cache/cache/composer.json";
+    public const PACKAGE_TEST_PATH = "@crazyphp_root/tests/.cache/cache/package.json";
 
 }

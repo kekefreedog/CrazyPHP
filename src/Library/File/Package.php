@@ -19,6 +19,7 @@ use CrazyPHP\Library\File\Config as FileConfig;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\File\Composer;
 use CrazyPHP\Library\Form\Process;
+use CrazyPHP\Library\Cache\Cache;
 use CrazyPHP\Library\Cli\Command;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Library\File\Json;
@@ -795,5 +796,138 @@ class Package{
         static::setValue("$parent.$key", $value);
 
     }
+    
+    /**
+     * Get Dependencies
+     * 
+     * Get NPM dependencies with metadata from package-lock.json
+     *
+     * @param string $path Path to package-lock.json
+     * @return array
+     */
+    public static function getDependencies(string $path = self::PATH["package-lock.json"]):array {
+
+        # Set result
+        $result = [];
+
+        # Check file exits
+        if(File::exists($path)){
+
+            # New cache instance
+            $cache = new Cache();
+
+            # Get key
+            $key = File::path(pathinfo($path, PATHINFO_FILENAME))."packageDepencies";
+
+            # Set lastModifiedDate
+            $lastModifiedDate = File::getLastModifiedDate($path);
+
+            # Check cache is valid
+            if(!$cache->hasUpToDate($key, $lastModifiedDate)){
+
+                # Set dependencies
+                $dependencies = [];
+
+                # Get lock data
+                $json = Json::open($path);
+
+                foreach ($json['packages'] ?? [] as $name => $data) {
+
+                    # skip root package
+                    if($name === '') 
+
+                        # Continie
+                        continue; 
+
+                    # Push into result 
+                    $dependencies[] = [
+                        'name'        => ltrim($name, 'node_modules/'),
+                        'version'     => $data['version'] ?? '',
+                        'description' => $data['description'] ?? '',
+                        'url'         => isset($data['funding']['url']) ? str_replace(["?sponsor=1"], "", $data['funding']['url']) : (isset($data['funding'][0]['url']) ? str_replace(["?sponsor=1"], "", $data['funding'][0]['url']) : ''),
+                        'license'     => $data['license'] ?? '',
+                        'type'        => 'npm',
+                        'authors'     => [],
+                        'source'      => [
+                            'type'      => 'npm',
+                            'url'       => $data['resolved'] ?? '',
+                            'integrity' => $data['integrity'] ?? '',
+                        ],
+                    ];
+
+                    # Set Cache
+                    $cache->set($key, $dependencies);
+                
+                }
+
+            }
+
+            # Get Cache
+            $result = $cache->get($key, $result);
+
+        }
+
+        # Return result
+        return $result;
+    }
+
+    /**
+     * Detect Non Commercial Dependecies
+     * 
+     * Detect non-commercial or non-permissive licenses from dependency list
+     *
+     * @param string $path Path to package-lock.json file
+     * @return array
+     */
+    public static function detectNonCommercialDependecies(string $path = self::PATH["package-lock.json"]):array {
+
+        # Set result
+        $result = [];
+
+        # Get dependencies
+        $dependencies = static::getDependencies($path);
+
+        # Iteration dependencies
+        if(!empty($dependencies)) foreach($dependencies as $dep){
+
+            # Set licences
+            $licenses = is_array($dep['license']) 
+                ? $dep['license'] 
+                : [$dep['license']]
+            ;
+
+            # Iteration licence
+            if(!empty($licenses)) foreach($licenses as $license)
+
+                # Iteration non commerical licence
+                foreach(static::NON_COMMERCIAL_LICENSE as $pattern)
+
+                    # Check
+                    if(stripos($license, $pattern) !== false) {
+
+                            # Set flag
+                            $result[] = $dep;
+
+                            # Stop at first match per dependency
+                            break 2; 
+                        
+                    }
+
+        }
+
+        # Return result
+        return $result;
+
+    }
+    
+    /** Public constants
+     ******************************************************
+     */
+
+    /**
+     * NON_COMMERCIAL_LICENSE
+     * Define license keywords considered restrictive or non-commercial 
+     */
+    public const NON_COMMERCIAL_LICENSE = Composer::NON_COMMERCIAL_LICENSE;
 
 }

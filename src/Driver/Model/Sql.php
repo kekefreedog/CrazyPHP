@@ -27,9 +27,6 @@ use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Core\Model;
 
-/* use PhpMyAdmin\SqlParser\Statements\SelectStatement;
-use PhpMyAdmin\SqlParser\Parser; */
-
 /**
  * Crazy Driver Model Interface
  * 

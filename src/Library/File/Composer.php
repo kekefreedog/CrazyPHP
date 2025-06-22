@@ -17,6 +17,7 @@ namespace CrazyPHP\Library\File;
  */
 use CrazyPHP\Library\File\Config as FileConfig;
 use CrazyPHP\Exception\CrazyException;
+use CrazyPHP\Library\Cache\Cache;
 use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\Cli\Command;
 use CrazyPHP\Library\File\Json;
@@ -350,7 +351,7 @@ class Composer {
      * 
      * Get value in composer
      *
-     * @param array $input Input to search in composer.json
+     * @param string $input Input to search in composer.json
      * @param string $file File composer.json
      * @return
      */
@@ -420,7 +421,7 @@ class Composer {
     /**
      * Read value in composer.json
      *
-     * @param string  $values Values to update on composer.json
+     * @param array $values Values to update on composer.json
      * @param string $createIfNotExists create parameter if doesn't exists
      * @param string $file File composer.json
      * @return array
@@ -873,6 +874,118 @@ class Composer {
         return $result;
 
     }
+
+    /**
+     * Get Dependencies
+     * 
+     * Get all composer dependencies with metadata
+     *
+     * @param string $path Path to composer.lock file
+     * @return array
+     */
+    public static function getDependencies(string $path = self::PATH["composer.lock"]):array {
+
+        # Set result
+        $result = [];
+
+        # Check file exits
+        if(File::exists($path)){
+
+            # New cache instance
+            $cache = new Cache();
+
+            # Get key
+            $key = File::path(pathinfo($path, PATHINFO_FILENAME))."composerDepencies";
+
+            # Set lastModifiedDate
+            $lastModifiedDate = File::getLastModifiedDate($path);
+
+            # Check cache is valid
+            if(!$cache->hasUpToDate($key, $lastModifiedDate)){
+
+                # Set dependencies
+                $dependencies = [];
+
+                # Get lock data
+                $lockData = Json::open($path);
+
+                # Combine "packages" and "packages-dev"
+                $allPackages = array_merge(
+                    $lockData['packages'] ?? [],
+                    $lockData['packages-dev'] ?? []
+                );
+
+                # Iteration packages
+                if(!empty($allPackages)) foreach($allPackages as $package)
+
+                    # Push into result
+                    $dependencies[] = [
+                        'name'        => $package['name'] ?? '',
+                        'version'     => $package['version'] ?? '',
+                        'description' => $package['description'] ?? '',
+                        'url'         => $package['homepage'] ?? $package['source']['url'] ?? '',
+                        'license'     => $package['license'] ?? [],
+                        'type'        => $package['type'] ?? '',
+                        'authors'     => $package['authors'] ?? [], // Optional, often helpful
+                        'source'      => $package['source'] ?? [],
+                    ];
+
+                # Set Cache
+                $cache->set($key, $dependencies);
+
+            } 
+
+            # Get Cache
+            $result = $cache->get($key, $result);
+
+        }
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Detect Non Commercial Dependecies
+     * 
+     * Detect non-commercial or non-permissive licenses from dependency list
+     *
+     * @param string $path Path to composer.lock file
+     * @return array
+     */
+    public static function detectNonCommercialDependecies(string $path = self::PATH["composer.lock"]):array {
+
+        # Set result
+        $result = [];
+
+        # Get dependencies
+        $dependencies = static::getDependencies($path);
+
+        # Iteration dependencies
+        if(!empty($dependencies)) foreach($dependencies as $dep)
+
+            # Iteration licence
+            foreach($dep['license'] ?? [] as $license)
+
+                # Iteration non commerical licence
+                foreach(static::NON_COMMERCIAL_LICENSE as $pattern)
+
+                    # Check
+                    if(stripos($license, $pattern) !== false) {
+
+                            # Set flag
+                            $result[] = $dep;
+
+                            # Stop at first match per dependency
+                            break 2; 
+                        
+                    }
+
+
+        # Return result
+        return $result;
+
+    }
     
     /** Public constants
      ******************************************************
@@ -880,5 +993,20 @@ class Composer {
 
     /** @const separator */
     public const SEPARATOR = [".", "___"];
+
+    /**
+     * NON_COMMERCIAL_LICENSE
+     * Define license keywords considered restrictive or non-commercial 
+     */
+    public const NON_COMMERCIAL_LICENSE = [
+        # Copyleft licenses
+        'AGPL', 'GPL', 'LGPL', 'EPL',
+        # Creative Commons Non-Commercial
+        'CC-BY-NC', 'CC-BY-NC-SA',
+        # Business Source / Proprietary
+        'BUSL', 'Proprietary',
+        # Generic mentions
+        'Non-Commercial', 'NonCommercial',
+    ];
 
 }
