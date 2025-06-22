@@ -3,6 +3,7 @@
     "version": "0.7.0",
     "description": "My crazy framework for creating ultra-fast webapps.",
     "type": "library",
+    "license": "MPL-2.0",
     "autoload": {
         "psr-4": {
             "CrazyPHP\\": "src/"
