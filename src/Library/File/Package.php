@@ -854,11 +854,11 @@ class Package{
                             'integrity' => $data['integrity'] ?? '',
                         ],
                     ];
-
-                    # Set Cache
-                    $cache->set($key, $dependencies);
                 
                 }
+
+                # Set Cache
+                $cache->set($key, $dependencies);
 
             }
 
