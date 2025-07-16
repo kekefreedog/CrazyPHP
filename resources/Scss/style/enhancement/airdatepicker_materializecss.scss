@@ -1,0 +1,91 @@
+/// /// ///
+/// Enhancement - Crazy Content
+///
+/// Ease pick ft. Materialize
+///
+/// @package    kzarshenas/crazyphp
+/// @author     kekefreedog <kevin.zarshenas@gmail.com>
+/// @copyright  2022-2024 Kévin Zarshenas
+/// /// /// 
+
+.air-datepicker {
+
+    // Transition
+    --adp-transition-duration: 0.11s; // faster
+
+    // Font and surface
+    --adp-font-family: 'Roboto', sans-serif;
+    --adp-background-color: var(--md-sys-color-surface);
+    --adp-color: var(--md-sys-color-on-surface);
+    --adp-color-secondary: var(--md-sys-color-on-surface-variant);
+    --adp-border-color: var(--md-sys-color-outline-variant);
+    --adp-border-color-inner: var(--md-sys-color-outline-variant);
+
+    // Current date
+    --adp-color-current-date: var(--md-sys-color-primary);
+
+    // Hover states
+    --adp-background-color-hover: var(--md-sys-color-surface-variant);
+    --adp-background-color-active: var(--md-sys-color-surface-variant);
+
+    // Selected state
+    --adp-cell-background-color-selected: var(--md-sys-color-primary);
+    --adp-cell-background-color-selected-hover: var(--md-sys-color-primary-container);
+    --adp-cell-border-color-in-range: var(--md-sys-color-primary);
+    --adp-cell-background-color-in-range: var(--md-sys-color-primary-container);
+    --adp-cell-background-color-in-range-hover: var(--md-sys-color-primary-container);
+    --adp-color-other-month: var(--md-sys-color-outline);
+    --adp-color-other-month-hover: var(--md-sys-color-on-surface-variant);
+
+    // Buttons
+    --adp-btn-color: var(--md-sys-color-primary);
+    --adp-btn-color-hover: var(--md-sys-color-on-primary);
+    --adp-btn-background-color-hover: var(--md-sys-color-primary-container);
+    --adp-btn-background-color-active: var(--md-sys-color-primary-container);
+
+    // Time picker
+    --adp-time-track-color: var(--md-sys-color-outline-variant);
+    --adp-time-track-color-hover: var(--md-sys-color-primary);
+    --adp-time-day-period-color: var(--md-sys-color-on-surface-variant);
+
+
+    // Nav
+    .air-datepicker-nav {
+
+        // Dimension
+        height: 32px;
+        padding: 0px;
+        
+        // Shadow
+        box-shadow: initial;
+        
+        // Color
+        background-color: inherit;
+        color: var(--adp-nav-color-secondary)!important;
+        
+        // Font size
+        .air-datepicker-nav--title {
+
+            // Font size
+            font-size: 14px;
+
+            i {
+
+                // Font size
+                font-size: 14px;
+
+            }
+
+        }
+
+    }
+
+    // Pointer
+    i.air-datepicker--pointer {
+
+        // Display
+        display: none;
+
+    }
+
+}

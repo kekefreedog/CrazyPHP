@@ -31,6 +31,10 @@
 /* Import ease picker Enhancement */
 @import '../enhancement/easepick_materializecss.scss';
 
+/* Import Air Date Picker */
+@import '../enhancement/airdatepicker_materializecss.scss';
+@import 'air-datepicker/air-datepicker.css';
+
 
 /* Partial */
 [partial="form"] {

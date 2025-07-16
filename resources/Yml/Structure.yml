@@ -180,6 +180,8 @@ Structure:
                             source: "@crazyphp_root/resources/Scss/style/enhancement/sweetalert_materializecss.scss"
                           tomselect_materializecss.scss:
                             source: "@crazyphp_root/resources/Scss/style/enhancement/tomselect_materializecss.scss"
+                          airdatepicker_materializecss.scss:
+                            source: "@crazyphp_root/resources/Scss/style/enhancement/airdatepicker_materializecss.scss"
                       partial:
                         files:
                           _preloader_linear_indeterminate.scss:

@@ -18,7 +18,9 @@ import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type';
 import { TomSettings, RecursivePartial } from 'tom-select/dist/types/types';
 // @ts-ignore
 import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
+import AirDatepicker, { AirDatepickerOptions } from 'air-datepicker';
 import IMask, { MaskedOptions, MaskedNumberOptions } from 'imask';
+import airDatePickerLocaleFr from 'air-datepicker/locale/fr'
 import { IPickerConfig } from '@easepick/core/dist/types';
 import {default as PageError} from './../Error/Page';
 import {default as UtilityStrings} from './Strings';
@@ -2092,7 +2094,7 @@ export default class Form {
             // Check filter
             if(!this._options.filter || (this._options.filter && value)){
 
-                if(itemEl instanceof HTMLInputElement && "datePicker" in itemEl.dataset && itemEl.dataset.datePicker == "easepick"){
+                if(itemEl instanceof HTMLInputElement && "datePicker" in itemEl.dataset && itemEl.dataset.datePicker && ["easepick", "airdatepicker"].includes(itemEl.dataset.datePicker)){
 
                     // Split by separator
                     let splitedValue = value.split(" - ");
@@ -3536,7 +3538,7 @@ export default class Form {
      */
     private _initDateInput = async (inputEl:HTMLSelectElement|HTMLInputElement):Promise<void> => {
 
-        // Check input
+        // Check input is easepick
         if(inputEl instanceof HTMLInputElement && "datePicker" in inputEl.dataset && inputEl.dataset.datePicker == "easepick"){
 
             // Prepare options
@@ -3623,6 +3625,124 @@ export default class Form {
 
             // New picker instance
             const picker = new easepick.create(options);
+
+        }else
+        // Check input is airdatepicker
+        if(inputEl instanceof HTMLInputElement && "datePicker" in inputEl.dataset && inputEl.dataset.datePicker == "airdatepicker"){
+
+            console.log("toto");
+            
+            // Set options
+            let options:AirDatepickerOptions = {
+                dateFormat: "dateFormat" in inputEl.dataset && inputEl.dataset.dateFormat
+                    ? inputEl.dataset.dateFormat
+                    : "yyyy-MM-dd"
+                ,
+                autoClose: true,
+            };
+
+            // Set multiple
+            let multiple = false;
+
+            // Check if input multiple
+            if(inputEl.multiple){
+
+                // Set range
+                options.range = true,
+
+                // Set separator
+                options.multipleDatesSeparator = ' - ';
+
+                // Set multiple
+                multiple = true;
+
+            }
+
+            // Check lang
+            if("dateLang" in inputEl.dataset && inputEl.dataset.dateLang == "fr-FR"){
+
+                // Push in options format
+                options.locale = airDatePickerLocaleFr;
+
+            }
+
+            // Check min
+            if(inputEl.hasAttribute("min") && inputEl.getAttribute("min") && typeof inputEl.getAttribute("min") === "string"){
+
+                // Get date
+                let dateMin = new Date(inputEl.getAttribute("min") as string);
+
+                // Set min
+                options.minDate = dateMin;
+
+            }
+
+            // Check max
+            if(inputEl.hasAttribute("max") && inputEl.getAttribute("max") && typeof inputEl.getAttribute("max") === "string"){
+
+                // Get date
+                let dateMax = new Date(inputEl.getAttribute("max") as string);
+
+                // Set max
+                options.maxDate = dateMax;
+
+            }
+
+            // Check not requierd
+            if(!inputEl.required){
+
+                options.buttons = ['clear'];
+
+            }
+
+
+            // Set on select
+            options.onSelect = ({date, formattedDate, datepicker}):void => {
+
+                // Get input el
+                let inputEl = datepicker.$el;
+
+                console.log(date);
+
+                // Check multiple and date is 2
+                if(multiple && Array.isArray(date) && date.length == 1) return;
+
+                // Check input el
+                if(inputEl instanceof HTMLInputElement){
+
+                    // Dispatch event input
+                    inputEl.dispatchEvent(new Event('input',{bubbles:true}));
+
+                    // Dispatch event change
+                    inputEl.dispatchEvent(new Event('change',{bubbles:true}));
+
+                }
+
+            }
+
+            // New picker instance
+            const picker = new AirDatepicker(inputEl, options);
+
+            // Add event
+            document.addEventListener('click', (e) => {
+
+                // Get calendat el
+                const calendarEl = document.querySelector('.air-datepicker');
+
+                // Check if click is outside the datepicker and input
+                if(
+                    // Check calendar
+                    calendarEl instanceof HTMLElement &&
+                    !calendarEl.contains(e.target as Node) &&
+                    !inputEl.contains(e.target as Node)
+                ){
+
+                    // Hide picker
+                    picker.visible && picker.hide();
+
+                }
+
+            });
 
         }
 

@@ -29,6 +29,7 @@
         "@easepick/bundle": "^1.2.1",
         "@material/material-color-utilities": "^0.3.0",
         "@simonwep/pickr": "^1.9.1",
+        "air-datepicker": "^3.6.0",
         "filepond": "^4.32.6",
         "filepond-plugin-file-validate-type": "^1.2.9",
         "filepond-plugin-image-exif-orientation": "^1.0.11",

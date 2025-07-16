@@ -724,7 +724,7 @@ class Form {
         # Set result
         $result = [];
 
-        # Check value
+        # Check value 2
         if(is_array($value) && count($value) >= 2){
 
             # Keep 2 first item of the value
@@ -763,6 +763,51 @@ class Form {
                 # Reverse array
                 $result = array_reverse($result);
 
+        }else
+        # Check value 1
+        if(is_array($value) && count($value) >= 1){
+
+            # Check value 0
+            if(array_key_exists(0, $value)){
+
+                # First item
+                $firstItem = static::_parseTodayYesterdayTomorrow($value[0]["value"] ?? null);
+
+                # Check if dates are valid
+                if(static::_isYmdDate($firstItem)){
+
+                    # Set result
+                    $result = [
+                        0   =>  [
+                            "value" =>  $firstItem
+                        ],
+                    ];
+
+                }
+
+            }
+
+            # Check value 1
+            if(array_key_exists(1, $value)){
+
+                # First item
+                $secondItem = static::_parseTodayYesterdayTomorrow($value[1]["value"] ?? null);
+
+                # Check if dates are valid
+                if(static::_isYmdDate($secondItem)){
+
+                    # Set result
+                    $result = [
+                        1   =>  [
+                            "value" =>  $secondItem
+                        ]
+                    ];
+
+                }
+
+            }
+
+            
         }
 
         # Return result
