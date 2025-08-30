@@ -1130,6 +1130,29 @@ class Helpers {
     }
 
     /**
+     * Modulo
+     * 
+     * Return the sum of `a` % `b`.
+     * 
+     * @param a Value to compare
+     * @param b Value to compare with
+     * 
+     * @return mixed
+     */
+    public static function modulo($a, $b, $option) {
+
+        # Check if both are numbers
+        if (is_numeric($a) && is_numeric($b))
+
+            # Return sum, casting to numbers explicitly
+            return (float)$a % (float)$b;
+
+        # Return empty string
+        return 1;
+
+    }
+
+    /**
      * Subtract
      * 
      * Return the difference of `a` by `b`.

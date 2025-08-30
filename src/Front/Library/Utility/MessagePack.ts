@@ -36,7 +36,7 @@ export default class MessagePack {
      * @param input to stringify
      * @returns {ArrayBuffer}
      */
-    public static stringify = (input:any):ArrayBuffer => {
+    public static stringify = (input:any):Buffer|Uint8Array => {
 
         let result = pack(input);
 

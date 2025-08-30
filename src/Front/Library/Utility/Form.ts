@@ -496,14 +496,36 @@ export default class Form {
         // Get all select and input on form el
         let items = formEl.querySelectorAll("select[name], input[name]");
 
+        // Radio already checked
+        let radioAlreadyChecked:string[] = [];
+
         // Check items
         if(items.length)
 
             // Iteration items
-            for (let i = 0; i < items.length; i++){
+            iterationItems:for (let i = 0; i < items.length; i++){
 
                 // Get current item
                 let currentItem = items[i];
+
+                // Check if radio
+                if(currentItem instanceof HTMLInputElement && currentItem.name && currentItem.type === "radio"){
+
+                    // Check if radio already checked
+                    if(radioAlreadyChecked.includes(currentItem.name))
+
+                        // Continue
+                        continue iterationItems;
+
+                    // Else
+                    else{
+
+                        // Add item in checked list
+                        radioAlreadyChecked.push(currentItem.name);
+
+                    }
+
+                }
 
                 // Get multiple
                 let mutliple = (currentItem instanceof HTMLInputElement || currentItem instanceof HTMLSelectElement) && currentItem.multiple
@@ -2507,6 +2529,108 @@ export default class Form {
                 }
 
             }
+
+        }
+
+        // Return result
+        return result;
+
+    }
+
+    /** Private methods | Retrieve Radio
+     ******************************************************
+     */
+
+    /**
+     * Retrieve radio
+     * 
+     * @param itemEl:HTMLElement
+     * @return null|Array<any>
+     */
+    private radioRetrieve = (itemEl:HTMLElement):null|Array<any> => {
+
+        // Set result
+        let result:null|Array<any> = null;
+
+        // Check value
+        if("value" in itemEl && "name" in itemEl && itemEl instanceof HTMLInputElement){
+
+            // Declare value
+            let value:string = "";
+
+            // Declare key
+            let key:string = itemEl.name as string;
+
+            // Check form
+            if(itemEl.form && itemEl.name){
+
+                // Get all similar radio
+                let radioEls = itemEl.form.querySelectorAll(`input[name=${itemEl.name}]`);
+
+                // Iteration
+                if(radioEls.length) for(let radioEl of Array.from(radioEls)) if(radioEl instanceof HTMLInputElement && radioEl.checked){
+
+                    // Set value
+                    value = radioEl.value as string;
+
+                    // Break
+                    break;
+
+                }
+
+            }
+
+            // Push in result
+            result = [key, value];
+
+        }
+
+        // Return result
+        return result;
+
+    }
+
+    /**
+     * Retrieve Radio Multiple
+     * 
+     * @param itemEl:HTMLElement
+     * @return null|Array<any>[]
+     */
+    private radioRetrieveMultiple = (itemEl:HTMLElement):null|Array<any>[] => {
+
+        // Set result
+        let result:null|Array<any> = null;
+
+        // Check value
+        if("value" in itemEl && "name" in itemEl && itemEl instanceof HTMLInputElement){
+
+            // Declare value
+            let value:string = "";
+
+            // Declare key
+            let key:string = itemEl.name as string;
+
+            // Check form
+            if(itemEl.form && itemEl.name){
+
+                // Get all similar radio
+                let radioEls = itemEl.form.querySelectorAll(`input[name=${itemEl.name}]`);
+
+                // Iteration
+                if(radioEls.length) for(let radioEl of Array.from(radioEls)) if(radioEl instanceof HTMLInputElement && radioEl.checked){
+
+                    // Set value
+                    value = radioEl.value as string;
+
+                    // Break
+                    break;
+
+                }
+
+            }
+
+            // Push in result
+            result = [[key, value]];
 
         }
 
