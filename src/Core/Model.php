@@ -199,7 +199,7 @@ class Model implements CrazyModel {
         # Set attributes as values
         $this->driver
             ->setAttributesAsValues()
-            ->forceSummary($options["summary"] ?? null)
+            ->run()
         ;
 
         # Return instance

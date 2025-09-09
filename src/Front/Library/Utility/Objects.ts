@@ -368,6 +368,22 @@ export default class Objects {
         return Arrays.equal(value1, value2);
 
     }
+
+    /**
+     * Map Headers
+     * 
+     * @param headers
+     * @param row 
+     * @returns {Record<T[number], any}
+     */
+    public static mapHeaders = <T extends readonly string[]>(headers: T,row: Record<number, any>): Record<T[number], any> => {
+    
+        // Return result
+        return Object.fromEntries(
+            Object.entries(row).map(([key, value]) => [headers[Number(key)], value])
+        ) as Record<T[number], any>;
+
+    }
     
 }
 
