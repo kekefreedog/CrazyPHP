@@ -480,6 +480,8 @@ class Up implements CrazyCommand {
                 # Get docker service id
                 $dockerServiceConfig = Arrays::filterByKey($dockerConfig, "Service", $dockerServiceName);
 
+                /**
+
                 # Exract value
                 $dockerServiceId = $dockerServiceConfig[array_key_first($dockerServiceConfig)]["ID"];
 
@@ -517,6 +519,14 @@ class Up implements CrazyCommand {
 
                 # Update host of current database
                 FileConfig::setValue("Database.collection.$database.host", $hostname);
+
+                */
+
+                # Get service id
+                $serviceName = array_key_first($dockerServiceConfig);
+
+                # Update host of current database
+                $serviceName && FileConfig::setValue("Database.collection.$database.host", $serviceName);
 
             }
 
