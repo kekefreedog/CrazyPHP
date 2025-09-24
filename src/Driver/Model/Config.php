@@ -414,8 +414,9 @@ class Config implements CrazyDriverModel {
 
         # Get host name
         $hostname = isset($_SERVER['REQUEST_SCHEME']) && isset($_SERVER['HTTP_HOST']) 
-            ? $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'] 
-            : "";
+            ? ($_SERVER["HTTP_X_FORWARDED_PROTO"] ?? $_SERVER['REQUEST_SCHEME']).'://'.$_SERVER['HTTP_HOST'] 
+            : ""
+		;
 
         # add hostame to result
         $result = "$hostname".($result == "index" ? "" : "/$result");

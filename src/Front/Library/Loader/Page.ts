@@ -496,10 +496,12 @@ export default class Page {
             return options;
 
         // Check url in options
-        if("url" in options && options.url !== null)
+        if("url" in options && options.url !== null){
 
             // Set new url
             Crazyurl.set(options.url);
+
+        }
 
         // Return options
         return options;

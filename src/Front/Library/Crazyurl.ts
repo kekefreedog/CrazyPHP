@@ -38,15 +38,28 @@ export default class Crazyurl {
      */
     public static set = (newPathname:string|URL = ""):void => {
 
-        // Convert path to url if is a string
-        if(typeof newPathname === "string"){
+        // Get url
+        let url: string;
 
-            newPathname = new URL(newPathname);
+        // Check path
+        if(newPathname instanceof URL){
+
+            // Set url
+            url = newPathname.toString();
+        
+        // Else
+        } else {
+
+            // Make sure it's relative to current origin
+            url = new URL(newPathname, window.location.origin).toString();
 
         }
 
-        // Push new pathname
-        window.history.pushState({}, "", newPathname.toString());
+        // Remove origin
+        if(url.startsWith(window.origin)) url = url.replace(window.origin, "")
+
+        // Update
+        window.history.pushState({}, "", url);
 
     }
 

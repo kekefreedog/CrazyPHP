@@ -1971,4 +1971,54 @@ class Helpers {
 
     }
 
+    /**
+     * To Hex Color
+     * 
+     * Return color string to hex
+     * 
+     * @param mixed $max
+     * @param mixed options
+     */
+    public static function toHexColor($input, $options) {
+
+        $input = trim($input);
+
+        // Case: rgb(r,g,b) OR raw "r,g,b"
+        if (stripos($input, 'rgb') === 0 || preg_match('/^\s*\d+\s*,\s*\d+\s*,\s*\d+\s*$/', $input)) {
+            preg_match_all('/\d+/', $input, $matches);
+            if (count($matches[0]) !== 3) {
+                return "";
+            }
+
+            $rgb = array_map('intval', $matches[0]);
+            foreach ($rgb as $v) {
+                if ($v < 0 || $v > 255) {
+                    return "";
+                }
+            }
+
+            return sprintf("#%02X%02X%02X", $rgb[0], $rgb[1], $rgb[2]);
+        }
+
+        // Case: hex
+        if (strpos($input, '#') === 0) {
+            $hex = strtoupper($input);
+
+            // Expand shorthand (#FFF → #FFFFFF)
+            if (strlen($hex) === 4) {
+                $hex = "#" . $hex[1] . $hex[1] . $hex[2] . $hex[2] . $hex[3] . $hex[3];
+            }
+
+            if (preg_match('/^#[0-9A-F]{6}$/i', $hex)) {
+                return $hex;
+            } else {
+                return "";
+            }
+        }
+
+        // Unsupported
+        return "";
+
+    }
+
 }
