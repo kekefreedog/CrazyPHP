@@ -498,10 +498,10 @@ class Page {
     public function pushError(array $options = []):self {
 
         # Check code
-        if($options["code"] ?? false){
+        if(isset($options["code"]) ?? false){
 
             # Check code is string
-            if(is_string($options["code"]))
+            if(is_string($options["code"]) || $options["code"] == 0)
 
                 # Set code as int
                 $options["code"] = 500;
