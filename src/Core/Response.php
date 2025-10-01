@@ -130,7 +130,7 @@ class Response {
             
         else
         # Create stream
-        if(gettype($body) == "StreamInterface")
+        if($body instanceof StreamInterface)
 
             # Set stream
             $stream = $body;
