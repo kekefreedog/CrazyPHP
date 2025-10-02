@@ -28,7 +28,7 @@ use CrazyPHP\Exception\CrazyException;
  */
 class Server {
 
-    /** Public Static Methods
+    /** Public Static Methods | Content Type
      ******************************************************
      */
 
@@ -88,6 +88,25 @@ class Server {
                 break;
 
             }
+
+        # Return result
+        return $result;
+
+    }
+
+    /** Public Static Methods | Root
+     ******************************************************
+     */
+
+    /**
+     * Get Index Root
+     * 
+     * @return string
+     */
+    public static function getIndexRoot():string {
+
+        # Set result
+        $result = str_replace("index.php", "", $_SERVER["SCRIPT_FILENAME"] ?? ( $_SERVER["DOCUMENT_ROOT"] . $_SERVER["PHP_SELF"] ));
 
         # Return result
         return $result;

@@ -15,6 +15,7 @@ namespace App\Core;
 /**
  * Dependances
  */
+use CrazyPHP\Model\Env;
 
 /**
  * Kernel
@@ -32,6 +33,11 @@ class Kernel{
      * 
      * @return self
      */
-    public function __construct(){}
+    public function __construct(){
+
+        # Set default env
+        Env::setDefault();
+
+    }
 
 }

@@ -18,6 +18,7 @@ namespace CrazyPHP\Model;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\Form\Process;
+use CrazyPHP\Library\System\Server;
 
 /**
  * Config
@@ -81,6 +82,51 @@ class Env{
     }
 
     /**
+     * Set Default Env
+     * 
+     * @param array $input Extra input to process
+     * 
+     * @return void
+     */
+    public static function setDefault(array $input = []):void {
+
+        # Prepare env to push
+        $envToPush = [];
+
+        # Get default env
+        $defaultEnv = static::getDefault();
+
+        # Set inputs
+        $inputs = $defaultEnv + $input;
+
+        # Iteration inputs
+        if(!empty($inputs)) foreach($inputs as $k => $v) {
+
+            # Check k is string
+            if(!is_string($k) || !$k)
+    
+                # New Exception
+                throw new CrazyException(
+                    "Please check custom env \"$k\" => \"$v\". Actually env name looks not valid, you have to choose a char string name.",
+                    500,
+                    [
+                        "custom_code"   =>  "env-003",
+                    ]
+                );
+
+            else
+
+                # Push env in env to push
+                !static::has($k) && ( $envToPush[$k] = $v );
+
+        }
+
+        # Set envs
+        static::set($envToPush);
+
+    }
+
+    /**
      * Get
      * 
      * Get env from name
@@ -111,7 +157,7 @@ class Env{
                 "No env variable match with \"$input\", please define it before !",
                 500,
                 [
-                    "custom_code"   =>  "composer-002",
+                    "custom_code"   =>  "env-002",
                 ]
             );
 
@@ -119,6 +165,28 @@ class Env{
         $result = $GLOBALS[static::PREFIX][$input] ?? null;
 
         # Return
+        return $result;
+
+    }
+
+    /**
+     * Get Default Env
+     * 
+     * @return array
+     */
+    public static function getDefault():array {
+
+        # Get root index
+        $indexRoot = Server::getIndexRoot();
+
+        # Set result
+        $result = [
+            "app_root"      =>  realpath($indexRoot.".."),
+            "crazyphp_root" =>  realpath($indexRoot."../vendor/kzarshenas/crazyphp"),
+            "app_assets"    =>  realpath($indexRoot."../assets"),
+        ];
+
+        # Return result
         return $result;
 
     }
@@ -190,7 +258,7 @@ class Env{
                 "Input can't be an empty string !",
                 500,
                 [
-                    "custom_code"   =>  "composer-001",
+                    "custom_code"   =>  "env-001",
                 ]
             );
 

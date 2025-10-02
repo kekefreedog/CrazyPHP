@@ -69,38 +69,8 @@ class Core extends Kernel {
      */
     public function setEnv(array $customEnv = []):void {
 
-        # Env to push
-        $envToPush = [
-            "app_root"      =>  $_SERVER["DOCUMENT_ROOT"]."/..",
-            "crazyphp_root" =>  $_SERVER["DOCUMENT_ROOT"]."/../vendor/kzarshenas/crazyphp",
-            "app_assets"    =>  $_SERVER["DOCUMENT_ROOT"]."/../assets"
-        ];
-
-        # Merge custom env
-        if(!empty($customEnv))
-
-            # Iteration of custom env
-            foreach($customEnv as $k => $v)
-
-                # Check k is string
-                if(!is_string($k) || !$k)
-        
-                    # New Exception
-                    throw new CrazyException(
-                        "Please check custom env \"$k\" => \"$v\". Actually env name looks not valid, you have to choose a char string name.",
-                        500,
-                        [
-                            "custom_code"   =>  "core-002",
-                        ]
-                    );
-
-                else
-
-                    # Push env in env to push
-                    $envToPush[$k]  =   $v;
-
-        # Set envs
-        Env::set($envToPush);
+        # Set default env
+        Env::setDefault($customEnv);
 
     }
 
