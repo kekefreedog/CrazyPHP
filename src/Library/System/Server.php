@@ -94,6 +94,45 @@ class Server {
 
     }
 
+    /**
+     * Is Iframe
+     * 
+     * Detect if the current request is being loaded inside an iframe.
+     *
+     * @param bool $simulate
+     * @return bool
+     */
+    public static function isIframe(bool $simulate=false):bool {
+
+        # Set result
+        $result = $simulate;
+
+        # Chrome, Edge, Firefox send Sec-Fetch-Dest header
+        if(!empty($_SERVER['HTTP_SEC_FETCH_DEST']) && $_SERVER['HTTP_SEC_FETCH_DEST'] === 'iframe')
+
+            # Set result
+            $result = true;
+        
+        else
+        # Safari (older versions) sometimes omit Sec-Fetch headers
+        # You can add your own client-side header via JS if needed.
+        if(!empty($_SERVER['HTTP_X_FRAME_CONTEXT']) && $_SERVER['HTTP_X_FRAME_CONTEXT'] === 'true') 
+
+            # Set result
+            $result = true;
+
+        else
+        # Optionally, you can add a GET parameter fallback (if you pass one intentionally)
+        if(isset($_GET['iframe']) && $_GET['iframe'] === '1')
+
+            # Set result
+            $result = true;
+
+        # Return result
+        return $result;
+
+    }
+
     /** Public Static Methods | Root
      ******************************************************
      */

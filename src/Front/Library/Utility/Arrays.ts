@@ -214,7 +214,32 @@ export default class Arrays {
         // If one is an array and the other isn't, or different types
         return false;
         
-      }
+    }
+
+    /**
+     * Chunk Array
+     * 
+     * Split into batches of 50
+     * 
+     * @param arr 
+     * @param size 
+     * @returns 
+     */
+    public static chunk<T>(arr: T[], size:number = 50):T[][] {
+        
+        // Set result
+        const result: T[][] = [];
+
+        // Iteration
+        for(let i = 0; i < arr.length; i += size)
+
+            // Push to result
+            result.push(arr.slice(i, i + size));
+
+        // Return result
+        return result;
+
+    }
 
     /** Private static methods
      ******************************************************
