@@ -27,6 +27,7 @@ export {default as UtilityEvents} from "./Library/Utility/Events";
 export {default as UtilityRunner} from "./Library/Utility/Runner";
 export {default as UtilityArrays} from "./Library/Utility/Arrays";
 export {default as LoaderPartial} from "./Library/Loader/Partial";
+export {default as UtilityCookie} from "./Library/Utility/Cookie";
 export {default as Crazylanguage} from "./Library/Crazylanguage";
 export {default as LoaderEvents} from "./Library/Loader/Events";
 export {default as RegisterPage} from "./Library/Register/Page";
