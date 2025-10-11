@@ -15,7 +15,6 @@ namespace  CrazyPHP\Core;
 /**
  * Dependances
  */
-
 use CrazyPHP\Library\Router\Router as LibraryRouter;
 use Mezon\Router\Types\BaseType as VendorBaseType;
 use CrazyPHP\Driver\Model\Config as ModelConfig;

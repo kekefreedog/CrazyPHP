@@ -37,6 +37,7 @@ import Crazyurl from '../Crazyurl';
 import TomSelect from 'tom-select';
 import Objects from './Objects';
 import Root from '../Dom/Root';
+import { key } from 'localforage';
 
 
 /**
@@ -1258,10 +1259,15 @@ export default class Form {
     private _initFilter = async():Promise<void> => {
 
         // Check if filter
-        if(typeof this._formEl.dataset.formFilter === "string")
+        if(typeof this._formEl.dataset.formFilter === "string"){
 
             // Set filter option
             this._options.filter = true;
+
+            // Process filter
+            this._processForFilter(this._formEl);
+
+        }
 
     }
 
@@ -1471,6 +1477,14 @@ export default class Form {
 
                 // Get target
                 const target = event.target;
+
+                // Process Filter
+                if(currentTarget instanceof HTMLFormElement && this._options.filter){
+
+                    // Process for filter
+                    this._processForFilter(currentTarget)
+
+                }
 
                 // Check options
                 if(this._onChangeCallable && currentTarget && target && currentTarget instanceof HTMLFormElement && ( target instanceof HTMLInputElement || target instanceof HTMLSelectElement ) && this._onChangeOptions.eventType === eventType){
@@ -4932,6 +4946,63 @@ export default class Form {
 
         // Return el
         return spanEl;
+
+    }
+
+    /** Private methods | Filter
+     ******************************************************
+     */
+
+    /**
+     * Precess For Filter
+     * 
+     * @param currentTarget 
+     */
+    private _processForFilter = (currentTarget:HTMLFormElement):void => {
+
+        // Set root
+        let root = `filters.${currentTarget.id}`;
+
+        // Parse root
+        const parsedRoot = root
+            ? root.split('.').reduce((acc, part, index) => {
+                return index === 0 ? part : `${acc}[${part}]`;
+            }, '')
+            : ''
+        ;
+
+        // Get formdata from current target
+        let formData = this.getFormData(currentTarget);
+
+        // New search params
+        let params = new URLSearchParams();
+
+        // Iteration formdata
+        formData.forEach((value, key, parent) => {
+
+            // Build the full key, e.g. "root[key]" or "root[user.name]"
+            const fullKey = parsedRoot 
+                ? `${parsedRoot}[${key}]` 
+                : key
+            ;
+
+            // Set value
+            const strValue = value instanceof File ? value.name : value;
+
+            if(value){
+
+                // Append value to params
+                params.append(fullKey, strValue);
+
+            }
+
+        });
+
+        // Remove current query
+        Crazyurl.removeQueryParameters(root);
+
+        // Add into url
+        Crazyurl.addQueryParameters(params);
 
     }
 

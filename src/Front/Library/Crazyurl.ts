@@ -149,13 +149,19 @@ export default class Crazyurl {
      * @param prefix Optional Prefix (for recursive loop)
      * @return string
      */
-    public static addQueryParameters = (params: Record<string, any>, prefix?: string): string => {
+    public static addQueryParameters = (params: Record<string, any>|URLSearchParams, prefix?: string): string => {
 
         // Search Parameters instances
         const searchParams: URLSearchParams = new URLSearchParams(window.location.search);
 
+        // Set values
+        let values = params instanceof URLSearchParams 
+            ? params.entries()
+            : Object.entries(params)
+        ;
+
         // Loop entries
-        for (const [key, value] of Object.entries(params)) {
+        for (const [key, value] of values) {
 
             // Get current key
             const paramKey: string = prefix ? `${prefix}[${key}]` : key;
@@ -218,9 +224,9 @@ export default class Crazyurl {
     /**
      * Remove Query Parameters
      * 
-     * Remove Query Parameters
+     * Remove all query parameters by name or under a root (supports dot notation)
      * 
-     * @param params:string|string[
+     * @param params {string|string[]} Parameter name(s) or root (e.g. "filters.simple_filter")
      * @returns {void}
      */
     public static removeQueryParameters = (params:string|string[]):void => {
@@ -228,48 +234,65 @@ export default class Crazyurl {
         // Check params
         if(params && params.length){
 
-            // Check if string
-            if(typeof params === "string")
+            // Convert to array if string
+            if(typeof params === "string") params = [params];
 
-                // Convert to array
-                params = [params];
-
-            // New search param instance
-            var searchParams = new URLSearchParams(window.location.search);
+            // Create new search params instance
+            const searchParams = new URLSearchParams(window.location.search);
 
             // Set any change
             let anyChange = false;
 
-            // Iteration params
-            for(let paramNameToRemove of params)
+            // Iterate params
+            for(let paramNameToRemove of params){
 
-                // Check params is the url
-                if(searchParams.has(paramNameToRemove)){
+                // Check if root (dot notation supported)
+                const root = paramNameToRemove.split('.').reduce((acc, part, index) => {
+                    return index === 0 ? part : `${acc}[${part}]`;
+                }, '');
 
-                    // Remove param
-                    searchParams.delete(paramNameToRemove);
-                    
-                    // Set any change
-                    anyChange = true;
+                // Collect keys to delete
+                const keysToDelete:string[] = [];
+
+                // Iterate existing params
+                for(const key of searchParams.keys()){
+
+                    // Match exact name or under root (e.g. filters[simple_filter][...])
+                    if(key === root || key.startsWith(`${root}[`))
+
+                        // Pusg key
+                        keysToDelete.push(key);
 
                 }
 
-            // Check any change 
+                // Delete matched keys
+                for(const key of keysToDelete){
+                    searchParams.delete(key);
+                    anyChange = true;
+                }
+
+            }
+
+            // If any change, push new URL
             if(anyChange){
 
-                // Set new url
-                const newUrl = `${window.location.pathname}?${searchParams.toString()}`;
+                // Get query string
+                const queryString = searchParams.toString();
 
-                // Push in browser
+                // Set new url
+                const newUrl = queryString
+                    ? `${window.location.pathname}?${queryString}`
+                    : window.location.pathname;
+
+                // Push into window
                 window.history.pushState(null, "", newUrl);
 
             }
 
-
         }
-        
 
     }
+
 
     /**
      * Is Same Domain
