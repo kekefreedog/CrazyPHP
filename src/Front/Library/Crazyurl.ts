@@ -93,13 +93,165 @@ export default class Crazyurl {
     }
 
     /**
-     * Qet Query Parameters
+     * Get Query Parameters
+     * 
+     * Get all query parameters from the current URL.
+     * Supports multidimensional access using PHP-style brackets or dot notation (e.g. "filters[simple_filter][color_input]" or "filters.simple_filter.color_input").
+     * Can retrieve one or several parameter names.
+     * 
+     * @param {string | string[]} [names] Optional parameter name or list of names/paths to retrieve.
+     * @returns {Record<string, any>} An object with key-value pairs representing query parameters.
+     */
+    public static getQueryParameters = (names?: string | string[]): Record<string, any> => {
+
+        // Set result
+        let result: Record<string, any> = {};
+
+        // Get params
+        const searchParams = new URLSearchParams(window.location.search);
+
+        // Helper to set nested values like filters[simple_filter][color_input]
+        const setNestedValue = (obj: any, path: string, value: any) => {
+
+            // Get parts
+            const parts = path
+                // remove closing brackets
+                .replace(/\]/g, '')
+                // split by [ or .
+                .split(/\[|\./g)
+                // remove empty
+                .filter(Boolean)
+            ;
+
+            // Set current
+            let current = obj;
+
+            // Iteration of parts
+            parts.forEach((part, index) => {
+
+                // Check index
+                if (index === parts.length - 1)
+
+                    // Set current
+                    current[part] = value;
+
+                // Else
+                else{
+
+                    // Check part
+                    if (!(part in current) || typeof current[part] !== 'object')
+
+                        // Set current part
+                        current[part] = {};
+
+                    // Set current part
+                    current = current[part];
+
+                }
+
+            });
+
+        };
+
+        // Fill the main result object
+        searchParams.forEach((value, key) => {
+
+            // Try parse json
+            try {
+
+                // Try parse JSON-like values
+                const parsedValue = JSON.parse(value);
+
+                // Use nested value
+                setNestedValue(result, key, parsedValue);
+
+            // If not working
+            } catch {
+
+                // Use nested value
+                setNestedValue(result, key, value);
+
+            }
+
+        });
+
+        // Helper to get nested value by path "a.b.c"
+        const getNestedValue = (obj: any, path: string): any => {
+
+            // Set parts
+            const parts = path
+                .replace(/\]/g, '')
+                .split(/\[|\./g)
+                .filter(Boolean)
+            ;
+
+            // Return reduce
+            return parts.reduce((acc, part) => {
+
+                // Check acc is object
+                if (acc && typeof acc === 'object' && part in acc)
+
+                    // Return acc
+                    return acc[part];
+
+                // Return undifined
+                return undefined;
+
+            }, obj);
+
+        };
+
+        // Normalize names to array
+        let nameList: string[] = [];
+
+        // check names are string
+        if (typeof names === 'string') 
+            
+            // Convert to array
+            nameList = [names];
+
+        else
+        // Check if array
+        if(Array.isArray(names)) 
+            
+            // Set name list
+            nameList = names;
+
+        // If no specific names provided → return all
+        if (!nameList.length) 
+            
+            // Return result
+            return result;
+
+        // Filtered result
+        let filtered:Record<string, any> = {};
+
+        // Iterate through requested names (can include nested)
+        nameList.forEach(name => {
+
+            // Get nested
+            const nested = getNestedValue(result, name);
+
+            // Check nested
+            if (nested !== undefined) filtered[name] = nested;
+
+        });
+
+        // Return filtered result
+        return filtered;
+
+    }
+
+
+    /**
+     * Qet Query Parameters (legacy)
      * 
      * Get all query parameters from the current URL.
      * 
+     * @deprecated
      * @returns {Record<string, string>} An object with key-value pairs representing query parameters.
      */
-    public static getQueryParameters = (names?:string[]):Record<string, string> => {
+    public static getQueryParametersLegacy = (names?:string[]):Record<string, string> => {
 
         // Set result
         let result:Record<string, string> = {};
