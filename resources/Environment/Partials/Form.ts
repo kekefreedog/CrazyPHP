@@ -57,14 +57,20 @@ export default class Form extends Crazypartial {
     /** Public methods
      ******************************************************
      */
-
+    
     /**
      * Get Form Data
      */
-    public getFormData = () => {
+    public getFormData = ():null|FormData => {
 
-        console.log("dev");
-        console.log(this._form);
+        // Return get form data
+        let result = this.input.target instanceof HTMLFormElement
+            ? this._form.getFormData(this.input.target)
+            : null;
+        ;
+
+        // return result
+        return result;
 
     }
 
