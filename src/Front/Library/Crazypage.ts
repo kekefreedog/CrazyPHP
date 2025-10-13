@@ -14,6 +14,7 @@
 import Pageregister from "./Pageregister";
 import Crazyrequest from "./Crazyrequest";
 import Arrays from "./Utility/Arrays";
+import Loader from "./Loader/Page";
 import Crazyurl from './Crazyurl';
 import State from "./State";
 
@@ -461,54 +462,70 @@ export default abstract class Crazypage {
      */
     public redirectByName = (name:string, options:RedirectByNameOptions, reloadPage:boolean = false):void => {
 
-        // Prepare query
-        let query:Object = {
-            filters: {
-                name: name
-            },
-            options: {}
-        };
+        // Check reload page
+        if(!reloadPage){
 
-        // Check options arguments
-        if("arguments" in options && options.arguments !== null){
+            // Load page
+            new Loader({
+                name: name,
+                arguments: options.arguments,
+            });
 
-            // Add options
-            query["options"].arguments = options.arguments;
+        }else{
+
+            // Prepare query
+            let query:Object = {
+                filters: {
+                    name: name
+                },
+                options: {}
+            };
+
+            // Check options arguments
+            if("arguments" in options && options.arguments !== null){
+
+                // Add options
+                query["options"].arguments = options.arguments;
+
+            }
+
+            // New request
+            new Crazyrequest(
+                "/api/v2/Router/filter",
+                {
+                    method: "GET",
+                    responseType: options.mimetype,
+                    from: "internal",
+                    ignoreHash: true
+                }
+            )
+                .fetch(query)
+                .then(result => {
+
+                    // Check result
+                    if(
+                        result &&
+                        "results" in result && 
+                        Array.isArray(result.results) &&
+                        result.results.length === 1 &&
+                        "name" in result.results[0] &&
+                        "path" in result.results[0]
+                    ){
+                
+                        // Redirect to page
+                        window.location.href = result.results[0].path;
+                        
+                    }else{
+
+                        // Send error
+                        throw new Error(`No page corresponding to "${name}" in the router collection`)
+
+                    }
+
+                })
+            ;
 
         }
-
-        // New request
-        new Crazyrequest(
-            "/api/v2/Router/filter",
-            {
-                method: "GET",
-                responseType: options.mimetype,
-                from: "internal",
-                ignoreHash: true
-            }
-        ).fetch(query)
-        .then(result => {
-
-            // Check result
-            if(
-                result &&
-                "results" in result && 
-                Array.isArray(result.results) &&
-                result.results.length === 1 &&
-                "name" in result.results[0] &&
-                "path" in result.results[0]
-            ){
-
-                // Load new page
-                window["Crazyobject"]["pages"]?.loadInternalPage(result.results[0]);
-                
-            }else{
-
-                throw new Error(`No page corresponding to "${name}" in the router collection`)
-
-            }
-
-        });
 
     }
 
