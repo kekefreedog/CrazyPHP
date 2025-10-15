@@ -15,6 +15,7 @@ namespace CrazyPHP\Controller;
 /**
  * Dependances
  */
+use CrazyPHP\Library\Router\Middleware;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Core\ApiResponse;
 use CrazyPHP\Core\Controller;
@@ -35,7 +36,10 @@ class ApiV2Delete extends Controller {
      * 
      * @return void
      */
-    public static function delete():void {
+    public static function delete($request):void {
+
+        # Check model middleware
+        $request = Middleware::runModelMiddleware($request);
 
         # Get id
         $id = (string) self::getParametersUrl("id");

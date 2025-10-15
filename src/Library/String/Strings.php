@@ -150,4 +150,32 @@ class Strings {
 
     }
 
+    /**
+     * Is Valid Method
+     * 
+     * @param string $method
+     * @return bool
+     */
+    public static function isValidMethod(string $method):bool {
+
+        # Set result
+        $result = false;
+
+        # Check string get ::
+        if(str_contains($method, '::')){
+
+            # Explode string
+            [$class, $func] = explode('::', $method, 2);
+
+            # Set result
+            $result = class_exists($class) && method_exists($class, $func);
+
+        }
+
+        # Return result
+        return $result;
+        
+    }
+
+
 }

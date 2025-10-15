@@ -15,6 +15,7 @@ namespace CrazyPHP\Controller;
 /**
  * Dependances
  */
+use CrazyPHP\Library\Router\Middleware;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Core\Controller;
 use CrazyPHP\Core\Model;
@@ -35,7 +36,10 @@ class ApiV2Create extends Controller {
      * 
      * @return void
      */
-    public static function post():void {
+    public static function post($request):void {
+
+        # Check model middleware
+        $request = Middleware::runModelMiddleware($request);
 
         # Declare content
         $content = self::Model()

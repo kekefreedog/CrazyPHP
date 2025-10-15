@@ -35,7 +35,7 @@ class ApiV2NewFrom extends Controller {
      * 
      * @return void
      */
-    public static function get():void {
+    public static function get($request):void {
 
         
 

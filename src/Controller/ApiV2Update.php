@@ -15,6 +15,7 @@ namespace CrazyPHP\Controller;
 /**
  * Dependances
  */
+use CrazyPHP\Library\Router\Middleware;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Core\ApiResponse;
 use CrazyPHP\Core\Controller;
@@ -36,6 +37,12 @@ class ApiV2Update extends Controller {
      * @return void
      */
     public static function put($request):void {
+
+        # Check model middleware
+        $request = Middleware::runModelMiddleware($request);
+
+        # Check entity given by user
+        self::Model()::checkEntityInContext();
 
         # Get id
         $id = (string) self::getParametersUrl("id");

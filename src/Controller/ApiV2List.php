@@ -38,13 +38,13 @@ class ApiV2List extends Controller {
      * 
      * @return void
      */
-    public static function get():void {
+    public static function get($request):void {
 
         # Get last modified date of model config
         $lastModified = FileConfig::getLastModified("Model");
 
         # Get all model available
-        $content = Model::getListAllModel();
+        $content = self::Model()::getListAllModel();
 
         # Set response
         (new ApiResponse())

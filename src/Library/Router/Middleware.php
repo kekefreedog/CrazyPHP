@@ -12,7 +12,11 @@
  */
 namespace  CrazyPHP\Library\Router;
 
+use Psr\Http\Message\ServerRequestInterface;
 use CrazyPHP\Library\File\Config;
+use CrazyPHP\Model\Context;
+use CrazyPHP\Core\Model;
+use CrazyPHP\Library\String\Strings;
 use ReflectionMethod;
 use ReflectionClass;
 
@@ -305,6 +309,52 @@ class Middleware {
 
         # Return result
         return $result;
+
+    }
+
+    /**
+     * Run Model Middleware
+     * 
+     * @param ServerRequestInterface $request
+     * @return void|ServerRequestInterface
+     */
+    public static function runModelMiddleware(ServerRequestInterface $request):ServerRequestInterface {
+
+        # Get current
+        $model = (new Model())->getCurrent();
+
+        # Get middle ware register
+        $middlewareRegister = Config::getValue("Middleware");
+
+        # Check middleware
+        $middlewareCollection = is_array($middlewareRegister)
+            ? array_column($middlewareRegister, "script", "name")
+            : null
+        ;
+
+        # check middlewareCollection
+        if($middlewareCollection){
+
+            # Get middlewares
+            $middlewares = $model["middleware"] ?? $model["middlewares"] ?? null;
+
+            # Check middlewares
+            if(is_array($middlewares)) foreach($middlewares as $middleware) {
+
+                # check if in collection
+                if($middleware && array_key_exists($middleware, $middlewareCollection) && Strings::isValidMethod($middlewareCollection[$middleware])){
+
+                    # Run middleware
+                    $request = $middlewareCollection[$middleware]($request);
+
+                }
+                
+            }
+
+        }
+
+        # Return request
+        return $request;
 
     }
 

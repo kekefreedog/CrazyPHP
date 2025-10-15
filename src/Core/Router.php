@@ -121,6 +121,7 @@ class Router extends VendorRouter {
      * PushCollection
      * 
      * Push collection of router in current instance
+     * 
      * @return void
      */
     public function pushCollection(string $collectionPath = ""):void {

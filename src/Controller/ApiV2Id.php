@@ -16,12 +16,13 @@ namespace CrazyPHP\Controller;
  * Dependances
  */
 use CrazyPHP\Library\File\Config as FileConfig;
+use CrazyPHP\Library\Router\Middleware;
 use CrazyPHP\Exception\CrazyException;
+use CrazyPHP\Library\Form\Query;
 use CrazyPHP\Core\ApiResponse;
 use CrazyPHP\Core\Controller;
 use CrazyPHP\Model\Context;
 use CrazyPHP\Core\Model;
-use CrazyPHP\Library\Form\Query;
 
 /**
  * Api V2 By Id
@@ -39,13 +40,13 @@ class ApiV2Id extends Controller {
      * 
      * @return void
      */
-    public static function get():void {
+    public static function get($request):void {
+
+        # Check model middleware
+        $request = Middleware::runModelMiddleware($request);
 
         # Check entity given by user
-        Model::checkEntityInContext();
-
-        # New model
-        $model = new Model();
+        self::Model()::checkEntityInContext();
 
         # Get id
         $id = self::getParametersUrl("id");
@@ -54,7 +55,7 @@ class ApiV2Id extends Controller {
         $filtersParameters = Query::getForId();
 
         # Declare content
-        $content = $model->readById((string) $id, ...$filtersParameters);
+        $content = self::Model()->readById((string) $id, ...$filtersParameters);
 
         # Get last modified date of model config
         $lastModified = FileConfig::getLastModified("Model");

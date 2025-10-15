@@ -16,6 +16,7 @@ namespace CrazyPHP\Controller;
  * Dependances
  */
 use CrazyPHP\Library\File\Config as FileConfig;
+use CrazyPHP\Library\Router\Middleware;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Form\Query;
 use CrazyPHP\Core\ApiResponse;
@@ -38,19 +39,19 @@ class ApiV2Filter extends Controller {
      * 
      * @return void
      */
-    public static function get():void {
+    public static function get($request):void {
+
+        # Check model middleware
+        $request = Middleware::runModelMiddleware($request);
 
         # Check entity given by user
-        Model::checkEntityInContext();
-
-        # New model
-        $model = new Model();
+        self::Model()::checkEntityInContext();
 
         # Filters parameters
         $filtersParameters = Query::getForFilters();
 
         # Declare content
-        $content = $model->readWithFilters(...$filtersParameters);
+        $content = self::Model()->readWithFilters(...$filtersParameters);
 
         # Get last modified date of model config
         $lastModified = FileConfig::getLastModified("Model");

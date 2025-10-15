@@ -16,6 +16,7 @@ namespace CrazyPHP\Controller;
  * Dependances
  */
 use CrazyPHP\Library\File\Config as FileConfig;
+use CrazyPHP\Library\Router\Middleware;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Core\ApiResponse;
 use CrazyPHP\Core\Controller;
@@ -38,16 +39,16 @@ class ApiV2Fields extends Controller {
      * 
      * @return void
      */
-    public static function get():void {
+    public static function get($request):void {
+
+        # Check model middleware
+        $request = Middleware::runModelMiddleware($request);
 
         # Check entity given by user
-        Model::checkEntityInContext();
-
-        # New model
-        $model = new Model();
+        self::Model()::checkEntityInContext();
 
         # Declare content
-        $content = $model
+        $content = self::Model()
             ->readAttributes()
             ->readWithFilters();
 

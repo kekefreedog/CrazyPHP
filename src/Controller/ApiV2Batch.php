@@ -15,6 +15,7 @@ namespace CrazyPHP\Controller;
 /**
  * Dependances
  */
+use CrazyPHP\Library\Router\Middleware;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Core\ApiResponse;
 use CrazyPHP\Core\Controller;
@@ -36,7 +37,10 @@ class ApiV2Batch extends Controller {
      * 
      * @return void
      */
-    public static function post():void {
+    public static function post($request):void {
+
+        # Check model middleware
+        $request = Middleware::runModelMiddleware($request);
 
         # New api state
         $state = self::ApiState();
