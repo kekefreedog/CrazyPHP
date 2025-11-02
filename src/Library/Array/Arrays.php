@@ -955,6 +955,77 @@ class Arrays{
 
 	}
 
+    /**
+	 * Replace
+	 * 
+     * Recursively search and replace strings in a multi-dimensional array.
+     *
+     * @param string|array $search  The value being searched for (same as str_replace)
+     * @param string|array $replace The replacement value (same as str_replace)
+     * @param mixed        $subject The input array or string
+     * @param bool         $replaceKeys Whether to also replace keys (string type only)
+     * @return mixed Returns the modified subject
+     */
+    public static function replace(string|array $search, string|array $replace, mixed $subject, bool $replaceKeys = false):mixed {
+
+		# Check subject
+        if(is_array($subject)) {
+
+			# Set result
+            $result = [];
+
+			# Iteration value
+            if(!empty($subject)) foreach($subject as $key => $value) {
+
+                # Check key
+                if($replaceKeys && is_string($key))
+
+					# Replace in the key if requested
+                    $newKey = str_replace($search, $replace, $key);
+
+				# Else
+                else
+
+					# Set new key as is
+                    $newKey = $key;
+
+                # Recurse or replace value
+                if (is_array($value))
+
+					# Set result
+                    $result[$newKey] = static::replace($search, $replace, $value, $replaceKeys);
+
+				else
+				# If is string
+                if(is_string($value))
+
+					# Set result
+                    $result[$newKey] = str_replace($search, $replace, $value);
+
+				# Else
+                else
+
+					# Set result
+                    $result[$newKey] = $value;
+
+            }
+
+			# Return result
+            return $result;
+
+        }
+
+        # For non-arrays, behave like str_replace
+        if(is_string($subject))
+
+			# Return simple str replace
+            return str_replace($search, $replace, $subject);
+
+		# Return subject
+        return $subject;
+		
+    }
+
     /** Public Constants
      ******************************************************
      */

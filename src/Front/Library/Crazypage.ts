@@ -556,9 +556,21 @@ export default abstract class Crazypage {
             // Get current url
             let url = Crazyurl.get(true);
 
+            // Set parameters string
+            let parametersString = "";
+
+            // Get parameters
+            let parameters = Crazyurl.getQueryParameters();
+
+            // Check parameters
+            if(Object.keys(parameters).length)
+
+                // Set parametersString
+                parametersString = `&${Crazyurl.toQueryString(parameters)}`;
+
             // New query
             let query = new Crazyrequest(
-                `${url}?catch_state=true`,
+                `${url}?catch_state=true${parametersString}`,
                 {
                     method: "get",
                     cache: false,
