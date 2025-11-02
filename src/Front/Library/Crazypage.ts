@@ -593,6 +593,9 @@ export default abstract class Crazypage {
                             // Set state status
                             this.options.status.hasState = true;
 
+                            // Set state
+                            this.options.name && State.set().page(this.options.name, this.options.state);
+
                             // Return result
                             return this.options.state;
             
