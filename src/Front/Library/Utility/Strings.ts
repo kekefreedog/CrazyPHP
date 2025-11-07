@@ -334,4 +334,31 @@ export default class Strings {
 
     }
 
+    /**
+     * Extract Hash
+     * 
+     * @param url 
+     * @returns {string|null}
+     */
+    public static extractHash = (url:string):string|null => {
+
+        // Let result
+        let result:string|null = null;
+
+        // Check url
+        if(url){
+
+            // Set match
+            const match = url.match(/\.([a-f0-9]{6,})\.js$/);
+
+            // Set match
+            result = match ? match[1] : null;
+
+        }
+
+        // Return result
+        return result;
+
+    }
+
 }

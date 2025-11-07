@@ -12,6 +12,7 @@
  * Dependances
  */
 import {default as LoaderScript} from './../Loader/Script';
+import PageCacheManager from '../Utility/PageCacheManager';
 import {default as PageError} from './../Error/Page';
 import Crazyrequest from './../Crazyrequest';
 import Pageregister from './../Pageregister';
@@ -30,6 +31,13 @@ import State from '../State';
  * @copyright  2022-2024 Kévin Zarshenas
  */
 export default class Page {
+
+    /** Private statis parameters 
+     ******************************************************
+     */
+
+    /** @param cache */
+    private static cache:PageCacheManager;
 
     /**
      * Constructor
@@ -51,6 +59,10 @@ export default class Page {
             .then(
                 // Open New Tab (if needed)
                 Page.openNewTab
+            )
+            .then(
+                // Load Page Cache Manager
+                Page.loadPageCacheManager
             )
             .then(
                 // Load Script
@@ -237,6 +249,25 @@ export default class Page {
      * Load Js scripts of the page
      * 
      * @param options:LoaderPageOptions Options with all page details
+     * @returns {Promise<LoaderPageOptions>}
+     */
+    public static loadPageCacheManager = async(options:LoaderPageOptions):Promise<LoaderPageOptions> =>  {
+
+        // Set cache
+        this.cache = new PageCacheManager();
+        
+
+        // Return options
+        return options;
+
+    }
+
+    /**
+     * Load Script
+     * 
+     * Load Js scripts of the page
+     * 
+     * @param options:LoaderPageOptions Options with all page details
      * @return Promise<LoaderPageOptions>
      */
     public static loadScript = async(options:LoaderPageOptions):Promise<LoaderPageOptions> =>  {
@@ -249,9 +280,54 @@ export default class Page {
     
             // Set url
             let url:string = `/dist/page/app/${options.name}.${hash}.js`;
-    
-            // Load script (will registerd by itself)
-            let script = await LoaderScript.load(url, options.name, true);
+
+            // Try to get cached version
+            let scriptContent = await this.cache.fetch(url);
+
+            // If we have cached script
+            if(scriptContent){
+
+                // Evaluate script manually (acts like LoaderScript.load)
+                try{
+
+                    // Create blob
+                    const blob = new Blob([scriptContent], { type: 'text/javascript' });
+
+                    // Create blob URL
+                    const blobUrl = URL.createObjectURL(blob);
+
+                    // Inject script tag
+                    await LoaderScript.load(blobUrl, options.name, true);
+
+                    // Revoke URL
+                    URL.revokeObjectURL(blobUrl);
+
+                }catch(e){
+
+                    console.warn("⚠️ Failed to execute cached script:", e);
+
+                }
+
+            }else{
+
+                // Fallback to standard LoaderScript (fetch + auto-cache)
+                let script = await LoaderScript.load(url, options.name, true);
+
+                // If loaded, cache it manually
+                if(script){
+
+                    // Get
+                    const res = await fetch(url);
+
+                    // Get code 
+                    const code = await res.text();
+
+                    // Set
+                    await this.cache.set(options.name, hash || "", code);
+                    
+                }
+
+            }
 
             // Get registered
             let registered = window.Crazyobject.registerPage.getRegistered(options.name ? options.name : "");
