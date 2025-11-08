@@ -42,9 +42,10 @@ class Context{
      * 
      * Get context
      * 
-     * @return array
+     * @param string $key
+     * @return mixed
      */
-    public static function get(string $key = ""):array|string|bool|int|null {
+    public static function get(string $key = ""):mixed {
         
         $bk = $key;
 
@@ -91,6 +92,30 @@ class Context{
 
         # Set result
         $result = $cursor;
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
+     * Has
+     * 
+     * Has context
+     * 
+     * @param string $key
+     * @return bool
+     */
+    public static function has(string $key = ""):bool {
+
+        # Get context
+        $cursor = $GLOBALS[static::PREFIX] ?? [];
+
+        # Change case
+        $cursor = Arrays::changeKeyCaseRecursively((array)$cursor, CASE_LOWER);
+
+        # Check has
+        $result = Arrays::hasKey($cursor, $key);
 
         # Return result
         return $result;

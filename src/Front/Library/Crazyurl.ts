@@ -367,11 +367,88 @@ export default class Crazyurl {
         return newUrl;
     }
 
-
-
-    /** Public static methods
-     ******************************************************
+    /**
+     * Update Query Parameters
+     * 
+     * Unified method to add, update, delete, or keep query parameters.
+     * - Adds parameters not present.
+     * - Updates existing parameters.
+     * - Removes parameters if value === undefined or value === null.
+     * - Keeps parameters if value === "__KEEP__".
+     * 
+     * Supports nested objects, booleans, empty strings, and arrays.
+     * 
+     * @param params Parameters to apply.
+     * @param prefix Optional prefix (used internally for recursion).
+     * @returns string The updated URL.
      */
+    public static updateQueryParameters = (
+        params: Record<string, any> | URLSearchParams,
+        prefix?: string
+    ): string => {
+
+        // Initialize current query
+        const searchParams = new URLSearchParams(window.location.search);
+
+        // Convert to iterable entries
+        const entries = params instanceof URLSearchParams
+            ? params.entries()
+            : Object.entries(params);
+
+        // Iteration entries
+        for(const [key, value] of entries) {
+
+            // Resolve full key (support nested)
+            const paramKey = prefix ? `${prefix}[${key}]` : key;
+
+            // Recursive support for objects
+            if (typeof value === "object" && value !== null && !Array.isArray(value)) {
+                Crazyurl.updateQueryParameters(value, paramKey);
+                continue;
+            }
+
+            // Handle removal
+            if (value === undefined || value === null) {
+                searchParams.delete(paramKey);
+                continue;
+            }
+
+            // Keep existing value
+            if (value === "__KEEP__") {
+                continue;
+            }
+
+            // Handle arrays
+            if (Array.isArray(value)) {
+                searchParams.delete(paramKey);
+                for (const v of value) {
+                    searchParams.append(paramKey, v ?? "");
+                }
+                continue;
+            }
+
+            // Convert booleans
+            if (typeof value === "boolean") {
+                searchParams.set(paramKey, value ? "true" : "false");
+                continue;
+            }
+
+            // Normal values (string, number, empty)
+            searchParams.set(paramKey, value === "" ? "" : String(value));
+
+        }
+
+        // Build new URL
+        const newUrl = `${window.location.origin}${window.location.pathname}?${searchParams.toString()}`;
+
+        // Push state (replace or push depending on your policy)
+        window.history.pushState(null, "", newUrl);
+
+        // Return new url
+        return newUrl;
+
+    };
+
 
     /**
      * Remove Query Parameters

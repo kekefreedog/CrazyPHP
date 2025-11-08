@@ -5040,11 +5040,8 @@ export default class Form {
 
         });
 
-        // Remove current query
-        Crazyurl.removeQueryParameters(root);
-
-        // Add into url
-        Crazyurl.addQueryParameters(params);
+        // Update
+        Crazyurl.updateQueryParameters(params);
 
     }
 
