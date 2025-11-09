@@ -428,7 +428,7 @@ class SqlOperation extends Operation {
      * @param array $options
      * @return mixed
      */
-    public function parseDefault(string|array $input, array $options = []):mixed {
+    public function parseDefault(mixed $input, array $options = []):mixed {
 
         # Set result of parent
         $parentResult = parent::parseDefault($input);

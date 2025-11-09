@@ -318,7 +318,7 @@ class Middleware {
      * @param ServerRequestInterface $request
      * @return void|ServerRequestInterface
      */
-    public static function runModelMiddleware(ServerRequestInterface $request):ServerRequestInterface {
+    public static function runModelMiddleware(?ServerRequestInterface $request = null):?ServerRequestInterface {
 
         # Get current
         $model = (new Model())->getCurrent();

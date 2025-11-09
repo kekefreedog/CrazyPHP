@@ -841,6 +841,17 @@ class Arrays{
 			# Iteration array
 			foreach($array as $key => $value) {
 
+				# If key is not string or doesn't contain separator, set directly
+				if (!is_string($key) || strpos($key, $separator) === false) {
+
+					# Set result
+					$result[$key] = $value;
+
+					# Continue iteration
+					continue;
+					
+				}
+
 				# Split the key based on the separator
 				$parts = explode($separator, $key);
 		

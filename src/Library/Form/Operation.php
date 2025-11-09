@@ -15,13 +15,7 @@ namespace  CrazyPHP\Library\Form;
 /**
  * Dependances
  */
-use CrazyPHP\Library\File\Config as FileConfig;
-use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Form\Validate;
-use CrazyPHP\Library\Array\Arrays;
-use CrazyPHP\Library\File\File;
-use CrazyPHP\Model\Config;
-use CrazyPHP\Model\Env;
 
 /**
  * Process operations in string
@@ -225,7 +219,7 @@ class Operation {
      * @param string|array $input
      * @param array $options OVerride existing options
      */
-    final public function run(string|array $input, array $options = []):mixed {
+    final public function run(mixed $input, array $options = []):mixed {
 
         # Get options
         $runOptions = $this->options;
@@ -243,7 +237,7 @@ class Operation {
         $isString = false;
 
         # Check input is string
-        if(is_string($input)){
+        if(!is_array($input)){
 
             # Convert to array
             $input = $input
@@ -270,6 +264,7 @@ class Operation {
 
                     # Check regex
                     if(
+                        !is_int($v) &&
                         isset($operation["name"]) && 
                         $operation["name"] && 
                         isset($operation["regex"]) && 
@@ -549,12 +544,12 @@ class Operation {
      * 
      * Description : No operations found
      * 
-     * @param string|array $input 
+     * @param mixed $input 
      * @param array $operation
      * @param array $options
      * @return mixed
      */
-    public function parseDefault(string|array $input, array $options = []):mixed {
+    public function parseDefault(mixed $input, array $options = []):mixed {
 
         # Push input in operations
         $operation = [
