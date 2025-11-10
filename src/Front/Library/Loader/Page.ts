@@ -599,8 +599,14 @@ export default class Page {
             // Stop function
             return options;
 
+        // Get potentiel title
+        let potentialTitle:string|null = State.get().page(`${options.name}._ui.title`);
+
         // Declare new title
-        let titleNew = options.name;
+        let titleNew = typeof potentialTitle === "string"
+            ? potentialTitle
+            : options.name
+        ;
 
         // Check titleNew
         if(titleNew)

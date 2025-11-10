@@ -117,6 +117,22 @@ class Page {
     }
 
     /**
+     * Push Title
+     * 
+     * @param string $title
+     * @return self
+     */
+    public function pushTitle(string $title = ""):Page {
+
+        # Set language in response
+        $this->pushUiContent("title", $title);
+
+        # Return self
+        return $this;
+
+    }
+
+    /**
      * Push UI Content
      * 
      * @param string $key

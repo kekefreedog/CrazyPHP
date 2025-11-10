@@ -315,6 +315,7 @@ declare global {
             }
         },
         _ui: {
+            title:string,
             materialDynamicColors: {
                 source: string
             }

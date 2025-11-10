@@ -411,7 +411,7 @@ class Structure {
 
     }
     
-    /** Public methods | body
+    /** Public methods | Head
      ******************************************************
      */
 
@@ -440,7 +440,30 @@ class Structure {
 
     }
 
-    /** Public methods | body
+    /**
+     * Set Title
+     * 
+     * Set Title Page
+     * 
+     * @param ?string $content Content to put in body
+     * @return self
+     */
+    public function setTitle(?string $title = ""):self {
+
+        # Check content
+        if($title !== null){
+
+            # Set element
+            $this->setElement("html.head.title", $title, null);
+
+        }
+
+        # Return current instance
+        return $this;
+
+    }
+
+    /** Public methods | Body
      ******************************************************
      */
 
