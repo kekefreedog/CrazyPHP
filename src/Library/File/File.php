@@ -1132,6 +1132,8 @@ class File {
         "sse"       =>  "text/event-stream",
         # Message pack
         "msgpack"   =>  "application/msgpack",
+        # Icon Mac OS
+        "icns"      =>  "image/x-icns"
         # TBC ...
     ];
 
