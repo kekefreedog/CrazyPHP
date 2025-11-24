@@ -154,7 +154,7 @@ class Process {
     private function _actionInt(array &$input = []):void {
 
         # Check value is same type
-        if(!is_int($input['value']) && !ctype_digit($input['value'])){
+        if(!is_int($input['value']) && !@ctype_digit($input['value'])){
 
             # Check requierd
             if(
@@ -174,9 +174,6 @@ class Process {
             return;
 
         }
-
-        # Parse the value
-        $input['value'] = intval($input['value']);
 
         # Check process
         if(!empty($input['process'] ?? null))

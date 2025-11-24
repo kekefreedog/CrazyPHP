@@ -55,6 +55,9 @@ class Validate {
             "isValidHttpStatusCode",
             "isMobilePhone"
         ],
+        "DECIMAL"   =>  [
+
+        ],
         "VARCHAR"   =>  [
             "isEmail",
             "isIpAddress",
@@ -110,6 +113,12 @@ class Validate {
 
                 # Action for varchar
                 $this->_actionInt($input);
+
+            # Type int
+            elseif(strtoupper(substr(trim($input['type']), 0, 7)) == "DECIMAL")
+
+                # Action for varchar
+                $this->_actionDecimal($input);
                 
             # Type Boolean
             elseif(strtoupper(substr(trim($input['type']), 0, 4)) == "BOOL")
@@ -157,7 +166,44 @@ class Validate {
         # Check value is same type
         if(
             (
-                $input['value'] !== null && !is_int($input['value']) && !ctype_digit($input['value'])
+                $input['value'] !== null && !is_int($input['value']) && !@ctype_digit($input['value'])
+            ) && (
+                (
+                    isset($input['required']) &&
+                    $input['required'] == false &&
+                    $input['value'] !== null
+                ) ||
+                (
+                    !isset($input['required']) &&
+                    $input['value'] !== null
+                )
+            )
+        ){
+
+            # New Exception
+            throw new CrazyException(
+                "Value of \”".$input["name"]."\” isn't a integer...",
+                500,
+                [
+                    "custom_code"   =>  "validate-010",
+                ]
+            );
+
+        }
+
+    }
+
+    /**
+     * Action for decimal
+     * 
+     * @return void
+     */
+    private function _actionDecimal(array &$input = []):void {
+
+        # Check value is same type
+        if(
+            (
+                $input['value'] !== null && !is_int($input['value']) && !@ctype_digit($input['value'])
             ) && (
                 (
                     isset($input['required']) &&

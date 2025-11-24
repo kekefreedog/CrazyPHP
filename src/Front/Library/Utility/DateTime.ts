@@ -352,12 +352,13 @@ export default class DateTime {
      * @param date - The Date object to format.
      * @param format - The format string :
      * - YYYY-MM-DD
+     * - YYYY/MM/DD
      * - YYYYMMDD
      * - MM/DD/YY
      * - DD/MM/YYYY
      * @returns {string} The formatted date string.
      */
-    public static formatDate = (date:Date|string, format:'YYYY-MM-DD'|'YYYYMMDD'|'MM/DD/YY'|'DD/MM/YYYY'):string => {
+    public static formatDate = (date:Date|string, format:'YYYY-MM-DD'|'YYYYMMDD'|'MM/DD/YY'|'DD/MM/YYYY'|'YYYY/MM/DD'):string => {
 
         // Check date
         if(typeof date === "string")
@@ -378,6 +379,8 @@ export default class DateTime {
         switch (format) {
             case 'YYYY-MM-DD':
                 return `${year}-${month}-${day}`;
+            case 'YYYY/MM/DD':
+                return `${year}/${month}/${day}`;
             case 'YYYYMMDD':
                 return `${year}${month}${day}`;
             case 'MM/DD/YY':
