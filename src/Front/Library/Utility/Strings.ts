@@ -361,4 +361,22 @@ export default class Strings {
 
     }
 
+    /**
+     * Is Numeric
+     * 
+     * @param value 
+     * @returns {boolean}
+     */
+    public static isNumeric = (value:unknown):boolean => {
+
+        // Set result
+        return typeof value === "number"
+            ? !isNaN(value) && isFinite(value)
+            : typeof value === "string"
+                ? value.trim() !== "" && !isNaN(Number(value))
+                : false
+        ;
+
+    };
+
 }
