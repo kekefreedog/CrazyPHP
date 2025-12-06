@@ -40,7 +40,7 @@ class ApiV2Batch extends Controller {
     public static function post($request):void {
 
         # Check model middleware
-        $request = Middleware::runModelMiddleware($request);
+        # $request = Middleware::runModelMiddleware($request);
 
         # New api state
         $state = self::ApiState();
