@@ -22,19 +22,10 @@ module.exports = function(input, options) {
     let result = false;
 
     // Check date
-    if(typeof input === "string" && input){
-
-        // Set date
-        const date = new Date(input);
-
-        // Get day in week 0 = Sunday, 6 = Saturday
-        const day = date.getDay();
-
-        // Check if weekend
-        if(day === 0 || day === 6)
-
-            // Set result
-            result = true;
+    if(input){
+            
+        // Set result
+        result = (new Date(`${input}`).getDay() == 0 || new Date(`${input}`).getDay() == 6);
 
     }
 
