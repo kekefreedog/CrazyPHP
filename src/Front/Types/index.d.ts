@@ -26,6 +26,7 @@ export {default as UtilityBoolean} from "./../Library/Utility/Boolean";
 export {default as UtilityProcess} from "./../Library/Utility/Process";
 export {default as UtilityObjects} from "./../Library/Utility/Objects";
 export {default as UtilityStrings} from "./../Library/Utility/Strings";
+export {default as UtilityFilter} from "./..//Library/Utility/Filter";
 export {default as Crazycomponent} from "./../Library/Crazycomponent";
 export {default as Crazynavigator} from "./../Library/Crazynavigator";
 export {default as UtilityArrays} from "./../Library/Utility/Arrays";

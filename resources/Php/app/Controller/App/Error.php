@@ -34,6 +34,9 @@ class Error extends Controller {
 
     /**
      * Get
+     * 
+     * @param $request
+     * @return void
      */
     public static function get($request){
 

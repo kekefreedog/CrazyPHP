@@ -33,6 +33,12 @@ use CrazyPHP\Core\File;
  */
 class manifest extends Controller {
 
+    /**
+     * Get
+     * 
+     * @param $request
+     * @return void
+     */
     public static function get($request){
 
         # Get config

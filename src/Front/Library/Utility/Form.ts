@@ -2747,6 +2747,52 @@ export default class Form {
     }
 
     /**
+     * Set Hidden
+     * 
+     * Set hidden in item
+     * 
+     * @param itemEl:HTMLElement
+     * @param value:string
+     * @return void
+     */
+    private hiddenSet = (itemEl:HTMLElement, value:string, valuesID:string|Object|null):void => {
+
+        // Check itemEl 
+        if(itemEl.tagName == "INPUT" && value !== null){
+
+            // Set value
+            itemEl.setAttribute("value", value);
+
+            // Check values id is string
+            if(typeof valuesID === "string"){
+
+                // Set entity_id
+                itemEl.setAttribute("value_id", valuesID);
+
+            }else
+            // Check value is object
+            if(valuesID !== null && Object.keys(valuesID).includes(itemEl["name"])){
+
+                // Set entity_id
+                itemEl.setAttribute("value_id", valuesID[itemEl["name"]]);
+
+            }else
+            // Check if $oid
+            if(valuesID && typeof valuesID === "object" && "$oid" in valuesID){
+
+                // Set entity_id
+                itemEl.setAttribute("value_id", valuesID["$oid"] as string);
+
+            }
+
+            // Dispatch event change
+            itemEl.dispatchEvent(new Event('change', { bubbles: true }));
+
+        }
+
+    }
+
+    /**
      * Set Password
      * 
      * Set text in item

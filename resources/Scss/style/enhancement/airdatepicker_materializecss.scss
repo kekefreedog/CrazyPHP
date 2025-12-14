@@ -10,6 +10,9 @@
 
 .air-datepicker {
 
+    // Depth
+    --adp-z-index: 100001; // or higher than SweetAlert
+
     // Transition
     --adp-transition-duration: 0.11s; // faster
 

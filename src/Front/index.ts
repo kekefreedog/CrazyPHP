@@ -24,6 +24,7 @@ export {default as UtilityStrings} from "./Library/Utility/Strings";
 export {default as Crazycomponent} from "./Library/Crazycomponent";
 export {default as Crazynavigator} from "./Library/Crazynavigator";
 export {default as UtilityEvents} from "./Library/Utility/Events";
+export {default as UtilityFilter} from "./Library/Utility/Filter";
 export {default as UtilityRunner} from "./Library/Utility/Runner";
 export {default as UtilityArrays} from "./Library/Utility/Arrays";
 export {default as LoaderPartial} from "./Library/Loader/Partial";

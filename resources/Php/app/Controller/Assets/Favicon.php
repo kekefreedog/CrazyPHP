@@ -30,6 +30,12 @@ use CrazyPHP\Core\Response;
  */
 class Favicon extends Controller {
 
+    /**
+     * Get
+     * 
+     * @param $request
+     * @return void
+     */
     public static function get($request){
 
         # Get parameter
