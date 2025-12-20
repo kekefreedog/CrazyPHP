@@ -1231,6 +1231,17 @@ class Mariadb implements CrazyDatabaseDriver {
                     }
                 }
 
+                /* 
+                
+                ###
+                # HERE. --> check how turn toto = 1,2,3 to toto in [1, 2, 3]
+                ###
+
+                if($table == "Timelog"){
+                print_r($query);
+                exit;
+                }*/
+
                 # Update table
                 $statment = $this->client->query($query);
 

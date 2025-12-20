@@ -463,7 +463,7 @@ declare global {
      */
 
     interface FormOptions {
-        onBeforeSubmit:(entity:string, formData:FormData)=>void,
+        onBeforeSubmit:(entity:string, formData:FormData)=>FormData|FormData[]|void,
         onSubmitDone:(result:object, entity:string, formData:FormData)=>void,
         onError:(result:object, entity:string, formData:FormData)=>void,
         alertDriver:string,

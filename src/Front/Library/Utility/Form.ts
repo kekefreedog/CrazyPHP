@@ -703,7 +703,7 @@ export default class Form {
             type: "submit"
         });
 
-        // Check entity or value id
+        // Check entity or value id for update
         if(entity !== null && valueID !== null){
 
             // Lock form
@@ -758,7 +758,7 @@ export default class Form {
                 );
 
         }else
-        // Check entity
+        // Check entity for new
         if(entity !== null){
 
             // Lock form
@@ -981,9 +981,6 @@ export default class Form {
      */
     private _onSubmitCreate = async (entityValue:string, formData:FormData):Promise<any> => {
 
-        // Check submit before
-        this._options.onBeforeSubmit && this._options.onBeforeSubmit(entityValue, formData);
-
         // Prepare request
         let request = new Crazyrequest(`/api/v2/${entityValue}/create`, {
             method: "POST",
@@ -993,8 +990,73 @@ export default class Form {
             cache: false
         });
 
+        // Check submit before
+        if(this._options.onBeforeSubmit){
+
+            // Get potential update
+            // @ts-ignore
+            let potentielUpdate = this._options.onBeforeSubmit(entityValue, formData);
+
+            // Check potential update
+            // @ts-ignore
+            if(potentielUpdate){
+
+                // Checi if is formdata
+                // @ts-ignore
+                if(potentielUpdate instanceof FormData){
+
+                    // Run request
+                    // @ts-ignore
+                    return request.fetch(potentielUpdate);
+
+                }else
+                // If is array
+                // @ts-ignore
+                if(Array.isArray(potentielUpdate)){
+
+                    // Set result
+                    let result:any = null;
+                    
+                    // @ts-ignore
+                    for(let item of potentielUpdate) if(item instanceof FormData) {
+
+                        // Set batch
+                        let temp:any = await request.fetch(item);
+
+                        // Check result
+                        if(!result) 
+
+                            // Set temp
+                            result = temp;
+
+                        else{
+
+                            // If array
+                            if(Array.isArray(result.results ?? false)) result.results.push(...temp.results ?? []);
+
+                            // If object
+                            else if(typeof (result.results ?? false) === "object") result = {...result.results ?? {}, ...temp.results ?? {}};
+
+                            // If string
+                            else result += temp ? `,${temp ?? ""}` : "";
+
+                        }
+
+
+                    }
+
+                    // Return result
+                    return result;
+
+                }
+
+            } 
+            
+
+        }
+
         // Run request
-        return request.fetch(formData);
+        return ;
 
     }
 
