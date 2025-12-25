@@ -441,7 +441,7 @@ declare global {
      */
     interface RunnerOption {
         errors?:?Array<CrazyError>,
-        result:Record<string,any>|Array<any>|string|null,
+        result:any,
         _info:{
             status:"Waiting"|"Ready"|"In Progress"|"Error"|"Complete",
             name:string,

@@ -56,7 +56,7 @@ export default class Runner {
 
         // Set options
         let options:RunnerOption = {
-            result: null,
+            result: {},
             _info: {
                 status: "Waiting",
                 name: "",

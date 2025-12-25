@@ -151,6 +151,32 @@ class Server {
         return $result;
 
     }
+    
+    /**
+    * Get Web Root
+    *
+    * Retrieve absolute web root URL (scheme + host)
+    *
+    * @return string
+    */
+    public static function getWebRoot():string {
+
+        # Detect scheme (proxy safe)
+        $scheme = (
+            (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
+            || (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+        ) ? 'https' : 'http';
+
+        # Detect host (proxy safe)
+        $host = $_SERVER['HTTP_X_FORWARDED_HOST']
+            ?? $_SERVER['HTTP_HOST']
+            ?? 'localhost';
+
+        # Return web root
+        return $scheme . '://' . $host;
+
+    }
+
 
     /** Public Constants
      ******************************************************

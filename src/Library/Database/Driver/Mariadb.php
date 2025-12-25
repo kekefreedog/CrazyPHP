@@ -394,8 +394,14 @@ class Mariadb implements CrazyDatabaseDriver {
             # If varchar
             if($columnTypeTemp == "VARCHAR"){
 
+                # Get maxlength
+                $maxlength =  isset($attribute['maxlength']) && $attribute['maxlength']
+                    ? (intval($attribute['maxlength']) ?: 255)
+                    : 255
+                ;
+
                 # Set column type
-                $columnType = "VARCHAR(255)";
+                $columnType = "VARCHAR($maxlength)";
 
                 # Set required
                 $required = isset($attribute['required']) && $attribute['required'] 
