@@ -10,7 +10,7 @@
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2024 Kévin Zarshenas
  */
-namespace  CrazyPHP\Library\Model;
+namespace CrazyPHP\Library\Model;
 
 /**
  * Dependances

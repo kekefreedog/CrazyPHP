@@ -28,6 +28,21 @@ HttpStatusCode:
           class: material-icons
           text: block
 
+  # Request forbidden
+  403:
+    code: 403
+    type: null
+    detail: null
+    _status_code:
+      title: Forbidden
+      style:
+        color:
+          text: white
+          fill: red
+        icon:
+          class: material-icons
+          text: lock
+
   # Request not find
   404:
     code: 404

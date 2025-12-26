@@ -10,7 +10,7 @@
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2023 Kévin Zarshenas
  */
-namespace  App\Driver\Model;
+namespace App\Driver\Model;
 
 /**
  * Dependances

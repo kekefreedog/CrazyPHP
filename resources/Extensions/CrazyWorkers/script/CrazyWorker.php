@@ -10,7 +10,7 @@
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2024 Kévin Zarshenas
  */
-namespace  App\Library;
+namespace App\Library;
 
 use CrazyPHP\Library\System\Logger;
 use CrazyPHP\Library\File\Config;
