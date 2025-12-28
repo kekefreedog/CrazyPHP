@@ -36,7 +36,8 @@
         "monolog/monolog": "^3.8",
         "illuminate/collections": "^12.4",
         "google/protobuf": "^4.30",
-        "rybakit/msgpack": "^0.9.1"
+        "rybakit/msgpack": "^0.9.1",
+        "ramsey/uuid": "^4.9"
     },
     "require-dev": {
         "phpunit/phpunit": "^11"

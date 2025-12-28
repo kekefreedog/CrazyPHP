@@ -42,6 +42,8 @@ class File {
      * 
      * Sometimes mime type isn't corresponding of the kind of file.
      * It just trying to check extension first, then mimetype
+     * 
+     * @return string|false
      */
     public static function guessMime(string $input = ""): string|false {
 

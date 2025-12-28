@@ -30,7 +30,7 @@ use CrazyPHP\Library\File\Config;
  */
 class Firewall {
 
-    /** Public static methods
+    /** Public static methods | Middleware
      ******************************************************
      */
 
@@ -42,7 +42,7 @@ class Firewall {
      * @param ServerRequestInterface $request PSR-7 request
      * @return void
      */
-    public static function firewall(ServerRequestInterface $request):void {
+    public static function check(ServerRequestInterface $request):void {
 
         # Get client IP
         $ip = self::getClientIp($request);
@@ -54,6 +54,10 @@ class Firewall {
             self::deny();
 
     }
+
+    /** Public static methods
+     ******************************************************
+     */
 
     /**
      * Whitelist
@@ -140,8 +144,30 @@ class Firewall {
      */
     public static function getClientIp(ServerRequestInterface $request):?string {
 
-        # Get current ip adress
-        return $request->getServerParams()['REMOTE_ADDR'] ?? null;
+        # Set ip
+        $ip = null;
+
+        # Get client ip
+        if(!empty($request->getServerParams()['HTTP_CLIENT_IP']))
+
+            # Set ip
+            $ip = $request->getServerParams()['HTTP_CLIENT_IP'];
+
+        else
+        # Try alt 2    
+        if(!empty($request->getServerParams()['HTTP_X_FORWARDED_FOR']))
+
+            # Set ip
+            $ip = $request->getServerParams()['HTTP_X_FORWARDED_FOR'];
+
+        # Else
+        else
+
+            # Set ip
+            $ip = $request->getServerParams()['REMOTE_ADDR'];
+
+        # Return filtered ip
+        return filter_var($ip, FILTER_VALIDATE_IP);
 
     }
 

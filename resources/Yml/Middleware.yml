@@ -10,6 +10,13 @@
 # @copyright  2022-2024 Kévin Zarshenas
 # #
 Middleware:
-  - name:
-    script:
+  # Test
+  - name: test
+    script: App\Library\Middleware::test
+  # Crazy Middlewares
+  - name: uuid
+    script: CrazyPHP\Library\System\Uuid::append
+  - name: firewall
+    script: CrazyPHP\Library\Internet\Firewall::check
+  # ...
   
