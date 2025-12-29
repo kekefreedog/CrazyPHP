@@ -1061,11 +1061,62 @@ class Mariadb implements CrazyDatabaseDriver {
                     }
 
                     /**
+                     * Multiple
+                     */
+                    # Check is "," to split into list
+                    if(is_array($value)){
+
+                        # Check value
+                        if(empty($value))
+
+                            # Continue
+                            continue;
+
+                        # Prepare in query
+                        $inQuery = "$alias.$key in (";
+
+                        # Is first
+                        $isFirst = true;
+
+                        # Iteration value
+                        foreach($value as $subValue){
+
+                            # Check is numeric
+                            if(is_numeric($subValue)){
+
+                                # Append to in query
+                                $inQuery .= (!$isFirst?", ":"").trim($subValue);
+
+                            }else
+                            # Check type
+                            if(is_string($subValue)){
+
+                                # Append to in query
+                                $inQuery .= (!$isFirst?", ":"")."\"".trim($subValue)."\"";
+
+                            }
+
+                            # Set is first false
+                            $isFirst && $isFirst = false;
+
+                        }
+
+                        # Close bracket
+                        $inQuery .= ")";
+
+                        # Fill filter stacked
+                        $filterStacked[] = [
+                            "operation" =>  $inQuery,
+                            "condition" =>  $operation
+                        ];
+
+
+                    }else
+                    /**
                      * Include
                      * 
                      * Catch <> 
                      */
-
                     # Check if contains []
                     if(substr($key, 0, 2) == "<>" || substr($key, 0, 2) == "@@"){
 
@@ -1237,16 +1288,10 @@ class Mariadb implements CrazyDatabaseDriver {
                     }
                 }
 
-                /* 
-                
-                ###
-                # HERE. --> check how turn toto = 1,2,3 to toto in [1, 2, 3]
-                ###
-
-                if($table == "Timelog"){
-                print_r($query);
-                exit;
-                }*/
+                /* if($table == "Timelog"){
+                    print_r($query);
+                    exit;
+                } */
 
                 # Update table
                 $statment = $this->client->query($query);

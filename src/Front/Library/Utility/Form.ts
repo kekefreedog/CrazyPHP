@@ -19,11 +19,11 @@ import { TomSettings, RecursivePartial } from 'tom-select/dist/types/types';
 // @ts-ignore
 import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
 import AirDatepicker, { AirDatepickerOptions } from 'air-datepicker';
-import IMask, { MaskedOptions, MaskedNumberOptions } from 'imask';
 import airDatePickerLocaleFr from 'air-datepicker/locale/fr'
 import { IPickerConfig } from '@easepick/core/dist/types';
 import {default as PageError} from './../Error/Page';
 import {default as UtilityStrings} from './Strings';
+import IMask, { MaskedNumberOptions } from 'imask';
 import UtilityDateTime from '../Utility/DateTime';
 import { AmpPlugin } from '@easepick/amp-plugin';
 import UtilityBoolean from '../Utility/Boolean';
@@ -37,7 +37,6 @@ import Crazyurl from '../Crazyurl';
 import TomSelect from 'tom-select';
 import Objects from './Objects';
 import Root from '../Dom/Root';
-import { key } from 'localforage';
 
 
 /**
@@ -562,8 +561,17 @@ export default class Form {
                             // Get name
                             let name = itemResult[0] as string;
 
-                            // Push value of current input
-                            result.append(name, itemResult[1]);
+                            // Check if multiple value
+                            if(Array.isArray(itemResult[1]) && itemResult[1].length > 1) for(let temp of itemResult[1])
+
+                                // Append value
+                                result.append(name, temp);
+
+                            // If single value
+                            else
+
+                                // Push value of current input
+                                result.append(name, itemResult[1]);
 
                         }
 
@@ -5127,11 +5135,14 @@ export default class Form {
         // New search params
         let params = new URLSearchParams();
 
+        // Set key already use
+        let keyAlreadyUsed:string[] = [];
+
         // Iteration formdata
         formData.forEach((value, key, parent) => {
 
             // Build the full key, e.g. "root[key]" or "root[user.name]"
-            const fullKey = parsedRoot 
+            let fullKey = parsedRoot 
                 ? `${parsedRoot}[${key}]` 
                 : key
             ;
@@ -5139,7 +5150,25 @@ export default class Form {
             // Set value
             const strValue = value instanceof File ? value.name : value;
 
-            if(value){
+            // Check value and key
+            if(value && fullKey){
+
+                // Check if key end with []
+                if(fullKey.endsWith("[]]")){
+
+                    // Set i
+                    let i = 0;
+
+                    // Iteration number until not already used
+                    while(keyAlreadyUsed.includes(`${fullKey}[${i}]`)) i++;
+
+                    // Update full key
+                    fullKey += `[${i}]`;
+
+                    // Append key into keyAlreadyUsed
+                    keyAlreadyUsed.push(fullKey);
+
+                }
 
                 // Append value to params
                 params.append(fullKey, strValue);

@@ -1075,10 +1075,27 @@ class Mariadb implements CrazyDriverModel {
             $operation = new SqlOperation();
 
             # Iteration filters
-            foreach($result as &$value){
+            foreach($result as &$value) {
 
-                # Run operation
-                $value = $operation->run($value);
+                # Check if value is array
+                if(is_array($value) && count($value) > 1){
+
+                    # Continue
+                    continue;
+                    
+                    # foreach($value as &$subValue) {
+                    # Run operation
+                    # $subValue = $operation->run($subValue);
+                    #}
+
+                }else
+                # Check value
+                if($value){
+                
+                    # Run operation
+                    $value = $operation->run($value);
+
+                }
 
             }
 
