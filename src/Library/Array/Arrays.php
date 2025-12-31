@@ -12,12 +12,11 @@
  */
 namespace CrazyPHP\Library\Array;
 
-use CrazyPHP\Library\File\File;
-use CrazyPHP\Library\String\Strings;
-
 /**
  * Dependances
  */
+use CrazyPHP\Library\String\Strings;
+use CrazyPHP\Library\File\File;
 
 /**
  * Arrays
@@ -33,8 +32,6 @@ class Arrays{
     /** Public Static Methods | Exploration
      ******************************************************
      */
-
-
 
     /**
      * Has

@@ -345,8 +345,16 @@ class Page {
             # If is internal
             else{
 
-                # Set url
-                $temp["name"] = $nameOrUrl;
+                # Check if "/"
+                (str_starts_with($nameOrUrl, "/"))
+
+                    # Set url
+                    ? ($temp["url"] = $nameOrUrl)
+
+                    # Set name
+                    : $temp["name"] = $nameOrUrl
+                    
+                ;
 
                 # Check parameters
                 if(is_array($arguments) && !empty($arguments)){

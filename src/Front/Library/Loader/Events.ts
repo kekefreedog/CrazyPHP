@@ -196,7 +196,10 @@ export default class Events {
         if(event.url){
 
             // Set url
-            let url = new URL(event.url);
+            let url = event.url.startsWith("/")
+                ? new URL(event.url, window.location.href)
+                : new URL(event.url)
+            ;
 
             // Check target
             if(event.target == "_blank"){

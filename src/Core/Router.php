@@ -29,6 +29,7 @@ use CrazyPHP\Library\File\Header;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Model\Context;
 use DateTime;
+use Illuminate\Support\Arr;
 
 /**
  * Router
@@ -460,7 +461,7 @@ class Router extends VendorRouter {
      * @param string $routerName
      * @param ?array $arguments
      */
-    public static function redirectTo(string $routerName, ?array $arguments = null):void {
+    public static function redirectTo(string $routerName, ?array $arguments = null, ?array $query = null):void {
 
         # Check route name
         if($routerName){
@@ -471,12 +472,18 @@ class Router extends VendorRouter {
             # Check if text
             if($accept == "text/html"){
 
+                # Set query
+                $queryString = is_array($query) && !empty($query)
+                    ? "?".http_build_query($query)
+                    : ""
+                ;
+
                 # New response
                 (new Response())
                     ->addHeader("Location", ModelConfig::getRouterPath([
                         "name"      =>  $routerName,
                         "arguments" =>  $arguments
-                    ]))
+                    ]).$queryString)
                     ->send()
                 ;
 
@@ -491,7 +498,8 @@ class Router extends VendorRouter {
                         [
                             "type"      =>  "redirect",
                             "name"      =>  $routerName,
-                            "arguments" =>  $arguments
+                            "arguments" =>  $arguments,
+                            "query"     =>  $query
                         ]
                     ])
                     ->send();

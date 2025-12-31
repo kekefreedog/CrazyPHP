@@ -177,6 +177,49 @@ class Server {
 
     }
 
+    /**
+     * Get Web Request
+     * 
+     * Get current web request as a relative URL (no scheme, no host)
+     *
+     * Examples:
+     *  - /assets/Png/Plan/file.png
+     *  - /login?redirect=/dashboard
+     *
+     * @return string
+     */
+    public static function getWebRequest():string {
+
+        # Set result
+        $result = "";
+
+        # CLI fallback
+        if(PHP_SAPI === 'cli'){
+
+            # Set result
+            $result = "/";
+
+        }else{
+
+            # Get uri
+            $uri = $_SERVER['REQUEST_URI'] ?? '/';
+
+            # Normalize path
+            $path = parse_url($uri, PHP_URL_PATH) ?? '/';
+
+            # Normalize query
+            $query = parse_url($uri, PHP_URL_QUERY);
+
+            # Set result
+            $result = $query ? $path . '?' . $query : $path;
+
+        }
+
+        # Return result
+        return $result;
+
+    }
+
 
     /** Public Constants
      ******************************************************
