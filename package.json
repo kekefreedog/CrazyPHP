@@ -18,12 +18,14 @@
     },
     "homepage": "https://github.com/kekefreedog/CrazyPHP#readme",
     "devDependencies": {
+        "@types/luxon": "^3.7.1",
         "@types/node": "^20.14.10",
         "@types/object-hash": "^3.0.6",
         "handlebars": "^4.7.8",
         "localforage": "^1.10.0",
         "object-hash": "^3.0.0",
-        "tslib": "^2.4.1"
+        "tslib": "^2.4.1",
+        "type-fest": "^5.3.1"
     },
     "dependencies": {
         "@easepick/bundle": "^1.2.1",
@@ -36,6 +38,7 @@
         "filepond-plugin-image-preview": "^4.6.12",
         "imask": "^7.6.1",
         "killa": "^1.9.1",
+        "luxon": "^3.7.2",
         "msgpackr": "^1.11.2",
         "reconnecting-websocket": "^4.4.0",
         "tom-select": "^2.3.1"

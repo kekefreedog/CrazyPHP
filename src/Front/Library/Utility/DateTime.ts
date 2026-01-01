@@ -11,6 +11,8 @@
 /**
  * Dependances
  */
+import { DateTime as Luxon, Duration } from 'luxon';
+import type {IntRange} from 'type-fest';
 
 /**
  * Date Time
@@ -564,6 +566,121 @@ export default class DateTime {
 
         // Return diff
         return inputDate < today;
+
+    };
+
+    /** Public static methods | Luxon
+     ******************************************************
+     */
+
+    /**
+     * Normalize
+     * 
+     * Normalize date range given
+     * 
+     * @param from 
+     * @param to 
+     * @returns {{start:Luxon,end:Luxon}}
+     */
+    public static normalize = (from:Date|Luxon,to:Date|Luxon):{start:Luxon,end:Luxon} => {
+
+        // Set start
+        let start = from instanceof Date
+            ? Luxon.fromJSDate(from)
+            : from
+        ;
+
+        // Set end
+        let end = to instanceof Date
+            ? Luxon.fromJSDate(to)
+            : to
+        ;
+
+        // Ensure start <= end
+        if(start > end)
+
+            // Set start and end
+            [start, end] = [end, start];
+
+        // Set result
+        let result = {start,end};
+
+        // Return result
+        return result;
+
+    };
+
+    /**
+     * Offset Range
+     * 
+     * Offset date range based on ration and direction given
+     * 
+     * @param from 
+     * @param to 
+     * @param direction 
+     * @param ratio 
+     * @returns {{from:Date, to:Date}}
+     */
+    public static offsetRange = (from:Date|Luxon,to:Date|Luxon,direction:"past"|"future"="future",ratio:number = 0.5):{from:Luxon, to:Luxon} => {
+
+        // Normalize start / end
+        const {start,end} = DateTime.normalize(from, to);
+
+        // Get delta using ratio
+        const delta = end
+            .diff(start)
+            .mapUnits(v => v * ratio)
+        ;
+
+        // Get direction
+        const directionInt = direction === 'future' ? 1 : -1;
+
+        // Set result
+        let result = {
+            from: start.plus(delta.mapUnits(v => v * directionInt)),
+            to: end.plus(delta.mapUnits(v => v * directionInt)),
+        };
+
+        // Return result
+        return result;
+
+    };
+
+    /**
+     * Align Range
+     * 
+     * Align range to have target date on the center
+     * 
+     * @param from 
+     * @param to 
+     * @param target 
+     * @returns {{from:Luxon, to:Luxon}}
+     */
+    public static alignRange = (from:Date|Luxon,to:Date|Luxon,target:Date|Luxon = Luxon.now()):{from:Luxon, to:Luxon} => {
+        
+        // Normalize start / end
+        const {start,end} = DateTime.normalize(from, to);
+
+        // Set end
+        let targetDate = target instanceof Date
+            ? Luxon.fromJSDate(target)
+            : target
+        ;
+
+        // Get duration
+        const duration = end.diff(start);
+
+        // Set half
+        const half = duration.mapUnits(v => v / 2);
+
+        // Set result
+        let result = {
+            from: targetDate.minus(half),
+            to: targetDate.plus(half)
+        };
+
+        // Retrun result
+        return result;
 
     };
 
