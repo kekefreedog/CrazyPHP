@@ -1337,6 +1337,9 @@ export default class Form {
             // Ingest Filter From Query
             this._ingestFilterFromQuery(this._formEl);
 
+            // Call event
+            this._options.onFilterReady && this._options.onFilterReady(this.getFormData(this._formEl));
+
             // Process filter
             this._processForFilter(this._formEl);
 

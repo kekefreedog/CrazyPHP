@@ -682,6 +682,110 @@ export default class DateTime {
         // Retrun result
         return result;
 
+        }
+        
+    /**
+    * Align Range By Ratio
+    * 
+    * Align range based on a ratio between two dates
+    * 
+    * @param from 
+    * @param to 
+    * @param range 
+    * @param ratio 
+    * @returns {{from:Luxon, to:Luxon}}
+    */
+    public static alignRangeByRatio = (from:Date|Luxon, to:Date|Luxon, range:'week'|'month'|'semester'|'year', ratio:number = 0.5):{from:Luxon, to:Luxon} => {
+
+        // Normalize start / end
+        const {start, end} = this.normalize(from, to);
+
+        // Clamp ratio
+        const safeRatio = Math.min(1, Math.max(0, ratio));
+
+        // Compute pivot date
+        const pivotMillis =
+            start.toMillis() +
+            (
+                end.toMillis() - start.toMillis()
+            ) * 
+            safeRatio
+        ;
+
+        // Set pivot
+        let pivot = Luxon.fromMillis(pivotMillis, {zone: start.zone});
+
+        // Let result
+        let result:{from:Luxon, to:Luxon};
+
+        // Switch range
+        switch(range){
+
+            // Case week
+            case 'week': {
+
+                // ISO week (Monday → Sunday)
+                let from = pivot.startOf('week');
+
+                // Set result
+                result = {
+                    from,
+                    to: from.endOf('week')
+                };
+
+            } break;
+
+            // Case month
+            case 'month': {
+
+                let from = pivot.startOf('month');
+
+                // Set result
+                result = {
+                    from,
+                    to: from.endOf('month')
+                };
+
+            } break;
+
+            // Case semester
+            case 'semester': {
+
+                // Jan–Jun or Jul–Dec
+                const semesterStartMonth = pivot.month <= 6 ? 1 : 7;
+
+                let from = pivot
+                    .set({month: semesterStartMonth})
+                    .startOf('month')
+                ;
+
+                // Set result
+                result = {
+                    from,
+                    to: from.plus({months: 6}).minus({milliseconds: 1})
+                };
+
+            } break;
+
+            // Case year
+            case 'year': {
+
+                let from = pivot.startOf('year');
+
+                // Set result
+                result = {
+                    from,
+                    to: from.endOf('year')
+                };
+
+            } break;
+
+        }
+
+        // Return result
+        return result;
+
     };
+
 
 }

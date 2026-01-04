@@ -468,6 +468,7 @@ declare global {
         onError:(result:object, entity:string, formData:FormData)=>void,
         alertDriver:string,
         filter:boolean,
+        onFilterReady?:(formData:FormData)=>void,
     }
 
     /** Interface | Error

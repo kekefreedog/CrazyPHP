@@ -239,8 +239,26 @@ export default class Filter {
 
         // New form
         this._formInstance = new Form(this._formEl, {
-            filter: true
+            filter: true,
+            onFilterReady: this._initFilterItem
         });
+
+    }
+
+    /**
+     * Init Filter Item
+     * 
+     * @returns {void}
+     */
+    private _initFilterItem = ():void => {
+
+        // Check collection
+        if(Object.keys(this._collections).length) for(let name in this._collections) if(this._collections[name].length) for(let item of this._collections[name]){
+            
+            // Init item
+            item.init();
+
+        }
 
     }
 
@@ -301,6 +319,19 @@ export class FilterItem {
         // Set input
         this._inputEl = inputEl;
 
+    }
+
+    /** Public Methods
+     ******************************************************
+     */
+
+    /**
+     * Init
+     * 
+     * @returns {any}
+     */
+    public init = ():any => {
+
         // Init item
         this._initItem();
 
@@ -308,10 +339,6 @@ export class FilterItem {
         this._initEvent();
 
     }
-
-    /** Public Methods
-     ******************************************************
-     */
 
     /**
      * Get
@@ -375,8 +402,22 @@ export class FilterItem {
      */
     private _initItem = ():void => {
 
-        // Init
-        this._collection.init && this._collection.init(this);
+        // Check Init
+        if(this._collection.init){
+
+            // Get formdata
+            let formdata = this._container._formInstance.getFormData(this._container._formEl);
+
+            // Set value
+            let value = formdata.has(this._inputEl.name)
+                ? formdata.get(this._inputEl.name)?.toString()
+                : null
+            ;
+            
+            // Init
+            this._collection.init(this, value)
+            
+        }
 
     }
 
@@ -430,7 +471,7 @@ export interface filterItem {
     name:string,
     el:HTMLElement|string,
     event?:keyof HTMLElementEventMap,
-    init?:(filter:FilterItem)=>void,
+    init?:(filter:FilterItem, currentValue:null|any)=>void,
     set?:false|((filter:FilterItem, currentValue:any, newValue?:any)=>any),
     get?:(filter:FilterItem, currentValue:any)=>any,
 
