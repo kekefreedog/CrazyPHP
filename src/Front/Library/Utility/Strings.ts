@@ -377,6 +377,35 @@ export default class Strings {
                 : false
         ;
 
+    }
+
+    /**
+     * Break Long Hyphen Words
+     * 
+     * @param input 
+     * @param maxLength 
+     * @returns 
+     */
+    public static breakLongHyphenWords = (input:string, maxLength:number=16):string => {
+        
+        // Return result
+        return input
+            // Split but keep separators (space or newline)
+            .split(/(\s+)/)
+            .map(part => {
+                // Ignore separators
+                if (/^\s+$/.test(part)) {
+                    return part;
+                }
+
+                // If word is too long, replace "-" by "-\n"
+                if (part.length > maxLength) {
+                    return part.replace(/-/g, '-\n');
+                }
+
+                return part;
+            })
+            .join('');
     };
 
 }
