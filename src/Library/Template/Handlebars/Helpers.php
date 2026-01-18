@@ -2021,4 +2021,67 @@ class Helpers {
 
     }
 
+    /**
+     * Markdown
+     * 
+     * Convert markdown
+     * 
+     * @param mixed $max
+     * @param mixed options
+     */
+    public static function markdown($input, $options) {
+
+        # Set result
+        $result = $input;
+
+        if($input && gettype($input) === "string") {
+
+            // Escape HTML
+            $html = htmlspecialchars($input, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+
+            // Headings
+            $html = preg_replace('/^###### (.*)$/m', '<h6 style="margin: 0 0 0 0;">$1</h6>', $html);
+            $html = preg_replace('/^##### (.*)$/m', '<h5 style="margin: 0 0 0 0;">$1</h5>', $html);
+            $html = preg_replace('/^#### (.*)$/m', '<h4 style="margin: 0 0 0 0;">$1</h4>', $html);
+            $html = preg_replace('/^### (.*)$/m', '<h3 style="margin: 0 0 0 0;">$1</h3>', $html);
+            $html = preg_replace('/^## (.*)$/m', '<h2 style="margin: 0 0 0 0;">$1</h2>', $html);
+            $html = preg_replace('/^# (.*)$/m', '<h1 style="margin: 0 0 0 0;">$1</h1>', $html);
+
+            // Bold
+            $html = preg_replace('/\*\*(.*?)\*\*/', '<strong>$1</strong>', $html);
+
+            // Italic
+            $html = preg_replace(
+                '/(\*|_)(?=[^*_]*[a-zA-Z])([a-zA-Z][^*_]*[a-zA-Z])\1/',
+                '<em>$2</em>',
+                $html
+            );
+
+            // Inline code
+            $html = preg_replace('/`([^`]+)`/', '<code>$1</code>', $html);
+
+            // Links
+            $html = preg_replace(
+                '/\[([^\]]+)\]\(([^)]+)\)/',
+                '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>',
+                $html
+            );
+
+            // Paragraphs
+            $blocks = preg_split("/\n{2,}/", $html);
+            $blocks = array_map(function ($block) {
+                if (preg_match('/^<h\d|^<ul|^<ol|^<p|^<blockquote/', $block)) {
+                    return $block;
+                }
+                return '<p style="margin: 0 0 0 0;">' . nl2br($block) . '</p>';
+            }, $blocks);
+
+            $result = implode('', $blocks);
+
+        }
+
+        return $result;
+
+    }
+
 }
