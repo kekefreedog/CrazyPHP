@@ -260,14 +260,8 @@ export default class Runner {
 
             }else{
 
-                // Check error
-                if(error instanceof Error){
-
-                    // Display error
-                    console.error(error.message);
-                    console.error('An error occurred during execution:', error);
-
-                }
+                // Display error
+                error instanceof Error && this._displayError(error, options);
             
             }
 
@@ -507,6 +501,34 @@ export default class Runner {
     private _loadOptions = ():RunnerOption => {
 
         return this._options;
+
+    }
+
+    /**
+     * Display Error
+     * 
+     * @param error 
+     * @param options
+     * @returns {void}
+     */
+    private _displayError = (error:Error, options:RunnerOption):void => {
+
+        // Check viewer
+        if(this.viewer){
+
+            // Update with error
+            this.viewer.update({error});
+
+        }else{
+
+            // Display error
+            console.error(error.message);
+            console.error('An error occurred during execution:', error);
+
+        }
+        
+        // Return custom last method
+        this.tearDownAfterClass(options)
 
     }
 
