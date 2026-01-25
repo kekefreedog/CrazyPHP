@@ -65,14 +65,15 @@ export default class Runner {
                     current: 0,
                     name: []
                 }
-            }
+            },
+            _viewer:null,
         }
 
         // Check viewer
         if(viewer)
 
             // Setup viewer
-            this.viewer = new viewer(options);
+            this.viewer = options._viewer = new viewer(options);
 
         // Check extra
         if(extra && extra !== null)

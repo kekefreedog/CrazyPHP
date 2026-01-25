@@ -455,6 +455,7 @@ declare global {
             }
         },
         _user_interface?:Object,
+        _viewer:RunnerViewer|null,
         extra?:any
     }
 
