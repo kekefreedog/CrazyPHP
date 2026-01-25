@@ -408,4 +408,54 @@ export default class Strings {
             .join('');
     };
 
+    /**
+     * Truncate
+     * 
+     * Truncate string
+     * > Exemple : alignement > align...
+     * 
+     * @param input 
+     * @param maxLength 
+     * @param emphasis 
+     * @param middle
+     * @returns {string}
+     */
+    public static truncate = (input:string, maxLength:number = 8, emphasis:string = "...", middle:boolean = false):string => {
+
+        // Set result
+        let result = input;
+
+        // Check length
+        if(input && input.length > maxLength){ 
+
+            // End truncate
+            if(!middle)
+
+                // Set result
+                result = `${input.slice(0, maxLength)}${emphasis}`;
+
+            // Middle truncate
+            else{
+
+                // Set keep
+                const keep = maxLength;
+
+                // Set start
+                const start = Math.ceil(keep / 2);
+                
+                // Set end
+                const end = Math.floor(keep / 2);
+                
+                // Set result
+                result = `${input.slice(0, start)}${emphasis}${input.slice(input.length - end)}`;
+
+            }
+
+        }
+
+        // Return input
+        return result;
+
+    }
+
 }
