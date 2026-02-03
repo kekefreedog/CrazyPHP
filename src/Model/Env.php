@@ -320,6 +320,7 @@ class Env{
     public const PREFIX = "__CRAZY_APP";
 
     /** @const string REGEX Regex expression for select word starting after @ */
-    public const REGEX = '/@[\w]+/';
+    # public const REGEX = '/@[\w]+/';
+    public const REGEX = '/(?<![A-Za-z0-9._%+-])@[\w.]+(?!\.[A-Za-z]{2,})/';
 
 }
