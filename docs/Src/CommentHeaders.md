@@ -181,6 +181,14 @@ class Toto {
   !--}}
 ```
 
+### HBS Separator
+
+```hbs
+{{!--
+  ! TITLE
+  !--}}
+```
+
 ## SCSS Headers
 
 ### SCSS header for SCSS file.
