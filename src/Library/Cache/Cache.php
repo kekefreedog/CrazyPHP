@@ -18,16 +18,13 @@ namespace CrazyPHP\Library\Cache;
 
 use Phpfastcache\Exceptions\PhpfastcacheInvalidArgumentException;
 use Phpfastcache\Exceptions\PhpfastcacheDriverConnectException;
-use Phpfastcache\Exceptions\PhpfastcacheSimpleCacheException;
 use Phpfastcache\Drivers\Mongodb\Config as MemcachedConfig;
 use Phpfastcache\Core\Pool\ExtendedCacheItemPoolInterface;
 use Phpfastcache\Config\ConfigurationOptionInterface;
 use Phpfastcache\Config\ConfigurationOption;
-use Phpfastcache\Drivers\Mongodb\Driver;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\File\Composer;
 use Phpfastcache\Helper\Psr16Adapter;
-use Psr\SimpleCache\CacheInterface;
 use CrazyPHP\Library\Time\DateTime;
 use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\File\File;
@@ -66,7 +63,7 @@ class Cache extends Psr16Adapter {
      * @param ConfigurationOptionInterface $config Config of the cache
      * @return Create
      */
-    public function __construct(string|ExtendedCacheItemPoolInterface $driver = "", ConfigurationOptionInterface $config = null){
+    public function __construct(string|ExtendedCacheItemPoolInterface $driver = "", ConfigurationOptionInterface|null $config = null){
 
         # Get Configuration
         $configuration = $this->getConfiguration($driver, $config);
@@ -346,7 +343,7 @@ class Cache extends Psr16Adapter {
      * @param ConfigurationOptionInterface $config Config to force
      * @return array
      */
-    public function getConfiguration(string|ExtendedCacheItemPoolInterface $driver = "", ConfigurationOptionInterface $config = null){
+    public function getConfiguration(string|ExtendedCacheItemPoolInterface $driver = "", ?ConfigurationOptionInterface $config = null){
 
         # Set result
         $result = [];

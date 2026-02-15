@@ -17,6 +17,7 @@ import {default as PageError} from './../Error/Page';
 import Crazyrequest from './../Crazyrequest';
 import Pageregister from './../Pageregister';
 import Crazycolor from '../Crazycolor';
+import Cookie from '../Utility/Cookie';
 import Crazyurl from '../Crazyurl';
 import DomRoot from '../Dom/Root';
 import State from '../State';
@@ -518,7 +519,7 @@ export default class Page {
                     method: "get",
                     cache: false,
                     responseType: "json",
-                    from: "internal"
+                    from: "internal",
                 }
             );
 
@@ -533,6 +534,9 @@ export default class Page {
                 catch_state: true,
                 ...queryParams
             });
+
+            // Clear cookie (if not secure)
+            Cookie.clear(Page.COOKIE_UUID_STATE, "/");
 
             // Push into state
             State.set().page(options.name, pageState);
@@ -1083,5 +1087,8 @@ export default class Page {
 
     /** @var globalPostAction */
     private static globalPostAction:null|(((options:LoaderPageOptions)=>LoaderPageOptions)) = null;
+
+    /** @var COOKIE_UUID_STATE */
+    private static COOKIE_UUID_STATE = "crazy_state_uuid";
 
 }

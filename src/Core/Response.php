@@ -16,6 +16,7 @@ namespace CrazyPHP\Core;
  * Dependances
  */
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
+use Psr\Http\Message\ServerRequestInterface;
 use Nyholm\Psr7\Response as Psr17Response;
 use Psr\Http\Message\ResponseInterface;
 use CrazyPHP\Exception\CrazyException;
@@ -23,12 +24,11 @@ use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Http\Message\StreamInterface;
 use CrazyPHP\Library\File\Composer;
 use CrazyPHP\Library\Time\DateTime;
-use CrazyPHP\Exception\CatchState;
 use CrazyPHP\Library\File\Config;
-use CrazyPHP\Library\State\Page;
 use CrazyPHP\Library\File\File;
+use CrazyPHP\Library\Html\Cookie;
+use CrazyPHP\Library\State\Page;
 use CrazyPHP\Model\Context;
-use CrazyPHP\Model\Env;
 
 /**
  * Response
@@ -57,8 +57,21 @@ class Response {
     /** @var ?ResponseInterface $response */
     public $response = null;
 
+    /** @var ?ServerRequestInterface $response */
+    public $request = null;
+
     /** @var array */
     public $header = [];
+
+    /** Public parameters
+     ******************************************************
+     */
+
+    /** @var array $cookies */
+    private array $_cookies = [
+        "delete"    =>  [],
+        "add"       =>  [],
+    ];
 
     /** @var array */
     private array $postResponseCollection = [];
@@ -66,12 +79,16 @@ class Response {
     /**
      * Constructor
      * 
+     * @param mixed $request
      * @return self
      */
-    public function __construct(){
+    public function __construct(mixed $request = null){
 
         # Check no blocker
         $this->checkBlocker();
+
+        # Set request
+        if($request instanceof ServerRequestInterface) $this->request = $request;
 
         # New instance
         $this->instance = new Psr17Factory();
@@ -96,7 +113,7 @@ class Response {
      * @param $body
      * @return self
      */
-    public function setContent(/* string|array|resource|StreamInterface */$body = ""):self {
+    public function setContent(mixed $body = ""):self {
 
         # Check if array
         if(is_array($body))
@@ -336,6 +353,53 @@ class Response {
     }
 
     /**
+     * Add Cookie
+     * 
+     * @param string $name
+     * @param array $options
+     * @return self
+     */
+    public function addCookie(string $name, string $value, array $options = []):self {
+
+        # Check if already in delete
+        if($name){
+
+            # Append
+            $this->_cookies["add"][$name] = [
+                "value"     =>  $value,
+                "options"   =>  $options
+            ];
+
+        }
+
+        # Return self
+        return $this;
+
+    }
+
+    /**
+     * Delete Cookie
+     * 
+     * @param string $name
+     * @param array $options
+     * @return self
+     */
+    public function deleteCookie(string $name, array $options = []):self {
+
+        # Check if already in delete
+        if($name){
+
+            # Append
+            $this->_cookies["delete"][$name] = $options;
+
+        }
+
+        # Return self
+        return $this;
+
+    }
+
+    /**
      * Prepare
      * 
      * Prepare response
@@ -357,12 +421,16 @@ class Response {
      * Just for hide errors in VSCODE
      */
     public function pushContent():self {
+
         # Return self
         return $this;
+
     }
     public function pushContext():self {
+
         # Return self
         return $this;
+        
     }
 
     /**
@@ -379,6 +447,9 @@ class Response {
 
             # Prepare response
             $this->prepare();
+
+        # Prepare cookie
+        $this->_prepareCookie();
 
         # Emit result
         (new SapiEmitter())->emit($this->response);
@@ -463,6 +534,48 @@ class Response {
      * @return void
      */
     private function checkBlocker():void {
+
+    }
+
+    /**
+     * Prepare cookie
+     * 
+     * @return void
+     */
+    private function _prepareCookie():void {
+
+        # Set cookie instance
+        $cookieInstance = new Cookie($this->response, $this->request);
+
+        # Check page state
+        if($_COOKIE[Page::COOKIE_UUID_STATE] ?? false){
+
+            # Clean conflict
+            $cookieInstance->delete(Page::COOKIE_UUID_STATE);
+
+            # Push cookie
+            $cookieInstance->add(Page::COOKIE_UUID_STATE, $_COOKIE[Page::COOKIE_UUID_STATE]);
+
+        }
+
+        # Iteration cookies to add
+        if(!empty($this->_cookies["add"] ?? [])) foreach($this->_cookies["add"] as $name => $param){
+
+            # Delete cookie
+            $cookieInstance->add($name, $param["value"], $param["options"]);
+
+        }
+
+        # Iteration cookies to delete
+        if(!empty($this->_cookies["delete"] ?? [])) foreach($this->_cookies["delete"] as $name => $param){
+
+            # Delete cookie
+            $cookieInstance->delete($name, $param);
+
+        }
+
+        # Set response
+        $this->response = $cookieInstance->getResponse();
 
     }
 

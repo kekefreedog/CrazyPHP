@@ -36,7 +36,7 @@ class Query {
      * Get
      * 
      * Get query parameters
-     * 
+     *
      * @return array
      */
     public static function get():array {

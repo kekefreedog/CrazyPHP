@@ -22,10 +22,13 @@ use CrazyPHP\Exception\CrazyException;
 use Symfony\Component\Finder\Finder;
 use CrazyPHP\Library\String\Color;
 use CrazyPHP\Library\Array\Arrays;
+use CrazyPHP\Library\Cache\Cache;
+use CrazyPHP\Library\System\Uuid;
 use Pelago\Emogrifier\CssInliner;
 use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\Html\Head;
 use CrazyPHP\Library\File\File;
+use CrazyPHP\Library\State\Page;
 use CrazyPHP\Model\Context;
 
 /**
@@ -57,6 +60,15 @@ class Structure {
     /** @var bool $watch Bool for check if watch mode is enable */
     private $watch = false;
 
+    /** @var string UUID */
+    private $_uuid;
+
+    /** @var Cache $cache */
+    private $_cache;
+
+    /** @var bool $is_chached */
+    private $_is_cached = false;
+
     /**
      * Constructor
      * 
@@ -69,6 +81,12 @@ class Structure {
 
         # Set html tag
         $this->response["elements"][0]["tag"] = "html";
+
+        # Set uuid
+        $this->_uuid = Uuid::create();
+
+        # New cache instance
+        $this->_cache = new Cache();
 
     }
 
@@ -127,6 +145,9 @@ class Structure {
 
         # Set last hash
         $this->_setHash($result);
+
+        # Set uuid
+        $this->_setUuid();
 
         # Return result
         return $result;
@@ -582,6 +603,9 @@ class Structure {
         # Rendered template
         $renderedTemplate = $templateInstance->render($data);
 
+        # Store uuid
+        $this->_uuid && $this->_cacheData($data);
+
         # Set body with template render
         $this->setBodyContent($renderedTemplate);
 
@@ -857,6 +881,12 @@ class Structure {
      ******************************************************
      */
 
+    /**
+     * Set Hash
+     * 
+     * @param $input
+     * @return void
+     */
     private function _setHash(string &$input):void {
 
         # Get watch
@@ -951,6 +981,46 @@ class Structure {
 
             # Set language in response
             $attributes["data-crazy-color"] = $source;
+
+        }
+
+    }
+
+    /**
+     * Cache Data
+     * 
+     * Cache data using uuid
+     * 
+     * @return void
+     */
+    private function _cacheData(array $data):void {
+
+        # Check uuid
+        if($this->_uuid){
+
+            # Delete potential conflic
+            $this->_cache->delete($this->_uuid);
+
+            # Push data into cache
+            $this->_is_cached = $this->_cache->set($this->_uuid, $data);
+
+        }
+
+    }
+
+    /**
+     * Set Uuid
+     * 
+     * @return void
+     */
+    private function _setUuid():void {
+
+        # Check uuid and is cached
+        if($this->_uuid && $this->_is_cached){
+
+            # Push uuid in cookie
+            $_COOKIE[Page::COOKIE_UUID_STATE] = $this->_uuid;
+
 
         }
 

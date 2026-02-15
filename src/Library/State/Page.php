@@ -19,9 +19,11 @@ use CrazyPHP\Library\Exception\HttpStatusCode;
 use CrazyPHP\Library\State\Components\Form;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Form\Validate;
+use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Exception\CatchState;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\String\Color;
+use CrazyPHP\Library\Cache\Cache;
 use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\String\Url;
 use CrazyPHP\Library\Form\Query;
@@ -74,6 +76,9 @@ class Page {
      * @return self
      */
     public function __construct(array $options = []){
+
+        # Check If Catch State With Uuid
+        $this->checkIfCatchStateWithUuid();
 
         # Fill options
         $this->_fillOptions($options);
@@ -737,12 +742,12 @@ class Page {
         if(
             Env::has(static::ENV_CATCH_STATE) && 
             Env::get(static::ENV_CATCH_STATE)
-        )
+        ){
 
             # New exception
             throw new CatchState("", 0, $result);
 
-        else
+        }else
         # Return state if env ?catch_state=true
         if(
             isset($_GET["catch_state"]) && 
@@ -754,6 +759,48 @@ class Page {
                 ->setStatusCode(200)
                 ->pushContent("", $result)
                 ->pushContext()
+                ->send();
+
+            # Stop script
+            exit;
+
+        }
+
+    }
+
+    /**
+     * Check If Catch State With Uuid
+     * 
+     * @param void
+     */
+    private function checkIfCatchStateWithUuid() {
+
+        # Check env
+        if(
+            ($_COOKIE[Page::COOKIE_UUID_STATE] ?? null) &&
+            Process::bool($_GET[static::ENV_CATCH_STATE] ?? false)
+        ){
+
+            # New cache instance
+            $cacheInstance = new Cache();
+
+            # Set uuid
+            $uuid = $_COOKIE[Page::COOKIE_UUID_STATE];
+
+            # Set result
+            $result = $cacheInstance->get($uuid, null);
+
+            # Check result
+            if($result === null) return;
+
+            # Set uuid into result
+            $result["_uuid"] = $uuid;
+
+            # Set response
+            (new ApiResponse())
+                ->setStatusCode(200)
+                ->pushContent("", $result)
+                ->addCookie(Page::COOKIE_UUID_STATE, "")
                 ->send();
 
             # Stop script
@@ -849,5 +896,8 @@ class Page {
 
     /** @var string ENV_CATCH_STATE  */
     public const ENV_CATCH_STATE = "catch_state";
+
+    /** @var string COOKIE_UUID_STATE  */
+    public const COOKIE_UUID_STATE = "crazy_state_uuid";
 
 }
