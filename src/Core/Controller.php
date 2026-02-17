@@ -592,6 +592,7 @@ class Controller {
                 ->setStatusCode(200)
                 ->pushContent("", $result)
                 # ->pushContext()
+                ->addCookie(Page::COOKIE_UUID_STATE, "")
                 ->send();
 
             # Stop script
