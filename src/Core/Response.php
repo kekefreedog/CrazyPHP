@@ -548,13 +548,21 @@ class Response {
         $cookieInstance = new Cookie($this->response, $this->request);
 
         # Check page state
-        if($_COOKIE[Page::COOKIE_UUID_STATE] ?? false){
+        if(($_COOKIE[Page::COOKIE_UUID_STATE] ?? false) /* Maybe problematic ?? */ && !($_GET["catch_state"] ?? false) /* Maybe problematic ?? */){
 
             # Clean conflict
             $cookieInstance->delete(Page::COOKIE_UUID_STATE);
 
             # Push cookie
             $cookieInstance->add(Page::COOKIE_UUID_STATE, $_COOKIE[Page::COOKIE_UUID_STATE]);
+
+        }else{
+
+            # Clean conflict
+            $cookieInstance->delete(Page::COOKIE_UUID_STATE);
+
+            # Push cookie
+            $cookieInstance->add(Page::COOKIE_UUID_STATE, "");
 
         }
 

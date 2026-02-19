@@ -83,7 +83,7 @@ class Structure {
         $this->response["elements"][0]["tag"] = "html";
 
         # Set uuid
-        $this->_uuid = Uuid::create();
+        if(Context::getCurrentRoute("group") == "app") $this->_uuid = Uuid::create();
 
         # New cache instance
         $this->_cache = new Cache();
