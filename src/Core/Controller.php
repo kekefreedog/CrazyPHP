@@ -140,13 +140,13 @@ class Controller {
      * 
      * @return Response
      */
-    public static function Response():Response {       
+    public static function Response(mixed $request = null):Response {       
         
         # Catch state if not done previously or no state
         static::_catchState();
 
         # New structure
-        $result = new Response();
+        $result = new Response($request);
 
         # Return result
         return $result;

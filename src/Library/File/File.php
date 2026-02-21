@@ -1135,7 +1135,11 @@ class File {
         # Message pack
         "msgpack"   =>  "application/msgpack",
         # Icon Mac OS
-        "icns"      =>  "image/x-icns"
+        "icns"      =>  "image/x-icns",
+        # Shell Script
+        "sh"        =>  "application/x-sh",
+        # Text
+        "text"      =>  "text/plain",
         # TBC ...
     ];
 
