@@ -4136,7 +4136,7 @@ export default class Form {
                     option.valueField = remoteData.value;
 
                     // Check label has {{}}
-                    if(remoteData.label.includes("{{") && remoteData.label.includes("}}")){
+                    if(remoteData.label && remoteData.label.includes("{{") && remoteData.label.includes("}}")){
 
                         // Set render
                         option.render = {

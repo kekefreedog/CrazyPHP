@@ -83,6 +83,13 @@ class Toto{
 # #
 ```
 
+## YAML Separator
+```yml
+# TITLE
+# ######################################################
+#
+```
+
 ## TS Headers
 
 ### TS header for TS file.
