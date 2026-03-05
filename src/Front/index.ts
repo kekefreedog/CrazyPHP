@@ -40,6 +40,7 @@ export {default as Crazyelement} from "./Library/Crazyelement";
 export {default as Pageregister} from "./Library/Pageregister";
 export {default as CurrentPage} from "./Library/Current/Page";
 export {default as HistoryPage} from "./Library/History/Page";
+export {default as UtilityPath} from "./Library/Utility/Path";
 export {default as DomRedirect} from "./Library/Dom/Redirect";
 export {default as Crazyevents} from "./Library/Crazyevents";
 export {default as UtilityCsv} from "./Library/Utility/Csv";

@@ -43,6 +43,7 @@ export {default as Crazyrequest} from "./../Library/Crazyrequest";
 export {default as Crazyelement} from "./../Library/Crazyelement";
 export {default as Pageregister} from "./../Library/Pageregister";
 export {default as Crazypartial} from "./../Library/Crazypartial";
+export {default as UtilityPath} from "./../Library/Utility/Path";
 export {default as CurrentPage} from "./../Library/Current/Page";
 export {default as HistoryPage} from "./../Library/History/Page";
 export {default as DomRedirect} from "./../Library/Dom/Redirect";
