@@ -283,6 +283,59 @@ class Page {
         # Push in ui
         $this->pushUiContent("forms.$formId", $formRender);
 
+        # Check if filter
+        if($form->isFilter()){
+
+            # Set result
+            $result = [
+                "id"        =>  $form->getId(),
+                "values"    =>  []
+            ];
+            
+            # Get items
+            foreach($form->getItems() as $item){
+
+                # Get name
+                $name = $item["name"];
+
+                # Is Multiple
+                $isMultiple = Process::bool($item["multiple"] ?? false);
+
+                # Check name
+                if($name ?? false){
+
+                    # Check if value stored in get
+                    if(
+                        (
+                            $isMultiple && 
+                            isset($_GET["filters"][$result["id"]][$name.($isMultiple ? "[]" : "")])
+                        ) || 
+                        isset($_GET["filters"][$result["id"]][$name])
+                    ){
+
+                        # Get value
+                        $value = $_GET["filters"][$result["id"]][$name."[]"] ?? $_GET["filters"][$result["id"]][$name] ?? null;
+
+                        # Check value
+                        if($value){
+
+                            # Set values
+                            $result["values"][$name] = $form->processItem($value, $item);
+
+                        }
+
+                    }
+
+                }
+                
+
+            }
+
+            # Push value into state
+            $this->pushUiContent("partials.forms.".$result["id"], $result);
+
+        }
+
         # Return self
         return $this;
 

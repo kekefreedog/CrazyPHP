@@ -307,6 +307,23 @@ class Form {
     }
 
     /**
+     * Is Filter
+     * 
+     * Check if filter
+     * 
+     * @return bool
+     */
+    public function isFilter():bool {
+
+        # Set id
+        $result = $this->_filter;
+
+        # Return self
+        return $result;
+
+    }
+
+    /**
      * Push Item
      * 
      * Push item of the form
@@ -351,6 +368,36 @@ class Form {
     }
 
     /**
+     * Process Item
+     * 
+     * Process item retrieve from get or another source
+     * 
+     * @param mixed $input Value to process
+     * @param array $currentItem Current item parameters
+     * @return mixed
+     */
+    public function processItem(mixed $input, array $currentItem):mixed {
+
+        # Set result
+        $result = $input;
+
+        # Check is method exists for current item
+        if(($currentItem["type"] ?? false) && method_exists($this, "_processItemsType".ucfirst($currentItem["type"]))){
+
+            # Process value
+            $v = $this->{"_pushItemsType".ucfirst($currentItem["type"])}($input, $currentItem);
+
+            # Set result
+            $result = $v;
+
+        }
+
+        # Return result
+        return $result;
+
+    }
+
+    /**
      * Push Items
      * 
      * Push item of the form
@@ -374,6 +421,23 @@ class Form {
 
         # Return self
         return $this;
+
+    }
+
+    /**
+     * Get Items
+     * 
+     * Get Items stored
+     * 
+     * @return array
+     */
+    public function getItems():array {
+
+        # Check items
+        $result = $this->_items;
+
+        # Return self
+        return $result;
 
     }
 

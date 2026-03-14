@@ -37,6 +37,8 @@ import Crazyurl from '../Crazyurl';
 import TomSelect from 'tom-select';
 import Objects from './Objects';
 import Root from '../Dom/Root';
+import State from '../State';
+import { UtilityObjects } from '../../Types';
 
 
 /**
@@ -96,9 +98,9 @@ export default class Form {
         // Scan current form
         this._ingestForm(form)
             .then(
-                this._initFilter
-            ).then(
                 this._initForm
+            ).then(
+                this._initFilter
             ).then(
                 this._initOnReady
             ).then(
@@ -275,19 +277,20 @@ export default class Form {
                 // Check if name
                 if("name" in items[i] && items[i]["name"] !== ""){
 
+                    // Set currentItem
+                    let currentItem = items[i] as HTMLSelectElement|HTMLInputElement;
+
                     // Get name
-                    currentName = items[i]["name"]/* .replace(`${formName}_`, "") */;
+                    currentName = currentItem["name"]/* .replace(`${formName}_`, "") */;
 
                     // Get type
-                    currentType = items[i]["type"] ?? "";
+                    currentType = currentItem.type ?? "";
 
                     // Check if data type 
-                    // @ts-ignore
-                    if("type" in items[i].dataset && items[i].dataset.type)
+                    if("type" in currentItem.dataset && currentItem.dataset.type)
 
                         // Override type
-                        // @ts-ignore
-                        currentType = items[i].dataset.type;
+                        currentType = currentItem.dataset.type;
 
                     // Check if in values
                     if(Object.keys(values).includes(currentName)){
@@ -876,9 +879,6 @@ export default class Form {
                 )
                 .then(
                     value => {
-
-                        console.log("youyou");
-                        console.log(value);
 
                         // Unlock target
                         this.unlock();
@@ -3889,8 +3889,6 @@ export default class Form {
         }else
         // Check input is airdatepicker
         if(inputEl instanceof HTMLInputElement && "datePicker" in inputEl.dataset && inputEl.dataset.datePicker == "airdatepicker"){
-
-            console.log("toto");
             
             // Set options
             let options:AirDatepickerOptions = {
@@ -3961,8 +3959,6 @@ export default class Form {
 
                 // Get input el
                 let inputEl = datepicker.$el;
-
-                console.log(date);
 
                 // Check multiple and date is 2
                 if(multiple && Array.isArray(date) && date.length == 1) return;
@@ -5086,6 +5082,26 @@ export default class Form {
         // Get id
         let currentId = currentTarget.id;
 
+        // Set querys
+        let querys:object = {};
+
+        // Get current pghe name
+        let pageName = window.Crazyobject.currentPage.get()?.name;
+
+        // Check page name
+        if(pageName){
+
+            // Get current partail state
+            let partialState = State.get().page(pageName, `_ui.partials.forms.${currentId}.values`);
+
+            // Check page state
+            if(partialState && typeof partialState === "object" && Object.keys(partialState).length)
+
+                // Set querys
+                querys = partialState;
+
+        }
+
         // Check id
         if(currentId){
 
@@ -5103,14 +5119,17 @@ export default class Form {
             ){
 
                 // Set querys
-                let querys = currentQueryParameters[root];
-
-                // Set values
-                this.setValue(querys);
+                querys = {
+                    ...querys,
+                    ...currentQueryParameters[root]
+                };
 
             }
 
         }
+
+        // Set values
+        Object.keys(querys).length && this.setValue(querys);
 
     }
 
@@ -5131,6 +5150,9 @@ export default class Form {
             }, '')
             : ''
         ;
+
+        // Set state result
+        let stateResult:any = {};
 
         // Get formdata from current target
         let formData = this.getFormData(currentTarget);
@@ -5176,12 +5198,26 @@ export default class Form {
                 // Append value to params
                 params.append(fullKey, strValue);
 
+                // Push value
+                stateResult[key] = value;
+
             }
 
         });
 
         // Update
         Crazyurl.updateQueryParameters(params);
+
+        // Get current pghe name
+        let pageName = window.Crazyobject.currentPage.get()?.name;
+
+        // Check state
+        if(pageName && State.get().page(pageName, `_ui.partials.forms.${currentTarget.id}.values`)){
+
+            // Push values
+            State.set().page(`${pageName}._ui.partials.forms.${currentTarget.id}.values`, stateResult);
+
+        }
 
     }
 
