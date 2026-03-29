@@ -384,6 +384,40 @@ export default class Objects {
         ) as Record<T[number], any>;
 
     }
+
+    /**
+     * Sort Key
+     * 
+     * @param obj 
+     * @param asc 
+     * @returns 
+     */
+    public static sortKey = <T>(obj:Record<string,T>, asc:boolean = true):Record<string,T> => {
+
+        // Set entries
+        const entries = Object.entries(obj);
+
+        // Set sort
+        entries.sort((a, b) => (a[0] > b[0] ? (asc ? 1 : -1) : (asc ? -1 : 1)));
+
+        // Set result
+        const result: Record<string, T> = {};
+
+        // Iteration entires
+        for (let i = 0; i < entries.length; i++) {
+
+            // Set key value
+            const [key, value] = entries[i];
+
+            // Set result
+            result[key] = value;
+
+        }
+
+        // Return result
+        return result;
+
+    }
     
 }
 
