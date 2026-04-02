@@ -1255,10 +1255,10 @@ class Process {
      * - Value get @
      * - Value get "{{" & "}}"
      * 
-     * @param any $inputs Input to process
-     * @return any
+     * @param mixed $inputs Input to process
+     * @return mixed
      */
-    public static function envAndConfigValues($inputs = []) {
+    public static function envAndConfigValues(mixed $inputs = []):mixed {
 
         # Check result
         if(!is_array($inputs) && !is_string($inputs))

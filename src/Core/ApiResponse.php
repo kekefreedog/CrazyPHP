@@ -219,6 +219,22 @@ class ApiResponse extends Response {
         # Get default format of response
         $responseFormat = Config::getValue("Router.parameters.api.format");
 
+        # Check if custom type by front mode
+        if(is_array($responseFormat) && !empty($responseFormat)){
+
+            # Get mode of front
+            $mode = trim(Config::getValue("Front.lastBuild.mode") ?? "");
+
+            # Check mode
+            if($mode && array_key_exists($mode, $responseFormat) && $responseFormat[$mode]){
+
+                # Set responseFormat
+                $responseFormat = $responseFormat[$mode];
+
+            }
+
+        }
+
         # Check response format
         if(!$responseFormat || $responseFormat === null || !is_string($responseFormat))
 
@@ -254,7 +270,6 @@ class ApiResponse extends Response {
         # Call parent
         parent::setContentType($name, $charset);
 
-    
         # Get and set engine to use
         $engine = File::MIMTYPE_TO_CLASS[File::EXTENSION_TO_MIMETYPE[$name] ?? null] ?? null;
 

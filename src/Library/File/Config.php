@@ -177,9 +177,9 @@ class Config{
      * Get value on config from key
      * 
      * @param string $input Name of config(s)
-     * @return
+     * @return mixed
      */
-    public static function getValue(string $input = ""){
+    public static function getValue(string $input = ""):mixed {
 
         # Declare result
         $result = [];

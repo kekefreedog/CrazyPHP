@@ -419,7 +419,6 @@ export default class Page {
             "/api/v2/Router/filter",
             {
                 method: "GET",
-                responseType: "json",
                 from: "internal",
                 ignoreHash: true,
                 cache: false,
@@ -518,7 +517,6 @@ export default class Page {
                 {
                     method: "get",
                     cache: false,
-                    responseType: "json",
                     from: "internal",
                 }
             );

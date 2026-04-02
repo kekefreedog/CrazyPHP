@@ -235,6 +235,23 @@ class Run extends CrazyModel implements CrazyCommand {
 
         }
 
+        # Extract mode
+        if($command){
+
+            # Extract mode value
+            preg_match('/--mode\s+(\S+)/', $command, $matches);
+
+            # Set mode
+            $mode = $matches[1] ?? null;
+
+            # Check mode
+            if($mode)
+
+                # Set mode
+                Config::setValue("Front.lastBuild.mode", $mode);
+
+        }
+
         # Return self
         return $this;
 

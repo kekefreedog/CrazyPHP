@@ -15,4 +15,5 @@ Front:
     hash: null
     watch: false
     date: null
+    mode: null
   scripts: null

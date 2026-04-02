@@ -61,7 +61,9 @@ Router:
     websocket: stream
   parameters:
     api:
-      format: json
+      format:
+        production: msgpack
+        development: json
   type : {}
   methods:
     - get
