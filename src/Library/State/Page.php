@@ -53,7 +53,7 @@ class Page {
     private $options = [];
 
     /** @var array $result */
-    private $result = [];
+    private mixed $result = [];
 
     /** @var string $status code */
     private $status_code = 200;
@@ -194,7 +194,10 @@ class Page {
             $resultTemp = $result;
 
         # Merge to result
-        $this->result = Arrays::mergeMultidimensionalArraysBis(true, $this->result, $resultTemp);
+        $this->result = is_array($resultTemp)
+            ? Arrays::mergeMultidimensionalArraysBis(true, $this->result, $resultTemp)
+            : $resultTemp
+        ;
 
         # Return self
         return $this;
@@ -673,7 +676,7 @@ class Page {
      * 
      * @return $result
      */
-    public function render():array {
+    public function render():mixed {
 
         # Set result
         $result = $this->result;
@@ -789,7 +792,7 @@ class Page {
      * @param array $result of the page state
      * @return void
      */
-    private function _catchState(array $result = []):void {
+    private function _catchState(mixed $result = []):void {
 
         # Check env
         if(
