@@ -114,12 +114,32 @@ class Server {
             $result = true;
         
         else
+        # Additional check: Sec-Fetch-Mode (navigation inside iframe)
+        if(!empty($_SERVER['HTTP_SEC_FETCH_MODE']) && $_SERVER['HTTP_SEC_FETCH_MODE'] === 'navigate')
+
+            # Additional heuristic using Sec-Fetch-Site
+            if(!empty($_SERVER['HTTP_SEC_FETCH_SITE']) && in_array($_SERVER['HTTP_SEC_FETCH_SITE'], ['cross-site','same-site']))
+
+                # Set result
+                $result = true;
+
+        else
         # Safari (older versions) sometimes omit Sec-Fetch headers
         # You can add your own client-side header via JS if needed.
         if(!empty($_SERVER['HTTP_X_FRAME_CONTEXT']) && $_SERVER['HTTP_X_FRAME_CONTEXT'] === 'true') 
 
             # Set result
             $result = true;
+
+        else
+        # Additional check: referer can indicate embedding context (weak signal)
+        if(!empty($_SERVER['HTTP_REFERER']))
+
+            # If referer host differs, possible iframe embedding
+            if(parse_url($_SERVER['HTTP_REFERER'], PHP_URL_HOST) !== ($_SERVER['HTTP_HOST'] ?? null))
+
+                # Set result
+                $result = true;
 
         else
         # Optionally, you can add a GET parameter fallback (if you pass one intentionally)
