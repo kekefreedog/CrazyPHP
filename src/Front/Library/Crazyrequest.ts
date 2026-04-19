@@ -613,7 +613,132 @@ export default class Crazyrequest{
      * @param prefix 
      * @returns 
      */
-    public static toQueryString(obj:Object, prefix:string = "") {
+    public static toQueryString(obj: any, prefix: string = ""):string {
+
+        // Set string
+        const str:string[] = [];
+
+        // Iteration obj
+        for(const p in obj){
+
+            // Check
+            if(!obj.hasOwnProperty(p)) 
+                
+                // Continue
+                continue;
+
+            // Set k
+            let k: string;
+
+            // Set v
+            const v = obj[p];
+
+            // Build key (preserve your bracket logic)
+            if(p.indexOf('[') !== -1)
+
+                // Set k
+                k = prefix
+                    ? prefix + "[" + p.substring(0, p.indexOf('[')) + "]" + p.substring(p.indexOf('['))
+                    : p
+                ;
+
+            // Set
+            else
+
+                // Set k
+                k = prefix ? `${prefix}[${p}]` : p;
+
+            // Set temp
+            let temp: string | null = null;
+
+            // NULL handling (CRITICAL FIX)
+            if (v === null)
+
+                // Set temp
+                temp = encodeURIComponent(k) + "=";
+
+            else
+            // Array handling
+            if (Array.isArray(v)) {
+
+                // Iteration v
+                v.forEach((item, index) => {
+
+                    // Set array key
+                    const arrayKey = `${k}[${index}]`;
+
+                    // Set item
+                    if(item === null)
+
+                        // Set push
+                        str.push(encodeURIComponent(arrayKey) + "=");
+
+                    else 
+                    // Set nested    
+                    if (typeof item === "object") {
+
+                        // Set nested
+                        const nested = this.toQueryString(item, arrayKey);
+
+                        // Push in str
+                        if(nested)
+                            
+                            // Set push
+                            str.push(nested);
+
+                    }else
+
+                        // Set str
+                        str.push(encodeURIComponent(arrayKey) + "=" + encodeURIComponent(item));
+
+                });
+
+                // Continue
+                continue;
+
+            } else
+            // Object handling
+            if(typeof v === "object") {
+
+                // Set nested
+                const nested = this.toQueryString(v, k);
+
+                // Check nested
+                if (nested) 
+                    
+                    // Set temp
+                    temp = nested;
+            } else
+                
+                // Primitive values
+                temp = encodeURIComponent(k) + "=" + encodeURIComponent(v);
+
+            // Avoid empty pushes (prevents &&)
+            if (temp) 
+
+                // Push
+                str.push(temp);
+
+        }
+
+        // Return result
+        return str.join("&");
+
+    }
+
+    /**
+     * To Query String
+     * 
+     * Convert object to query string
+     * 
+     * @source https://stackoverflow.com/questions/26084733/convert-multidimensional-object-to-query-string
+     * @deprecated Because "" / null value not parsed correctly
+     * 
+     * @param obj 
+     * @param prefix 
+     * @returns 
+     */
+    public static toQueryStringLegacy(obj:Object, prefix:string = "") {
         var str:Array<any> = [], k:string, v:Object;
         for(var p in obj) {
             if (!obj.hasOwnProperty(p)) {continue;} // skip things from the prototype

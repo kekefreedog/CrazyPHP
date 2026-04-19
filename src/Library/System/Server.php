@@ -142,6 +142,13 @@ class Server {
                 $result = true;
 
         else
+        # Reliable fallback: cookie set via JS if inside iframe
+        if(!empty($_COOKIE['iframe']) && $_COOKIE['iframe'] === '1')
+
+            # Set result
+            $result = true;
+
+        else
         # Optionally, you can add a GET parameter fallback (if you pass one intentionally)
         if(isset($_GET['iframe']) && $_GET['iframe'] === '1')
 
