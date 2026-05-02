@@ -16,6 +16,7 @@ namespace Tests\Library\Array;
  * Dependances
  */
 use CrazyPHP\Library\Array\Api;
+use CrazyPHP\Library\Array\Module\Map;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -77,7 +78,7 @@ class ArraysApiTest extends TestCase{
                 'getPackageName'    =>  "delivery name",
             ],
             'method'    =>  [
-                'getTest'           =>  "Test"
+                'getTest'           =>  "test"
             ]
         ];
 
@@ -119,7 +120,7 @@ class ArraysApiTest extends TestCase{
                 'getPackageName'    =>  "delivery name",
             ],
             'method'    =>  [
-                'getTest'           =>  "Test"
+                'getTest'           =>  "test"
             ]
         ];
 
@@ -133,7 +134,7 @@ class ArraysApiTest extends TestCase{
         file_put_contents($tmpFile, $json);
 
         # New api
-        $api = new Api($tmpFile, ["Tests\Library\Array\Test"]);
+        $api = new Api($tmpFile, ["Tests\\Library\\Array\\Test"]);
         
         # Check result 1
         $this->assertEquals($api->method->getTest(), Test::test());
@@ -150,4 +151,4 @@ class ArraysApiTest extends TestCase{
  */
 
 /** Test */
-class Test { public static function test(string $input = "") { return $input ? $input : "test complete"; } }
+class Test extends Map { public static function test(string $input = "") { return $input ? $input : "test complete"; } }

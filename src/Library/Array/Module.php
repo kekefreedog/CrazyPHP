@@ -16,6 +16,7 @@ namespace CrazyPHP\Library\Array;
  * Dependances
 */
 use BadMethodCallException;
+use CrazyPHP\Library\Array\Module\Map;
 use CrazyPHP\Library\Form\Validate;
 
 /**
@@ -38,7 +39,12 @@ class Module {
      * 
      * @return self
      */
-    public function __construct(private string $module, private array $methods, private array|null $aliasClass = null) {}
+    public function __construct(private string $module, private array $methods, private array|null $aliasClass = null) {
+
+        # Override alias class
+        $this->_overrideAliasClass();
+
+    }
 
     /**
      * Caller
@@ -93,6 +99,54 @@ class Module {
     /** Private methods
      ******************************************************
      */
+
+    /**
+     * Ovveride Alias Class
+     * 
+     * @return void
+     */
+    private function _overrideAliasClass():void {
+
+        # Set alias class
+        $aliasClass = $this->aliasClass;
+
+        # Check module
+        if($aliasClass && !empty($aliasClass)){
+            
+            # Set reset alais
+            $resetAlias = false;
+
+            # Set temp
+            $temp = [];
+
+            // Iteration alias
+            foreach($aliasClass as $key => $class) if(is_int($key) || strpos($class, "\\") !== false) {
+
+                # Set 
+                $resetAlias = true;
+
+                // Check class
+                if(class_exists($class) && is_subclass_of($class, Map::class)){
+
+                    # Extract alias methods
+                    $aliasMethods = $class::getMethodsAlias();
+
+                    # Fil it in temp
+                    $temp += $aliasMethods;
+
+                }
+
+            }
+
+            # Check reset
+            if($resetAlias)
+
+                # Replace alias
+                $this->aliasClass = $temp;
+
+        }
+
+    }
 
     /**
      * Default
