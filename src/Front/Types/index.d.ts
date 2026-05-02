@@ -35,6 +35,7 @@ export {default as UtilityRunner} from "./../Library/Utility/Runner";
 export {default as LoaderPartial} from "./../Library/Loader/Partial";
 export {default as UtilityCookie} from "./../Library/Utility/Cookie";
 export {default as Crazylanguage} from "./../Library/Crazylanguage";
+export {default as MapModuleMap} from './../Library/Map/Module/Map';
 export {default as UtilityMoney} from "./../Library/Utility/Money";
 export {default as RegisterPage} from "./../Library/Register/Page";
 export {default as LoaderEvents} from "./../Library/Loader/Events";
@@ -55,11 +56,13 @@ export {default as Crazystate} from "./../Library/Crazystate";
 export {default as Crazycolor} from "./../Library/Crazycolor";
 export {default as Crazyalert} from "./../Library/Crazyalert";
 export {default as Crazyobject} from "./../Core/Crazyobject";
+export {default as MapModule} from './../Library/Map/Module';
 export {default as Crazypage} from "./../Library/Crazypage";
 export {default as Form} from "./../Library/Utility/Form";
 export {default as Crazyurl} from "./../Library/Crazyurl";
 export {default as Hash} from "./../Library/Utility/Hash";
 export {default as DomRoot} from "./../Library/Dom/Root";
+export {default as MapApi} from './../Library/Map/Api';
 export {default as State} from './../Library/State';
 
 /* Modules to export */

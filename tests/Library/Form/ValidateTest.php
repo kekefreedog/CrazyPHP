@@ -111,5 +111,25 @@ class ValidateTest extends TestCase{
             $this->assertEquals(self::OUTPUT["phoneNumber"][$i], Validate::isMobilePhone($input), "\"$input\" is not valid");
 
     }
+    /**
+     * Test Is Static Method
+     * 
+     * @return void
+     */
+    public function testIsStaticMethod():void {
+
+        # Set input
+        $input = "Tests\Library\File\ValidateTest::setUpBeforeClass";
+
+        # Check is true
+        $this->assertTrue(Validate::isStaticMethod($input));
+
+        # Check is false
+        $this->assertFalse(Validate::isStaticMethod($input."Suffix"));
+
+        # Check is false
+        $this->assertFalse(Validate::isStaticMethod(""));
+
+    }
 
 }

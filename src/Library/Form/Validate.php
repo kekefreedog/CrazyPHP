@@ -21,6 +21,7 @@ use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Library\File\Json;
 use Exception;
+use ReflectionMethod;
 
 /**
  * Validate form values
@@ -40,17 +41,17 @@ class Validate {
     /** 
      * Input (form results)
      */
-    private $values = [];
+    private array $values = [];
 
     /**
      * Only One Input
      */
-    private $oneItemOnly = false;
+    private bool $oneItemOnly = false;
 
     /**
      * Dispatch of action
      */
-    private $dispatch = [
+    private array $dispatch = [
         "INT"       =>  [
             "isValidHttpStatusCode",
             "isMobilePhone"
@@ -63,7 +64,8 @@ class Validate {
             "isIpAddress",
             "isValidUrl",
             "isSemanticVersioning",
-            "isMobilePhone"
+            "isMobilePhone",
+            "isValidStaticCallable"
         ],
         "ARRAY"     =>  [
         ], 
@@ -79,7 +81,7 @@ class Validate {
     /**
      * Logs
      */
-    private $log = [];
+    private array $log = [];
 
     /**
      * Constructor
@@ -87,7 +89,7 @@ class Validate {
      * Ingest data
      * 
      * @param array $formResult Collection of value to process
-     * @return Form
+     * @return self
      */
     public function __construct(array $formResult = []){
 
@@ -391,10 +393,13 @@ class Validate {
                 # Guess the mime type of the file
                 $mimeType = File::guessMime($input["value"]["tmp_name"]);
 
+                # Set mimetype exploded
+                $mimeTypeExploded = explode("/", $mimeType);
+
                 # Set ext
                 $ext = array_search($extAllow, File::EXTENSION_TO_MIMETYPE) 
                     ? array_search($extAllow, File::EXTENSION_TO_MIMETYPE)
-                    : @end(explode("/", $mimeType))
+                    : @end($mimeTypeExploded)
                 ;
                 
                 # Check mime type is in the extAllow
@@ -428,11 +433,14 @@ class Validate {
 
                     # Guess the mime type of the file
                     $mimeType = File::guessMime($input["value"]["tmp_name"]);
+
+                    # Set mimetype exploded
+                    $mimeTypeExploded = explode("/", $mimeType);
         
                     # Set ext
                     $ext = array_search($extOmit, File::EXTENSION_TO_MIMETYPE) 
                         ? array_search($extOmit, File::EXTENSION_TO_MIMETYPE)
-                        : @end(explode("/", $mimeType))
+                        : @end($mimeTypeExploded)
                     ;
 
                 }
@@ -755,10 +763,10 @@ class Validate {
      * 
      * Check string is email
      * 
-     * @param string $input Input to validate
+     * @param array $input Input to validate
      * @return void
      */
-    private function _isEmail(string &$input = ""):void {
+    private function _isEmail(array &$input = []):void {
 
         if(!filter_var($input['value'], FILTER_VALIDATE_EMAIL))
 
@@ -806,10 +814,10 @@ class Validate {
      * 
      * Check string is valid url
      * 
-     * @param string $input
+     * @param array $input
      * @return bool
      */
-    public static function isValidUrl(string $input = ""):bool{
+    public static function isValidUrl(array $input = []):bool{
 
         // Check value
         if(!filter_var($input['value'], FILTER_VALIDATE_URL))
@@ -1016,6 +1024,58 @@ class Validate {
         # Return result
         return $result;
            
+    }
+
+    /**
+     * isStaticMethod
+     * 
+     * @param string $input
+     */
+    public static function isStaticMethod(string $input):bool {
+
+        # Set result
+        $result = true;
+
+        # Must contain ::
+        if(!str_contains($input, '::'))
+
+            # Set result
+            $result = false;
+
+        else{
+
+            # Explode input
+            [$class, $method] = explode('::', $input, 2);
+
+            # Validate class
+            if(!class_exists($class))
+
+                # Set result
+                $result = false;
+
+            else
+            # Validate method
+            if(!method_exists($class, $method))
+
+                # Set result
+                $result = false;
+
+            # Else
+            else{
+
+                # Ensure method is static
+                $reflection = new ReflectionMethod($class, $method);
+
+                # Set result
+                $result = $reflection->isStatic();
+
+            }
+
+        }
+
+        # Return result
+        return $result;
+
     }
 
 }
