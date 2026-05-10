@@ -15,9 +15,9 @@ namespace CrazyPHP\Library\Array;
 /**
  * Dependances
 */
-use BadMethodCallException;
 use CrazyPHP\Library\Array\Module\Map;
 use CrazyPHP\Library\Form\Validate;
+use BadMethodCallException;
 
 /**
  * Module
@@ -39,7 +39,7 @@ class Module {
      * 
      * @return self
      */
-    public function __construct(private string $module, private array $methods, private array|null $aliasClass = null) {
+    public function __construct(private Api $class, private string $module, private array $methods, private array|null $aliasClass = null) {
 
         # Override alias class
         $this->_overrideAliasClass();
@@ -69,21 +69,21 @@ class Module {
         if($value === null)
 
             # Set default
-            $result = $this->_default($method, $args);
+            $result = $this->_default($this->class, $method, $args);
 
         else
         # Is callable
         if(is_callable($value))
 
             # Set result
-            $result = $value(...$args);
+            $result = $value($this->class, ...$args);
 
         else
         # Check if array alias
         if($value && is_string($value) && is_array($this->aliasClass) && !empty($this->aliasClass) && array_key_exists($value, $this->aliasClass) && Validate::isStaticMethod($this->aliasClass[$value])){
 
             # Set result
-            $result = $this->aliasClass[$value](...$args);
+            $result = $this->aliasClass[$value]($this->class, ...$args);
 
         }else
         # string or scalar
@@ -153,9 +153,10 @@ class Module {
      * 
      * @param string $method
      * @param array $args
+     * @param Api $class
      * @return mixed
      */
-    private function _default(string $method, array $args):mixed {
+    private function _default(Api $class, string $method, array $args):mixed {
 
         # Set result
         $result = "{$this->module}.{$method} called with " . json_encode($args);

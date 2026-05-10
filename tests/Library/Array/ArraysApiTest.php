@@ -151,4 +151,4 @@ class ArraysApiTest extends TestCase{
  */
 
 /** Test */
-class Test extends Map { public static function test(string $input = "") { return $input ? $input : "test complete"; } }
+class Test extends Map { public static function test(Api|null $class = null, string $input = "") { return $input ? $input : "test complete"; } }

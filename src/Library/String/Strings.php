@@ -177,5 +177,18 @@ class Strings {
         
     }
 
+    /**
+     * Make Hash
+     * 
+     * @param mixed
+     * @return string
+     */
+    public static function hash(mixed ...$inputs):string {
+    
+        # Return result
+        return hash('sha256',json_encode($inputs, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES));
+
+    }
+
 
 }

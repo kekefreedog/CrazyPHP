@@ -29,6 +29,13 @@ use ReflectionClass;
  */
 abstract class Map {
 
+    /** Private static parameters
+     ******************************************************
+     */
+
+    /** @param array $_simpleCache */
+    private static array $_simpleCache = [];
+
     /** Public static class
      ******************************************************
      */
@@ -63,6 +70,50 @@ abstract class Map {
             $result[$name] = $class.'::'.$name;
 
         }
+
+        # Return result
+        return $result;
+
+    }
+
+    /** Private static class
+     ******************************************************
+     */
+
+    /**
+     * Set Cache
+     * 
+     * @param string $keyOrHash
+     * @param mixed $data
+     * @return void
+     */
+    protected static function _setCache(string $keyOrHash, mixed $data):void {
+
+        # Check input
+        if($keyOrHash && $data)
+
+            # Push into cache
+            static::$_simpleCache[$keyOrHash] = $data;
+
+    }
+
+    /**
+     * Get Cache
+     * 
+     * @param string $keyOrHash
+     * @return mixed
+     */
+    protected static function _getCache(string $keyOrHash):mixed {
+
+        # Set result null
+        $result = null;
+
+        # Check input
+        if(array_key_exists($keyOrHash, static::$_simpleCache))
+
+            # Push into cache
+            $result = static::$_simpleCache[$keyOrHash];
+
 
         # Return result
         return $result;

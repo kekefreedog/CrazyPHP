@@ -87,7 +87,7 @@ class Api {
             ]);
 
         # Set result
-        $result = new Module($name, $this->_map[$name], $this->_aliasClass);
+        $result = new Module($this, $name, $this->_map[$name], $this->_aliasClass);
 
         # Return result
         return $result;

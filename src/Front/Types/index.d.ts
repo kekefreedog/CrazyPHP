@@ -590,7 +590,8 @@ declare global {
     }
 
     // Define the state shape
-    interface StatePage extends object {
+    interface StatePage extends Record<string, any> {
     }
 
 }
+
