@@ -342,6 +342,7 @@ export default class State {
         if(State._trigger === "set"){
 
             // Set state
+            // @ts-ignore
             this._store.setState((state:Record<string,any>|any[]) => {});
 
         }else
@@ -356,6 +357,7 @@ export default class State {
         if(State._trigger === "delete"){
 
             // Delete all
+            // @ts-ignore
             this._store.setState((state:Record<string,any>|any[]) => {});
 
         }
@@ -419,6 +421,7 @@ export default class State {
     public reset = (removeMethods:boolean = true):void => {
 
         // Delete all
+        // @ts-ignore
         this._store.setState((state:Record<string,any>|any[]) => {});
 
         // Check removeMethods 
@@ -509,6 +512,7 @@ export default class State {
                 if(name in this._eventRegister){
 
                     // Remove all event current event
+                    // @ts-ignore
                     this._store.destroy();
 
                     // Push name into event register
@@ -559,6 +563,7 @@ export default class State {
                     selector 
                         ? this._store.subscribe(
                             processedCallback,
+                            // @ts-ignore
                             selector
                         )
                         : this._store.subscribe(
@@ -600,6 +605,7 @@ export default class State {
             if(!name){
 
                 // Destroy all events
+                // @ts-ignore
                 this._store.destroy();
 
                 // Clear event
@@ -610,6 +616,7 @@ export default class State {
             if(name in this._eventRegister){
 
                 // Destroy all events
+                // @ts-ignore
                 this._store.destroy();
 
                 // Clear event

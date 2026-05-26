@@ -16,6 +16,7 @@ namespace CrazyPHP\Core;
  * Dependances
  */
 use CrazyPHP\Exception\CrazyException;
+use Psr\Http\Message\StreamInterface;
 use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\State\Page;
 use CrazyPHP\Library\File\File;
@@ -37,8 +38,8 @@ class ApiResponse extends Response {
      ******************************************************
      */
     
-    /** @var ?StreamInterface $content */
-    public $apiContent = null;
+    /** @var null|StreamInterface|array $content */
+    public null|StreamInterface|array $apiContent = null;
     
     /** @var string|null $engineInstance Classe for convert to response format */
     public $engineInstance = null;
@@ -70,10 +71,10 @@ class ApiResponse extends Response {
      * 
      * Set content of response
      * 
-     * @param $body
+     * @param mixed $body
      * @return self
      */
-    public function setContent(/* string|array|resource|StreamInterface */$body = ""):self {
+    public function setContent(/* string|array|resource|StreamInterface */mixed $body = ""):self {
 
         # Check if stream
         if(gettype($body) == "StreamInterface")

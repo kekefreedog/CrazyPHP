@@ -28,6 +28,7 @@ import UtilityDateTime from '../Utility/DateTime';
 import { AmpPlugin } from '@easepick/amp-plugin';
 import UtilityBoolean from '../Utility/Boolean';
 import { RangePlugin } from '@easepick/bundle';
+import { UtilityObjects } from '../../Types';
 import { easepick } from '@easepick/bundle';
 import Crazyrequest from '../Crazyrequest';
 import fr_FR from 'filepond/locale/fr-fr';
@@ -38,7 +39,6 @@ import TomSelect from 'tom-select';
 import Objects from './Objects';
 import Root from '../Dom/Root';
 import State from '../State';
-import { UtilityObjects } from '../../Types';
 
 
 /**
@@ -1064,7 +1064,7 @@ export default class Form {
         }
 
         // Run request
-        return ;
+        return request.fetch(formData);
 
     }
 
