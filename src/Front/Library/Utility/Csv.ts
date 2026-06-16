@@ -55,8 +55,10 @@ export default class Csv {
     /**
      * Download
      * 
+     * @param object 
+     * @param filename 
+     * @return {void}
      */
-
     public static download = (object:any[], filename:string):void => {
 
         // Get csv string
