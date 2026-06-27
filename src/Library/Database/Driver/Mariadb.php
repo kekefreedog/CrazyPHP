@@ -38,19 +38,19 @@ use PDO;
 class Mariadb implements CrazyDatabaseDriver {
 
     /**
-     * @var $config Config of current database
+     * @var array $config Config of current database
      */
-    public $config = null;
+    public ?array $config = null;
 
     /**
-     * @var $client Client of current database
+     * @var ?PDO $client Client of current database
      */
-    public $client = null;
+    public ?PDO $client = null;
 
     /**
-     * @var $manager Manager of current database
+     * @var ?Query $manager Manager of current database
      */
-    public $manager = null;
+    public ?Query $manager = null;
 
     /**
      * Constructor
@@ -253,7 +253,7 @@ class Mariadb implements CrazyDatabaseDriver {
     /**
      * Create Database
      * 
-     * @param string $options
+     * @param string $option
      * @return void
      */
     public function createDatabase(string $option = "CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"):void {
@@ -303,7 +303,7 @@ class Mariadb implements CrazyDatabaseDriver {
     /**
      * Create Table
      * 
-     * @param string $table
+     * @param string $tableName
      * @param array $attributes
      * @param bool $replaceTable
      * @param array $option
@@ -784,9 +784,9 @@ class Mariadb implements CrazyDatabaseDriver {
      * @param array $value
      * @param string $database
      * @param bool $createIfNotExists
-     * @param array $validator
+     * @param array $uniquesException
      */
-    public function insertToTable(string $table, array $value, string $database = "", bool $createIfNotExists = false, array $validator = []) {
+    public function insertToTable(string $table, array $value, string $database = "", bool $createIfNotExists = false, ?array $uniquesException = null) {
 
         # Set result
         $result = null;
@@ -822,12 +822,34 @@ class Mariadb implements CrazyDatabaseDriver {
 
         try {
         
-            // Insert chain
-            $result = $this->manager
+            # Prepare insert
+            $insert = $this->manager
                 ->insertInto($table)
                 ->values($value)
-                ->execute()
             ;
+
+            # Check unique exception
+            if(!empty($uniquesException)){
+
+                # Set Update
+                $updates = [];
+
+                # Iteration values
+                foreach($value as $column => $val) if(!in_array($column, $uniquesException))
+
+                    # Push in updates
+                    $updates[$column] = $val;
+
+                # Check updqtes
+                if(!empty($updates))
+
+                    # Set onDuplicateKeyUpdate
+                    $insert->onDuplicateKeyUpdate($updates);
+
+            }
+
+            # Set result
+            $result = $insert->execute();
         
         } catch (PDOException $e) {
 
@@ -1118,7 +1140,10 @@ class Mariadb implements CrazyDatabaseDriver {
                      * Catch <> 
                      */
                     # Check if contains []
-                    if(substr($key, 0, 2) == "<>" || substr($key, 0, 2) == "@@"){
+                    if(substr($key, 0, 2) == "<>" || substr($key, 0, 2) == "@@" || substr($key, 0, 2) == "><"){
+
+                        # Set out (check if where of not where)
+                        $out = substr($key, 0, 2) == "><" ? true : false;
 
                         # Update $key
                         $key = substr($key, 2);
@@ -1162,7 +1187,7 @@ class Mariadb implements CrazyDatabaseDriver {
                         $extraAlias++;
 
                         # Prepare includeQuery
-                        $includeQuery = "EXISTS (";
+                        $includeQuery = ($out ? "NOT " : "" ) . "EXISTS (";
 
                         # Check if key is id
                         if(strpos($key, "_") !== false){
@@ -1504,7 +1529,7 @@ class Mariadb implements CrazyDatabaseDriver {
      * Create audit table and create trigger based on operation and table to fill audit table automatically
      * 
      * @param string|array $tables to audit
-     * @param string|array $column to retrieve on audit
+     * @param string|array $columns to retrieve on audit
      * @param string|array $operations to audit ['INSERT'|'UPDATE'|'DELETE']
      * @param string $auditLogTableName audit table name (:-Audit_log)
      * @return void
@@ -1663,7 +1688,6 @@ class Mariadb implements CrazyDatabaseDriver {
      * 
      * Test Database connection
      * 
-     * @param array $options Option from Config > Database
      * @return bool
      */
     public static function test():bool {

@@ -254,7 +254,7 @@ class Schema {
      * 
      * 
      * @param ?array $values Values to push in schema
-     * @param ?array $option Custom options
+     * @param ?array $options Custom options
      * @return void
      */
     public function pushValues(?array $values = [], ?array $options = null):void {
