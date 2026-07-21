@@ -64,6 +64,9 @@ class Page {
     /** @var array $ui */
     private $ui = [];
 
+    /** @var array $ui */
+    private $api = [];
+
     /** @var array $events */
     private $events = [];
 
@@ -149,6 +152,36 @@ class Page {
 
         # Set content
         $result = Arrays::setKey($this->ui, $key, $value, $createIfNotExists);
+
+        # Check
+        if(!$result)
+        
+            # New Exception
+            throw new CrazyException(
+                "Key \"$key\" do not exists in UI content of the current page state. Switch parameter to \"createIfNotExists\" for fixing it.", 
+                500,
+                [
+                    "custom_code"   =>  "state-page-001",
+                ]
+            );
+
+        # Return self
+        return $this;
+
+    }
+
+    /**
+     * Push Api Content
+     * 
+     * @param string $key
+     * @param mixed $value
+     * @param bool $createIfNotExists Replace content is already exists
+     * @return Page
+     */
+    public function pushApiContent(string $key, mixed $value, bool $createIfNotExists = true):Page {
+
+        # Set content
+        $result = Arrays::setKey($this->api, $key, $value, $createIfNotExists);
 
         # Check
         if(!$result)
@@ -717,6 +750,12 @@ class Page {
 
             # Push ui
             $result["_ui"] = $this->ui;
+
+        # Check api
+        if(!empty($this->api))
+
+            # Push ui
+            $result["_api"] = $this->api;
 
         # Check events
         if(!empty($this->events))
