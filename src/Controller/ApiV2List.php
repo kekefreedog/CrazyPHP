@@ -17,7 +17,6 @@ namespace CrazyPHP\Controller;
  */
 use CrazyPHP\Library\File\Config as FileConfig;
 use CrazyPHP\Exception\CrazyException;
-use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Core\ApiResponse;
 use CrazyPHP\Core\Controller;
 use CrazyPHP\Core\Model;
@@ -44,7 +43,7 @@ class ApiV2List extends Controller {
         $lastModified = FileConfig::getLastModified("Model");
 
         # Get all model available
-        $content = self::Model()::getListAllModel();
+        $content = Model::getListAllModel();
 
         # Set response
         (new ApiResponse())
