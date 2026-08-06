@@ -111,13 +111,11 @@ class Schema {
         $result = [];
 
         # Check whitelist
-        if(!empty($whiteListAttributes) && $whiteListAttributes !== null){
+        if(!empty($whiteListAttributes) && $whiteListAttributes !== null)
 
-            # Iteration of 
+        # Iteration of 
 
-            ## To finish
-
-        }
+        ## To finish
 
         # Return result
         return $result;

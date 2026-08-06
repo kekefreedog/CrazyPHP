@@ -467,7 +467,7 @@ class Helpers {
             (!$a && !$b) || 
             ($a == $b)
         ) 
-            ? $option["fn"]()
+            ? $option["fn"]() 
             : $option["inverse"]()
         ;
 
