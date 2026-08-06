@@ -16,7 +16,6 @@ namespace CrazyPHP\Controller;
  * Dependances
  */
 use CrazyPHP\Library\File\Config as FileConfig;
-use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Core\ApiResponse;
 use CrazyPHP\Core\Controller;
 use CrazyPHP\Core\Model;
