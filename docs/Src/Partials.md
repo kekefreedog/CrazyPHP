@@ -27,11 +27,11 @@ app/Front/style/scss/index.scss ← @import for the SCSS file
 
 `CrazyPHP\Library\File\Partial` is the authoritative source of truth. It discovers existing partials by scanning three sources and merging the results:
 
-| Source | Method | What it scans |
-|---|---|---|
-| TypeScript | `getAllFromScript()` | `import` statements in `app/Front/index.ts` |
-| SCSS | `getAllFromStyle()` | `@import` lines under the `// Partials` block in `app/Front/style/scss/index.scss` |
-| Templates | `getAllFromTemplate()` | `*.hbs` files in `assets/Hbs/partials/` |
+| Source     | Method                 | What it scans                                                                      |
+| ---------- | ---------------------- | ---------------------------------------------------------------------------------- |
+| TypeScript | `getAllFromScript()`   | `import` statements in `app/Front/index.ts`                                        |
+| SCSS       | `getAllFromStyle()`    | `@import` lines under the `// Partials` block in `app/Front/style/scss/index.scss` |
+| Templates  | `getAllFromTemplate()` | `*.hbs` files in `assets/Hbs/partials/`                                            |
 
 This means **there is no separate config file** for partials. The three index files are the config.
 
@@ -102,8 +102,8 @@ At app boot (`app/Front/index.ts`) all partial classes are collected into `globa
 
 ```typescript
 let globalPartials = {
-    "my_partial": MyPartial,
-    // … one entry per partial, keys sorted by descending length
+  my_partial: MyPartial,
+  // … one entry per partial, keys sorted by descending length
 };
 
 window.Crazyobject = new Crazyobject({ globalPartials });
@@ -134,7 +134,7 @@ The calling page then instantiates each one:
 
 ```typescript
 for (let partial of scanned) {
-    new partial.callable(partial, options);
+  new partial.callable(partial, options);
 }
 ```
 
@@ -142,16 +142,16 @@ for (let partial of scanned) {
 
 Every partial class extends `Crazypartial`. Key members:
 
-| Member | Purpose |
-|---|---|
-| `input` | The `RegisterPartialScanned` object passed by the scanner |
-| `html` | The compiled Handlebars template function (imported from the `.hbs` file via webpack) |
-| `onReady()` | Called at construction and after a reload — attach DOM handlers here |
-| `onDestroy()` | Called before a reload — clean up timers, listeners |
-| `reload(state)` | Re-renders `html(state)`, replaces the DOM node in-place, calls `onDestroy()` then `onReady()` |
-| `enable()` / `disable()` | Optional hooks for toggling the partial |
-| `onChange(callable, options)` | Optional hook for change events |
-| `getCurrentPageName()` | Returns the name of the currently active page |
+| Member                        | Purpose                                                                                        |
+| ----------------------------- | ---------------------------------------------------------------------------------------------- |
+| `input`                       | The `RegisterPartialScanned` object passed by the scanner                                      |
+| `html`                        | The compiled Handlebars template function (imported from the `.hbs` file via webpack)          |
+| `onReady()`                   | Called at construction and after a reload — attach DOM handlers here                           |
+| `onDestroy()`                 | Called before a reload — clean up timers, listeners                                            |
+| `reload(state)`               | Re-renders `html(state)`, replaces the DOM node in-place, calls `onDestroy()` then `onReady()` |
+| `enable()` / `disable()`      | Optional hooks for toggling the partial                                                        |
+| `onChange(callable, options)` | Optional hook for change events                                                                |
+| `getCurrentPageName()`        | Returns the name of the currently active page                                                  |
 
 ### Minimal partial class
 
@@ -160,16 +160,16 @@ import { Crazypartial } from "crazyphp";
 const html = require("./../../../assets/Hbs/partials/my_partial.hbs");
 
 export default class MyPartial extends Crazypartial {
-    public html = html;
+  public html = html;
 
-    public constructor(input: RegisterPartialScanned) {
-        super(input);
-        this.onReady();
-    }
+  public constructor(input: RegisterPartialScanned) {
+    super(input);
+    this.onReady();
+  }
 
-    public onReady = () => {
-        // this.input.target is the DOM element
-    }
+  public onReady = () => {
+    // this.input.target is the DOM element
+  };
 }
 ```
 

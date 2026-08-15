@@ -45,9 +45,9 @@ class HandlebarsTest extends TestCase{
 
     /**
      * Set Up Before Class
-     * 
+     *
      * This method is called before the first test of this test class is run.
-     * 
+     *
      * @return void
      */
     public static function setUpBeforeClass():void {
@@ -64,9 +64,9 @@ class HandlebarsTest extends TestCase{
 
     /**
      * Tear Down After Class
-     * 
+     *
      * This method is called after the last test of this test class is run.
-     * 
+     *
      * @return void
      */
     public static function tearDownAfterClass():void {
@@ -92,33 +92,74 @@ class HandlebarsTest extends TestCase{
         # Load partials
         $partials = Handlebars::loadAppPartials(self::PARTIAL_DIR);
 
-        # Scan directory and retrieve filenames
-        $filenames = scandir(File::path(self::PARTIAL_DIR));
+        # Recursively scan directory and retrieve filenames (resources/Hbs/Partials is no
+        # longer flat: form.hbs's per-item.type sub-partials live under nested form/ and
+        # filter/ folders, so this has to walk subfolders too, not just the top level)
+        $basePath = rtrim(File::path(self::PARTIAL_DIR), "/");
 
         # Prepare result
         $result = [];
 
-        # Check filenames
-        if(!empty($filenames))
+        # Iteration of every file found recursively under the partials dir
+        foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($basePath, \FilesystemIterator::SKIP_DOTS)) as $file){
 
-            # Iteration foreach
-            foreach ($filenames as $filename){
+            # Get file extension
+            $fileExtension = pathinfo($file->getFilename(), PATHINFO_EXTENSION);
 
-                # Get file path
-                $filePath = File::path(self::PARTIAL_DIR)."/$filename";
-            
-                # Get file extension
-                $fileExtension = pathinfo($filename, PATHINFO_EXTENSION);
-            
-                # Check file has extension
-                if(in_array($fileExtension, Handlebars::EXTENSIONS))
-                
-                    $result[pathinfo($filename, PATHINFO_FILENAME)] = file_get_contents($filePath);
+            # Check file has extension
+            if(in_array($fileExtension, Handlebars::EXTENSIONS)){
+
+                # Get path relative to the partials dir, without its extension (e.g. "form/form_color")
+                $relativePath = ltrim(substr($file->getPathname(), strlen($basePath)), "/");
+                $name = rtrim(substr($relativePath, 0, -strlen($fileExtension)), ".");
+
+                # Push in result
+                $result[$name] = file_get_contents($file->getPathname());
 
             }
 
+        }
+
         # Assertion
         $this->assertEquals($partials, $result);
+
+    }
+
+    /**
+     * Test Load App Partials Nested Path
+     *
+     * Regression test for the fix that keys partials by their path relative to the
+     * partials directory (instead of by basename only). Uses the real form/filter
+     * sub-partials shipped under resources/Hbs/Partials/{form,filter}/ -- one partial
+     * per form item.type, included by form.hbs's dispatch chain -- rather than a
+     * synthetic fixture, now that real nested partials exist in this repo.
+     *
+     * @return void
+     */
+    public function testLoadAppPartialsNestedPath():void {
+
+        # Load partials from the real partials dir
+        $partials = Handlebars::loadAppPartials(self::PARTIAL_DIR);
+
+        # A nested partial must be keyed by its relative path, not its basename
+        $this->assertArrayHasKey("form/form_color", $partials);
+        $this->assertArrayNotHasKey("form_color", $partials);
+
+        $this->assertArrayHasKey("filter/filter_color", $partials);
+        $this->assertArrayNotHasKey("filter_color", $partials);
+
+        # A flat partial must still be keyed by its plain basename
+        $this->assertArrayHasKey("form", $partials);
+
+        # Content should match the files on disk
+        $this->assertEquals(
+            File::open(self::PARTIAL_DIR."/form/form_color.hbs"),
+            $partials["form/form_color"]
+        );
+        $this->assertEquals(
+            File::open(self::PARTIAL_DIR."/filter/filter_color.hbs"),
+            $partials["filter/filter_color"]
+        );
 
     }
 

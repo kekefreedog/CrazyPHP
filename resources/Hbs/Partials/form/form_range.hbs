@@ -1,0 +1,26 @@
+{{!--
+  ! Form / range
+  !
+  ! Renders one "range" form item. Included by ../form.hbs as
+  ! {{> form/form_range item form=form}} — `item` becomes the partial's
+  ! context (bare field access), `form` is merged in as an extra field.
+  !--}}
+<div class="input-field col s12 mn-2{{#if _style.customClass.input-field}} {{_style.customClass.input-field}}{{/if}}" style="margin-bottom: 0px;">
+
+    {{#if label}}{{#if required}}<b>{{/if}}{{label}}{{#if required}}</b>*{{/if}}{{/if}}
+    <p class="range-field mt-0">
+        {{#if disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{/if}}
+        <input
+            id="{{form.id}}_{{name}}"
+            name="{{name}}"
+            type="range"
+            min="{{#if select.[0].value}}{{select.[0].value}}{{else}}0{{/if}}"
+            max="{{#if select.[1].value}}{{select.[1].value}}{{else}}100{{/if}}"
+            class="pt-0{{#if _style.customClass.input}} {{_style.customClass.input}}{{/if}}"
+            {{#if disabled}}disabled=""{{else}}{{#if form.onready}}disabled="loading"{{/if}}{{/if}}
+            {{#unless form.onready}}{{#if default includeZero=false}}value="{{default}}" default="{{default}}"{{/if}}{{/unless}}
+            {{#if _style.range.step}}step="{{_style.range.step}}"{{/if}}
+        />
+    </p>
+
+</div>

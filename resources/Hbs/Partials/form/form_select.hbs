@@ -1,0 +1,42 @@
+{{!--
+  ! Form / select
+  !
+  ! Renders one "select" form item. Included by ../form.hbs as
+  ! {{> form/form_select item form=form}} — `item` becomes the partial's
+  ! context (bare field access), `form` is merged in as an extra field.
+  !--}}
+<div class="input-field col s12 mn-2{{#if _style.customClass.input-field}} {{_style.customClass.input-field}}{{/if}}" style="margin-bottom: 15px;">
+
+    <div id="dependency" class="suffix suffix-tomselect hide"><i class="material-icons">link_off</i></div>
+    {{#if disabled}}<div class="suffix suffix-tomselect"><i class="material-icons">lock</i></div>{{else}}
+    {{#if _style.suffix}}<div class="suffix suffix-tomselect"><i class="{{_style.suffix.class}}">{{_style.suffix.text}}</i></div>{{/if}}{{/if}}
+    {{#if label}}{{#if required}}<b>{{/if}}{{label}}{{#if required}}</b>*{{/if}}{{/if}}
+    <{{#if _style.select.tag}}input{{else}}select{{/if}}
+        id="{{form.id}}_{{name}}"
+        data-type="select"
+        {{#if _style.select.tag}}data-select-tag=""{{/if}}
+        {{#if _style.select.clear}}data-select-clear="{{#is _style.select.clear "true"}}Clear{{else}}{{_style.select.clear}}{{/is}}"{{/if}}
+        name="{{name}}{{#if multiple}}[]{{/if}}"
+        {{#if multiple}}multiple=""{{/if}}
+        {{#if _style.select.tag}}{{#isArray default}}value="{{join default ","}}"{{/isArray}}{{/if}}
+        {{#unless form.onready}}{{#if default includeZero=false}}default="{{#isArray default}}{{JSONstringify default}}{{else}}{{#isObject default}}{{JSONstringify default}}{{else}}{{default}}{{/isObject}}{{/isArray}}"{{/if}}{{/unless}}
+        autocomplete="off"
+        {{#if placeholder}}placeholder="{{placeholder}}"{{/if}}
+        {{#if disabled}}disabled=""{{/if}}
+        {{#if required}}required=""{{/if}}
+        {{#if select.url}}data-select-remote="{{JSONstringify select}}"{{/if}}
+        {{#if valuePrefix}}data-form-value-prefix="{{valuePrefix}}"{{/if}}
+        {{#if valueSuffix}}data-form-value-suffix="{{valueSuffix}}"{{/if}}
+        {{#if depends}}data-depends="{{#isArray depends}}{{join depends ","}}{{else}}{{depends}}{{/isArray}}" default="true"{{/if}}
+    {{#if _style.select.tag}}/>{{else}}>{{#if select}}{{#if select.url}}{{else}}
+        {{!-- Iteration options --}}
+        {{#each select as |option|}}<option
+            {{#if option.value includeZero=false}}value="{{option.value}}"{{/if}}
+            {{#unless ../form.onready}}{{#if ../default includeZero=false}}{{#is ../default option.value}}selected=""{{/is}}{{else}}{{#if option.default}}selected=""{{/if}}{{/if}}{{/unless}}
+            {{#unless ../form.onready}}{{#if option.default}}default=""{{/if}}{{/unless}}
+            {{#if option.disabled}}disabled=""{{/if}}
+        >{{option.label}}</option>{{/each}}
+    {{/if}}{{/if}}</select>
+    {{#if select.url}}<div class="progress mt-0 mb-0" data-select-id="{{form.id}}_{{name}}"><div class="indeterminate"></div></div>{{/if}}{{/if}}
+
+</div>

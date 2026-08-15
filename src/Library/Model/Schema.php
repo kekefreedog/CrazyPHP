@@ -19,8 +19,6 @@ use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Form\Validate;
 use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\Array\Arrays;
-use CrazyPHP\Library\Cache\Cache;
-use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\File\File;
 
 /**
@@ -111,11 +109,13 @@ class Schema {
         $result = [];
 
         # Check whitelist
-        if(!empty($whiteListAttributes) && $whiteListAttributes !== null)
+        if(!empty($whiteListAttributes) && $whiteListAttributes !== null){
 
         # Iteration of 
 
         ## To finish
+
+        }
 
         # Return result
         return $result;

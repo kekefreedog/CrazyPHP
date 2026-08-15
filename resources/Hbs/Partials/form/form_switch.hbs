@@ -1,0 +1,32 @@
+{{!--
+  ! Form / switch
+  !
+  ! Renders one "switch" form item. Included by ../form.hbs as
+  ! {{> form/form_switch item form=form}} — `item` becomes the partial's
+  ! context (bare field access), `form` is merged in as an extra field.
+  !
+  ! Note: the original inline branch referenced a stray `radioItem` variable
+  ! here (leftover copy/paste from the radio branch, never bound in this
+  ! scope, always falsy) — dropped during extraction, behavior unchanged.
+  !--}}
+<div class="input-field col s12 mn-2{{#if _style.customClass.input-field}} {{_style.customClass.input-field}}{{/if}}" style="margin-bottom: 15px;">
+
+    {{#if label}}{{#if required}}<b>{{/if}}{{label}}{{#if required}}</b>*{{/if}}{{/if}}
+    <div class="switch{{#if label}}  mt-4{{/if}}"><label>
+        <div id="dependency" class="suffix hide"><i class="material-icons">link_off</i></div>
+        {{#if disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{/if}}
+        Off
+        <input
+            id="{{form.id}}_{{name}}"
+            name="{{name}}"
+            type="checkbox"
+            {{#if _style.customClass.input}}class="{{_style.customClass.input}}"{{/if}}
+            {{#if disabled}}disabled=""{{else}}disabled="loading"{{/if}}
+            {{#unless form.onready}}{{#if default}}checked="" default="true"{{/if}}{{/unless}}
+            {{#if depends}}data-depends="{{#isArray depends}}{{join "," depends}}{{else}}{{depends}}{{/isArray}}" default="true"{{/if}}
+        >
+        <span class="lever"></span>
+        On
+    </label></div>
+
+</div>

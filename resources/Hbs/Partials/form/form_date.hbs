@@ -1,0 +1,39 @@
+{{!--
+  ! Form / date
+  !
+  ! Renders one "date" form item. Included by ../form.hbs as
+  ! {{> form/form_date item form=form}} — `item` becomes the partial's
+  ! context (bare field access), `form` is merged in as an extra field.
+  !--}}
+<div class="input-field col s12 mn-2{{#if _style.customClass.input-field}} {{_style.customClass.input-field}}{{/if}}" style="margin-bottom: 15px;">
+
+    {{#if disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{else}}
+    {{#if _style.suffix}}<div class="suffix"><i class="{{_style.suffix.class}}">{{_style.suffix.text}}</i></div>{{/if}}{{/if}}
+    {{#if _style.prefix}}<div class="prefix"><i class="{{_style.prefix.class}}">{{_style.prefix.text}}</i></div>{{/if}}
+    <input
+        id="{{form.id}}_{{name}}"
+        name="{{name}}{{#if multiple}}[]{{/if}}"
+        {{#if multiple}}multiple=""{{/if}}
+        {{#if _style.customClass.input}}class="{{_style.customClass.input}}"{{/if}}
+        {{#if disabled}}disabled=""{{else}}{{#if form.onready}}disabled="loading"{{/if}}{{/if}}
+        type="{{#is _style.date.picker "easepick"}}text{{else}}{{#is _style.date.picker "airdatepicker"}}text{{else}}date{{/is}}{{/is}}"
+        {{#is _style.date.picker "easepick"}}data-type="date"{{/is}}
+        {{#is _style.date.picker "airdatepicker"}}data-type="date"{{/is}}
+        {{#if placeholder}}placeholder="{{placeholder}}"{{else}}placeholder=" "{{/if}}
+        {{#if readonly}}readonly=""{{/if}}
+        {{#unless form.onready}}{{#if default}}value="{{default}}" default="{{default}}"{{/if}}{{/unless}}
+        {{#if select.[0].value}}min="{{select.[0].value}}"{{/if}}
+        {{#if select.[1].value}}max="{{select.[1].value}}"{{/if}}
+        {{#if required}}required=""{{/if}}
+        {{#if _style.date.picker}}data-date-picker="{{_style.date.picker}}"{{/if}}
+        {{!-- Easepick --}}
+        {{#if _style.date.format}}data-date-format="{{_style.date.format}}"{{/if}}
+        {{#if _style.date.lang}}data-date-lang="{{_style.date.lang}}"{{/if}}
+        {{!-- Air Date Picker --}}
+        {{#if _style.date.format}}data-date-format="{{_style.date.format}}"{{/if}}
+        {{#if _style.date.lang}}data-date-lang="{{_style.date.lang}}"{{/if}}
+        autocomplete="off"
+    >
+    {{#if label}}<label for="{{form.id}}_{{name}}">{{#if required}}<b>{{/if}}{{label}}{{#if required}}</b>*{{/if}}</label>{{/if}}
+
+</div>

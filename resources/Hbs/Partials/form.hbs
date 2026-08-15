@@ -26,312 +26,35 @@
 >
     {{!-- Items --}}
     {{#each form.items as |item|}}
-    <div class="input-field col s12 mn-2{{#if item._style.customClass.input-field}} {{item._style.customClass.input-field}}{{/if}}" style="margin-bottom: {{#is item.type "range"}}0{{else}}15{{/is}}px;">
-        
-        {{!-- File Input --}}
-        {{#is item.type "file"}} 
-        {{#if item.disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{else}}
-        {{#if item._style.suffix}}<div class="suffix"><i class="{{item._style.suffix.class}}">{{item._style.suffix.text}}</i></div>{{/if}}{{/if}}
-        {{#if item._style.prefix}}<div class="prefix"><i class="{{item._style.prefix.class}}">{{item._style.prefix.text}}</i></div>{{/if}}
-            {{!-- Filepond --}}
-            {{#is item._style.file.picker "filepond"}}
-                <input 
-                    id="{{../form.id}}_{{item.name}}" 
-                    name="{{item.name}}{{#if item.multiple}}[]{{/if}}"
-                    {{#if item._style.file.preview}}data-file-preview=""{{/if}}
-                    {{#if item.multiple}}multiple=""{{/if}}
-                    {{#if item._style.customClass.input}}class="{{item._style.customClass.input}}"{{/if}}
-                    {{#if item.disabled}}disabled=""{{else}}{{#if ../form.onready}}disabled="loading"{{/if}}{{/if}}
-                    type="file"
-                    {{#if item.placeholder}}placeholder="{{item.placeholder}}"{{else}}placeholder=" "{{/if}}
-                    {{#if item.readonly}}readonly=""{{/if}}
-                    {{#unless form.onready}}{{#if item.default}}value="{{item.default}}" default="{{item.default}}"{{/if}}{{/unless}}
-                    {{#if item.select.[0].value}}min="{{item.select.[0].value}}"{{/if}}
-                    {{#if item.select.[1].value}}max="{{item.select.[1].value}}"{{/if}}
-                    {{#if item.required}}required=""{{/if}}
-                    {{#if item.required}}required=""{{/if}}
-                    {{!-- Filepond specific --}}
-                    {{#if item._style.file.maxFiles}}data-max-files="{{item._style.file.maxFiles}}"{{/if}}
-                    class="filepond"
-                    {{#if item._style.file.acceptedFileTypes}}accept="{{join item._style.file.acceptedFileTypes ","}}"{{/if}}
-                    {{#if item._style.file.locale}}data-file-locale="{{item._style.file.locale}}"{{/if}}
-                >
-                {{#if item.label}}<label for="{{../form.id}}_{{item.name}}">{{#if item.required}}<b>{{/if}}{{item.label}}{{#if item.required}}</b>*{{/if}}</label>{{/if}}
-            {{!-- Legacy file input --}}
-            {{else}}<div class="file-field">
-                <div class="btn">
-                    <span>{{#if item.label}}{{#if item.required}}<b>{{/if}}{{item.label}}{{#if item.required}}</b>*{{/if}}{{/if}}</span>
-                    <input
-                        id="{{../form.id}}_{{item.name}}"
-                        {{#if item.multiple}}multiple=""{{/if}}
-                        name="{{item.name}}{{#if item.multiple}}[]{{/if}}"
-                        {{#if item._style.customClass.input}}class="{{item._style.customClass.input}}"{{/if}}
-                        {{#if item.disabled}}disabled=""{{else}}{{#if ../form.onready}}disabled="loading"{{/if}}{{/if}}
-                        type="file"
-                        {{#if item.placeholder}}placeholder="{{item.placeholder}}"{{else}}placeholder=" "{{/if}}
-                        {{#if item.readonly}}readonly=""{{/if}}
-                        {{#unless form.onready}}{{#if item.default}}value="{{item.default}}" default="{{item.default}}"{{/if}}{{/unless}}
-                        {{#if item.select.[0].value}}min="{{item.select.[0].value}}"{{/if}}
-                        {{#if item.select.[1].value}}max="{{item.select.[1].value}}"{{/if}}
-                        {{#if item.required}}required=""{{/if}}
-                        {{#if item._style.file.acceptedFileTypes}}accept="{{join item._style.file.acceptedFileTypes ","}}"{{/if}}
-                    >
-                </div>
-                <div class="file-path-wrapper">
-                    <input class="file-path validate" type="text">
-                </div>
-            </div>{{/is}}
-
-        {{!-- Color Input --}}
-        {{else}}{{#is item.type "color"}} 
-        {{#if item.required}}<b>{{/if}}{{item.label}}{{#if item.required}}</b>*{{/if}}<br>
-        {{#if item.disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{else}}
-        {{#if item._style.suffix}}<div class="suffix"><i class="{{item._style.suffix.class}}">{{item._style.suffix.text}}</i></div>{{/if}}{{/if}}
-        {{#if item._style.prefix}}<div class="prefix"><i class="{{item._style.prefix.class}}">{{item._style.prefix.text}}</i></div>{{/if}}
-        <input
-            id="{{../form.id}}_{{item.name}}" 
-            name="{{item.name}}"
-            {{#if item._style.customClass.input}}class="{{item._style.customClass.input}}"{{/if}}
-            {{#if item.disabled}}disabled=""{{else}}{{#if ../form.onready}}disabled="loading"{{/if}}{{/if}}
-            type="color"
-            {{#if item._style.color.picker}}
-                data-color-picker="{{item._style.color.picker}}"
-                {{#if item._style.color.theme}}data-color-theme="{{item._style.color.theme}}"{{/if}}
-                data-color-opacity="{{item._style.color.opacity}}"
-                {{#if item._style.color.locale}}data-color-locale="{{item._style.color.locale}}"{{/if}}
-            {{/if}}
-            {{!-- data-type="color" --}}
-            {{#if item.placeholder}}placeholder="{{item.placeholder}}"{{else}}placeholder=" "{{/if}}
-            {{#if item.readonly}}readonly=""{{/if}}
-            {{#unless form.onready}}{{#if item.default includeZero=false}}value="{{#is item.default "randomHex()"}}{{colorHexRandom}}{{else}}{{item.default}}{{/is}}" default="{{item.default}}"{{/if}}{{/unless}}
-            {{#if item.select.[0].value includeZero=false}}min="{{item.select.[0].value}}"{{/if}}
-            {{#if item.select.[1].value includeZero=false}}max="{{item.select.[1].value}}"{{/if}}
-            {{#if item.required}}required=""{{/if}}
-        >
-
-        {{!-- Select Input --}}
-        {{else}}{{#is item.type "select"}}
-        <div id="dependency" class="suffix suffix-tomselect hide"><i class="material-icons">link_off</i></div>
-        {{#if item.disabled}}<div class="suffix suffix-tomselect"><i class="material-icons">lock</i></div>{{else}}
-        {{#if item._style.suffix}}<div class="suffix suffix-tomselect"><i class="{{item._style.suffix.class}}">{{item._style.suffix.text}}</i></div>{{/if}}{{/if}}
-        {{#if item.label}}{{#if item.required}}<b>{{/if}}{{item.label}}{{#if item.required}}</b>*{{/if}}{{/if}}
-        <{{#if item._style.select.tag}}input{{else}}select{{/if}}
-            id="{{../form.id}}_{{item.name}}" 
-            data-type="select"
-            {{#if item._style.select.tag}}data-select-tag=""{{/if}}
-            {{#if item._style.select.clear}}data-select-clear="{{#is item._style.select.clear "true"}}Clear{{else}}{{item._style.select.clear}}{{/is}}"{{/if}}
-            name="{{item.name}}{{#if item.multiple}}[]{{/if}}"
-            {{#if item.multiple}}multiple=""{{/if}}
-            {{#if item._style.select.tag}}{{#isArray item.default}}value="{{join item.default ","}}"{{/isArray}}{{/if}}
-            {{#unless form.onready}}{{#if item.default includeZero=false}}default="{{#isArray item.default}}{{JSONstringify item.default}}{{else}}{{#isObject item.default}}{{JSONstringify item.default}}{{else}}{{item.default}}{{/isObject}}{{/isArray}}"{{/if}}{{/unless}}
-            autocomplete="off"
-            {{#if item.placeholder}}placeholder="{{item.placeholder}}"{{/if}}
-            {{#if item.disabled}}disabled=""{{/if}}
-            {{#if item.required}}required=""{{/if}}
-            {{#if item.select.url}}data-select-remote="{{JSONstringify item.select}}"{{/if}}
-            {{#if item.valuePrefix}}data-form-value-prefix="{{item.valuePrefix}}"{{/if}}
-            {{#if item.valueSuffix}}data-form-value-suffix="{{item.valueSuffix}}"{{/if}}
-            {{#if item.depends}}data-depends="{{#isArray item.depends}}{{join item.depends ","}}{{else}}{{item.depends}}{{/isArray}}" default="true"{{/if}}
-        {{#if item._style.select.tag}}/>{{else}}>{{#if item.select}}{{#if item.select.url}}{{else}}
-            {{!-- Iteration options --}}
-            {{#each item.select as |option|}}<option
-                {{#if option.value includeZero=false}}value="{{option.value}}"{{/if}}
-                {{#unless form.onready}}{{#if item.default includeZero=false}}{{#is item.default option.value}}selected=""{{/is}}{{else}}{{#if option.default}}selected=""{{/if}}{{/if}}{{/unless}}
-                {{#unless form.onready}}{{#if option.default}}default=""{{/if}}{{/unless}}
-                {{#if option.disabled}}disabled=""{{/if}}
-            >{{option.label}}</option>{{/each}}
-        {{/if}}{{/if}}</select>
-        {{#if item.select.url}}<div class="progress mt-0 mb-0" data-select-id="{{../form.id}}_{{item.name}}"><div class="indeterminate"></div></div>{{/if}}{{/if}}
-
-        {{!-- Password Input --}}
-        {{else}}{{#is item.type "password"}}
-        {{#if item.disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{else}}
-        {{#if item._style.password.visible}}<div class="suffix cursor-pointer waves-effect waves-circle"><i class="material-icons">visibility</i></div>{{else}}
-        {{#if item._style.suffix}}<div class="suffix"><i class="{{item._style.suffix.class}}">{{item._style.suffix.text}}</i></div>{{/if}}{{/if}}{{/if}}
-        {{#if item._style.prefix}}<div class="prefix"><i class="{{item._style.prefix.class}}">{{item._style.prefix.text}}</i></div>{{/if}}
-        <input
-            {{#if item._style.password.visible}}data-password-visible="0"{{/if}}
-            id="{{../form.id}}_{{item.name}}" 
-            name="{{item.name}}"
-            {{#if item._style.customClass.input}}class="{{item._style.customClass.input}}"{{/if}}
-            {{#if item.disabled}}disabled=""{{else}}{{#if ../form.onready}}disabled="loading"{{/if}}{{/if}}
-            type="password"
-            {{#if item.placeholder}}placeholder="{{item.placeholder}}"{{else}}placeholder=" "{{/if}}
-            {{#if item.readonly}}readonly=""{{/if}}
-            {{#unless form.onready}}{{#if item.default}}value="{{item.default}}" default="{{item.default}}"{{/if}}{{/unless}}
-            {{#if item._style.text.minlength includeZero=false}}minlength="{{item._style.text.minlength}}"{{/if}}
-            {{#if item._style.text.maxlength includeZero=false}}maxlength="{{item._style.text.maxlength}}"{{/if}}
-            {{#if item.required}}required=""{{/if}}
-        >
-        {{#if item.label}}<label for="{{../form.id}}_{{item.name}}">{{#if item.required}}<b>{{/if}}{{item.label}}{{#if item.required}}</b>*{{/if}}</label>{{/if}}
-
-        {{!-- Date Input --}}
-        {{else}}{{#is item.type "date"}} 
-        {{#if item.disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{else}}
-        {{#if item._style.suffix}}<div class="suffix"><i class="{{item._style.suffix.class}}">{{item._style.suffix.text}}</i></div>{{/if}}{{/if}}
-        {{#if item._style.prefix}}<div class="prefix"><i class="{{item._style.prefix.class}}">{{item._style.prefix.text}}</i></div>{{/if}}
-        <input
-            id="{{../form.id}}_{{item.name}}" 
-            name="{{item.name}}{{#if item.multiple}}[]{{/if}}"
-            {{#if item.multiple}}multiple=""{{/if}}
-            {{#if item._style.customClass.input}}class="{{item._style.customClass.input}}"{{/if}}
-            {{#if item.disabled}}disabled=""{{else}}{{#if ../form.onready}}disabled="loading"{{/if}}{{/if}}
-            type="{{#is item._style.date.picker "easepick"}}text{{else}}{{#is item._style.date.picker "airdatepicker"}}text{{else}}date{{/is}}{{/is}}"
-            {{#is item._style.date.picker "easepick"}}data-type="date"{{/is}}
-            {{#is item._style.date.picker "airdatepicker"}}data-type="date"{{/is}}
-            {{#if item.placeholder}}placeholder="{{item.placeholder}}"{{else}}placeholder=" "{{/if}}
-            {{#if item.readonly}}readonly=""{{/if}}
-            {{#unless form.onready}}{{#if item.default}}value="{{item.default}}" default="{{item.default}}"{{/if}}{{/unless}}
-            {{#if item.select.[0].value}}min="{{item.select.[0].value}}"{{/if}}
-            {{#if item.select.[1].value}}max="{{item.select.[1].value}}"{{/if}}
-            {{#if item.required}}required=""{{/if}}
-            {{#if item._style.date.picker}}data-date-picker="{{item._style.date.picker}}"{{/if}}
-            {{!-- Easepick --}}
-            {{#if item._style.date.format}}data-date-format="{{item._style.date.format}}"{{/if}}
-            {{#if item._style.date.lang}}data-date-lang="{{item._style.date.lang}}"{{/if}}
-            {{!-- Air Date Picker --}}
-            {{#if item._style.date.format}}data-date-format="{{item._style.date.format}}"{{/if}}
-            {{#if item._style.date.lang}}data-date-lang="{{item._style.date.lang}}"{{/if}}
-            autocomplete="off"
-        >
-        {{#if item.label}}<label for="{{../form.id}}_{{item.name}}">{{#if item.required}}<b>{{/if}}{{item.label}}{{#if item.required}}</b>*{{/if}}</label>{{/if}}
-        
-        {{!-- Number Input --}}
-        {{else}}{{#is item.type "number"}} 
-        {{#if item.disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{else}}
-        {{#if item._style.suffix}}<div class="suffix"><i class="{{item._style.suffix.class}}">{{item._style.suffix.text}}</i></div>{{/if}}{{/if}}
-        {{#if item._style.prefix}}<div class="prefix"><i class="{{item._style.prefix.class}}">{{item._style.prefix.text}}</i></div>{{/if}}
-        <input
-            id="{{../form.id}}_{{item.name}}" 
-            name="{{item.name}}"
-            {{#if item._style.customClass.input}}class="{{item._style.customClass.input}}"{{/if}}
-            {{#if item.disabled}}disabled=""{{else}}{{#if ../form.onready}}disabled="loading"{{/if}}{{/if}}
-            type="text"
-            data-type="number"
-            {{#if item.placeholder}}placeholder="{{item.placeholder}}"{{else}}placeholder=" "{{/if}}
-            {{#if item.readonly}}readonly=""{{/if}}
-            {{#unless form.onready}}{{#if item.default includeZero=false}}value="{{item.default}}" default="{{item.default}}"{{/if}}{{/unless}}
-            {{#if item.select.[0].value includeZero=false}}min="{{item.select.[0].value}}"{{/if}}
-            {{#if item.select.[1].value includeZero=false}}max="{{item.select.[1].value}}"{{/if}}
-            {{#if item.required}}required=""{{/if}}
-            {{#if item._style.number.decimal}}step=".01"{{/if}}
-        >
-        {{#if item.label}}<label for="{{../form.id}}_{{item.name}}">{{#if item.required}}<b>{{/if}}{{item.label}}{{#if item.required}}</b>*{{/if}}</label>{{/if}}
-
-        {{!-- Range Input --}}
-        {{else}}{{#is item.type "range"}}
-        {{#if item.label}}{{#if item.required}}<b>{{/if}}{{item.label}}{{#if item.required}}</b>*{{/if}}{{/if}}
-        <p class="range-field mt-0">
-            {{#if item.disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{/if}}
-            <input 
-                id="{{../form.id}}_{{item.name}}"
-                name="{{item.name}}" 
-                type="range"
-                min="{{#if item.select.[0].value}}{{item.select.[0].value}}{{else}}0{{/if}}"
-                max="{{#if item.select.[1].value}}{{item.select.[1].value}}{{else}}100{{/if}}"
-                class="pt-0{{#if item._style.customClass.input}} {{item._style.customClass.input}}{{/if}}"
-                {{#if item.disabled}}disabled=""{{else}}{{#if ../form.onready}}disabled="loading"{{/if}}{{/if}}
-                {{#unless form.onready}}{{#if item.default includeZero=false}}value="{{item.default}}" default="{{item.default}}"{{/if}}{{/unless}}
-                {{#if item._style.range.step}}step="{{item._style.range.step}}"{{/if}}
-            />
-        </p>
-
-        {{!-- Switch Input --}}
-        {{else}}{{#is item.type "switch"}}
-        {{#if item.label}}{{#if item.required}}<b>{{/if}}{{item.label}}{{#if item.required}}</b>*{{/if}}{{/if}}
-        <div class="switch{{#if item.label}}  mt-4{{/if}}"><label>
-            <div id="dependency" class="suffix hide"><i class="material-icons">link_off</i></div>
-            {{#if item.disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{/if}}
-            Off
-            <input
-                id="{{../form.id}}_{{item.name}}" 
-                name="{{item.name}}"
-                type="checkbox"
-                {{#if item._style.customClass.input}}class="{{item._style.customClass.input}}"{{/if}}
-                {{#if item.disabled}}disabled=""{{else}}{{#if radioItem.disabled}}disabled=""{{else}}disabled="loading"{{/if}}{{/if}}
-                {{#unless form.onready}}{{#if item.default}}checked="" default="true"{{/if}}{{/unless}}
-                {{#if item.depends}}data-depends="{{#isArray item.depends}}{{join "," item.depends}}{{else}}{{item.depends}}{{/isArray}}" default="true"{{/if}}
-            >
-            <span class="lever"></span>
-            On
-        </label></div>
-
-        {{!-- Radio Input --}}
-        {{else}}{{#is item.type "radio"}}
-        <div id="{{form.id}}_{{item.name}}" data-radio-name="{{item.name}}">
-            {{#if item.disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{/if}}
-            {{#if item.label}}{{#if item.required}}<b>{{/if}}{{item.label}}{{#if item.required}}</b>*{{/if}}{{/if}}
-            {{!-- Multiple choice Radio --}}
-            {{#each item.select as |radioItem|}}{{#if item.multiple}}<p><label>
-                <input 
-                    name="{{item.name}}[]"
-                    type="checkbox" 
-                    {{#if item.required}}required=""{{/if}}
-                    class="filled-in{{#if item._style.customClass.input}} {{item._style.customClass.input}}{{/if}}"
-                    {{#if item.disabled}}disabled=""{{else}}{{#if radioItem.disabled}}disabled=""{{else}}disabled="loading"{{/if}}{{/if}}
-                    {{#if item.disabled}}disabled=""{{else}}{{#if ../form.onready}}disabled="loading"{{/if}}{{/if}}
-                    {{#unless form.onready}}{{#if item.default includeZero=false}}
-                        {{#is item.default radioItem.value}}checked="" default=""{{/is}}
-                    {{else}}
-                        {{#is radioItem.default radioItem.value}}checked="" default=""{{/is}}
-                    {{/if}}{{/unless}}
-                    {{#if radioItem.value includeZero=false}}value="{{radioItem.value}}"{{/if}}
-                />
-                <span>{{radioItem.label}}{{#if radioItem.disabled}}<i class="material-icons ml-3">lock</i>{{/if}}</span>
-            {{!-- Singe choice Radio --}}
-            </label></p>{{else}}<p><label>
-                <input
-                    name="{{item.name}}"
-                    type="radio"
-                    {{#if item.required}}required=""{{/if}}
-                    {{#if item._style.customClass.input}}class="{{item._style.customClass.input}}"{{/if}}
-                    {{#if item.disabled}}disabled=""{{else}}{{#if radioItem.disabled}}disabled=""{{else}}disabled="loading"{{/if}}{{/if}}
-                    {{#unless form.onready}}{{#if item.default includeZero=false}}{{#is item.default radioItem.value}}checked="" default=""{{/is}}{{else}}{{#if radioItem.default}}checked="" default=""{{/if}}{{/if}}{{/unless}}
-                    {{#if radioItem.value}}value="{{radioItem.value}}"{{/if}}
-                    {{#unless form.onready}}{{#if radioItem.default}}default=""{{/if}}{{/unless}}
-                />
-                <span>{{radioItem.label}}{{#if radioItem.disabled}}<i class="material-icons ml-3">lock</i>{{/if}}</span>
-            </label></p>{{/if}}{{/each}}
-        </div>
-
-        {{!-- Checkbox Input --}}
-        {{else}}{{#is item.type "checkbox"}}
-        <p><label>
-            <div id="dependency" class="suffix hide"><i class="material-icons">link_off</i></div>
-            {{#if item.disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{/if}}
-            <input 
-                id="{{../form.id}}_{{item.name}}" 
-                name="{{item.name}}" 
-                type="checkbox"
-                {{#if item._style.customClass.input}}class="{{item._style.customClass.input}}"{{/if}}
-                {{#if item.disabled}}disabled=""{{else}}{{#if ../form.onready}}disabled="loading"{{/if}}{{/if}}
-                {{#unless form.onready}}{{#if item.default}}checked="" default="true"{{/if}}{{/unless}}
-            />
-            {{#if item.label}}<span>{{#if item.required}}<b>{{/if}}{{item.label}}{{#if item.required}}</b>*{{/if}}</span>{{/if}}
-        </label></p>
-        {{else}}
-
-        {{!-- Text Input --}}
-        {{#if item.disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{else}}
-        {{#if item._style.suffix}}<div class="suffix"><i class="{{item._style.suffix.class}}">{{item._style.suffix.text}}</i></div>{{/if}}{{/if}}
-        {{#if item._style.prefix}}<div class="prefix"><i class="{{item._style.prefix.class}}">{{item._style.prefix.text}}</i></div>{{/if}}
-        <input
-            id="{{../form.id}}_{{item.name}}" 
-            name="{{item.name}}"
-            class="validate {{#if item._style.customClass.input}} {{item._style.customClass.input}}{{/if}}"
-            {{#if item.disabled}}disabled=""{{else}}{{#if ../form.onready}}disabled="loading"{{/if}}{{/if}}
-            {{#if item.type}}type="{{item.type}}"{{else}}type="text"{{/if}}
-            {{#if item.placeholder}}placeholder="{{item.placeholder}}"{{else}}placeholder=" "{{/if}}
-            {{#if item.readonly}}readonly=""{{/if}}
-            {{#if item.required}}required=""{{/if}}
-            {{#unless form.onready}}{{#if item.default}}value="{{item.default}}" default="{{item.default}}"{{/if}}{{/unless}}
-            {{#if item._style.text.minlength includeZero=false}}minlength="{{item._style.text.minlength}}"{{/if}}
-            {{#if item._style.text.maxlength includeZero=false}}maxlength="{{item._style.text.maxlength}}"{{/if}}
-        >
-        {{#if item.label}}<label for="{{../form.id}}_{{item.name}}">{{#if item.required}}<b>{{/if}}{{item.label}}{{#if item.required}}</b>*{{/if}}</label>{{/if}}
-        {{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}
-
-    </div>
+    {{#if form.filter}}
+        {{#is item.type "file"}}{{> filter/filter_file item form=form}}
+        {{else}}{{#is item.type "color"}}{{> filter/filter_color item form=form}}
+        {{else}}{{#is item.type "select"}}{{> filter/filter_select item form=form}}
+        {{else}}{{#is item.type "password"}}{{> filter/filter_password item form=form}}
+        {{else}}{{#is item.type "date"}}{{> filter/filter_date item form=form}}
+        {{else}}{{#is item.type "number"}}{{> filter/filter_number item form=form}}
+        {{else}}{{#is item.type "range"}}{{> filter/filter_range item form=form}}
+        {{else}}{{#is item.type "switch"}}{{> filter/filter_switch item form=form}}
+        {{else}}{{#is item.type "radio"}}{{> filter/filter_radio item form=form}}
+        {{else}}{{#is item.type "checkbox"}}{{> filter/filter_checkbox item form=form}}
+        {{else}}{{#is item.type "hidden"}}{{> filter/filter_hidden item form=form}}
+        {{else}}{{> filter/filter_default item form=form}}
+        {{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}
+    {{else}}
+        {{#is item.type "file"}}{{> form/form_file item form=form}}
+        {{else}}{{#is item.type "color"}}{{> form/form_color item form=form}}
+        {{else}}{{#is item.type "select"}}{{> form/form_select item form=form}}
+        {{else}}{{#is item.type "password"}}{{> form/form_password item form=form}}
+        {{else}}{{#is item.type "date"}}{{> form/form_date item form=form}}
+        {{else}}{{#is item.type "number"}}{{> form/form_number item form=form}}
+        {{else}}{{#is item.type "range"}}{{> form/form_range item form=form}}
+        {{else}}{{#is item.type "switch"}}{{> form/form_switch item form=form}}
+        {{else}}{{#is item.type "radio"}}{{> form/form_radio item form=form}}
+        {{else}}{{#is item.type "checkbox"}}{{> form/form_checkbox item form=form}}
+        {{else}}{{#is item.type "hidden"}}{{> form/form_hidden item form=form}}
+        {{else}}{{> form/form_default item form=form}}
+        {{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}
+    {{/if}}
     {{/each}}
 
     {{!-- Submit --}}

@@ -42,6 +42,61 @@ Structure:
                     source: "@crazyphp_root/resources/Hbs/Partials/preloader_linear_indeterminate.hbs"
                   navigation.hbs:
                     source: "@crazyphp_root/resources/Hbs/Partials/navigation.hbs"
+                folders:
+                  # One partial per form item.type, included by form.hbs's dispatch chain
+                  form:
+                    files:
+                      form_file.hbs:
+                        source: "@crazyphp_root/resources/Hbs/Partials/form/form_file.hbs"
+                      form_color.hbs:
+                        source: "@crazyphp_root/resources/Hbs/Partials/form/form_color.hbs"
+                      form_select.hbs:
+                        source: "@crazyphp_root/resources/Hbs/Partials/form/form_select.hbs"
+                      form_password.hbs:
+                        source: "@crazyphp_root/resources/Hbs/Partials/form/form_password.hbs"
+                      form_date.hbs:
+                        source: "@crazyphp_root/resources/Hbs/Partials/form/form_date.hbs"
+                      form_number.hbs:
+                        source: "@crazyphp_root/resources/Hbs/Partials/form/form_number.hbs"
+                      form_range.hbs:
+                        source: "@crazyphp_root/resources/Hbs/Partials/form/form_range.hbs"
+                      form_switch.hbs:
+                        source: "@crazyphp_root/resources/Hbs/Partials/form/form_switch.hbs"
+                      form_radio.hbs:
+                        source: "@crazyphp_root/resources/Hbs/Partials/form/form_radio.hbs"
+                      form_checkbox.hbs:
+                        source: "@crazyphp_root/resources/Hbs/Partials/form/form_checkbox.hbs"
+                      form_hidden.hbs:
+                        source: "@crazyphp_root/resources/Hbs/Partials/form/form_hidden.hbs"
+                      form_default.hbs:
+                        source: "@crazyphp_root/resources/Hbs/Partials/form/form_default.hbs"
+                  # Filter-mode variant per form item.type (stubs delegate to form/ until designed)
+                  filter:
+                    files:
+                      filter_file.hbs:
+                        source: "@crazyphp_root/resources/Hbs/Partials/filter/filter_file.hbs"
+                      filter_color.hbs:
+                        source: "@crazyphp_root/resources/Hbs/Partials/filter/filter_color.hbs"
+                      filter_select.hbs:
+                        source: "@crazyphp_root/resources/Hbs/Partials/filter/filter_select.hbs"
+                      filter_password.hbs:
+                        source: "@crazyphp_root/resources/Hbs/Partials/filter/filter_password.hbs"
+                      filter_date.hbs:
+                        source: "@crazyphp_root/resources/Hbs/Partials/filter/filter_date.hbs"
+                      filter_number.hbs:
+                        source: "@crazyphp_root/resources/Hbs/Partials/filter/filter_number.hbs"
+                      filter_range.hbs:
+                        source: "@crazyphp_root/resources/Hbs/Partials/filter/filter_range.hbs"
+                      filter_switch.hbs:
+                        source: "@crazyphp_root/resources/Hbs/Partials/filter/filter_switch.hbs"
+                      filter_radio.hbs:
+                        source: "@crazyphp_root/resources/Hbs/Partials/filter/filter_radio.hbs"
+                      filter_checkbox.hbs:
+                        source: "@crazyphp_root/resources/Hbs/Partials/filter/filter_checkbox.hbs"
+                      filter_hidden.hbs:
+                        source: "@crazyphp_root/resources/Hbs/Partials/filter/filter_hidden.hbs"
+                      filter_default.hbs:
+                        source: "@crazyphp_root/resources/Hbs/Partials/filter/filter_default.hbs"
           Jpeg: null
           Js: null
           Png: null

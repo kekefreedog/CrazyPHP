@@ -520,7 +520,7 @@ class Config implements CrazyDriverModel {
             
             # New error
             throw new CrazyException(
-                "Given config name \"".$this->arguments["name"]."\“ isn't supported by the Config Model Driver...", 
+                "Given config name \"".$this->arguments["name"]."\" isn't supported by the Config Model Driver...", 
                 500,
                 [
                     "custom_code"   =>  "driver-model-config-001",
@@ -552,7 +552,12 @@ class Config implements CrazyDriverModel {
             );
 
         # New schema
-        $this->schema = new Schema($this->arguments["attributes"]);
+        $this->schema = new Schema(
+            source: $this->arguments["attributes"],
+            options: [
+                "flatten"   => true
+            ]
+        );
 
         # Get values
         $values = $this->getValues();
@@ -614,7 +619,8 @@ class Config implements CrazyDriverModel {
 
     /** @const array Supported Config */
     public const SUPPORTED = [
-        "Router"
+        "Router",
+        "Model"
     ];
 
     /** @const array */

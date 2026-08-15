@@ -102,7 +102,7 @@ class Operation {
      * 
      * Construct and prepare instance
      * 
-     * @param string|array $Operation Exemple ["=", "[]"] or ["contains", "between"] or "@>" or "contains" or "@all" (for all operations)
+     * @param string|array $operations Exemple ["=", "[]"] or ["contains", "between"] or "@>" or "contains" or "@all" (for all operations)
      * @param array $options [
      *      suffix:string
      *      prefix:string
@@ -546,7 +546,6 @@ class Operation {
      * Description : No operations found
      * 
      * @param mixed $input 
-     * @param array $operation
      * @param array $options
      * @return mixed
      */

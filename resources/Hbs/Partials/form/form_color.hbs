@@ -1,0 +1,35 @@
+{{!--
+  ! Form / color
+  !
+  ! Renders one "color" form item. Included by ../form.hbs as
+  ! {{> form/form_color item form=form}} — `item` becomes the partial's
+  ! context (bare field access), `form` is merged in as an extra field.
+  !--}}
+<div class="input-field col s12 mn-2{{#if _style.customClass.input-field}} {{_style.customClass.input-field}}{{/if}}" style="margin-bottom: 15px;">
+
+    {{#if required}}<b>{{/if}}{{label}}{{#if required}}</b>*{{/if}}<br>
+    {{#if disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{else}}
+    {{#if _style.suffix}}<div class="suffix"><i class="{{_style.suffix.class}}">{{_style.suffix.text}}</i></div>{{/if}}{{/if}}
+    {{#if _style.prefix}}<div class="prefix"><i class="{{_style.prefix.class}}">{{_style.prefix.text}}</i></div>{{/if}}
+    <input
+        id="{{form.id}}_{{name}}"
+        name="{{name}}"
+        {{#if _style.customClass.input}}class="{{_style.customClass.input}}"{{/if}}
+        {{#if disabled}}disabled=""{{else}}{{#if form.onready}}disabled="loading"{{/if}}{{/if}}
+        type="color"
+        {{#if _style.color.picker}}
+            data-color-picker="{{_style.color.picker}}"
+            {{#if _style.color.theme}}data-color-theme="{{_style.color.theme}}"{{/if}}
+            data-color-opacity="{{_style.color.opacity}}"
+            {{#if _style.color.locale}}data-color-locale="{{_style.color.locale}}"{{/if}}
+        {{/if}}
+        {{!-- data-type="color" --}}
+        {{#if placeholder}}placeholder="{{placeholder}}"{{else}}placeholder=" "{{/if}}
+        {{#if readonly}}readonly=""{{/if}}
+        {{#unless form.onready}}{{#if default includeZero=false}}value="{{#is default "randomHex()"}}{{colorHexRandom}}{{else}}{{default}}{{/is}}" default="{{default}}"{{/if}}{{/unless}}
+        {{#if select.[0].value includeZero=false}}min="{{select.[0].value}}"{{/if}}
+        {{#if select.[1].value includeZero=false}}max="{{select.[1].value}}"{{/if}}
+        {{#if required}}required=""{{/if}}
+    >
+
+</div>

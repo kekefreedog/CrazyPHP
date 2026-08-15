@@ -530,7 +530,15 @@ class Model implements CrazyModel {
                 # Set driver
                 $this->driver = new $appClassName(...$arguments);
 
-            }
+            }else
+
+                throw new CrazyException(
+                    "No driver found",
+                    500,
+                    [
+                        "custom_code"   =>  "Model-030"
+                    ]
+                );
 
         }
 

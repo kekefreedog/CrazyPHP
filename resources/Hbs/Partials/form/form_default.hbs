@@ -1,0 +1,30 @@
+{{!--
+  ! Form / default
+  !
+  ! Generic fallback renderer for any item.type not covered by a dedicated
+  ! form_<type>.hbs partial (e.g. "text", "email" — anything that just needs
+  ! a plain <input type="..."> element). Included by ../form.hbs as
+  ! {{> form/form_default item form=form}} — `item` becomes the partial's
+  ! context (bare field access), `form` is merged in as an extra field.
+  !--}}
+<div class="input-field col s12 mn-2{{#if _style.customClass.input-field}} {{_style.customClass.input-field}}{{/if}}" style="margin-bottom: 15px;">
+
+    {{#if disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{else}}
+    {{#if _style.suffix}}<div class="suffix"><i class="{{_style.suffix.class}}">{{_style.suffix.text}}</i></div>{{/if}}{{/if}}
+    {{#if _style.prefix}}<div class="prefix"><i class="{{_style.prefix.class}}">{{_style.prefix.text}}</i></div>{{/if}}
+    <input
+        id="{{form.id}}_{{name}}"
+        name="{{name}}"
+        class="validate {{#if _style.customClass.input}} {{_style.customClass.input}}{{/if}}"
+        {{#if disabled}}disabled=""{{else}}{{#if form.onready}}disabled="loading"{{/if}}{{/if}}
+        {{#if type}}type="{{type}}"{{else}}type="text"{{/if}}
+        {{#if placeholder}}placeholder="{{placeholder}}"{{else}}placeholder=" "{{/if}}
+        {{#if readonly}}readonly=""{{/if}}
+        {{#if required}}required=""{{/if}}
+        {{#unless form.onready}}{{#if default}}value="{{default}}" default="{{default}}"{{/if}}{{/unless}}
+        {{#if _style.text.minlength includeZero=false}}minlength="{{_style.text.minlength}}"{{/if}}
+        {{#if _style.text.maxlength includeZero=false}}maxlength="{{_style.text.maxlength}}"{{/if}}
+    >
+    {{#if label}}<label for="{{form.id}}_{{name}}">{{#if required}}<b>{{/if}}{{label}}{{#if required}}</b>*{{/if}}</label>{{/if}}
+
+</div>

@@ -43,7 +43,7 @@ class SqlOperation extends Operation {
      * 
      * Construct and prepare instance
      * 
-     * @param string|array $Operation Exemple ["=", "[]"] or ["contains", "between"] or "@>" or "contains" or "*" (for all operations)
+     * @param string|array $operations Exemple ["=", "[]"] or ["contains", "between"] or "@>" or "contains" or "*" (for all operations)
      * @return self
      */
     public function __construct(string|array $operations = "@all", string $entity = ""){
@@ -457,7 +457,7 @@ class SqlOperation extends Operation {
         if($options["prefix"] ?? false)
 
             # Set prefix in result
-            $result = $options["prefix"].$result;
+            $result = $options["prefix"]."$result";
 
         # Check suffix
         if($options["suffix"] ?? false)

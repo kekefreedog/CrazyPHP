@@ -1,0 +1,52 @@
+{{!--
+  ! Form / radio
+  !
+  ! Renders one "radio" form item. Included by ../form.hbs as
+  ! {{> form/form_radio item form=form}} — `item` becomes the partial's
+  ! context (bare field access), `form` is merged in as an extra field.
+  !
+  ! Inside the nested each-loop over `select` (aliased as radioItem), `this`
+  ! shifts to the current option — outer item fields are reached via `../`, except
+  ! where the original template intentionally distinguished the field-level
+  ! value (`../disabled`, `../default`) from the option-level one (bare
+  ! `disabled`, `default`) — that distinction is preserved exactly.
+  !--}}
+<div class="input-field col s12 mn-2{{#if _style.customClass.input-field}} {{_style.customClass.input-field}}{{/if}}" style="margin-bottom: 15px;">
+
+    <div id="{{form.id}}_{{name}}" data-radio-name="{{name}}">
+        {{#if disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{/if}}
+        {{#if label}}{{#if required}}<b>{{/if}}{{label}}{{#if required}}</b>*{{/if}}{{/if}}
+        {{!-- Multiple choice Radio --}}
+        {{#each select as |radioItem|}}{{#if ../multiple}}<p><label>
+            <input
+                name="{{../name}}[]"
+                type="checkbox"
+                {{#if ../required}}required=""{{/if}}
+                class="filled-in{{#if ../_style.customClass.input}} {{../_style.customClass.input}}{{/if}}"
+                {{#if ../disabled}}disabled=""{{else}}{{#if disabled}}disabled=""{{else}}disabled="loading"{{/if}}{{/if}}
+                {{#if ../disabled}}disabled=""{{else}}{{#if ../form.onready}}disabled="loading"{{/if}}{{/if}}
+                {{#unless form.onready}}{{#if ../default includeZero=false}}
+                    {{#is ../default value}}checked="" default=""{{/is}}
+                {{else}}
+                    {{#is default value}}checked="" default=""{{/is}}
+                {{/if}}{{/unless}}
+                {{#if value includeZero=false}}value="{{value}}"{{/if}}
+            />
+            <span>{{label}}{{#if disabled}}<i class="material-icons ml-3">lock</i>{{/if}}</span>
+        {{!-- Singe choice Radio --}}
+        </label></p>{{else}}<p><label>
+            <input
+                name="{{../name}}"
+                type="radio"
+                {{#if ../required}}required=""{{/if}}
+                {{#if ../_style.customClass.input}}class="{{../_style.customClass.input}}"{{/if}}
+                {{#if ../disabled}}disabled=""{{else}}{{#if disabled}}disabled=""{{else}}disabled="loading"{{/if}}{{/if}}
+                {{#unless form.onready}}{{#if ../default includeZero=false}}{{#is ../default value}}checked="" default=""{{/is}}{{else}}{{#if default}}checked="" default=""{{/if}}{{/if}}{{/unless}}
+                {{#if value}}value="{{value}}"{{/if}}
+                {{#unless form.onready}}{{#if default}}default=""{{/if}}{{/unless}}
+            />
+            <span>{{label}}{{#if disabled}}<i class="material-icons ml-3">lock</i>{{/if}}</span>
+        </label></p>{{/if}}{{/each}}
+    </div>
+
+</div>

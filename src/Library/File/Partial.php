@@ -90,10 +90,16 @@ class Partial {
                     $tempValue = true;
 
                     # If type template
-                    if($type === "template")
+                    if($type === "template"){
+
+                        # snake_case each path segment individually, rejoin with "/" so nested
+                        # partials (e.g. "Form/FormColor") reconstruct to their real nested path
+                        $segments = array_map(fn($segment) => Process::camelToSnake($segment), explode("/", $item));
 
                         # Set temp value
-                        $tempValue = rtrim($templatePath, "/")."/".Process::camelToSnake($item).".hbs";
+                        $tempValue = rtrim($templatePath, "/")."/".implode("/", $segments).".hbs";
+
+                    }
 
                     # If type script
                     if($type === "script"){
@@ -315,10 +321,22 @@ class Partial {
             ;
         
             # Iteration file found
-            if($finder->hasResults()) foreach($finder as $file)
+            if($finder->hasResults()) foreach($finder as $file){
+
+                # Get relative path (includes any subfolders), e.g. "form/form_color.hbs" or "hello.hbs"
+                $relativePath = str_replace(DIRECTORY_SEPARATOR, "/", $file->getRelativePathname());
+
+                # Strip the ".hbs" extension
+                $nameNoExt = rtrim(substr($relativePath, 0, -strlen("hbs")), ".");
+
+                # CamelCase each path segment individually, rejoin with "/" so nested
+                # partials (e.g. "form/form_color") keep their directory structure
+                $segments = array_map(fn($segment) => Process::snakeToCamel($segment, true), explode("/", $nameNoExt));
 
                 # Push partial
-                $result[] = Process::snakeToCamel($file->getBasename('.hbs'), true);
+                $result[] = implode("/", $segments);
+
+            }
 
             # Sort by descending length
             if(!empty($result)) usort($result, function ($a, $b) {

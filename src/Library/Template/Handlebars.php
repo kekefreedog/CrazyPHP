@@ -286,7 +286,7 @@ class Handlebars {
      * 
      * Return flags set
      * 
-     * @return Constant
+     * @return ?Constant
      */
     public function getFlags() {
 
@@ -464,8 +464,23 @@ class Handlebars {
                         # Iteration result
                         foreach($finder as $file){
 
-                            # Get name
-                            $name = rtrim(ltrim($file->getBasename($file->getExtension()), "_"), ".");
+                            # Get relative path (includes any subfolders), e.g. "form/form_color.hbs" or "hello.hbs"
+                            $relativePath = str_replace(DIRECTORY_SEPARATOR, "/", $file->getRelativePathname());
+
+                            # Strip the matched extension (".hbs" / ".handlebars")
+                            $extension = $file->getExtension();
+
+                            # Extract name without extension
+                            $nameNoExt = rtrim(substr($relativePath, 0, -strlen($extension)), ".");
+
+                            # Explide segment
+                            $segments = explode("/", $nameNoExt);
+
+                            # Trim a leading underscore only off the final path segment (filename), not directory parts
+                            $segments[count($segments) - 1] = ltrim(end($segments), "_");
+
+                            # Recreate path
+                            $name = implode("/", $segments);
 
                             # Get content
                             $content = $file->getContents();
