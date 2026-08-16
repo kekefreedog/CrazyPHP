@@ -411,7 +411,10 @@ class SqlOperation extends Operation {
             # Set result
             $result = 'LIKE "%'.$parentResult["value"][1].'%"';
 
-        }
+        }else
+
+            # Set empty result
+            $result = "";
 
         # Return regex result
         return $result;

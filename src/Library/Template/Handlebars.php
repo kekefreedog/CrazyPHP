@@ -20,7 +20,9 @@ use CrazyPHP\Exception\CrazyException;
 use Symfony\Component\Finder\Finder;
 use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\Cache\Cache;
+use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\File\File;
+use CrazyPHP\Model\Env;
 use LightnCandy\LightnCandy;
 
 /**
@@ -138,6 +140,8 @@ class Handlebars {
 
         # Check inputs
         if(empty($inputs))
+
+            # Stop
             return;
 
         # Process inputs
@@ -215,8 +219,14 @@ class Handlebars {
         # Set lastModifiedDate
         $lastModifiedDate = File::getLastModifiedDate($inputs);
 
+        # Get watch
+        $isWatch = Env::get("phpunit_test", true)
+            ? false # Avoid error on phph unit test
+            : Config::getValue("Front.lastBuild.watch")
+        ;
+
         # Check cache is valid
-        if(!$cache->hasUpToDate($this->key, $lastModifiedDate)){
+        if($isWatch || !$cache->hasUpToDate($this->key, $lastModifiedDate)){
 
             # Read file
             $file = File::read($inputs);

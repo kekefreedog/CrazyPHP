@@ -12,7 +12,8 @@
         "strictPropertyInitialization": false,    
         "typeRoots": ["./src/Front/*", "./node_modules/@types"],
         "paths": {
-            "tslib" : ["./node_modules/tslib/tslib.d.ts"]
+            "tslib" : ["./node_modules/tslib/tslib.d.ts"],
+            "@materializecss/materialize": ["./node_modules/@materializecss/materialize/dist/js/materialize.d.ts"]
         },
         "allowSyntheticDefaultImports": true
     },

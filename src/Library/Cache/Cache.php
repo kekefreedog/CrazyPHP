@@ -37,7 +37,7 @@ use Exception;
  *
  * Cache manipulation
  * 
- * @extends [Psr16Adapter](/vendor/phpfastcache/phpfastcache/lib/Phpfastcache/Helper/Psr16Adapter.php)
+ * @info extend [Psr16Adapter](/vendor/phpfastcache/phpfastcache/lib/Phpfastcache/Helper/Psr16Adapter.php)
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
@@ -94,6 +94,8 @@ class Cache extends Psr16Adapter {
 
             # Set config
             $config = new MemcachedConfig();
+
+            # Set config
             $config
                 ->setHost($configuration["options"]["host"])
                 ->setPort($configuration["options"]["port"])

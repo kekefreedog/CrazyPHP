@@ -21,6 +21,7 @@ import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
 import AirDatepicker, { AirDatepickerOptions } from 'air-datepicker';
 import airDatePickerLocaleFr from 'air-datepicker/locale/fr'
 import { IPickerConfig } from '@easepick/core/dist/types';
+import { FormSelect } from "@materializecss/materialize";
 import {default as PageError} from './../Error/Page';
 import {default as UtilityStrings} from './Strings';
 import IMask, { MaskedNumberOptions } from 'imask';
@@ -1333,6 +1334,9 @@ export default class Form {
 
             // Set filter option
             this._options.filter = true;
+
+            // Set operator
+            this._initOperator(this._formEl)
 
             // Ingest Filter From Query
             this._ingestFilterFromQuery(this._formEl);
@@ -5072,6 +5076,27 @@ export default class Form {
      */
 
     /**
+     * Init Operator
+     * 
+     * @returns {void}
+     */
+    private _initOperator = (currentTarget:HTMLFormElement):void => {
+
+        // Get operator els
+        let operatorEls = currentTarget.querySelectorAll(".filter-operator");
+
+        // Iteration
+        if(operatorEls.length) for(let operatorEl of operatorEls) if(operatorEl instanceof HTMLSelectElement){
+
+            // Init select
+            let formInstance = FormSelect.init(operatorEl, {});
+
+        }
+        
+
+    }
+
+    /**
      * Ingest Filter From Query
      * 
      * @param currentTarget 
@@ -5128,8 +5153,60 @@ export default class Form {
 
         }
 
-        // Set values
-        Object.keys(querys).length && this.setValue(querys);
+        // Check querys
+        if(Object.keys(querys).length){
+
+            // Iteration
+            for(let name in querys) if(typeof querys[name] === "string"){
+
+                // Check operator
+                let operatorEl = currentTarget.querySelector(`[data-operator-name="${name}"]`);
+
+                // Get optionEls
+                let optionsEls = currentTarget.querySelectorAll(`[data-operator-name="${name}"] option[value]`);
+
+                // Check options
+                if(operatorEl instanceof HTMLSelectElement && optionsEls){
+
+                    // Set options
+                    let options:string[] = [];
+
+                    // Iteratin els
+                    for(let optionEl of optionsEls) if(optionEl instanceof HTMLOptionElement && optionEl.value && !options.includes(optionEl.value))
+
+                        // Push into options
+                        options.push(optionEl.value);
+
+                    // Check
+                    if(options.length){
+
+                        // Sort by -length
+                        options.sort((a, b) => b.length - a.length);
+
+                        // Iteration options
+                        for(let option of options) if(querys[name].startsWith(option)){
+
+                            // Clean value
+                            querys[name] = querys[name].slice(option.length);
+
+                            // Set value of option
+                            operatorEl.value = option;
+
+                            // Displatch event
+                            operatorEl.dispatchEvent(new Event('change', { bubbles: true }));
+
+                        }
+
+                    }
+
+                }
+
+            }
+            
+            // Set values
+            this.setValue(querys);
+
+        }
 
     }
 
@@ -5173,7 +5250,27 @@ export default class Form {
             ;
 
             // Set value
-            const strValue = value instanceof File ? value.name : value;
+            let strValue = value instanceof File 
+                ? value.name 
+                : value
+            ;
+
+            // Check operator
+            let operatorEl = currentTarget.querySelector(`[data-operator-name="${key}"]`);
+
+            // Check operator
+            if(operatorEl instanceof HTMLSelectElement){
+
+                // Get value
+                let operatorValue = operatorEl.value;
+
+                // Check value
+                if(operatorValue)
+
+                    // Push as prefix
+                    strValue = `${operatorValue}${strValue}`;
+
+            }
 
             // Check value and key
             if(value && fullKey){

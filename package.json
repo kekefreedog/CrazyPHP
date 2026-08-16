@@ -18,6 +18,7 @@
     },
     "homepage": "https://github.com/kekefreedog/CrazyPHP#readme",
     "devDependencies": {
+        "@materializecss/materialize": "^2.3.3",
         "@types/luxon": "^3.7.1",
         "@types/node": "^20.14.10",
         "@types/object-hash": "^3.0.6",
