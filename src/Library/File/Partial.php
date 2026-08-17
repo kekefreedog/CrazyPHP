@@ -318,6 +318,7 @@ class Partial {
                 ->files()
                 ->in(File::path($path))
                 ->name('*.hbs')
+                ->sortByName()
             ;
         
             # Iteration file found
@@ -338,9 +339,10 @@ class Partial {
 
             }
 
-            # Sort by descending length
+            # Sort by descending length, then alphabetically to keep ties
+            # deterministic regardless of filesystem/Finder order
             if(!empty($result)) usort($result, function ($a, $b) {
-                return strlen($b) - strlen($a);
+                return strlen($b) - strlen($a) ?: strcmp($a, $b);
             });
         
         }

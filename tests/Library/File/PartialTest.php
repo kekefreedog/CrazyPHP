@@ -18,7 +18,6 @@ namespace Tests\Library\File;
 
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\File\Partial;
-use CrazyPHP\Library\File\File;
 use PHPUnit\Framework\TestCase;
 use CrazyPHP\Model\Env;
 
@@ -128,32 +127,31 @@ class PartialTest extends TestCase {
      */
     public function testGetAllFromTemplate():void {
 
-        # Set expect (resources/Hbs/Partials is no longer flat: form.hbs's per-item.type
-        # sub-partials live under nested form/ and filter/ folders)
+        # Set expect
         $expect = [
             "PreloaderLinearIndeterminate",
-            "Filter/FilterPassword",
             "Filter/FilterCheckbox",
+            "Filter/FilterPassword",
             "Filter/FilterDefault",
-            "Filter/FilterSelect",
-            "Filter/FilterSwitch",
             "Filter/FilterHidden",
             "Filter/FilterNumber",
+            "Filter/FilterSelect",
+            "Filter/FilterSwitch",
+            "Filter/FilterColor",
             "Filter/FilterRadio",
             "Filter/FilterRange",
-            "Filter/FilterColor",
-            "Form/FormPassword",
-            "Form/FormCheckbox",
-            "Filter/FilterFile",
             "Filter/FilterDate",
+            "Filter/FilterFile",
+            "Form/FormCheckbox",
+            "Form/FormPassword",
             "Form/FormDefault",
-            "Form/FormNumber",
             "Form/FormHidden",
-            "Form/FormSwitch",
+            "Form/FormNumber",
             "Form/FormSelect",
-            "Form/FormRange",
+            "Form/FormSwitch",
             "Form/FormColor",
             "Form/FormRadio",
+            "Form/FormRange",
             "Form/FormDate",
             "Form/FormFile",
             "Navigation",
@@ -176,39 +174,34 @@ class PartialTest extends TestCase {
      */
     public function testGetAllMinimize():void {
 
-        # Set expect (resources/Hbs/Partials is no longer flat: form.hbs's per-item.type
-        # sub-partials live under nested form/ and filter/ folders, so getAll() has more
-        # template-only entries in addition to the 4 fully-registered partials.
-        # Keys are non-contiguous because getAll() does array_unique(array_merge(...)) over
-        # script/style/template lists, which preserves original position of the first
-        # occurrence of each value and just drops later duplicate positions)
+        # Set expect
         $expect = [
             0   =>  "PreloaderLinearIndeterminate",
             1   =>  "Navigation",
             2   =>  "Hello",
             3   =>  "Form",
-            7   =>  "Filter/FilterPassword",
-            8   =>  "Filter/FilterCheckbox",
+            7   =>  "Filter/FilterCheckbox",
+            8   =>  "Filter/FilterPassword",
             9   =>  "Filter/FilterDefault",
-            10  =>  "Filter/FilterSelect",
-            11  =>  "Filter/FilterSwitch",
-            12  =>  "Filter/FilterHidden",
-            13  =>  "Filter/FilterNumber",
-            14  =>  "Filter/FilterRadio",
-            15  =>  "Filter/FilterRange",
-            16  =>  "Filter/FilterColor",
-            17  =>  "Form/FormPassword",
-            18  =>  "Form/FormCheckbox",
-            19  =>  "Filter/FilterFile",
-            20  =>  "Filter/FilterDate",
+            10  =>  "Filter/FilterHidden",
+            11  =>  "Filter/FilterNumber",
+            12  =>  "Filter/FilterSelect",
+            13  =>  "Filter/FilterSwitch",
+            14  =>  "Filter/FilterColor",
+            15  =>  "Filter/FilterRadio",
+            16  =>  "Filter/FilterRange",
+            17  =>  "Filter/FilterDate",
+            18  =>  "Filter/FilterFile",
+            19  =>  "Form/FormCheckbox",
+            20  =>  "Form/FormPassword",
             21  =>  "Form/FormDefault",
-            22  =>  "Form/FormNumber",
-            23  =>  "Form/FormHidden",
-            24  =>  "Form/FormSwitch",
-            25  =>  "Form/FormSelect",
-            26  =>  "Form/FormRange",
-            27  =>  "Form/FormColor",
-            28  =>  "Form/FormRadio",
+            22  =>  "Form/FormHidden",
+            23  =>  "Form/FormNumber",
+            24  =>  "Form/FormSelect",
+            25  =>  "Form/FormSwitch",
+            26  =>  "Form/FormColor",
+            27  =>  "Form/FormRadio",
+            28  =>  "Form/FormRange",
             29  =>  "Form/FormDate",
             30  =>  "Form/FormFile",
         ];
