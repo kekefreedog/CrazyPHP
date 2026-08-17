@@ -176,16 +176,19 @@ export default class Filter {
     private _createForm = (name:string):void => {
 
         // Create form
-        let fromEl = document.createElement("form");
+        let formEl = document.createElement("form");
+
+        // Set class hide
+        formEl.classList.add("hide");
 
         // Set id
-        fromEl.id = name;
+        formEl.id = name;
 
         // Set form el
-        fromEl.dataset.formFilter = "";
+        formEl.dataset.formFilter = "";
 
         // Append
-        this._formEl = this._containerEl.appendChild(fromEl);
+        this._formEl = this._containerEl.appendChild(formEl);
 
     }
 

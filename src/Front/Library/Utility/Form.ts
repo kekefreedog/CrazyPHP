@@ -5218,7 +5218,7 @@ export default class Form {
     private _processForFilter = (currentTarget:HTMLFormElement):void => {
 
         // Set root
-        let root = `filters.${currentTarget.id}`;
+        let root = `filters.${currentTarget.getAttribute("id")}`;
 
         // Parse root
         const parsedRoot = root
@@ -5242,6 +5242,7 @@ export default class Form {
 
         // Iteration formdata
         formData.forEach((value, key, parent) => {
+
 
             // Build the full key, e.g. "root[key]" or "root[user.name]"
             let fullKey = parsedRoot 
