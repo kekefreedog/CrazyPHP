@@ -842,10 +842,10 @@ class Process {
      * 
      * Process value to bool 
      * 
-     * @param $input
+     * @param mixed $input
      * @return bool
      */
-    public static function bool($input = ""):bool {
+    public static function bool(mixed $input = ""):bool {
 
         # check if email
 		return filter_var($input, FILTER_VALIDATE_BOOL) ? true : false;
@@ -857,7 +857,7 @@ class Process {
      * 
      * Process email
      * 
-     * @param string $string
+     * @param string $input
      * @return string
      */
     public static function email(string $input = ''):string {
@@ -943,11 +943,11 @@ class Process {
      *  HelloToutLeMonde (capitalize)
      * }
      * 
-     * @param $input
+     * @param string $input
      * @return string
 	 * 
 	 */
-	public static function snakeToCamel($input = '', bool $capitalizeFirstCharacter = false):string {
+	public static function snakeToCamel(string $input = '', bool $capitalizeFirstCharacter = false):string {
         
         # Process string
         $input = str_replace(' ', '_', $input);

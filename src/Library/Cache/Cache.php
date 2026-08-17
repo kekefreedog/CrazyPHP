@@ -93,6 +93,7 @@ class Cache extends Psr16Adapter {
             }
 
             # Set config
+            /** @disregard P1009 */
             $config = new MemcachedConfig();
 
             # Set config
@@ -110,6 +111,7 @@ class Cache extends Psr16Adapter {
             try{
 
                 # Set driver instance
+                /** @disregard P1006 */
                 $driverInstance = CacheManager::getInstance(
                     $configuration["driver"], 
                     $config

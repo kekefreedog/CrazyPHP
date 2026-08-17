@@ -1,19 +1,22 @@
 {
     "compilerOptions": {
-        "target": "es6",
-        "lib": ["es6", "dom", "es2017", "es2021", "es2022", "dom.iterable"],
-        "module": "esnext",
-        "moduleResolution": "node",
-        "sourceMap": true,
         "strict": true,
-        "importHelpers": true,
+        "target": "es6",
+        "sourceMap": true,
+        "module": "esnext",
         "skipLibCheck": true,
+        "importHelpers": true,
         "noImplicitAny": false,
-        "typeRoots": ["./node_modules/@types", "./app/Front/types"],
-        "strictPropertyInitialization": false,
+        "moduleResolution": "bundler",
         "allowSyntheticDefaultImports": true,
+        "strictPropertyInitialization": false,
+        "typeRoots": ["./node_modules/@types", "./app/Front/types"],
+        "lib": ["es6", "dom", "es2017", "es2021", "es2022", "dom.iterable"],
+        "esModuleInterop":true,
         "paths": {
-            "tslib" : ["./node_modules/tslib/tslib.d.ts"]
+            "tslib": ["./node_modules/tslib/tslib"],
+            "killa": ["./app/Front/types/killa"],
+            "@materializecss/materialize": ["./app/Front/types/materialize"]
         }
     },
     "exclude": ["./vendor/kzarshenas/crazyphp/resources/"]

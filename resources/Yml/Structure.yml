@@ -274,6 +274,10 @@ Structure:
                     source: "@crazyphp_root/resources/Ts/Front/types/index.d.ts"
                   global.d.ts: 
                     source: "@crazyphp_root/resources/Ts/Front/types/global.d.ts"
+                  killa.d.ts: 
+                    source: "@crazyphp_root/resources/Ts/Front/types/killa.d.ts"
+                  materialize.d.ts: 
+                    source: "@crazyphp_root/resources/Ts/Front/types/materialize.d.ts"
             files:
               index.ts:
                 source: "@crazyphp_root/resources/Ts/Front/index.ts"
