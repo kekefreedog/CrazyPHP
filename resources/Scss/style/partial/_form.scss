@@ -36,8 +36,173 @@
 @import 'air-datepicker/air-datepicker.css';
 
 
+
+$offset-input: 56px;
+$offset-input-checkbox: $offset-input + 20px;
+$offset-input-switch: $offset-input + 20px;
+
 /* Partial */
 [partial="form"] {
+    
+    // Filter parent
+    .input-field:has(> .input-filter) {
+
+        // Height
+        min-height: 56px;
+
+    }
+
+    /* Container */
+    .input-filter {
+
+        // Inout
+        & ~ input, & ~ label {
+
+            // Dimension
+            width: calc(100% - #{$offset-input});
+            margin-left: #{$offset-input};
+
+        }
+
+        // Input check box
+        & ~ p {
+
+            // Dimension
+            width: calc(100% - #{$offset-input-checkbox});
+            margin-left: #{$offset-input-checkbox};
+            box-sizing: inherit;
+            padding: 17px 0px;
+            margin-bottom: 0;
+
+            // Dimension
+            margin-top: 0px;
+
+        }
+
+        // Input switch
+        & ~ div.switch, & ~ span.switch-label {
+
+            // Dimension
+            width: calc(100% - #{$offset-input-switch});
+            margin-left: #{$offset-input-switch};
+
+            // Position
+            top: -16px;
+            position: absolute;
+
+        }
+        & ~ div.switch {
+            
+            // Position
+            margin-top: 7px !important;
+            position: absolute;
+            top: 6px;
+
+        }
+        
+        // Input select
+        & + #dependency,
+        & + #dependency + span,
+        & + #dependency + span + select,
+        & + #dependency + span + select + .ts-wrapper {
+
+            // Dimension
+            width: calc(100% - #{$offset-input});
+            margin-left: #{$offset-input};
+
+        }
+        & + #dependency + span {
+
+            // Position
+            // Must be `absolute`, not `relative` — a relatively positioned
+            // element still reserves its normal-flow space, so its line
+            // box (~22px) was adding onto `.input-field`'s height instead
+            // of being lifted out of flow the way `.switch-label` above
+            // correctly is.
+            z-index: 2;
+            position: absolute;
+            top: -16px;
+            left: 16px;
+        }
+        & + #dependency + span + select + .ts-wrapper {
+
+            // Position
+            // This used to compensate the `span` above pushing `.ts-wrapper`
+            // ~22px down the flow. Now that the `span` is `absolute` (no
+            // longer taking flow space), `.ts-wrapper` already sits at the
+            // top of `.input-field` on its own — shifting it up further
+            // just pushes it above `.input-filter`'s (correctly stretched)
+            // box instead of aligning with it.
+            position: relative;
+            top: 0;
+
+            // Content
+            .ts-control {
+
+                // Dimension
+                border-radius: 0px 4px 0px 0px;
+
+            }
+
+
+        }
+
+        /* Dimension */
+        // `top`/`bottom` (rather than a fixed `height`) stretch this to
+        // match `.input-field`'s real height, whatever it computes to —
+        // it used to rely on its own content's natural height, which only
+        // ever matched by coincidence.
+        width: 56px;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+
+        // Select wrapper
+        // A percentage `height` on the input only resolves if every
+        // ancestor up to this one also has a defined height — Materialize's
+        // generated `.select-wrapper.input-field` is `auto` by default, so
+        // without this the input's `height: 100%` below is simply ignored.
+        .select-wrapper.input-field {
+
+            // Dimension
+            height: 100%;
+
+        }
+
+        // Input
+        input {
+
+            // Dimension
+            border: 0;
+            border-radius: 30px 0 0 30px;
+            vertical-align: center;
+            padding: 0;
+            width: 56px;
+            height: 100%;
+
+            // Color
+            background-color: var(--md-sys-color-on-secondary);
+
+            // Text
+            text-align: center;
+            font-size: 25px;
+            user-select: none;
+
+            // Caret
+            caret-color: transparent;
+
+
+        }
+
+        // Caret
+        .caret {
+
+            // Display
+            display: none;
+
+        }
+
+    }
 
     /* Progress after wrapper */
     .ts-wrapper + .progress {

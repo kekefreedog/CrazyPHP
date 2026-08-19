@@ -41,6 +41,7 @@
         "killa": "^1.9.1",
         "luxon": "^3.7.2",
         "msgpackr": "^1.11.2",
+        "pako": "^3.0.1",
         "reconnecting-websocket": "^4.4.0",
         "tom-select": "^2.3.1"
     }

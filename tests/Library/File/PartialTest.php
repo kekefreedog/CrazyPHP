@@ -142,6 +142,7 @@ class PartialTest extends TestCase {
             "Filter/FilterRange",
             "Filter/FilterDate",
             "Filter/FilterFile",
+            "Filter/FilterText",
             "Form/FormCheckbox",
             "Form/FormPassword",
             "Form/FormDefault",
@@ -192,18 +193,19 @@ class PartialTest extends TestCase {
             16  =>  "Filter/FilterRange",
             17  =>  "Filter/FilterDate",
             18  =>  "Filter/FilterFile",
-            19  =>  "Form/FormCheckbox",
-            20  =>  "Form/FormPassword",
-            21  =>  "Form/FormDefault",
-            22  =>  "Form/FormHidden",
-            23  =>  "Form/FormNumber",
-            24  =>  "Form/FormSelect",
-            25  =>  "Form/FormSwitch",
-            26  =>  "Form/FormColor",
-            27  =>  "Form/FormRadio",
-            28  =>  "Form/FormRange",
-            29  =>  "Form/FormDate",
-            30  =>  "Form/FormFile",
+            19  =>  "Filter/FilterText",
+            20  =>  "Form/FormCheckbox",
+            21  =>  "Form/FormPassword",
+            22  =>  "Form/FormDefault",
+            23  =>  "Form/FormHidden",
+            24  =>  "Form/FormNumber",
+            25  =>  "Form/FormSelect",
+            26  =>  "Form/FormSwitch",
+            27  =>  "Form/FormColor",
+            28  =>  "Form/FormRadio",
+            29  =>  "Form/FormRange",
+            30  =>  "Form/FormDate",
+            31  =>  "Form/FormFile",
         ];
 
         # Get all partial from ts
@@ -320,6 +322,9 @@ class PartialTest extends TestCase {
             "Form/FormFile"                =>  [
                 "template"  => "@crazyphp_root/resources/Hbs/Partials/form/form_file.hbs",
             ],
+            "Filter/FilterText"            =>  [
+                "template"  => "@crazyphp_root/resources/Hbs/Partials/filter/filter_text.hbs",
+            ],
         ];
 
         # Get all partial from ts
@@ -421,6 +426,7 @@ class PartialTest extends TestCase {
             "Form/FormRadio"                =>  "Form/FormRadio",
             "Form/FormDate"                 =>  "Form/FormDate",
             "Form/FormFile"                 =>  "Form/FormFile",
+            "Filter/FilterText"             =>  "Filter/FilterText",
         ];
 
         # Get all partial from ts

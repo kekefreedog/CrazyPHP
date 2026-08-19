@@ -11,33 +11,24 @@
 /**
  * Dependances
  */
-// @ts-ignore
-import FilePondPluginImageExifOrientation from 'filepond-plugin-image-exif-orientation';
-// @ts-ignore
-import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type';
-import { TomSettings, RecursivePartial } from 'tom-select/dist/types/types';
-// @ts-ignore
-import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
-import AirDatepicker, { AirDatepickerOptions } from 'air-datepicker';
-import airDatePickerLocaleFr from 'air-datepicker/locale/fr'
-import { IPickerConfig } from '@easepick/core/dist/types';
 import { FormSelect } from "@materializecss/materialize";
 import {default as PageError} from './../Error/Page';
 import {default as UtilityStrings} from './Strings';
-import IMask, { MaskedNumberOptions } from 'imask';
-import UtilityDateTime from '../Utility/DateTime';
-import { AmpPlugin } from '@easepick/amp-plugin';
 import UtilityBoolean from '../Utility/Boolean';
-import { RangePlugin } from '@easepick/bundle';
-import { UtilityObjects } from '../../Types';
-import { easepick } from '@easepick/bundle';
+import type FormInputType from './Form/Type';
+import CheckboxType from './Form/Checkbox';
+import PasswordType from './Form/Password';
 import Crazyrequest from '../Crazyrequest';
-import fr_FR from 'filepond/locale/fr-fr';
-import * as FilePond from 'filepond';
-import Pickr from '@simonwep/pickr';
+import SelectType from './Form/Select';
+import HiddenType from './Form/Hidden';
+import NumberType from './Form/Number';
+import ColorType from './Form/Color';
+import EmailType from './Form/Email';
+import RadioType from './Form/Radio';
 import Crazyurl from '../Crazyurl';
-import TomSelect from 'tom-select';
-import Objects from './Objects';
+import DateType from './Form/Date';
+import TextType from './Form/Text';
+import FileType from './Form/File';
 import Root from '../Dom/Root';
 import State from '../State';
 
@@ -62,6 +53,9 @@ export default class Form {
 
     /** @var _options */
     private _options:Partial<FormOptions>;
+
+    /** @var _typeRegistry */
+    private _typeRegistry:Record<string, FormInputType>;
 
     /** Parameters | on change
      ******************************************************
@@ -99,6 +93,10 @@ export default class Form {
         // Scan current form
         this._ingestForm(form)
             .then(
+                this._initOptions
+            ).then(
+                this._initRegistery
+            ).then(
                 this._initForm
             ).then(
                 this._initFilter
@@ -296,11 +294,14 @@ export default class Form {
                     // Check if in values
                     if(Object.keys(values).includes(currentName)){
 
+                        // Check type handler
+                        let currentTypeHandler = this._typeRegistry[currentType];
+
                         // Check itemEl
-                        if(typeof this[`${currentType}Set`] === "function"){
+                        if(currentTypeHandler?.set){
 
                             // Set result
-                            this[`${currentType}Set`](items[i], values[currentName], valuesID);
+                            currentTypeHandler.set(currentItem, values[currentName], valuesID, this._formEl, this._options);
 
                         }
 
@@ -1330,10 +1331,7 @@ export default class Form {
     private _initFilter = async():Promise<void> => {
 
         // Check if filter
-        if(typeof this._formEl.dataset.formFilter === "string"){
-
-            // Set filter option
-            this._options.filter = true;
+        if(this._options.filter){
 
             // Set operator
             this._initOperator(this._formEl)
@@ -1348,6 +1346,49 @@ export default class Form {
             this._processForFilter(this._formEl);
 
         }
+
+    }
+
+    /**
+     * Init Options
+     * 
+     * Prepare form input
+     * 
+     * @returns {Promise<void>}
+     */
+    private _initOptions = async():Promise<void> => {
+
+        // Check if filter
+        if(typeof this._formEl.dataset.formFilter === "string")
+
+            // Set filter option
+            this._options.filter = true;
+
+    }
+
+    /**
+     * Init Registery
+     * 
+     * Prepare registery
+     * 
+     * @returns {Promise<void>}
+     */
+    private _initRegistery = async():Promise<void> => {
+
+        // Registery
+        this._typeRegistry = {
+            text: new TextType(this._options),
+            email: new EmailType(this._options),
+            password: new PasswordType(this._options),
+            hidden: new HiddenType(this._options),
+            number: new NumberType(this._options),
+            color: new ColorType(this._options),
+            date: new DateType(this._options),
+            select: new SelectType(this._options),
+            file: new FileType(this._options),
+            checkbox: new CheckboxType(this._options),
+            radio: new RadioType(this._options),
+        };
 
     }
 
@@ -1396,11 +1437,14 @@ export default class Form {
                     // Get init method name
                     let initMethodName:string = `_init${UtilityStrings.ucfirst(inputType.toLowerCase())}Input`;
 
-                    // Check initMethodName in this 
-                    if(initMethodName in this){
+                    // Get type handler
+                    let inputTypeHandler = this._typeRegistry[inputType.toLowerCase()];
+
+                    // Check type handler has init
+                    if(inputTypeHandler?.init){
 
                         // Run method
-                        await this[initMethodName](inputEl);
+                        await inputTypeHandler.init(inputEl, this._formEl, { processQueryParams: this._processQueryParams }, this._options);
 
                     }else
 
@@ -1716,7 +1760,7 @@ export default class Form {
     private extractKeyValue = (itemEl:HTMLElement):null|Array<any> => {
 
         // Declare result
-        let result = null;
+        let result:any = null;
 
         // Get type
         let type:string|null = null;
@@ -1735,10 +1779,10 @@ export default class Form {
 
 
         // Check type
-        if(typeof type === "string" && typeof this[`${type}Retrieve`] === "function")
+        if(typeof type === "string" && this._typeRegistry[type])
 
             // Set result
-            result = this[`${type}Retrieve`](itemEl);
+            result = this._typeRegistry[type].get(itemEl, this._options);
 
         // Return null
         return result;
@@ -1755,7 +1799,7 @@ export default class Form {
     private extractKeyMultipleValue = (itemEl:HTMLElement, multiple:boolean = false):null|[Array<any>] => {
 
         // Declare result
-        let result = null;
+        let result:any = null;
 
         // Get type
         let type:string|null = null;
@@ -1774,1482 +1818,48 @@ export default class Form {
 
 
         // Check type
-        if(typeof type === "string" && typeof this[`${type}RetrieveMultiple`] === "function")
+        if(typeof type === "string" && this._typeRegistry[type])
 
             // Set result
-            result = this[`${type}RetrieveMultiple`](itemEl);
+            result = this._typeRegistry[type].getMultiple(itemEl, this._options);
 
         // Return null
         return result;
 
     }
 
-    /** Private methods | Retrieve Hidden
+    /** Private methods | Retrieve
      ******************************************************
+     *
+     * Per-type value readers ({type}Retrieve / {type}RetrieveMultiple)
+     * have been migrated to Form/{Type}.ts as get()/getMultiple() (see
+     * this._typeRegistry above) - extractKeyValue()/extractKeyMultipleValue()
+     * dispatch to them directly.
      */
-
-    /**
-     * Retrieve Hidden
-     * 
-     * @param itemEl:HTMLElement
-     * @return null|Array<any>
-     */
-    private hiddenRetrieve = (itemEl:HTMLElement):null|Array<any> => {
-
-        // Set result
-        let result:null|Array<any> = null;
-
-        // Check value
-        if("value" in itemEl && "name" in itemEl){
-
-            let key:string = itemEl.name as string;
-
-            // Set result
-            let value:string = itemEl.value as string;
-
-            // Push in result
-            result = [key, value];
-
-        }
-
-        // Return result
-        return result;
-
-    }
-
-    /**
-     * Retrieve Multiple Hidden
-     * 
-     * @param itemEl:HTMLElement
-     * @return null|Array<any>[]
-     */
-    private hiddenRetrieveMultiple = (itemEl:HTMLElement):null|Array<any>[] => {
-
-        // Set result
-        let result:null|Array<any>[] = null;
-
-        // Check value
-        if("value" in itemEl && "name" in itemEl){
-
-            let key:string = itemEl.name as string;
-
-            // Set result
-            let value:string = itemEl.value as string;
-
-            // Push in result
-            result = [[key, value]];
-
-        }
-
-        // Return result
-        return result;
-
-    }
-
-    /** Private methods | Retrieve Text
-     ******************************************************
-     */
-
-    /**
-     * Retrieve Text
-     * 
-     * @param itemEl:HTMLElement
-     * @return null|Array<any>
-     */
-    private textRetrieve = (itemEl:HTMLElement):null|Array<any> => {
-
-        // Set result
-        let result:null|Array<any> = null;
-
-        // Check value
-        if("value" in itemEl && "name" in itemEl){
-
-            let key:string = itemEl.name as string;
-
-            // Set result
-            let value:string = itemEl.value as string;
-
-            // Push in result
-            result = [key, value];
-
-        }
-
-        // Return result
-        return result;
-
-    }
-
-    /**
-     * Retrieve Multiple Text
-     * 
-     * @param itemEl:HTMLElement
-     * @return null|Array<any>[]
-     */
-    private textRetrieveMultiple = (itemEl:HTMLElement):null|Array<any>[] => {
-
-        // Set result
-        let result:null|Array<any>[] = null;
-
-        // Check value
-        if("value" in itemEl && "name" in itemEl){
-
-            let key:string = itemEl.name as string;
-
-            // Set result
-            let value:string = itemEl.value as string;
-
-            // Push in result
-            result = [[key, value]];
-
-        }
-
-        // Return result
-        return result;
-
-    }
-
-    /** Private methods | Retrieve checkbox
-     ******************************************************
-     */
-
-    /**
-     * Retrieve checkbox
-     * 
-     * @param itemEl:HTMLElement
-     * @return null|Array<any>
-     */
-    private checkboxRetrieve = (itemEl:HTMLElement):null|Array<any> => {
-
-        // Set result
-        let result:null|Array<any> = null;
-
-        // Check value
-        if("value" in itemEl && "name" in itemEl && itemEl instanceof HTMLInputElement){
-
-            // Declare value
-            let value:string = "";
-
-            // Declare key
-            let key:string = itemEl.name as string;
-
-            // Set result
-            let rawValue:boolean = itemEl.checked;
-
-            // Check raw value is on
-            if(rawValue){
-
-                // Set value
-                value = "true"
-
-            }else{
-
-                // Set value
-                value = "false";
-
-            }
-
-            // Push in result
-            result = [key, value];
-
-        }
-
-        // Return result
-        return result;
-
-    }
-
-    /**
-     * Retrieve Multiple checkbox
-     * 
-     * @param itemEl:HTMLElement
-     * @return null|Array<any>[]
-     */
-    private checkboxRetrieveMultiple = (itemEl:HTMLElement):null|Array<any>[] => {
-
-        // Set result
-        let result:null|Array<any>[] = null;
-
-        // Check value
-        if("value" in itemEl && "name" in itemEl && itemEl instanceof HTMLInputElement){
-
-            // Declare value
-            let value:string = "";
-
-            // Declare key
-            let key:string = itemEl.name as string;
-
-            // Set result
-            let rawValue:boolean = itemEl.checked;
-
-            // Check raw value is on
-            if(rawValue){
-
-                // Set value
-                value = "true"
-
-            }else{
-
-                // Set value
-                value = "false";
-
-            }
-
-            // Push in result
-            result = [[key, value]];
-
-        }
-
-        // Return result
-        return result;
-
-    }
-
-    /** Private methods | Retrieve Select
-     ******************************************************
-     */
-
-    /**
-     * Retrieve Select
-     * 
-     * - Prefix : OK
-     * - Suffix : OK
-     * 
-     * @param itemEl:HTMLElement
-     * @return null|Array<any>
-     */
-    private selectRetrieve = (itemEl:HTMLElement):null|Array<any> => {
-
-        // Set result
-        let result:null|Array<any> = null;
-
-        // Check value
-        if("value" in itemEl && "name" in itemEl){
-
-            let key:string = itemEl.name as string;
-
-            // Set result
-            let value:string = itemEl.value as string;
-
-            // Check filter
-            if(!this._options.filter || (this._options.filter && value)){
-
-                // Check prefix
-                if(typeof itemEl.dataset.formValuePrefix && itemEl.dataset.formValuePrefix){
-
-                    // Update value
-                    value = `${itemEl.dataset.formValuePrefix}${value}`;
-                    
-                }
-
-                // Check prefix
-                if(typeof itemEl.dataset.formValueSuffix && itemEl.dataset.formValueSuffix){
-
-                    // Update value
-                    value = `${value}${itemEl.dataset.formValueSuffix}`;
-                    
-                }
-
-                // Push in result
-                result = [key, value];
-
-            }
-
-        }
-
-        // Return result
-        return result;
-
-    }
-
-    /**
-     * Retrieve Multiple Select
-     * 
-     * @param itemEl:HTMLElement
-     * @return null|Array<any>[]
-     */
-    private selectRetrieveMultiple = (itemEl:HTMLElement):null|Array<any>[] => {
-
-        // Set result
-        let result:null|Array<any>[] = null;
-
-        // Declare value
-        let value:any[] = [];
-
-        // Check value
-        if("value" in itemEl && "name" in itemEl){
-
-            // Set key
-            let key:string = itemEl.name as string;
-
-            // Check if tomselect
-            if("tomselect" in itemEl && itemEl.tomselect instanceof TomSelect){
-
-                // Get values
-                let valueRaw = itemEl.tomselect.getValue();
-
-                // Set value
-                if(typeof valueRaw === "string") valueRaw = [valueRaw];
-
-                // Check value raw
-                if(valueRaw.length) for(let currentValue of valueRaw) if(currentValue !== null){
-                    
-                    // Push value
-                    value.push(currentValue);
-
-                }
-
-            }else
-            // Check if from materialize
-            if("M_Dropdown" in itemEl && itemEl.M_Dropdown){
-
-                // Get valueRaw
-                let valueRaw = itemEl.value as string;
-
-                // Check value raw
-                if(valueRaw){
-
-                    // Explode value
-                    let explodedValue = valueRaw.split(", ");
-
-                    // Iteration exploded value 
-                    if(explodedValue.length) for(let explodValue of explodedValue) if(explodValue !== null){
-                        
-                        // Push value
-                        value.push(explodValue);
-
-                    }
-
-                }
-
-
-            // Default case
-            }else{
-
-                // Set result
-                value = Array.isArray(itemEl.value) 
-                    ? itemEl.value 
-                    : [itemEl.value as string]
-                ;
-
-            }
-
-            // Iteration value
-            if(value.length) for(let currentValue of value) if(currentValue !== null){
-
-                // Check result
-                if(result === null) result = [];
-
-                // Push value
-                result.push([key, currentValue]);
-
-            }
-
-            // Push in result
-            result = [[key, value]];
-
-        }
-
-        // Return result
-        return result;
-
-    }
-
-    /** Private methods | Retrieve checkbox
-     ******************************************************
-     */
-
-    /**
-     * Retrieve Date
-     * 
-     * @param itemEl:HTMLElement
-     * @return null|Array<any>
-     */
-    private dateRetrieve = (itemEl:HTMLElement):null|Array<any> => {
-
-        // Set result
-        let result:null|Array<any> = null;
-
-        // Check value
-        if("value" in itemEl && "name" in itemEl){
-
-            let key:string = itemEl.name as string;
-
-            // Set result
-            let value:string = itemEl.value as string;
-
-            // Push in result
-            result = [key, value];
-
-        }
-
-        // Return result
-        return result;
-
-    }
-
-    /**
-     * Retrieve Multiple Date
-     * 
-     * @param itemEl:HTMLElement
-     * @return null|Array<any>[]
-     */
-    private dateRetrieveMultiple = (itemEl:HTMLElement):null|Array<any>[] => {
-
-        // Set result
-        let result:null|Array<any>[] = null;
-
-        // Check value
-        if("value" in itemEl && "name" in itemEl){
-
-            // Get key
-            let key:string = itemEl.name as string;
-
-            // Set result
-            let value:string = itemEl.value as string;
-
-            // Check filter
-            if(!this._options.filter || (this._options.filter && value)){
-
-                if(itemEl instanceof HTMLInputElement && "datePicker" in itemEl.dataset && itemEl.dataset.datePicker && ["easepick", "airdatepicker"].includes(itemEl.dataset.datePicker)){
-
-                    // Split by separator
-                    let splitedValue = value.split(" - ");
-
-                    // Iteration 
-                    if(splitedValue.length){
-
-                        // check if two value, meaning range
-                        if(splitedValue.length == 2){
-
-                            // Set range value
-                            let rangeValue:string = `[${splitedValue[0]}:${splitedValue[1]}]`
-
-                            // Check result
-                            if(result === null) result = [];
-
-                            // Push to result
-                            result.push([key.replace("[]", ""), rangeValue])
-
-                        // Iteration value
-                        }else for(let splitValue of splitedValue) if(splitValue !== null) {
-
-                            // Check result
-                            if(result === null) result = [];
-
-                            // Push to result
-                            result.push([key, splitValue])
-
-                        }
-
-                    }
-
-                }else{
-
-                    // Push in result
-                    result = [[key, value]];
-
-                }
-
-            }
-
-        }
-
-        // Return result
-        return result;
-
-    }
-
-    /** Private methods | Retrieve number
-     ******************************************************
-     */
-
-    /**
-     * Retrieve Number
-     * 
-     * @param itemEl:HTMLElement
-     * @return null|Array<any>
-     */
-    private numberRetrieve = (itemEl:HTMLElement):null|Array<any> => {
-
-        // Set result
-        let result:null|Array<any> = null;
-
-        // Check value
-        if("value" in itemEl && "name" in itemEl){
-
-            let key:string = itemEl.name as string;
-
-            // Set result
-            let value:number = itemEl.value as number;
-
-            // Push in result
-            result = [key, value];
-
-        }
-
-        // Return result
-        return result;
-
-    }
-
-    /**
-     * Retrieve Multiple Number
-     * 
-     * @param itemEl:HTMLElement
-     * @return null|Array<any>[]
-     */
-    private numberRetrieveMultiple = (itemEl:HTMLElement):null|Array<any>[] => {
-
-        // Set result
-        let result:null|Array<any>[] = null;
-
-        // Check value
-        if("value" in itemEl && "name" in itemEl){
-
-            let key:string = itemEl.name as string;
-
-            // Set result
-            let value:number = itemEl.value as number;
-
-            // Push in result
-            result = [[key, value]];
-
-        }
-
-        // Return result
-        return result;
-
-    }
-
-    /** Private methods | Retrieve number
-     ******************************************************
-     */
-
-    /**
-     * Retrieve Email
-     * 
-     * @param itemEl:HTMLElement
-     * @return null|Array<any>
-     */
-    private emailRetrieve = (itemEl:HTMLElement):null|Array<any> => {
-
-        // Set result
-        let result:null|Array<any> = null;
-
-        // Check value
-        if("value" in itemEl && "name" in itemEl){
-
-            let key:string = itemEl.name as string;
-
-            // Set result
-            let value:string = itemEl.value as string;
-
-            // Push in result
-            result = [key, value];
-
-        }
-
-        // Return result
-        return result;
-
-    }
-
-    /**
-     * Retrieve Multiple Email
-     * 
-     * @param itemEl:HTMLElement
-     * @return null|Array<any>[]
-     */
-    private emailRetrieveMultiple = (itemEl:HTMLElement):null|Array<any>[] => {
-
-        // Set result
-        let result:null|Array<any>[] = null;
-
-        // Check value
-        if("value" in itemEl && "name" in itemEl){
-
-            let key:string = itemEl.name as string;
-
-            // Set result
-            let value:string = itemEl.value as string;
-
-            // Push in result
-            result = [[key, value]];
-
-        }
-
-        // Return result
-        return result;
-
-    }
-
-    /** Private methods | Retrieve color
-     ******************************************************
-     */
-
-    /**
-     * Retrieve Color
-     * 
-     * @param itemEl:HTMLElement
-     * @return null|Array<any>
-     */
-    private colorRetrieve = (itemEl:HTMLElement):null|Array<any> => {
-
-        // Set result
-        let result:null|Array<any> = null;
-
-        // Check value
-        if("value" in itemEl && "name" in itemEl){
-
-            let key:string = itemEl.name as string;
-
-            // Set result
-            let value:string = itemEl.value as string;
-
-            // Push in result
-            result = [key, value];
-
-        }
-
-        // Return result
-        return result;
-
-    }
-
-    /**
-     * Retrieve Multiple Color
-     * 
-     * @param itemEl:HTMLElement
-     * @return null|Array<any>[]
-     */
-    private colorRetrieveMultiple = (itemEl:HTMLElement):null|Array<any>[] => {
-
-        // Set result
-        let result:null|Array<any>[] = null;
-
-        // Check value
-        if("value" in itemEl && "name" in itemEl){
-
-            let key:string = itemEl.name as string;
-
-            // Set result
-            let value:string = itemEl.value as string;
-
-            // Push in result
-            result = [[key, value]];
-
-        }
-
-        // Return result
-        return result;
-
-    }
-
-    /** Private methods | Retrieve password
-     ******************************************************
-     */
-
-    /**
-     * Retrieve Password
-     * 
-     * @param itemEl:HTMLElement
-     * @return null|Array<any>
-     */
-    private passwordRetrieve = (itemEl:HTMLElement):null|Array<any> => {
-
-        // Set result
-        let result:null|Array<any> = null;
-
-        // Check value
-        if("value" in itemEl && "name" in itemEl){
-
-            let key:string = itemEl.name as string;
-
-            // Set result
-            let value:string = itemEl.value as string;
-
-            // Push in result
-            result = [key, value];
-
-        }
-
-        // Return result
-        return result;
-
-    }
-
-    /**
-     * Retrieve Multiple Password
-     * 
-     * @param itemEl:HTMLElement
-     * @return null|Array<any>[]
-     */
-    private passwordRetrieveMultiple = (itemEl:HTMLElement):null|Array<any>[] => {
-
-        // Set result
-        let result:null|Array<any>[] = null;
-
-        // Check value
-        if("value" in itemEl && "name" in itemEl){
-
-            let key:string = itemEl.name as string;
-
-            // Set result
-            let value:string = itemEl.value as string;
-
-            // Push in result
-            result = [[key, value]];
-
-        }
-
-        // Return result
-        return result;
-
-    }
-
-    /** Private methods | Retrieve file
-     ******************************************************
-     */
-
-    /**
-     * File Retrieve
-     * 
-     * @param itemEl:HTMLElement
-     * @return null|Array<any>[]
-     */
-    private fileRetrieve = (itemEl:HTMLElement):null|Array<any> => {
-
-        // Set result
-        let result:null|Array<any> = null;
-
-        // Check value
-        if("name" in itemEl && itemEl instanceof HTMLInputElement && itemEl.files?.length){
-
-            let key:string = itemEl.name as string;
-
-            // Set result
-            let files:FileList = itemEl.files;
-
-            // Push in result
-            result = [key, Array.from(files).at(0)];
-
-        }else
-        // Check if pond instance
-        if(itemEl.dataset.pondId && itemEl instanceof HTMLInputElement){
-
-            // Search el
-            let pondEl = itemEl.closest("form")?.querySelector(`div#${itemEl.dataset.pondId}`);
-
-            // Check pond el
-            if(pondEl instanceof HTMLDivElement){
-
-                let key:string = itemEl.name as string;
-
-                // Get pond instance
-                let pondInstance = FilePond.find(pondEl);
-
-                // Get files
-                let files = pondInstance.getFiles();
-
-                // Set result
-                result = [key, files.length ? files[0].file as File : ""];
-
-            }
-
-        }
-
-        // Return result
-        return result;
-
-    }
-
-    /**
-     * File Retrieve Multiple
-     * 
-     * @param itemEl:HTMLElement
-     * @return null|Array<any>[]
-     */
-    private fileRetrieveMultiple = (itemEl:HTMLElement):null|Array<any>[] => {
-
-        // Set result
-        let result:null|Array<any>[] = null;
-
-        // Check value
-        if("name" in itemEl && itemEl instanceof HTMLInputElement && itemEl.files?.length){
-
-            let key:string = itemEl.name as string;
-
-            // Set result
-            let files = Array.from(itemEl.files);
-
-            // Check files
-            if(files.length) for(let currentFile of files) if(currentFile instanceof File){
-
-                // Check result
-                if(result === null) result = [];
-
-                // Push in result
-                result.push([key, currentFile]);
-
-            }
-
-        }else
-        // Check if pond instance
-        if(itemEl.dataset.pondId && itemEl instanceof HTMLInputElement){
-
-            // Search el
-            let pondEl = itemEl.closest("form")?.querySelector(`div#${itemEl.dataset.pondId}`);
-
-            // Check pond el
-            if(pondEl instanceof HTMLDivElement){
-
-                let key:string = itemEl.name as string;
-
-                // Get pond instance
-                let pondInstance = FilePond.find(pondEl);
-
-                // Get files
-                let files = pondInstance.getFiles();
-
-                // Check files
-                if(files.length) for(let currentFile of files) if(currentFile instanceof File){
-    
-                    // Check result
-                    if(result === null) result = [];
-    
-                    // Push in result
-                    result.push([key, currentFile]);
-    
-                }
-
-            }
-
-        }
-
-        // Return result
-        return result;
-
-    }
-
-    /** Private methods | Retrieve Radio
-     ******************************************************
-     */
-
-    /**
-     * Retrieve radio
-     * 
-     * @param itemEl:HTMLElement
-     * @return null|Array<any>
-     */
-    private radioRetrieve = (itemEl:HTMLElement):null|Array<any> => {
-
-        // Set result
-        let result:null|Array<any> = null;
-
-        // Check value
-        if("value" in itemEl && "name" in itemEl && itemEl instanceof HTMLInputElement){
-
-            // Declare value
-            let value:string = "";
-
-            // Declare key
-            let key:string = itemEl.name as string;
-
-            // Check form
-            if(itemEl.form && itemEl.name){
-
-                // Get all similar radio
-                let radioEls = itemEl.form.querySelectorAll(`input[name=${itemEl.name}]`);
-
-                // Iteration
-                if(radioEls.length) for(let radioEl of Array.from(radioEls)) if(radioEl instanceof HTMLInputElement && radioEl.checked){
-
-                    // Set value
-                    value = radioEl.value as string;
-
-                    // Break
-                    break;
-
-                }
-
-            }
-
-            // Push in result
-            result = [key, value];
-
-        }
-
-        // Return result
-        return result;
-
-    }
-
-    /**
-     * Retrieve Radio Multiple
-     * 
-     * @param itemEl:HTMLElement
-     * @return null|Array<any>[]
-     */
-    private radioRetrieveMultiple = (itemEl:HTMLElement):null|Array<any>[] => {
-
-        // Set result
-        let result:null|Array<any> = null;
-
-        // Check value
-        if("value" in itemEl && "name" in itemEl && itemEl instanceof HTMLInputElement){
-
-            // Declare value
-            let value:string = "";
-
-            // Declare key
-            let key:string = itemEl.name as string;
-
-            // Check form
-            if(itemEl.form && itemEl.name){
-
-                // Get all similar radio
-                let radioEls = itemEl.form.querySelectorAll(`input[name=${itemEl.name}]`);
-
-                // Iteration
-                if(radioEls.length) for(let radioEl of Array.from(radioEls)) if(radioEl instanceof HTMLInputElement && radioEl.checked){
-
-                    // Set value
-                    value = radioEl.value as string;
-
-                    // Break
-                    break;
-
-                }
-
-            }
-
-            // Push in result
-            result = [[key, value]];
-
-        }
-
-        // Return result
-        return result;
-
-    }
 
     /** Private methods | Set value
      ******************************************************
+     *
+     * Per-type value writers ({type}Set) have been migrated to
+     * Form/{Type}.ts (see this._typeRegistry above) - setValue() above
+     * dispatches to them directly.
      */
 
-    /**
-     * Set Text
-     * 
-     * Set text in item
-     * 
-     * @param itemEl:HTMLElement
-     * @param value:string
-     * @return void
-     */
-    private textSet = (itemEl:HTMLElement, value:string, valuesID:string|Object|null):void => {
-
-        // Check itemEl 
-        if(itemEl.tagName == "INPUT" && value !== null){
-
-            // Set value
-            itemEl.setAttribute("value", value);
-
-            // Check values id is string
-            if(typeof valuesID === "string"){
-
-                // Set entity_id
-                itemEl.setAttribute("value_id", valuesID);
-
-            }else
-            // Check value is object
-            if(valuesID !== null && Object.keys(valuesID).includes(itemEl["name"])){
-
-                // Set entity_id
-                itemEl.setAttribute("value_id", valuesID[itemEl["name"]]);
-
-            }else
-            // Check if $oid
-            if(valuesID && typeof valuesID === "object" && "$oid" in valuesID){
-
-                // Set entity_id
-                itemEl.setAttribute("value_id", valuesID["$oid"] as string);
-
-            }
-
-        }
-
-    }
-
-    /**
-     * Set Email
-     * 
-     * Set text in item
-     * 
-     * @param itemEl:HTMLElement
-     * @param value:string
-     * @return void
-     */
-    private emailSet = (itemEl:HTMLElement, value:string, valuesID:string|Object|null):void => {
-
-        // Check itemEl 
-        if(itemEl.tagName == "INPUT" && value !== null){
-
-            // Set value
-            itemEl.setAttribute("value", value);
-
-            // Check values id is string
-            if(typeof valuesID === "string"){
-
-                // Set entity_id
-                itemEl.setAttribute("value_id", valuesID);
-
-            }else
-            // Check value is object
-            if(valuesID !== null && Object.keys(valuesID).includes(itemEl["name"])){
-
-                // Set entity_id
-                itemEl.setAttribute("value_id", valuesID[itemEl["name"]]);
-
-            }else
-            // Check if $oid
-            if(valuesID && typeof valuesID === "object" && "$oid" in valuesID){
-
-                // Set entity_id
-                itemEl.setAttribute("value_id", valuesID["$oid"] as string);
-
-            }
-
-        }
-
-    }
-
-    /**
-     * Set Hidden
-     * 
-     * Set hidden in item
-     * 
-     * @param itemEl:HTMLElement
-     * @param value:string
-     * @return void
-     */
-    private hiddenSet = (itemEl:HTMLElement, value:string, valuesID:string|Object|null):void => {
-
-        // Check itemEl 
-        if(itemEl.tagName == "INPUT" && value !== null){
-
-            // Set value
-            itemEl.setAttribute("value", value);
-
-            // Check values id is string
-            if(typeof valuesID === "string"){
-
-                // Set entity_id
-                itemEl.setAttribute("value_id", valuesID);
-
-            }else
-            // Check value is object
-            if(valuesID !== null && Object.keys(valuesID).includes(itemEl["name"])){
-
-                // Set entity_id
-                itemEl.setAttribute("value_id", valuesID[itemEl["name"]]);
-
-            }else
-            // Check if $oid
-            if(valuesID && typeof valuesID === "object" && "$oid" in valuesID){
-
-                // Set entity_id
-                itemEl.setAttribute("value_id", valuesID["$oid"] as string);
-
-            }
-
-            // Dispatch event change
-            itemEl.dispatchEvent(new Event('change', { bubbles: true }));
-
-        }
-
-    }
-
-    /**
-     * Set Password
-     * 
-     * Set text in item
-     * 
-     * @param itemEl:HTMLElement
-     * @param value:string
-     * @return void
-     */
-    private passwordSet = (itemEl:HTMLElement, value:string, valuesID:string|Object|null):void => {
-
-        // Check itemEl 
-        if(itemEl.tagName == "INPUT" && value !== null){
-
-            // Set value
-            itemEl.setAttribute("value", value);
-
-            // Set id
-            this._setID(valuesID, itemEl);
-
-        }
-
-    }
-
-    /**
-     * Set Color
-     * 
-     * Set text in item
-     * 
-     * @param itemEl:HTMLElement
-     * @param value:string
-     * @return void
-     */
-    private colorSet = (itemEl:HTMLElement, value:string, valuesID:string|Object|null):void => {
-
-        // Check itemEl 
-        if(itemEl.tagName == "INPUT" && value !== null){
-
-            // Set value
-            itemEl.setAttribute("value", value);
-
-            // Dispatch event change
-            itemEl.dispatchEvent(new Event("change"));
-
-            // Set id
-            this._setID(valuesID, itemEl);
-
-        }
-
-    }
-
-    /**
-     * Set Select 
-     * 
-     * Set select in item
-     * 
-     * @param itemEl:HTMLElement
-     * @param value:string
-     * @return void
-     */
-    private selectSet = (itemEl:HTMLElement, value:string, valuesID:string|Object|null):void => {
-
-        // Check itemEl 
-        if(["INPUT", "SELECT"].includes(itemEl.tagName) && value !== null){
-
-            // Check if tomselect in item
-            if("tomselect" in itemEl && itemEl.tomselect instanceof TomSelect){
-
-                // Let disabled
-                let disabled = false;
-
-                // Check if item disabled
-                if(itemEl instanceof HTMLSelectElement && itemEl.disabled){
-
-                    // Set disabled
-                    disabled = true;
-
-                    // Disabled Disabled
-                    itemEl.disabled = false;
-
-                }
-
-                // Check if depends
-                if(itemEl.dataset.depends){
-
-                    // Set value into depends value
-                    itemEl.dataset.dependsValue = JSON.stringify({
-                        value: value,
-                        valuesID: valuesID
-                    });
-
-                }
-
-                // Get progress bar
-                let progressEl:HTMLElement|null = itemEl.id 
-                    ? itemEl.parentElement?.querySelector(`.progress[data-select-id="${itemEl.id}"]`) as HTMLElement|null 
-                    : null
-                ;
-
-                // Attribute to observe
-                let attributeToObserve = "disabled";
-
-                // Check if progress bar is not null and have disabled attribute
-                if(progressEl && progressEl.hasAttribute(attributeToObserve)){
-
-                    // Max iteration
-                    var maxIteration = 5;
-
-                    // Interval (ms)
-                    var interval = 200;
-
-                    // Tries
-                    let tries = 0;
-
-                    // Prepare function
-                    const check = () => {
-
-                        // Increment tries
-                        tries++;
-                  
-                        // Check disabled disparead
-                        if(!itemEl.hasAttribute('disabled')){
-
-                            // Set value
-                            itemEl.tomselect instanceof TomSelect && itemEl.tomselect.setValue(value);
-        
-                            // Set id
-                            this._setID(valuesID, itemEl);
-
-                            // Top function
-                            return;
-
-                        }
-                  
-                        if(tries < maxIteration)
-
-                            // Set timeout
-                            setTimeout(check, interval);
-
-                    };
-                  
-                    // Run check
-                    check();
-
-                }else{
-
-                    // Set value
-                    itemEl.tomselect.setValue(value);
-
-                    // Set id
-                    this._setID(valuesID, itemEl);
-
-                }
-
-                // Get setted value
-                let valueSet = itemEl.tomselect.getValue();
-
-                // Check if is expected value
-                if(valueSet != value){
-
-                    // Set value in attribute
-                    itemEl.dataset.selectValueToSet = JSON.stringify({
-                        value: value,
-                        valuesID: valuesID
-                    });
-
-                }
-
-                // Check if item disabled
-                if(itemEl instanceof HTMLSelectElement && disabled){
-
-                    // Disabled Disabled
-                    itemEl.disabled = true;
-
-                }
-
-            }else{
-
-                // Set value
-                itemEl.setAttribute("value", value);
-
-                // Dispatch event change
-                itemEl.dispatchEvent(new Event("change"));
-
-                // Set id
-                this._setID(valuesID, itemEl);
-
-            }
-
-        }
-
-    }
-
-    /**
-     * Set Number
-     * 
-     * Set number in item
-     * 
-     * @param itemEl:HTMLElement
-     * @param value:string
-     * @return void
-     */
-    private numberSet = (itemEl:HTMLElement, value:string, valuesID:string|Object|null):void => {
-
-        // Check itemEl 
-        if(["INPUT", "SELECT"].includes(itemEl.tagName) && value !== null){
-
-            // Set value
-            itemEl.setAttribute("value", value);
-
-            // Dispatch event change
-            itemEl.dispatchEvent(new Event("change"));
-
-            // Set id
-            this._setID(valuesID, itemEl);
-
-        }
-
-    }
-
-    /**
-     * Set Date
-     * 
-     * Set date in item
-     * 
-     * @param itemEl:HTMLElement
-     * @param value:string
-     * @return void
-     */
-    private dateSet = (itemEl:HTMLElement, value:string, valuesID:string|Object|null):void => {
-
-        // Check itemEl 
-        if(["INPUT", "SELECT"].includes(itemEl.tagName) && value !== null){
-
-            // Get date
-            let dateClean = UtilityDateTime.toYYYYMMDDFormat(new Date(value), "-");
-
-            // Check date
-            if(dateClean){
-
-                // Set value
-                itemEl.setAttribute("value", dateClean);
-
-                // Dispatch event change
-                itemEl.dispatchEvent(new Event("change"));
-
-                // Set id
-                this._setID(valuesID, itemEl);
-
-            }
-
-        }
-
-    }
-
-    /**
-     * Set File
-     * 
-     * Set file in item
-     * 
-     * @param itemEl:HTMLElement
-     * @param value:string
-     * @return void
-     */
-    private fileSet = (itemEl:HTMLElement, value:formFilePondValue|formFilePondValue[], valuesID:string|Object|null):void => {
-
-        // Check itemEl 
-        if(["INPUT", "SELECT"].includes(itemEl.tagName) && value !== null){
-
-            // Check if filepont
-            if(itemEl.classList.contains("filepond--browser") && itemEl.parentElement instanceof HTMLElement){
-
-                // Get pond instance
-                let pondInstance = FilePond.find(itemEl.parentElement);
-
-                // Check pondInstance
-                if(pondInstance){
-
-                    // Set files
-                    let files:File[] = [];
-
-                    // Check if value is array
-                    if(Array.isArray(value)){
-
-                        // Iteration value
-                        for(let item of value){
-
-                            // Set fake content
-                            let fakeContent = "";
-                            
-                            // Set fake content
-                            if(item.options.file.type == "application/json"){
-    
-                                // Set fakeContent
-                                fakeContent = JSON.stringify({});
-    
-                            }
-    
-                            // New blob
-                            const blob = new Blob(
-                                [fakeContent], 
-                                { type: item.options.file.type }
-                            );
-    
-                            // New file
-                            const currentFile = new File(
-                                [blob], 
-                                item.source, 
-                                { type: item.options.file.type }
-                            );
-
-                            // Push files
-                            files.push(currentFile);
-
-                        }
-
-                        // Add Files
-                        pondInstance.addFiles(files);
-
-                    }else{
-
-                        // Set fake content
-                        let fakeContent = "";
-                        
-                        // Set fake content
-                        if(value.options.file.type == "application/json"){
-
-                            // Set fakeContent
-                            fakeContent = JSON.stringify({});
-
-                        }
-
-                        // New blob
-                        const blob = new Blob(
-                            [fakeContent], 
-                            { type: value.options.file.type }
-                        );
-
-                        // New file
-                        const file = new File(
-                            [blob], 
-                            value.source, 
-                            { type: value.options.file.type }
-                        );
-
-                        // Add file
-                        pondInstance.addFile(file);
-
-                    }
-
-                    // Set value
-                    /* itemEl.setAttribute("value", value);
-    
-                    // Dispatch event change
-                    itemEl.dispatchEvent(new Event("change"));
-    
-                    // Set id
-                    this._setID(valuesID, itemEl); */
-
-                }
-
-            }
-
-        }
-
-    }
-
-    /** Private methods | Set value | Set Custom Data
+    /** Public static methods | Set value
      ******************************************************
      */
 
     /**
      * Set ID
-     * 
-     * Set ID of the item of the from
-     * 
+     *
+     * Set ID of the item of the form
+     *
+     * @param formEl
      * @param valueID
      * @param itemEl
-     * @returns void 
+     * @returns void
      */
-    private _setID(valueID:string|Object|null, itemEl:HTMLElement):void {
+    public static setId(formEl:HTMLFormElement, valueID:string|Object|null, itemEl:HTMLElement):void {
 
         // Declare key collection
         let keysCollection:Array<string> = [];
@@ -3278,7 +1888,7 @@ export default class Form {
         }
 
         // Get items of form
-        let itemsEls = this._formEl.querySelectorAll("select, input");
+        let itemsEls = formEl.querySelectorAll("select, input");
 
         // Iterations items
         for(let i = 0; i < itemsEls.length; i++) {
@@ -3297,7 +1907,7 @@ export default class Form {
 
                 // Push key in collection
                 keysCollection.push(currentValueID);
-            
+
 
         }
 
@@ -3314,7 +1924,7 @@ export default class Form {
             itemsEls[i].removeAttribute("value_id");
 
         // Push value id in form
-        this._formEl.setAttribute("value_id", keysCollection.pop() as string);
+        formEl.setAttribute("value_id", keysCollection.pop() as string);
 
     }
 
@@ -3580,1048 +2190,12 @@ export default class Form {
 
     /** Private methods | Init input
      ******************************************************
+     *
+     * Per-type init wiring (_init{Type}Input: Color, Number, Date,
+     * Password, Select, File) has been migrated to Form/{Type}.ts (see
+     * this._typeRegistry above) - _initForm() above dispatches to them
+     * directly.
      */
-
-    /**
-     * Init Color Input
-     * 
-     * @param inputEl 
-     * @returns {void}
-     */
-    private _initColorInput = async (inputEl:HTMLSelectElement|HTMLInputElement):Promise<void> => {
-
-        // Check pickr
-        if(inputEl instanceof HTMLInputElement && "colorPicker" in inputEl.dataset && inputEl.dataset.colorPicker == "pickr"){
-
-            // Create divEl
-            let divEl = document.createElement("div");
-
-            // Append el after el
-            inputEl.after(divEl);
-
-            // Hide input
-            inputEl.classList.add("hide");
-
-            // Prepare options
-            let options:Partial<Pickr.Options> = {
-                el: divEl,
-                theme: "colorTheme" in inputEl.dataset && ['classic', 'monolith', 'nano'].includes(inputEl.dataset.colorTheme as string)
-                    ? inputEl.dataset.colorTheme as Pickr.Theme
-                    : 'classic'
-                ,
-                lockOpacity: "colorOpacity" in inputEl.dataset && ['false', '0', '', 'null'].includes(inputEl.dataset.colorOpacity as string)
-                    ? true
-                    : false
-                ,
-                swatches: [
-                    'rgba(244, 67, 54, 1)',
-                    'rgba(233, 30, 99, 0.95)',
-                    'rgba(156, 39, 176, 0.9)',
-                    'rgba(103, 58, 183, 0.85)',
-                    'rgba(63, 81, 181, 0.8)',
-                    'rgba(33, 150, 243, 0.75)',
-                    'rgba(3, 169, 244, 0.7)',
-                    'rgba(0, 188, 212, 0.7)',
-                    'rgba(0, 150, 136, 0.75)',
-                    'rgba(76, 175, 80, 0.8)',
-                    'rgba(139, 195, 74, 0.85)',
-                    'rgba(205, 220, 57, 0.9)',
-                    'rgba(255, 235, 59, 0.95)',
-                    'rgba(255, 193, 7, 1)'
-                ],
-                components: {
-                    // Main components
-                    preview: true,
-                    opacity: true,
-                    hue: true,
-                    // Input / output Options
-                    interaction: {
-                        hex: true,
-                        rgba: true,
-                        hsla: true,
-                        hsva: true,
-                        cmyk: true,
-                        input: true,
-                        clear: true,
-                        save: true
-                    }
-                }
-            };
-
-            // Check locale
-            if(inputEl.dataset.colorLocale && ["fr-fr"].includes(inputEl.dataset.colorLocale)){
-
-                // Set i18n
-                options.i18n = {
-
-                    // Strings visible in the UI
-                   'ui:dialog': 'boîte de dialogue du sélecteur de couleur',
-                   'btn:toggle': 'basculer la boîte de dialogue du sélecteur de couleur',
-                   'btn:swatch': 'échantillon de couleur',
-                   'btn:last-color': 'utiliser la couleur précédente',
-                   'btn:save': 'Enregistrer',
-                   'btn:cancel': 'Annuler',
-                   'btn:clear': 'Effacer',
-                
-                   // Strings used for aria-labels
-                   'aria:btn:save': 'enregistrer et fermer',
-                   'aria:btn:cancel': 'annuler et fermer',
-                   'aria:btn:clear': 'effacer et fermer',
-                   'aria:input': 'champ de saisie de couleur',
-                   'aria:palette': 'zone de sélection des couleurs',
-                   'aria:hue': 'curseur de sélection de teinte',
-                   'aria:opacity': 'curseur de sélection d\'opacité'
-
-                }
-
-            }
-
-            // Check if input has default
-            if(inputEl.hasAttribute("value")){
-
-                // Get default
-                var currentValue = inputEl.getAttribute("value");
-
-                // Check current value
-                if(currentValue && currentValue != "randomHex()"){
-
-                    // Set default on option
-                    options.default = currentValue;
-
-                }else
-                // Check if input has default
-                if(inputEl.hasAttribute("default")){
-    
-                    // Get default
-                    var currentDefault = inputEl.getAttribute("default");
-
-    
-                    // Check current value
-                    if(currentDefault === "randomHex()"){
-
-                        // Generate a random integer between 0 and 16777215 (0xFFFFFF)
-                        const randomColor = Math.floor(Math.random() * 16777216);
-                        
-                        // Convert to hexadecimal and pad with leading zeros if necessary
-                        options.default = `#${randomColor.toString(16).padStart(6, '0')}`;
-
-                    }else
-                    // Check currentValue
-                    if(currentDefault)
-
-                        // Set default on option
-                        options.default = currentDefault;
-    
-    
-                }
-
-
-
-            }
-
-            // Simple example, see optional options for more configuration.
-            const pickr = Pickr.create(options as Pickr.Options);
-
-            // Add event on save
-            pickr.on("save", (color, instance) => {
-
-                // Get color
-                let hexa:string = color.toHEXA();
-
-                // Set value on inputEl
-                inputEl.value = hexa
-
-                // Close instance
-                instance.hide();
-
-            });
-
-            // Add event on input
-            inputEl.addEventListener(
-                "change",
-                (e:Event) => {
-
-                    // Get targelt
-                    let el = e.currentTarget;
-
-                    // Check el
-                    if(el instanceof HTMLInputElement){
-
-                        // Get value
-                        let value = el.value;
-
-                        // Set value in pickr
-                        pickr.setColor(value);
-
-                    }
-
-                }
-            )
-
-        }
-
-    }
-    
-    /**
-     * Init Number Input
-     * 
-     * @param inputEl 
-     * @returns {void}
-     */
-    private _initNumberInput = async (inputEl:HTMLSelectElement|HTMLInputElement):Promise<void> => {
-
-        // Declare options
-        let options:MaskedNumberOptions = {
-            mask: Number,
-            skipInvalid: true,
-            thousandsSeparator: " ",
-            radix: ".",
-            mapToRadix: [','],
-            autofix: true,
-        };
-
-        // Check if max
-        inputEl.hasAttribute("max") && inputEl.getAttribute("max") && (options.max = Number(inputEl.getAttribute("max")));
-
-        // Check if min
-        inputEl.hasAttribute("min") && inputEl.getAttribute("min") && (options.min = Number(inputEl.getAttribute("min")));
-
-        // check if decimal
-        inputEl.hasAttribute("step") && inputEl.getAttribute("step")?.includes(".") && (options.scale = inputEl.getAttribute("step")?.split(".").at(-1)?.length);
-
-        // Set instance
-        IMask(inputEl, options);
-
-    }
-
-    /**
-     * Init Date Input
-     * 
-     * @param inputEl 
-     * @returns {void}
-     */
-    private _initDateInput = async (inputEl:HTMLSelectElement|HTMLInputElement):Promise<void> => {
-
-        // Check input is easepick
-        if(inputEl instanceof HTMLInputElement && "datePicker" in inputEl.dataset && inputEl.dataset.datePicker == "easepick"){
-
-            // Prepare options
-            let options:IPickerConfig = {
-                element: inputEl,
-                css: [
-                  'https://cdn.jsdelivr.net/npm/@easepick/bundle@1.2.1/dist/index.css',
-                ],
-                zIndex: 1,
-                plugins: [AmpPlugin],
-                AmpPlugin: {
-                    dropdown: {
-                        months: true,
-                        years: true,
-                    },
-                },
-                setup: (picker) => {
-
-                    // Init event input
-                    picker.on("preselect", () => {
-
-                        // Dispatch
-                        inputEl.dispatchEvent(new Event("input", {bubbles: true}));
-
-                    })
-
-                    // Init event change
-                    picker.on("select", () => {
-
-                        // Dispatch
-                        inputEl.dispatchEvent(new Event("change", {bubbles: true}));
-
-                    })
-
-                } 
-            }
-
-            // Check format
-            if("dateFormat" in inputEl.dataset && inputEl.dataset.dateFormat)
-
-                // Push in options format
-                options.format = inputEl.dataset.dateFormat;
-
-            // Check lang
-            if("dateLang" in inputEl.dataset && inputEl.dataset.dateLang)
-
-                // Push in options format
-                options.lang = inputEl.dataset.dateLang;
-
-            // Check if required
-            if(!inputEl.required && options.AmpPlugin){
-
-                // Enable reset btn
-                options.AmpPlugin.resetButton = () => {
-
-                    // Clear value
-                    inputEl.value = "";
-
-                    // Dispatch input event
-                    inputEl.dispatchEvent(new Event("input", {bubbles: true}));
-
-                    // Dispatch change event
-                    inputEl.dispatchEvent(new Event("change", {bubbles: true}));
-
-                    // Return true
-                    return true;
-
-                };
-
-            }
-
-            // Check if input multiple
-            if(inputEl.multiple){
-
-                // Enable Range Plugin
-                options.plugins?.push(RangePlugin);
-
-                // Push config
-                options.RangePlugin = {
-                    repick: true
-                }
-
-            }
-
-            // New picker instance
-            const picker = new easepick.create(options);
-
-        }else
-        // Check input is airdatepicker
-        if(inputEl instanceof HTMLInputElement && "datePicker" in inputEl.dataset && inputEl.dataset.datePicker == "airdatepicker"){
-            
-            // Set options
-            let options:AirDatepickerOptions = {
-                dateFormat: "dateFormat" in inputEl.dataset && inputEl.dataset.dateFormat
-                    ? inputEl.dataset.dateFormat
-                    : "yyyy-MM-dd"
-                ,
-                autoClose: true,
-            };
-
-            // Set multiple
-            let multiple = false;
-
-            // Check if input multiple
-            if(inputEl.multiple){
-
-                // Set range
-                options.range = true,
-
-                // Set separator
-                options.multipleDatesSeparator = ' - ';
-
-                // Set multiple
-                multiple = true;
-
-            }
-
-            // Check lang
-            if("dateLang" in inputEl.dataset && inputEl.dataset.dateLang == "fr-FR"){
-
-                // Push in options format
-                options.locale = airDatePickerLocaleFr;
-
-            }
-
-            // Check min
-            if(inputEl.hasAttribute("min") && inputEl.getAttribute("min") && typeof inputEl.getAttribute("min") === "string"){
-
-                // Get date
-                let dateMin = new Date(inputEl.getAttribute("min") as string);
-
-                // Set min
-                options.minDate = dateMin;
-
-            }
-
-            // Check max
-            if(inputEl.hasAttribute("max") && inputEl.getAttribute("max") && typeof inputEl.getAttribute("max") === "string"){
-
-                // Get date
-                let dateMax = new Date(inputEl.getAttribute("max") as string);
-
-                // Set max
-                options.maxDate = dateMax;
-
-            }
-
-            // Check not requierd
-            if(!inputEl.required){
-
-                options.buttons = ['clear'];
-
-            }
-
-
-            // Set on select
-            options.onSelect = ({date, formattedDate, datepicker}):void => {
-
-                // Get input el
-                let inputEl = datepicker.$el;
-
-                // Check multiple and date is 2
-                if(multiple && Array.isArray(date) && date.length == 1) return;
-
-                // Check input el
-                if(inputEl instanceof HTMLInputElement){
-
-                    // Dispatch event input
-                    inputEl.dispatchEvent(new Event('input',{bubbles:true}));
-
-                    // Dispatch event change
-                    inputEl.dispatchEvent(new Event('change',{bubbles:true}));
-
-                }
-
-            }
-
-            // New picker instance
-            const picker = new AirDatepicker(inputEl, options);
-
-            // Add event
-            document.addEventListener('click', (e) => {
-
-                // Get calendat el
-                const calendarEl = document.querySelector('.air-datepicker');
-
-                // Check if click is outside the datepicker and input
-                if(
-                    // Check calendar
-                    calendarEl instanceof HTMLElement &&
-                    !calendarEl.contains(e.target as Node) &&
-                    !inputEl.contains(e.target as Node)
-                ){
-
-                    // Hide picker
-                    picker.visible && picker.hide();
-
-                }
-
-            });
-
-        }
-
-    }
-
-    /**
-     * Init Password Input
-     * 
-     * @param inputEl 
-     * @returns {void}
-     */
-    private _initPasswordInput = async (inputEl:HTMLSelectElement|HTMLInputElement):Promise<void> => {
-
-        // Check maska
-        if(inputEl instanceof HTMLInputElement && inputEl.dataset && "passwordVisible" in inputEl.dataset && inputEl.parentNode){
-
-            // Get password visible
-            let passwordVisible = inputEl.dataset.passwordVisible;
-
-            // Get prefix
-            let suffixEl = inputEl.parentNode.querySelector("div.suffix");
-
-            // Add event on password
-            typeof passwordVisible === "string" && suffixEl && suffixEl.addEventListener("click", (e:Event) =>{
-
-                // Get password visible
-                let passwordVisible = inputEl.dataset.passwordVisible;
-
-                // Check e.target
-                if(e.currentTarget && e.currentTarget instanceof HTMLDivElement){
-
-                    // Change input type
-                    inputEl.type = passwordVisible == "0" 
-                        ? "text"
-                        : "password"
-                    ;
-
-                    // Get icon
-                    let suffixIconEl = suffixEl && suffixEl.querySelector("i");
-
-                    // Check suffix icon
-                    if(suffixIconEl && suffixIconEl instanceof HTMLElement)
-
-                        // Change icon
-                        suffixIconEl.innerHTML = passwordVisible == "0"
-                            ? "visibility_off"
-                            : "visibility"
-                        ;
-
-                    // Change attribute
-                    inputEl.dataset.passwordVisible = passwordVisible == "0"
-                        ? "1"
-                        : "0"
-                    ;
-
-                }
-
-            }, true);
-
-        }
-
-    }
-
-    /**
-     * Init Number Input
-     * 
-     * @param inputEl 
-     * @returns {void}
-     */
-    private _initSelectInput = async (inputEl:HTMLSelectElement|HTMLInputElement):Promise<void> => {
-
-        // Promise wrap
-        return new Promise<void>((resolve) => {
-
-            // Check maska
-            if(inputEl instanceof HTMLInputElement || inputEl instanceof HTMLSelectElement){
-
-                // Pending Requests
-                const pendingRequests:Promise<void>[] = [];
-
-                // Get progress
-                let progressEl:HTMLElement|null = inputEl.id 
-                    ? inputEl.parentElement?.querySelector(`.progress[data-select-id="${inputEl.id}"]`) as HTMLElement|null 
-                    : null
-                ;
-
-                // Set option
-                let option:RecursivePartial<TomSettings> = {
-                    persist: false,
-                    createOnBlur: true,
-                    create: true,
-                    dropdownParent: "body",
-                    plugins: {}
-                };
-
-                // Append create
-                option.create = false;
-
-                // Check clear
-                if(inputEl.dataset && "selectClear" in inputEl.dataset)
-
-                    // Set plugin
-                    // @ts-ignore
-                    option.plugins["clear_button"] = {
-                        title: inputEl.dataset.selectClear
-                    };
-
-                // Check clear
-                if((inputEl.dataset && "selectTag" in inputEl.dataset) || ("multiple" in inputEl && inputEl.multiple)){
-
-                    // Set plugin caret position
-                    // @ts-ignore
-                    option.plugins["caret_position"] = {};
-
-                    // Set plugin drag drop
-                    // @ts-ignore
-                    option.plugins["drag_drop"] = {};
-
-                }
-
-                // Declare potential add option
-                let addOption:(()=>void)|null = null;
-
-                // Check if 
-                if(inputEl.dataset && "selectRemote" in inputEl.dataset && inputEl.dataset.selectRemote && UtilityStrings.isJson(inputEl.dataset.selectRemote)){
-
-                    // Decode selectRemote
-                    let remoteData = JSON.parse(inputEl.dataset.selectRemote);
-
-                    // Set value
-                    option.valueField = remoteData.value;
-
-                    // Check label has {{}}
-                    if(remoteData.label && remoteData.label.includes("{{") && remoteData.label.includes("}}")){
-
-                        // Set render
-                        option.render = {
-                            option: (data:Record<string,any>, escape:(input:string)=>string):string => {
-                        
-                                // Declare result
-                                let result:string = remoteData.label.replace(/\{\{(.*?)\}\}/g, (i:any, match:any) => escape(data[match]))
-        
-                                // Append div after and before
-                                return `<div>${result}</div>` as string;
-                                
-                            },
-                            item: (data:Record<string,any>, escape:(input:string)=>string):string => {
-
-                                // Declare result
-                                let result:string = remoteData.label.replace(/\{\{(.*?)\}\}/g, (i:any, match:any) => escape(data[match]))
-        
-                                // Append div after and before
-                                return `<div>${result}</div>` as string;
-                                
-                            }
-                        };
-
-                    }else{
-
-                        // Set label
-                        option.labelField = remoteData.label;
-
-                    }
-
-                    // Set search
-                    option.searchField = remoteData.search;
-
-                    // option.allowEmptyOption = true;
-
-                    // Set load
-                    option.load = (selectQuery, callback) => {
-
-                        // Open progression
-                        progressEl?.removeAttribute("disabled");
-
-                        // Let result
-                        let result = Crazyurl.extractQueryAndUrl(`${window.location.origin}${remoteData.url}`);
-
-                        // Set queryParam
-                        let queryParam = result.query;
-
-                        // Get parent form
-                        let formEl = inputEl.closest(`form[partial="form"]`);
-
-                        // Check param
-                        if(Object.keys(queryParam).length)
-
-                            // Update query
-                            queryParam = this._processQueryParams(queryParam, formEl instanceof HTMLFormElement ? formEl : null);
-
-                        // New query
-                        let query = new Crazyrequest(
-                            result.url,
-                            {
-                                method: "get",
-                                cache: false,
-                                responseType: "json",
-                                from: "internal"
-                            }
-                        ).fetch(queryParam).then(
-                            value => {
-
-                                // Check if dataKey
-                                if(typeof remoteData.dataKey === "string" && remoteData.dataKey)
-
-                                    // Set right value 
-                                    value.results = remoteData.dataKey.split('.').reduce((acc:any, key:any) => acc && acc[key], value.results);
-                                
-                                // Check value results
-                                if(
-                                    value &&
-                                    "results" in value && 
-                                    Array.isArray(value.results) && 
-                                    value.results.length
-                                )
-
-                                    // Iteration value
-                                    for(let key in value.results)
-
-                                        // Set key
-                                        value.results[key] = Objects.flatten(value.results[key], "", ".");
-
-                                // Callback with value retrieve
-                                let call = callback(value.results);
-
-                            }
-                        )
-                        .then(() => {
-
-                            // Open progression
-                            progressEl?.setAttribute("disabled", "");
-
-                            // Get value to set
-                            let selectValueToSet = inputEl.dataset.selectValueToSet;
-
-                            // Check value to set
-                            if(selectValueToSet){
-
-                                // Parse value
-                                let parsedValueToSet = JSON.parse(selectValueToSet);
-
-                                // Get value
-                                let value = parsedValueToSet.value;
-
-                                // Get value id
-                                let valueId = parsedValueToSet.valuesID;
-
-                                // Remove value to set
-                                delete inputEl.dataset.selectValueToSet;
-
-                                // Set value
-                                this.selectSet(inputEl, value, valueId);
-
-                            }
-
-                        })
-                        .then(() => {
-
-                            // Check depends
-                            if(inputEl.dataset.depends && inputEl.dataset.dependsValue){
-
-                                // Read inputEl.dataset.dependsValue
-                                let valueParsed = JSON.parse(inputEl.dataset.dependsValue);
-
-                                // Check parsed
-                                if(valueParsed.value && valueParsed.valuesID){
-
-                                    // Check if multiple
-                                    if(inputEl.multiple){
-
-
-                                    }
-                                    // Check if single
-                                    else{
-
-                                        // Check value already set
-                                        if(!inputEl.value){
-
-                                            // Set value
-                                            this.selectSet(inputEl, valueParsed.value, valueParsed.valuesID);
-
-                                        }
-
-                                    }
-                                
-                                }
-
-                            }
-
-                        })
-                        .catch(() => callback([]))
-                        .finally(() => {
-
-                            // Remove completed request from pendingRequests
-                            pendingRequests.splice(pendingRequests.indexOf(query), 1);
-
-                        });
-
-                        // Track the request
-                        pendingRequests.push(query);
-
-                    };
-
-                    // Prepare add option
-                    addOption = () => {
-
-                        // Open progression
-                        progressEl?.removeAttribute("disabled");
-
-                        // Let result
-                        let result = Crazyurl.extractQueryAndUrl(`${window.location.origin}${remoteData.url}`);
-
-                        // Set queryParam
-                        let queryParam = result.query;
-
-                        // Get parent form
-                        let formEl = inputEl.closest(`form[partial="form"]`);
-
-                        // Check param
-                        if(Object.keys(queryParam).length)
-
-                            // Update query
-                            queryParam = this._processQueryParams(queryParam, formEl instanceof HTMLFormElement ? formEl : null);
-
-                        // New query
-                        let query = new Crazyrequest(
-                            result.url,
-                            {
-                                method: "get",
-                                cache: false,
-                                responseType: "json",
-                                from: "internal"
-                            }
-                        ).fetch(queryParam)
-                        // Add options found
-                        .then(
-                            value => {
-
-                                // Check if dataKey
-                                if(typeof remoteData.dataKey === "string" && remoteData.dataKey)
-
-                                    // Set right value 
-                                    value.results = remoteData.dataKey.split('.').reduce((acc:any, key:any) => acc && acc[key], value.results);
-
-                                // Check value results
-                                if(
-                                    value &&
-                                    "results" in value && 
-                                    Array.isArray(value.results) && 
-                                    value.results.length
-                                )
-
-                                    // Iteration value
-                                    for(let key in value.results)
-
-                                        // Set key
-                                        value.results[key] = Objects.flatten(value.results[key], "", ".");
-
-                                // Add options to tom
-                                selectInstance.addOptions(value.results);
-
-                            }
-                        // Check default and set it
-                        ).then(
-                            () => {
-
-                                // Check default in input el
-                                if(inputEl.hasAttribute("default")){
-
-                                    // Get default
-                                    let defaultValue = inputEl.getAttribute("default");
-
-                                    // Check type of default value
-                                    if(typeof defaultValue === "string")
-
-                                        // Set value
-                                        selectInstance.setValue(defaultValue);
-
-                                }
-
-                            }
-                        )
-                        .then(() => {
-
-                            // Open progression
-                            progressEl?.setAttribute("disabled", "");
-
-                            // Get value to set
-                            let selectValueToSet = inputEl.dataset.selectValueToSet;
-
-                            // Check value to set
-                            if(selectValueToSet){
-
-                                // Parse value
-                                let parsedValueToSet = JSON.parse(selectValueToSet);
-
-                                // Get value
-                                let value = parsedValueToSet.value;
-
-                                // Get value id
-                                let valueId = parsedValueToSet.valuesID;
-
-                                // Remove value to set
-                                delete inputEl.dataset.selectValueToSet;
-
-                                // Set value
-                                this.selectSet(inputEl, value, valueId);
-
-                            }
-
-                        })
-                        .then(() => {
-
-                            // Check depends
-                            if(inputEl.dataset.depends && inputEl.dataset.dependsValue){
-
-                                // Read inputEl.dataset.dependsValue
-                                let valueParsed = JSON.parse(inputEl.dataset.dependsValue);
-
-                                // Check parsed
-                                if(valueParsed.value && valueParsed.valuesID){
-
-                                    // Check if multiple
-                                    if(inputEl.multiple){
-
-
-                                    }
-                                    // Check if single
-                                    else{
-
-                                        // Check value already set
-                                        if(!inputEl.value){
-
-                                            // Set value
-                                            this.selectSet(inputEl, valueParsed.value, valueParsed.valuesID);
-
-                                        }
-
-                                    }
-                                
-                                }
-
-                            }
-
-                        })
-                        .finally(() => {
-
-                            // Remove completed request from pendingRequests
-                            pendingRequests.splice(pendingRequests.indexOf(query), 1);
-
-                        });
-
-                    }
-
-                }
-
-                // Init maska
-                let selectInstance = new TomSelect(inputEl, option);
-
-                // Check addOption is callable
-                if(addOption !== null && typeof addOption === "function"){
-
-                    // Run function
-                    // @ts-ignore
-                    addOption();
-
-                }        
-                
-                // Wait for all pending requests to complete before resolving
-                Promise.all(pendingRequests).then(() => resolve());
-
-            }else{
-
-                // Resolve immediately if element is missing
-                resolve(); 
-
-            }
-
-        });
-
-    }
-
-    /**
-     * Init File Input
-     * 
-     * @param inputEl 
-     * @returns {void}
-     */
-    private _initFileInput = async (inputEl:HTMLSelectElement|HTMLInputElement):Promise<void> => {
-
-        // Check maska
-        if(inputEl instanceof HTMLInputElement){
-
-            // Check if input has filepond
-            if(inputEl.classList.contains("filepond")){
-
-                // Check if preview
-                if(typeof inputEl.dataset.filePreview === "string")
-
-                    // Register plugin
-                    FilePond.registerPlugin(FilePondPluginImagePreview);
-
-                // Register exif plugin
-                FilePond.registerPlugin(FilePondPluginImageExifOrientation);
-
-                // Prepare options
-                let options:FilePond.FilePondOptions = {
-                    
-                    // Set on init
-                    oninit: () => {
-
-                        // Check element
-                        if(pondInstance.element){
-
-                            // Apply margin
-                            pondInstance.element.classList.add("mb-0", "mt-6");
-
-                            // Remove credits
-
-                            // Search credit
-                            let els = pondInstance.element.querySelectorAll(".filepond--credits");
-
-                            // Iteration and delete
-                            els?.forEach((value:Element):void => value.remove());
-
-                            // Search input with name
-                            let el = pondInstance.element.querySelector("input[name]");
-        
-                            // Check el
-                            if(el instanceof HTMLInputElement){
-        
-                                // Check id
-                                if(pondInstance.id)
-        
-                                    // Add data type
-                                    el.dataset.pondId = pondInstance.id;
-        
-                                // Set type
-                                el.dataset.type = "file";
-        
-                            }
-
-                        }
-
-                    }
-
-                }
-
-                // Set name
-                // if(inputEl.name)
-
-                    // Set name
-
-                // Check if max file
-                if(typeof inputEl.dataset.maxFiles === "string")
-
-                    // set max files
-                    options.maxFiles = Number(inputEl.dataset.maxFiles);
-
-                // Check if multiple
-                if(inputEl.multiple)
-
-                    // set max files
-                    options.allowReorder = true;
-
-                // Check if accept
-                if(inputEl.accept){
-
-                    // Register validate type
-                    FilePond.registerPlugin(FilePondPluginFileValidateType);
-
-                }
-
-                // Check lang
-                if(typeof inputEl.dataset.fileLocale === "string")
-
-                    // Check if fr
-                    if(["fr-fr", "fr_FR"].includes(inputEl.dataset.fileLocale)){
-
-                        // Register lang
-                        options = {...options, ...fr_FR};
-
-                    }
-
-                // Create pond instance
-                let pondInstance = FilePond.create(inputEl, options);
-
-                // Add event
-                pondInstance.on("updatefiles", () => {
-
-                    // Search input with name
-                    let el = pondInstance.element?.querySelector("input[name]");
-
-                    // Check el
-                    if(el instanceof HTMLInputElement){
-
-                        // Check id
-                        if(pondInstance.id)
-
-                            // Add data type
-                            el.dataset.pondId = pondInstance.id;
-
-                        // Set type
-                        el.dataset.type = "file";
-
-                    }
-                        
-
-                });
-
-                // Push it into el
-                // @ts-ignore
-                inputEl.pondInstance = pondInstance;
-
-            }
-
-        }
-
-    }
 
     /** Private methods | Depends
      ******************************************************
@@ -4811,10 +2385,10 @@ export default class Form {
                         if(dependencyEl.multiple){
 
                             // Check if method to retrieve value is set
-                            if(dependencyType && typeof this[`${dependencyType}Retrieve`] === "function"){
-                        
+                            if(dependencyType && this._typeRegistry[dependencyType]){
+
                                 // Set result
-                                let retrieveMethold = this[`${dependencyType}Retrieve`];
+                                let retrieveMethold = this._typeRegistry[dependencyType].get;
 
                                 // Fill dependencyCollections
                                 dependencyCollections.push({
@@ -4828,10 +2402,10 @@ export default class Form {
                         }else{
 
                             // Check if method to retrieve value is set
-                            if(dependencyType && typeof this[`${dependencyType}RetrieveMultiple`] === "function"){
-                        
+                            if(dependencyType && this._typeRegistry[dependencyType]){
+
                                 // Set result
-                                let retrieveMethold = this[`${dependencyType}RetrieveMultiple`];
+                                let retrieveMethold = this._typeRegistry[dependencyType].getMultiple;
 
                                 // Fill dependencyCollections
                                 dependencyCollections.push({
@@ -4861,7 +2435,7 @@ export default class Form {
                         if(dependencyCollections.length) for(let dependency of dependencyCollections){
 
                             // Retrieve value
-                            let result = dependency.method(dependency.el);
+                            let result = dependency.method(dependency.el, this._options);
 
                             /**
                              * Multiple case
@@ -4969,7 +2543,7 @@ export default class Form {
                                     inputEl.tomselect.destroy();
 
                                     // Setup
-                                    this._initSelectInput(inputEl);
+                                    this._typeRegistry.select?.init?.(inputEl, this._formEl, { processQueryParams: this._processQueryParams }, this._options);
 
                                     // Attach event
                                     // inputEl.dataset.depends && this._addDependencies(inputEl, inputEl.dataset.depends.includes(",") ? inputEl.dataset.depends.split(",") : inputEl.dataset.depends);
@@ -5400,13 +2974,13 @@ export default class Form {
                     ;
 
                     // Prepare Retrieve method
-                    if(type && typeof this[`${type}Retrieve`] === "function"){
+                    if(type && this._typeRegistry[type]){
 
                         // Retrieve value of the current target
-                        let resultForm:null|Array<any> = this[`${type}Retrieve`](itemEl);
+                        let resultForm:null|Array<any> = this._typeRegistry[type].get(itemEl, this._options);
 
                         // Set result
-                        result = Array.isArray(resultForm) 
+                        result = Array.isArray(resultForm)
                             ? resultForm[1]
                             : ""
                         ;

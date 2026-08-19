@@ -6,42 +6,88 @@
 /// @package    kzarshenas/crazyphp
 /// @author     kekefreedog <kevin.zarshenas@gmail.com>
 /// @copyright  2022-2024 Kévin Zarshenas
-/// /// /// 
+/// /// ///
 
-// Input search
+/**
+ * Make the Tom Select wrapper read as a Materialize .input-field control
+ */
 .ts-wrapper {
 
+    // Color
+    --input-color: var(--md-sys-color-primary);
+
     .ts-control {
-        
+
         // Border
-        border-radius: 4px 4px 0px 0px;
+        border-radius: 4px 4px 0 0;
 
         // Dimension
+        // Equal padding top and bottom — unlike a plain `.input-field
+        // input` (which is asymmetric: padding-top 20px / 0 bottom, since
+        // the label floats into the top gap), Tom Select's value has no
+        // separate floating label sharing the box, so it reads better
+        // centred with the same space on both sides.
+        padding: 10px 16px 10px 16px;
+        // Tom Select's own base rule (`.ts-control:not(.rtl)`) sets
+        // `padding-right` from `max(--ts-pr-min, --ts-pr-caret + …)` with
+        // `!important`, which pushes the value in from a variable, caret-
+        // dependent distance instead of the flat 16px every other field
+        // uses — re-assert it explicitly so the value lines up.
+        padding-right: 16px!important;
+        box-sizing: border-box;
+        // Floor at 56px when empty (no value/tags yet) so the field reads
+        // at the same height as its neighbours; grows past it once tags
+        // wrap to a second line. `align-items: center` keeps the single
+        // line of content centred in that extra space instead of stuck to
+        // the top, since the padding above is no longer enough on its own
+        // to fill a box taller than the content.
         min-height: 56px;
+        align-items: center;
+
+        // Gap
+        // `.item` only carries a right margin (horizontal spacing) — once
+        // tags wrap to a second line there's nothing keeping the lines
+        // apart, so they touch. `row-gap` only affects the vertical gap
+        // between wrapped lines, leaving the horizontal margin untouched.
+        row-gap: 8px;
+
+        // Tom Select's own theme wins ties against a bare ".ts-control" on
+        // stateful combos such as ".ts-wrapper.single.input-active" (4
+        // classes), so the colors below need `!important` to reliably
+        // outrank it regardless of state.
 
         // Color
-        background-color: var(--md-sys-color-background);
-        border-bottom: 1px solid var(--md-sys-color-on-surface-variant);
-        border-right: 0;
-        border-left: 0;
-        border-top: 0;
+        background-color: var(--md-sys-color-surface)!important;
+        border-bottom: 1px solid var(--md-sys-color-on-surface-variant)!important;
+        border-right: 0!important;
+        border-left: 0!important;
+        border-top: 0!important;
+
+        // Transition
+        transition: border-bottom .2s ease-out, padding-top .2s ease-out;
 
         // Item
+        // A single-select's chosen value stays a plain label — only a
+        // multi-select's tags get vertical padding + the filled chip box,
+        // added below under `&.multi .ts-control .item`. Without that
+        // padding here, the value's own line-height is all that's left
+        // above the underline, landing it where a plain input's text sits
+        // instead of floating lower in a taller, padded box.
         .item {
-        
+
             // Border
-            border-radius: 4px;
+            border-radius: 8px;
 
             // Font
             font-size: 16px;
 
             // Dimension
-            padding: 8px 6px!important;
-            margin: 0px 10px 0px 0!important;
+            padding: 0 6px!important;
+            margin: 0 10px 0 0!important;
 
             // Color
-            // color: var(--md-sys-color-on-surface-variant);
-            color: var(--md-sys-color-on-background);
+            color: var(--md-sys-color-on-surface)!important;
+            background-color: transparent!important;
 
         }
 
@@ -51,33 +97,67 @@
             width: initial!important;
             height: initial!important;
 
+            // Gap
+            // Kill Tom Select's default `flex: 1 1 auto`, which stretches
+            // the shared text-entry input to fill the rest of the row —
+            // that's the big empty gap seen when arrow-keying between tags.
+            flex: none!important;
+            min-width: 2px!important;
+
             // Font
             font-size: 16px;
 
             // Color
-            color: var(--md-sys-color-on-surface-variant);
+            color: var(--md-sys-color-on-surface)!important;
+
+            &::placeholder {
+
+                // Color
+                color: var(--md-sys-color-on-surface-variant)!important;
+                opacity: 1!important;
+
+            }
 
         }
 
     }
 
-    // Focus
+    // Label
+    &:not(.focus) .ts-control input::placeholder {
+
+        // Color
+        color: transparent!important;
+
+    }
+
+    /**
+     * Focus state, mirrors .input-field input:focus:not([readonly])
+     */
     &.focus {
 
         // Ts control
         .ts-control {
 
+            // Border
+            border-bottom: 2px solid var(--input-color);
+
+            // Dimension
+            // Border grows 1px -> 2px on focus; trim 1px off the bottom
+            // (not the top) so top/bottom stay as close to equal as
+            // possible while the box's total height doesn't jump.
+            padding-bottom: 9px;
+
             .item {
 
                 // Color
-                color: var(--md-sys-color-surface-variant);
+                color: var(--md-sys-color-on-surface);
 
             }
 
             input {
 
                 // Color
-                color: var(--md-sys-color-surface-variant);
+                color: var(--md-sys-color-on-surface)!important;
 
             }
 
@@ -85,14 +165,48 @@
 
     }
 
-    // Clear
-    &.multi { 
-        
+    /**
+     * Multi select: clear button and native combobox input
+     */
+    &.multi {
+
+        // Padding
+        // Tom Select's own `.ts-wrapper.multi.has-items .ts-control` rule
+        // (_items.scss) recomputes padding from the item's own spacing
+        // with `!important`, at the same specificity as our base rule
+        // above — it wins the tie and drops our `padding-bottom`. Repeat
+        // the element type (`div.`) to outrank it on specificity alone,
+        // regardless of stylesheet order.
+        &.has-items div.ts-control {
+
+            padding: 10px 16px 10px 16px!important;
+            padding-right: 16px!important;
+
+        }
+
         .ts-control {
+
+            // Tag box
+            // Materialize's own `.chip` idiom: a neutral tint over the
+            // surface. Scoped to `.multi` only — a multi-select's tags are
+            // discrete tokens, unlike a single-select's plain value, so
+            // only they get the breathing room the pill shape needs.
+            .item {
+
+                // Border
+                border-radius: 8px;
+
+                // Dimension
+                padding: 8px 6px!important;
+
+                // Color
+                background-color: color-mix(in srgb, transparent, var(--md-sys-color-on-surface) 12%)!important;
+
+            }
 
             > div.clear-button {
 
-                // Border
+                // Color
                 color: var(--md-sys-color-on-surface-variant);
 
             }
@@ -101,7 +215,7 @@
             input[role="combobox"] {
 
                 // Color
-                color: var(--md-sys-color-on-background);
+                color: var(--md-sys-color-on-surface)!important;
 
             }
 
@@ -109,37 +223,86 @@
 
     }
 
+    /**
+     * Disabled state, mirrors .input-field input:disabled
+     */
     &.disabled {
 
         .ts-control {
 
+            // Opacity
             opacity: 1;
+
+            // Color
+            color: color-mix(in srgb, transparent, var(--md-sys-color-on-surface) 38%);
+            background-color: color-mix(in srgb, transparent, var(--md-sys-color-on-surface) 4%);
+            border-bottom-color: color-mix(in srgb, transparent, var(--md-sys-color-on-surface) 12%);
+
+            .item, input {
+
+                // Color
+                color: color-mix(in srgb, transparent, var(--md-sys-color-on-surface) 38%);
+
+            }
 
         }
 
-    } 
+    }
 
 }
 
-// Ts Wrapper
+/**
+ * Error state, mirrors .input-field.error
+ */
+.input-field.error .ts-wrapper {
+
+    // Ts control
+    .ts-control {
+
+        // Border
+        border-bottom-color: var(--md-sys-color-error);
+
+    }
+
+    &.focus .ts-control {
+
+        // Border
+        border-bottom-color: var(--md-sys-color-error);
+
+    }
+
+}
+
+/**
+ * Dropdown appended to body by Tom Select (dropdownParent: "body"), style at root
+ */
 .ts-dropdown {
+
+    // Color
+    // `dropdownParent: "body"` detaches this from `.ts-wrapper`, so it
+    // can't inherit `--input-color` from there — redeclare it here so the
+    // active option can share the same accent as a focused input-field.
+    --input-color: var(--md-sys-color-primary);
 
     // Depth
     z-index: 9999;
 
     // Color
-    background-color: var(--md-sys-color-on-tertiary);
+    // `--md-sys-color-surface` resolves to the same value as
+    // `--md-sys-color-background` in dark mode, so a dropdown floating over
+    // the page reads as flat/too dark. `surface-variant` is the elevated
+    // tone meant for exactly this — a container sitting above the page.
+    background-color: var(--md-sys-color-surface-variant)!important;
 
     // Position
     margin-top: 0px;
 
     // Shadow
-    box-shadow: 0 2px 2px #00000024,0 3px 1px -2px #0000001f,0 1px 5px #0003;
+    box-shadow: 0 2px 2px #00000024, 0 3px 1px -2px #0000001f, 0 1px 5px #0003;
 
     // Dimension
     border: none;
-
-    // Children
+    border-radius: 0 0 4px 4px;
 
     // Items
     .create, .no-results, .option {
@@ -149,9 +312,9 @@
         line-height: 22px;
 
         // Color
-        color: var(--md-sys-color-primary);
-        background-color: transparent;
-        
+        color: var(--md-sys-color-on-surface-variant)!important;
+        background-color: transparent!important;
+
         // Dimension
         padding: 14px 16px;
 
@@ -160,22 +323,32 @@
 
         &.active {
 
-            background-color: var(--md-sys-color-tertiary-container);
+            // Color
+            color: var(--input-color)!important;
+            background-color: color-mix(in srgb, transparent, var(--input-color) 12%)!important;
 
         }
 
     }
 
+    // Optgroup header
+    .optgroup-header {
+
+        // Color
+        color: var(--md-sys-color-on-surface-variant);
+
+    }
+
 }
 
-// Label
+/**
+ * Float the label like a native .input-field input, once Tom Select has a value or is focused
+ */
 select.tomselected + div.ts-wrapper + label {
-
-    /* color: white; */
-    /* background-color: red; */
 
     // Font
     text-align: left!important;
+    color: var(--md-sys-color-on-surface-variant);
 
     // Position
     position: absolute!important;
@@ -187,7 +360,25 @@ select.tomselected + div.ts-wrapper + label {
 
 }
 
-// input-field
+/**
+ * Label colour follows focus / error state, same as a native input + label
+ */
+select.tomselected + div.ts-wrapper.focus + label {
+
+    // Color
+    color: var(--input-color);
+
+}
+.input-field.error select.tomselected + div.ts-wrapper + label {
+
+    // Color
+    color: var(--md-sys-color-error);
+
+}
+
+/**
+ * input-field spacing when it wraps a Tom Select
+ */
 .input-field > .ts-wrapper {
 
     // Position
@@ -195,7 +386,7 @@ select.tomselected + div.ts-wrapper + label {
 
 }
 
-/*
+/**
  * Fix suffix next to select
  */
 div.suffix.suffix-tomselect {
@@ -208,14 +399,16 @@ div.suffix.suffix-tomselect {
 
 }
 
-// Rectangle on select not focus
+/**
+ * Caret, closed state
+ */
 select.tomselected + .ts-wrapper .ts-control::after {
 
     // Content
     content: "";
-    
+
     // Dimension
-    border: solid var(--md-sys-color-on-background);
+    border: solid var(--md-sys-color-on-surface-variant);
     border-width: 0 3px 3px 0;
     padding: 3px;
     display: inline-block;
@@ -223,7 +416,6 @@ select.tomselected + .ts-wrapper .ts-control::after {
     // Position
     position: absolute;
     top: calc(50% - 6px);
-    // top: 39%;
     right: 25px;
     z-index: 1;
     transform: rotate(45deg);
@@ -234,14 +426,16 @@ select.tomselected + .ts-wrapper .ts-control::after {
 
 }
 
-// Rectangle on select
+/**
+ * Caret, open state
+ */
 select.tomselected + .ts-wrapper.dropdown-active .ts-control::after {
 
     // Content
     content: "";
-    
+
     // Dimension
-    border: solid var(--md-sys-color-on-background);
+    border: solid var(--md-sys-color-on-surface-variant);
     border-width: 0 3px 3px 0;
     padding: 3px;
     display: inline-block;
@@ -249,7 +443,6 @@ select.tomselected + .ts-wrapper.dropdown-active .ts-control::after {
     // Position
     position: absolute;
     top: calc(50% - 4px);
-    // top: 39%;
     right: 25px;
     z-index: 1;
     transform: rotate(-135deg);

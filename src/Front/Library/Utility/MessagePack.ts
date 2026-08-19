@@ -11,6 +11,7 @@
 /**
  * Dependances
  */
+import { gzip, ungzip } from 'pako';
 import { unpack, pack } from 'msgpackr';
 
 /**
@@ -30,15 +31,23 @@ export default class MessagePack {
 
     /**
      * Stringify
-     * 
+     *
      * Convert to message pack string
-     * 
+     *
      * @param input to stringify
+     * @param gzipBrotli Gzip the packed result
      * @returns {ArrayBuffer}
      */
-    public static stringify = (input:any):Buffer|Uint8Array => {
+    public static stringify = (input:any, gzipBrotli:boolean = false):Buffer|Uint8Array => {
 
-        let result = pack(input);
+        // Pack input
+        let result:Buffer|Uint8Array = pack(input);
+
+        // Check gzip
+        if(gzipBrotli)
+
+            // Gzip packed result
+            result = gzip(result as Uint8Array);
 
         // Return result
         return result;
@@ -47,21 +56,31 @@ export default class MessagePack {
 
     /**
      * Parse
-     * 
+     *
      * Parse message pack string
-     * 
+     *
      * @param input to parse
+     * @param gzipBrotli Ungzip the input before parsing
      * @returns {string}
      */
-    public static parse = (input:Buffer|Uint8Array):any => {
+    public static parse = (input:Buffer|Uint8Array, gzipBrotli:boolean = false):any => {
 
-        // Check 
+        // Check
         let result = null;
 
         // Check input
-        if(input)
+        if(input){
 
-            result = unpack(input);
+            // Check gzip
+            let packed:Buffer|Uint8Array = gzipBrotli
+                ? ungzip(input as Uint8Array)
+                : input
+            ;
+
+            // Unpack result
+            result = unpack(packed);
+
+        }
 
         // Return result
         return result;

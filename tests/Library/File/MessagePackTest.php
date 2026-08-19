@@ -124,6 +124,64 @@ class MessagePackTest extends TestCase {
     }
 
     /**
+     * Test Encode Decode Gzip
+     *
+     * @return void
+     */
+    public function testEncodeDecodeGzip():void {
+
+        # Set data
+        $data = [
+            "first"     =>  null,
+            "second"    =>  "test",
+            "third"     =>  3,
+            "fourth"    =>  true
+        ];
+
+        # Encode without gzip
+        $encoded = MessagePack::encode($data);
+
+        # Encode with gzip
+        $encodedGzip = MessagePack::encode($data, true);
+
+        # Check gzip encoded differs from plain encoded
+        $this->assertNotEquals($encoded, $encodedGzip);
+
+        # Decode gzip encoded data back
+        $result = MessagePack::decode($encodedGzip, false, true);
+
+        # Compare
+        $this->assertEquals($data, $result);
+
+    }
+
+    /**
+     * Test Check Gzip
+     *
+     * @return void
+     */
+    public function testCheckGzip():void {
+
+        # Set data
+        $data = [
+            "first"     =>  null,
+            "second"    =>  "test",
+            "third"     =>  3,
+            "fourth"    =>  true
+        ];
+
+        # Encode with gzip
+        $encodedGzip = MessagePack::encode($data, true);
+
+        # Check gzip encoded is recognized with gzipBrotli flag
+        $this->assertTrue(MessagePack::check($encodedGzip, true));
+
+        # Check plain encoded is still recognized
+        $this->assertTrue(MessagePack::check(MessagePack::encode($data)));
+
+    }
+
+    /**
      * Test Create
      * 
      * @return void 

@@ -43,7 +43,7 @@ class MessagePack {
      * 
      * @return bool
      */
-    public static function isConvertible($input):bool {
+    public static function isConvertible(mixed $input):bool {
 
         # Check not is resource  or Closure
         if (is_resource($input) || $input instanceof Closure)
@@ -68,14 +68,46 @@ class MessagePack {
 
     }
 
-    /** 
+    /**
      * Check if input is message pack
-     * 
+     *
      * @param mixed $string
+     * @param bool $gzipBrotli Ungzip string before checking it
      * @return bool
      */
-    public static function check(mixed $string = ""):bool {
-        
+    public static function check(mixed $string = "", bool $gzipBrotli = false):bool {
+
+        # Check gzip
+        if($gzipBrotli){
+
+            # Check gzdecode exists
+            if(!function_exists('gzdecode'))
+
+                # Return false
+                return false;
+
+            # Try
+            try {
+
+                # Ungzip string
+                $string = gzdecode($string);
+
+                # Check ungzip result
+                if($string === false)
+
+                    # Return false
+                    return false;
+
+            # Catch error
+            } catch (Throwable $e) {
+
+                # Return false
+                return false;
+
+            }
+
+        }
+
         # If PECL extension is available
         if(function_exists('msgpack_unpack')) {
 
@@ -83,6 +115,7 @@ class MessagePack {
             try {
 
                 # Unpack
+                /** @disregard P1010 */
                 msgpack_unpack($string);
 
                 # Return true
@@ -386,13 +419,14 @@ class MessagePack {
 
     /**
      * Encode
-     * 
+     *
      * Encode data to message pack
-     * 
+     *
      * @param mixed $input Input to encode in Json
+     * @param bool $gzipBrotli Gzip the packed result
      * @return string
      */
-    public static function encode(mixed $input = ""):string {
+    public static function encode(mixed $input = "", bool $gzipBrotli = false):string {
 
         # Set result
         $result = "";
@@ -401,6 +435,7 @@ class MessagePack {
         if(function_exists('msgpack_pack')) {
 
             # Pack
+            /** @disregard P1010 */
             $result = msgpack_pack($input);
 
         }else
@@ -411,8 +446,15 @@ class MessagePack {
             $packer = new Packer();
 
             # Pack input
-            return $packer->pack($input);
+            $result = $packer->pack($input);
+
         }
+
+        # Check gzip
+        if($gzipBrotli && $result !== "" && function_exists('gzencode'))
+
+            # Gzip packed result
+            $result = gzencode($result);
 
         # Return result
         return $result;
@@ -421,22 +463,44 @@ class MessagePack {
 
     /**
      * Decode
-     * 
+     *
      * Decode json
-     * 
+     *
      * @param string $jsonString
      * @param bool $decodeAsObject Decode as object, else as array
+     * @param bool $gzipBrotli Ungzip the input before decoding
      * @return mixed
      */
-    public static function decode(string $input, bool $decodeAsObject = false):mixed {
+    public static function decode(string $input, bool $decodeAsObject = false, bool $gzipBrotli = false):mixed {
 
         # Set result
         $result = null;
+
+        # Check gzip
+        if($gzipBrotli && $input !== ""){
+
+            # Check gzdecode exists
+            if(!function_exists('gzdecode'))
+
+                # New Exception
+                throw new CrazyException(
+                    "Function \"gzdecode\" doesn't exists, please check if zlib extension is enabled...",
+                    500,
+                    [
+                        "custom_code"   =>  "message-pack-002",
+                    ]
+                );
+
+            # Ungzip input
+            $input = gzdecode($input);
+
+        }
 
         # Check msgpack_pack
         if(function_exists('msgpack_unpack')){
 
             # Set result
+            /** @disregard P1010 */
             $result = msgpack_unpack($input);
 
         }else

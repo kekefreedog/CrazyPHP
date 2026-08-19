@@ -1,4 +1,6 @@
-{{!-- Filter-specific markup for the default/generic input type --}}
+{{!-- Filter / text — plain native <select> (no data-type="select": that attribute is what
+  ! also triggers TomSelect in UtilityForm.ts, so it's deliberately omitted here) beside a
+  ! classic text input. Values = Operation::LIST keys. Not yet auto-collected by getFormData(). --}}
 <div class="col s12 mn-2{{#if _style.customClass.input-field}} {{_style.customClass.input-field}}{{/if}}" style="margin-bottom: 15px;">
 
     <div class="input-field">
@@ -11,11 +13,11 @@
                 {{#if disabled}}disabled=""{{else}}{{#if form.onready}}disabled="loading"{{/if}}{{/if}}
             >
                 {{#if _style.filter.operators}}
-                    {{#each _style.filter.operators as |operator|}}<option value="{{operator.value}}"{{#if operator.default}} selected=""{{/if}}>{{operator.label}}</option>{{/each}}
+                    {{#each _style.filter.operators as |operator|}}<option value="{{operator.value}}"{{#if operator.default}} selected{{/if}}>{{operator.label}}</option>{{/each}}
                 {{else}}
+                    <option value="*">*</option>
                     <option value="=">=</option>
                     <option value="!=">≠</option>
-                    <option value="*">*</option>
                 {{/if}}
             </select>
         </div>
@@ -27,14 +29,14 @@
             name="{{name}}"
             class="validate {{#if _style.customClass.input}} {{_style.customClass.input}}{{/if}}"
             {{#if disabled}}disabled=""{{else}}{{#if form.onready}}disabled="loading"{{/if}}{{/if}}
-            {{#if type}}type="{{type}}"{{else}}type="text"{{/if}}
+            type="text"
             {{#if placeholder}}placeholder="{{placeholder}}"{{else}}placeholder=" "{{/if}}
             {{#if readonly}}readonly=""{{/if}}
             {{#unless form.onready}}{{#if default}}value="{{default}}" default="{{default}}"{{/if}}{{/unless}}
             {{#if _style.text.minlength includeZero=false}}minlength="{{_style.text.minlength}}"{{/if}}
             {{#if _style.text.maxlength includeZero=false}}maxlength="{{_style.text.maxlength}}"{{/if}}
         >
-        {{#if label}}<label for="{{form.id}}_{{name}}">{{#if required}}<b>{{/if}}{{label}}{{#if required}}</b>*{{/if}}</label>{{/if}}
+        {{#if label}}<label for="{{form.id}}_{{name}}">{{label}}</label>{{/if}}
     </div>
 
 </div>

@@ -1,2 +1,37 @@
 {{!-- TODO: design filter-specific markup for "checkbox" --}}
-{{> form/form_checkbox}}
+<div class="col s12 mn-2{{#if _style.customClass.input-field}} {{_style.customClass.input-field}}{{/if}}" style="margin-bottom: 15px;">
+
+    <div class="input-field">
+        <div class="input-filter">
+            <select
+                data-operator-id="{{form.id}}_{{name}}"
+                data-operator-name="{{name}}"
+                class="filter-operator"
+                aria-label="{{#if label}}{{label}} {{/if}}comparison"
+                {{#if disabled}}disabled=""{{else}}{{#if form.onready}}disabled="loading"{{/if}}{{/if}}
+            >
+                {{#if _style.filter.operators}}
+                    {{#each _style.filter.operators as |operator|}}<option value="{{operator.value}}"{{#if operator.default}} selected=""{{/if}}>{{operator.label}}</option>{{/each}}
+                {{else}}
+                    <option value="=">=</option>
+                    <option value="!=">≠</option>
+                    <option value="*">*</option>
+                {{/if}}
+            </select>
+        </div>
+        <div id="dependency" class="suffix hide"><i class="material-icons">link_off</i></div>
+        <p><label>
+            {{#if disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{/if}}
+            <input
+                id="{{form.id}}_{{name}}"
+                name="{{name}}"
+                type="checkbox"
+                {{#if _style.customClass.input}}class="{{_style.customClass.input}}"{{/if}}
+                {{#if disabled}}disabled=""{{else}}{{#if form.onready}}disabled="loading"{{/if}}{{/if}}
+                {{#unless form.onready}}{{#if default}}checked="" default="true"{{/if}}{{/unless}}
+            />
+            {{#if label}}<span>{{label}}</span>{{/if}}
+        </label></p>
+    </div>
+
+</div>

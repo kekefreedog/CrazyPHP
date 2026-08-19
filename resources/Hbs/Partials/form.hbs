@@ -27,7 +27,8 @@
     {{!-- Items --}}
     {{#each form.items as |item|}}
     {{#if form.filter}}
-        {{#is item.type "file"}}{{> filter/filter_file item form=form}}
+        {{#is item.type "text"}}{{> filter/filter_text item form=form}}
+        {{else}}{{#is item.type "file"}}{{> filter/filter_file item form=form}}
         {{else}}{{#is item.type "color"}}{{> filter/filter_color item form=form}}
         {{else}}{{#is item.type "select"}}{{> filter/filter_select item form=form}}
         {{else}}{{#is item.type "password"}}{{> filter/filter_password item form=form}}
@@ -39,7 +40,7 @@
         {{else}}{{#is item.type "checkbox"}}{{> filter/filter_checkbox item form=form}}
         {{else}}{{#is item.type "hidden"}}{{> filter/filter_hidden item form=form}}
         {{else}}{{> filter/filter_default item form=form}}
-        {{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}
+        {{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}
     {{else}}
         {{#is item.type "file"}}{{> form/form_file item form=form}}
         {{else}}{{#is item.type "color"}}{{> form/form_color item form=form}}
