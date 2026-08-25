@@ -563,8 +563,8 @@ export default class State {
                     selector 
                         ? this._store.subscribe(
                             processedCallback,
-                            // @ts-ignore
-                            selector
+                            // selector
+                            this._eventRegister[name].selector
                         )
                         : this._store.subscribe(
                             processedCallback,

@@ -68,6 +68,55 @@ div.switch:has(input[type="checkbox"]) {
 
 }
 
+/*
+ * Fix checkbox label text alignment
+ *
+ * The checkbox box is an inline replaced element drawn via `:before`/`:after`
+ * — its default `vertical-align: baseline` sits the box's bottom edge on the
+ * label text's baseline, leaving the box floating visibly above the text's
+ * optical center instead of level with it.
+ */
+input[type="checkbox"] ~ span {
+
+    // Position
+    vertical-align: middle;
+
+    // Spacing
+    margin-left: 8px;
+
+}
+input[type="checkbox"] {
+
+    // Position
+    vertical-align: middle;
+
+}
+
+/*
+ * Fix checkbox inheriting text-field chrome
+ *
+ * Materialize 2.3.x broadened `.input-field input, textarea` to be
+ * type-unqualified (it used to list text-like types explicitly), so
+ * checkboxes now also get the text-field padding/border-bottom meant
+ * for text inputs — showing up as a stray horizontal line through
+ * the checkbox box.
+ */
+.input-field input[type="checkbox"] {
+
+    // Reset text-field chrome
+    padding: 0;
+    border-bottom: none;
+    border-radius: 0;
+
+    &:focus:not([readonly]) {
+
+        border-bottom: none;
+        padding-top: 0;
+
+    }
+
+}
+
 /**
  * Fix supporting-text position
  */

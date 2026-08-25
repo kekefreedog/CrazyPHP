@@ -199,8 +199,7 @@ class Operation {
      * 
      * Get Operations
      * 
-     * @param string|array $operations
-     * @return void
+     * @return string|array
      */
     final public function get():string|array {
 

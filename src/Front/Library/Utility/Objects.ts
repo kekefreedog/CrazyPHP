@@ -370,6 +370,183 @@ export default class Objects {
     }
 
     /**
+     * Difference
+     * 
+     * Get object that represents difference between multiple objects
+     * 
+     * @param objects:any[]
+     * @returns {any}
+     */
+    public static difference(...objects:any[]):any {
+
+        // Initialize the final result.
+        let result: any = {};
+
+        // Check that at least two objects were provided.
+        if(objects.length >= 2) {
+
+            // Recursive function used to compare values.
+            const diff = (values: any[]): any => {
+
+                // Initialize the result for the current level.
+                let currentResult: any = {};
+
+                // Check whether all values are objects.
+                let allObjects = true;
+
+                // Check whether at least one value is an object.
+                let hasObject = false;
+
+                // Check whether at least one value is an array.
+                let hasArray = false;
+
+                // Check whether all values are equal.
+                let allEqual = true;
+
+                // Compare every value against the first value.
+                for(let i = 1; i < values.length; i++){
+
+                    // Compare the current value with the first value.
+                    if (JSON.stringify(values[i]) !== JSON.stringify(values[0])) {
+                        
+                        // At least one value is different.
+                        allEqual = false;
+
+                    }
+                }
+
+                // Check every value to determine its type.
+                for (const value of values) {
+
+                    // Check if the value is an object.
+                    if (
+                        value !== null &&
+                        typeof value === "object" &&
+                        !Array.isArray(value)
+                    ) {
+
+                        // At least one object exists.
+                        hasObject = true;
+
+                    } else {
+                        
+                        // At least one value is not an object.
+                        allObjects = false;
+
+                    }
+
+                    // Check if the value is an array.
+                    if (Array.isArray(value)) {
+
+                        // At least one array exists.
+                        hasArray = true;
+
+                    }
+
+                }
+
+                // If all values are equal, there is no difference.
+                if (allEqual) {
+
+                    // Keep the current result empty.
+
+                // If at least one value is an object, compare its properties.
+                } else if (hasObject) {
+
+                    // Create a set containing every property name.
+                    const keys = new Set<string>();
+
+                    // Iterate through all values.
+                    for(const value of values) {
+
+                        // Only inspect objects.
+                        if (
+                            value !== null &&
+                            typeof value === "object" &&
+                            !Array.isArray(value)
+                        ) {
+
+                            // Add all properties to the set.
+                            Object.keys(value).forEach(key => {
+                                keys.add(key);
+                            });
+                        }
+
+                    }
+
+                    // Compare every property.
+                    for (const key of keys) {
+
+                        // Get the value of this property from every object.
+                        const childValues = values.map(value => {
+
+                            // Return the property when the value is an object.
+                            if (
+                                value !== null &&
+                                typeof value === "object" &&
+                                !Array.isArray(value)
+                            ) {
+                            
+                                return value[key];
+
+                            }
+
+                            // Return undefined when the value is not an object.
+                            return undefined;
+
+                        });
+
+                        // Recursively calculate the difference.
+                        const childDiff = diff(childValues);
+
+                        // Add the difference if one was found.
+                        if (
+                            childDiff !== undefined &&
+                            (
+                                typeof childDiff !== "object" ||
+                                Object.keys(childDiff).length > 0
+                            )
+                        )
+
+                            // Set current
+                            currentResult[key] = childDiff;
+
+                    }
+
+                } else
+                // If at least one value is an array, store all array values.
+                if(hasArray) {
+
+                    // Store the values of the arrays.
+                    currentResult = {
+                        values
+                    };
+
+                // Otherwise, the values are primitive values.
+                } else {
+
+                    // Store all different primitive values.
+                    currentResult = {
+                        values
+                    };
+                }
+
+                // Return the result of this recursive level.
+                return currentResult;
+
+            };
+
+            // Calculate the complete difference.
+            result = diff(objects);
+
+        }
+
+        // Return the final result.
+        return result;
+        
+    }
+
+    /**
      * Map Headers
      * 
      * @param headers

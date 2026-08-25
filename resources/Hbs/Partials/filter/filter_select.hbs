@@ -38,13 +38,17 @@
             {{#if valueSuffix}}data-form-value-suffix="{{valueSuffix}}"{{/if}}
             {{#if depends}}data-depends="{{#isArray depends}}{{join depends ","}}{{else}}{{depends}}{{/isArray}}" default="true"{{/if}}
         {{#if _style.select.tag}}/>{{else}}>{{#if select}}{{#if select.url}}{{else}}
-            {{!-- Iteration options --}}
-            {{#each select as |option|}}<option
+            {{#isObject select}}{{#each select as |option|}}<option
                 {{#if option.value includeZero=false}}value="{{option.value}}"{{/if}}
                 {{#unless ../form.onready}}{{#if ../default includeZero=false}}{{#is ../default option.value}}selected=""{{/is}}{{else}}{{#if option.default}}selected=""{{/if}}{{/if}}{{/unless}}
                 {{#unless ../form.onready}}{{#if option.default}}default=""{{/if}}{{/unless}}
                 {{#if option.disabled}}disabled=""{{/if}}
-            >{{option.label}}</option>{{/each}}
+            >{{option.label}}</option>{{/each}}{{else}}{{#each select}}<option
+                {{#if this includeZero=false}}value="{{this}}"{{/if}}
+                {{#unless ../form.onready}}{{#if ../default includeZero=false}}{{#is ../default this}}selected=""{{/is}}{{else}}{{#if option.default}}selected=""{{/if}}{{/if}}{{/unless}}
+                {{#unless ../form.onready}}{{#if option.default}}default=""{{/if}}{{/unless}}
+                {{#if option.disabled}}disabled=""{{/if}}
+            >{{this}}</option>{{/each}}{{/isObject}}
         {{/if}}{{/if}}</select>
         {{#if select.url}}<div class="progress mt-0 mb-0" data-select-id="{{form.id}}_{{name}}"><div class="indeterminate"></div></div>{{/if}}{{/if}}
     </div>
