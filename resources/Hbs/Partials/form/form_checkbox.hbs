@@ -1,11 +1,5 @@
-{{!--
-  ! Form / checkbox
-  !
-  ! Renders one "checkbox" form item. Included by ../form.hbs as
-  ! {{> form/form_checkbox item form=form}} — `item` becomes the partial's
-  ! context (bare field access), `form` is merged in as an extra field.
-  !--}}
-<div class="input-field col s12 mn-2{{#if _style.customClass.input-field}} {{_style.customClass.input-field}}{{/if}}" style="margin-bottom: 15px;">
+{{!-- Form / checkbox --}}
+<div partial="form/form_checkbox" class="input-field col s12 mn-2{{#if _style.customClass.input-field}} {{_style.customClass.input-field}}{{/if}}" style="margin-bottom: 15px;">
 
     <div id="dependency" class="suffix hide"><i class="material-icons">link_off</i></div>
     <p><label>

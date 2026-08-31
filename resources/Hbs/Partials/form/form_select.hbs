@@ -1,11 +1,5 @@
-{{!--
-  ! Form / select
-  !
-  ! Renders one "select" form item. Included by ../form.hbs as
-  ! {{> form/form_select item form=form}} — `item` becomes the partial's
-  ! context (bare field access), `form` is merged in as an extra field.
-  !--}}
-<div class="input-field col s12 mn-2{{#if _style.customClass.input-field}} {{_style.customClass.input-field}}{{/if}}" style="margin-bottom: 15px;">
+{{!-- Form / select --}}
+<div partial="form/form_select" class="input-field col s12 mn-2{{#if _style.customClass.input-field}} {{_style.customClass.input-field}}{{/if}}" style="margin-bottom: 15px;">
 
     <div id="dependency" class="suffix suffix-tomselect hide"><i class="material-icons">link_off</i></div>
     {{#if disabled}}<div class="suffix suffix-tomselect"><i class="material-icons">lock</i></div>{{else}}

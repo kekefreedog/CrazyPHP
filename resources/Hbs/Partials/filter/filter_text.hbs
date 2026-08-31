@@ -1,7 +1,5 @@
-{{!-- Filter / text — plain native <select> (no data-type="select": that attribute is what
-  ! also triggers TomSelect in UtilityForm.ts, so it's deliberately omitted here) beside a
-  ! classic text input. Values = Operation::LIST keys. Not yet auto-collected by getFormData(). --}}
-<div class="col s12 mn-2{{#if _style.customClass.input-field}} {{_style.customClass.input-field}}{{/if}}" style="margin-bottom: 15px;">
+{{!-- Filter / text --}}
+<div partial="filter/filter_text" class="col s12 mn-2{{#if _style.customClass.input-field}} {{_style.customClass.input-field}}{{/if}}" style="margin-bottom: 15px;">
 
     <div class="input-field">
         {{#isnt _style.filter.operators false}}

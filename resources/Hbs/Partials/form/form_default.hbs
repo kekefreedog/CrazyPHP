@@ -1,13 +1,5 @@
-{{!--
-  ! Form / default
-  !
-  ! Generic fallback renderer for any item.type not covered by a dedicated
-  ! form_<type>.hbs partial (e.g. "text", "email" — anything that just needs
-  ! a plain <input type="..."> element). Included by ../form.hbs as
-  ! {{> form/form_default item form=form}} — `item` becomes the partial's
-  ! context (bare field access), `form` is merged in as an extra field.
-  !--}}
-<div class="input-field col s12 mn-2{{#if _style.customClass.input-field}} {{_style.customClass.input-field}}{{/if}}" style="margin-bottom: 15px;">
+{{!-- Form / default --}}
+<div partial="form/form_default" class="input-field col s12 mn-2{{#if _style.customClass.input-field}} {{_style.customClass.input-field}}{{/if}}" style="margin-bottom: 15px;">
 
     {{#if disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{else}}
     {{#if _style.suffix}}<div class="suffix"><i class="{{_style.suffix.class}}">{{_style.suffix.text}}</i></div>{{/if}}{{/if}}

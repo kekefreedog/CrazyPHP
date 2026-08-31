@@ -32,7 +32,7 @@
                 {{#if disabled}}disabled=""{{else}}{{#if form.onready}}disabled="loading"{{/if}}{{/if}}
                 {{#unless form.onready}}{{#if default}}checked="" default="true"{{/if}}{{/unless}}
             />
-            {{#if label}}<span>{{label}}</span>{{/if}}
+            {{#if label}}<span>{{#if required}}<b>{{/if}}{{label}}{{#if required}}</b>*{{/if}}</span>{{/if}}
         </label></p>
     </div>
 

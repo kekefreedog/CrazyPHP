@@ -1,17 +1,5 @@
-{{!--
-  ! Form / radio
-  !
-  ! Renders one "radio" form item. Included by ../form.hbs as
-  ! {{> form/form_radio item form=form}} — `item` becomes the partial's
-  ! context (bare field access), `form` is merged in as an extra field.
-  !
-  ! Inside the nested each-loop over `select` (aliased as radioItem), `this`
-  ! shifts to the current option — outer item fields are reached via `../`, except
-  ! where the original template intentionally distinguished the field-level
-  ! value (`../disabled`, `../default`) from the option-level one (bare
-  ! `disabled`, `default`) — that distinction is preserved exactly.
-  !--}}
-<div class="input-field col s12 mn-2{{#if _style.customClass.input-field}} {{_style.customClass.input-field}}{{/if}}" style="margin-bottom: 15px;">
+{{!-- Form / radio --}}
+<div partial="form/form_radio" class="input-field col s12 mn-2{{#if _style.customClass.input-field}} {{_style.customClass.input-field}}{{/if}}" style="margin-bottom: 15px;">
 
     <div id="{{form.id}}_{{name}}" data-radio-name="{{name}}">
         {{#if disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{/if}}

@@ -1,11 +1,5 @@
-{{!--
-  ! Form / color
-  !
-  ! Renders one "color" form item. Included by ../form.hbs as
-  ! {{> form/form_color item form=form}} — `item` becomes the partial's
-  ! context (bare field access), `form` is merged in as an extra field.
-  !--}}
-<div class="input-field col s12 mn-2{{#if _style.customClass.input-field}} {{_style.customClass.input-field}}{{/if}}" style="margin-bottom: 15px;">
+{{!-- Form / color --}}
+<div partial="form/form_color" class="input-field col s12 mn-2{{#if _style.customClass.input-field}} {{_style.customClass.input-field}}{{/if}}" style="margin-bottom: 15px;">
 
     {{#if required}}<b>{{/if}}{{label}}{{#if required}}</b>*{{/if}}<br>
     {{#if disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{else}}
