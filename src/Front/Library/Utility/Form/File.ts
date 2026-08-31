@@ -11,17 +11,14 @@
 /**
  * Dependances
  */
-// @ts-ignore
 import FilePondPluginImageExifOrientation from 'filepond-plugin-image-exif-orientation';
-// @ts-ignore
 import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type';
-// @ts-ignore
 import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
+import type { FormInputTypeHelpers, FormInputType } from './FormType';
 import type { formFilePondValue } from '../Form';
 import fr_FR from 'filepond/locale/fr-fr';
-import type { FormInputTypeHelpers } from './Type';
-import type FormInputType from './Type';
 import * as FilePond from 'filepond';
+import FormType from './FormType';
 
 /**
  * File Type
@@ -32,7 +29,7 @@ import * as FilePond from 'filepond';
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2024 Kévin Zarshenas
  */
-export default class FileType implements FormInputType {
+export default class FileType extends FormType implements FormInputType {
 
     /** Private Parameters
      ******************************************************
@@ -49,6 +46,9 @@ export default class FileType implements FormInputType {
      * @param options
      */
     constructor(options:Partial<FormOptions> = {}){
+
+        // Call parent constructor
+        super();
 
         // Ingest options
         this._options = {...this._options, ...options};
@@ -204,7 +204,7 @@ export default class FileType implements FormInputType {
      * Get
      *
      * @param itemEl:HTMLElement
-     * @return null|Array<any>[]
+     * @returns {null|Array<any>[]}
      */
     public get = (itemEl:HTMLElement, options:Partial<FormOptions> = {}):null|Array<any> => {
 
@@ -259,7 +259,7 @@ export default class FileType implements FormInputType {
      * Get Multiple
      *
      * @param itemEl:HTMLElement
-     * @return null|Array<any>[]
+     * @returns {null|Array<any>[]}
      */
     public getMultiple = (itemEl:HTMLElement, options:Partial<FormOptions> = {}):null|Array<any>[] => {
 
@@ -327,6 +327,36 @@ export default class FileType implements FormInputType {
     }
 
     /**
+     * Filter Get
+     *
+     * A file's value isn't operator-filterable — just proxies to `get()`
+     *
+     * @param itemEl:HTMLElement
+     * @param formEl:HTMLFormElement
+     * @returns {null|Array<any>}
+     */
+    public filterGet = (itemEl:HTMLElement, formEl:HTMLFormElement, options:Partial<FormOptions> = {}):null|Array<any> => {
+
+        // Return result
+        return this.get(itemEl, options);
+
+    }
+
+    /**
+     * Filter Get Multiple
+     *
+     * @param itemEl:HTMLElement
+     * @param formEl:HTMLFormElement
+     * @returns {null|Array<any>[]}
+     */
+    public filterGetMultiple = (itemEl:HTMLElement, formEl:HTMLFormElement, options:Partial<FormOptions> = {}):null|Array<any>[] => {
+
+        // Return results
+        return this.getMultiple(itemEl, options);
+
+    }
+
+    /**
      * Set
      *
      * Set file in item
@@ -335,7 +365,7 @@ export default class FileType implements FormInputType {
      * @param value:string
      * @param valuesID
      * @param formEl
-     * @return void
+     * @returns {void}
      */
     public set = (itemEl:HTMLElement, value:formFilePondValue|formFilePondValue[], valuesID:string|Object|null, formEl:HTMLFormElement, options:Partial<FormOptions> = {}):void => {
 
@@ -440,6 +470,23 @@ export default class FileType implements FormInputType {
             }
 
         }
+
+    }
+
+    /**
+     * Set Filter
+     *
+     * @param itemEl:HTMLElement
+     * @param value:string
+     * @param valuesID
+     * @param formEl
+     * @param options
+     * @returns {void}
+     */
+    public filterSet = (itemEl:HTMLElement, value:formFilePondValue|formFilePondValue[], valuesID:string|Object|null, formEl:HTMLFormElement, options:Partial<FormOptions> = {}):void => {
+
+        // Delegate to the regular setter
+        this.set(itemEl, value, valuesID, formEl, options);
 
     }
 

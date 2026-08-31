@@ -12,13 +12,13 @@
  * Dependances
  */
 import { RecursivePartial, TomSettings } from 'tom-select/dist/types/types';
+import type { FormInputTypeHelpers, FormInputType } from './FormType';
 import {default as UtilityStrings} from '../Strings';
-import type { FormInputTypeHelpers } from './Type';
 import Crazyrequest from '../../Crazyrequest';
-import type FormInputType from './Type';
 import {default as Form} from '../Form';
 import Crazyurl from '../../Crazyurl';
 import TomSelect from 'tom-select';
+import FormType from './FormType';
 import Objects from '../Objects';
 
 /**
@@ -30,7 +30,7 @@ import Objects from '../Objects';
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2024 Kévin Zarshenas
  */
-export default class RadioType implements FormInputType {
+export default class RadioType extends FormType implements FormInputType {
 
     /** Private Parameters
      ******************************************************
@@ -47,6 +47,9 @@ export default class RadioType implements FormInputType {
      * @param options
      */
     constructor(options:Partial<FormOptions> = {}){
+
+        // Call parent constructor
+        super();
 
         // Ingest options
         this._options = {...this._options, ...options};
@@ -78,11 +81,9 @@ export default class RadioType implements FormInputType {
      * Get
      *
      * @param itemEl:HTMLElement
-     * @return null|Array<any>
+     * @returns {null|Array<any>}
      */
     public get = (itemEl:HTMLElement, options:Partial<FormOptions> = {}):null|Array<any> => {
-
-        console.log("-- get solo --");
 
         // Resync options
         this._options = {...this._options, ...options};
@@ -90,6 +91,16 @@ export default class RadioType implements FormInputType {
         // Set result
         let result:null|Array<any> = null;
 
+        // In filter mode the radio group is rendered as a TomSelect-backed
+        // <select> (see filter_radio.hbs), not a set of radio inputs — delegate
+        // to the multi-value filter reader and collapse it down to a single pair
+        if(this._options.filter){
+
+            let multiple = this._getMultipleFilter(itemEl);
+
+            result = multiple && multiple.length ? multiple[0] : null;
+
+        }else
         // Check value
         if("value" in itemEl && "name" in itemEl && itemEl instanceof HTMLInputElement){
 
@@ -132,7 +143,7 @@ export default class RadioType implements FormInputType {
      * Get Multiple
      *
      * @param itemEl:HTMLElement
-     * @return null|Array<any>[]
+     * @returns {null|Array<any>[]}
      */
     public getMultiple = (itemEl:HTMLElement, options:Partial<FormOptions> = {}):null|Array<any>[] => {
 
@@ -188,15 +199,56 @@ export default class RadioType implements FormInputType {
     }
 
     /**
+     * Filter Get
+     *
+     * @param itemEl:HTMLElement
+     * @param formEl:HTMLFormElement
+     * @returns {null|Array<any>}
+     */
+    public filterGet = (itemEl:HTMLElement, formEl:HTMLFormElement, options:Partial<FormOptions> = {}):null|Array<any> => {
+
+        // Get plain key/value
+        let result = this.get(itemEl, options);
+
+        // Combine with operator
+        if(result) result = [result[0], FormType.combineFilterOperatorValue(FormType.getFilterOperatorValue(formEl, result[0]), result[1], result[0], options)];
+
+        // Return result
+        return result;
+
+    }
+
+    /**
+     * Filter Get Multiple
+     *
+     * @param itemEl:HTMLElement
+     * @param formEl:HTMLFormElement
+     * @returns {null|Array<any>[]}
+     */
+    public filterGetMultiple = (itemEl:HTMLElement, formEl:HTMLFormElement, options:Partial<FormOptions> = {}):null|Array<any>[] => {
+
+        // Get plain key/values — goes through `_getMultipleFilter()` when filter mode is on
+        let results = this.getMultiple(itemEl, options);
+
+        // Combine with operator
+        if(results) results = results.map(result => [result[0], FormType.combineFilterOperatorValue(FormType.getFilterOperatorValue(formEl, result[0]), result[1], result[0], options)]);
+
+        // Return results
+        return results;
+
+    }
+
+    /**
      * Set
      *
-     * Set select in item
+     * A plain radio group is set by rendering its "checked" attribute, not
+     * by scripting it — nothing to do outside filter mode
      *
      * @param itemEl:HTMLElement
      * @param value:string
      * @param valuesID
      * @param formEl
-     * @return void
+     * @returns {void}
      */
     public set = (itemEl:HTMLElement, value:string, valuesID:string|Object|null, formEl:HTMLFormElement, options:Partial<FormOptions> = {}):void => {
 
@@ -204,7 +256,7 @@ export default class RadioType implements FormInputType {
         this._options = {...this._options, ...options};
 
         // Check filter
-        this._options.filter && this._setFilter(itemEl, value, valuesID, formEl)
+        this._options.filter && this.filterSet(itemEl, value, valuesID, formEl, options)
     }
 
     /** Private Methods
@@ -632,15 +684,17 @@ export default class RadioType implements FormInputType {
     /**
      * Set Filter
      *
-     * Set select in item
-     *
      * @param itemEl:HTMLElement
      * @param value:string
      * @param valuesID
      * @param formEl
-     * @return void
+     * @param options
+     * @returns {void}
      */
-    private _setFilter = (itemEl:HTMLElement, value:string, valuesID:string|Object|null, formEl:HTMLFormElement):void => {
+    public filterSet = (itemEl:HTMLElement, value:string, valuesID:string|Object|null, formEl:HTMLFormElement, options:Partial<FormOptions> = {}):void => {
+
+        // Resync options
+        this._options = {...this._options, ...options};
 
         // Check itemEl
         if(["INPUT", "SELECT"].includes(itemEl.tagName) && value !== null){
@@ -773,6 +827,16 @@ export default class RadioType implements FormInputType {
 
     }
 
+    /** Private methods
+     ******************************************************
+     */
+
+    /**
+     * Get Multiple Filter
+     * 
+     * @param itemEl 
+     * @returns {null|Array<any>[]}
+     */
     public _getMultipleFilter = (itemEl:HTMLElement):null|Array<any>[] => {
 
         // Set result

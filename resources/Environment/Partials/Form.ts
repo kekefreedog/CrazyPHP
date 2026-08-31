@@ -29,15 +29,18 @@ export default class Form extends Crazypartial {
     /** Parameters
      ******************************************************
      */
-
-    /** @var _form Form Instance */
-    private _form:UtilityForm;
     
     /** 
      * @param html:string 
      * Duplicate of the class name because build change name of class
      */
     public static readonly html = html;
+
+    /** @var _form Form Instance */
+    private _form:UtilityForm;
+
+    /** @param partialEl */
+    private _partialEl:HTMLDivElement;
 
     /**
      * Constructor
@@ -49,15 +52,21 @@ export default class Form extends Crazypartial {
 
         console.log("hello form");
 
+        // Get form
+        let form = this.input.target && this.input.target instanceof HTMLFormElement 
+            ? this.input.target 
+            : ""
+        ;
+
         // Prepare form
-        this._form = new UtilityForm(UtilityForm.isHTMLFormElement(this.input.target) ? this.input.target : "", options);
+        this._form = new UtilityForm(form , options);
 
     }
     
     /** Public methods
      ******************************************************
      */
-    
+
     /**
      * Get Form Data
      */

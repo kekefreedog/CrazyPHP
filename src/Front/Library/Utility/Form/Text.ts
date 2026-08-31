@@ -11,8 +11,8 @@
 /**
  * Dependances
  */
-import type { FormInputTypeHelpers } from './Type';
-import type FormInputType from './Type';
+import type { FormInputTypeHelpers, FormInputType } from './FormType';
+import FormType from './FormType';
 
 /**
  * Text Type
@@ -23,7 +23,7 @@ import type FormInputType from './Type';
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2024 Kévin Zarshenas
  */
-export default class TextType implements FormInputType {
+export default class TextType extends FormType implements FormInputType {
 
     /** Private Parameters
      ******************************************************
@@ -40,6 +40,9 @@ export default class TextType implements FormInputType {
      * @param options
      */
     constructor(options:Partial<FormOptions> = {}){
+
+        // Call parent constructor
+        super();
 
         // Ingest options
         this._options = {...this._options, ...options};
@@ -69,7 +72,7 @@ export default class TextType implements FormInputType {
      * Get
      *
      * @param itemEl:HTMLElement
-     * @return null|Array<any>
+     * @returns {null|Array<any>}
      */
     public get = (itemEl:HTMLElement, options:Partial<FormOptions> = {}):null|Array<any> => {
 
@@ -101,7 +104,7 @@ export default class TextType implements FormInputType {
      * Get Multiple
      *
      * @param itemEl:HTMLElement
-     * @return null|Array<any>[]
+     * @returns {null|Array<any>[]}
      */
     public getMultiple = (itemEl:HTMLElement, options:Partial<FormOptions> = {}):null|Array<any>[] => {
 
@@ -130,6 +133,65 @@ export default class TextType implements FormInputType {
     }
 
     /**
+     * Filter Get
+     *
+     * Same as `get()`, but the "*" operator wraps the value on both sides
+     * (`*value*`, "contains") instead of just prefixing it
+     *
+     * @param itemEl:HTMLElement
+     * @param formEl:HTMLFormElement
+     * @returns {null|Array<any>}
+     */
+    public filterGet = (itemEl:HTMLElement, formEl:HTMLFormElement, options:Partial<FormOptions> = {}):null|Array<any> => {
+
+        // Get plain key/value
+        let result = this.get(itemEl, options);
+
+        // Check result
+        if(result){
+
+            // Get operator paired with this field
+            let operatorValue = FormType.getFilterOperatorValue(formEl, result[0]);
+
+            // Combine, wrapping the "*" operator on both sides
+            result = [result[0], FormType.combineFilterOperatorValue(operatorValue, result[1], result[0], options, true)];
+
+        }
+
+        // Return result
+        return result;
+
+    }
+
+    /**
+     * Filter Get Multiple
+     *
+     * @param itemEl:HTMLElement
+     * @param formEl:HTMLFormElement
+     * @returns {null|Array<any>[]}
+     */
+    public filterGetMultiple = (itemEl:HTMLElement, formEl:HTMLFormElement, options:Partial<FormOptions> = {}):null|Array<any>[] => {
+
+        // Get plain key/values
+        let results = this.getMultiple(itemEl, options);
+
+        // Check results
+        if(results) results = results.map(result => {
+
+            // Get operator paired with this field
+            let operatorValue = FormType.getFilterOperatorValue(formEl, result[0]);
+
+            // Combine, wrapping the "*" operator on both sides
+            return [result[0], FormType.combineFilterOperatorValue(operatorValue, result[1], result[0], options, true)];
+
+        });
+
+        // Return results
+        return results;
+
+    }
+
+    /**
      * Set
      *
      * Set text in item
@@ -138,7 +200,7 @@ export default class TextType implements FormInputType {
      * @param value:string
      * @param valuesID
      * @param formEl
-     * @return void
+     * @returns {void}
      */
     public set = (itemEl:HTMLElement, value:string, valuesID:string|Object|null, formEl:HTMLFormElement, options:Partial<FormOptions> = {}):void => {
 
@@ -174,6 +236,23 @@ export default class TextType implements FormInputType {
             }
 
         }
+
+    }
+
+    /**
+     * Set Filter
+     *
+     * @param itemEl:HTMLElement
+     * @param value:string
+     * @param valuesID
+     * @param formEl
+     * @param options
+     * @returns {void}
+     */
+    public filterSet = (itemEl:HTMLElement, value:string, valuesID:string|Object|null, formEl:HTMLFormElement, options:Partial<FormOptions> = {}):void => {
+
+        // Delegate to the regular setter
+        this.set(itemEl, value, valuesID, formEl, options);
 
     }
 

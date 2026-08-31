@@ -11,10 +11,9 @@
 /**
  * Dependances
  */
+import {Crazylanguage, Crazypage, DomRoot, State} from "crazyphp";
 const css = require("!!css-loader!sass-loader!./style.scss");
-import { M } from "@materializecss/materialize";
 const html = require("./template.hbs");
-import {Crazypage} from "crazyphp";
 require("./style.scss");
 
 /**
@@ -71,6 +70,43 @@ export default class Home extends Crazypage {
     public onReady = ():void => {
 
         console.log("hello home");
+
+        // Check page loaded well
+        this._pageLoadedWell();
+
+    }
+
+    /** Private methods | Init
+     ******************************************************
+     */
+
+    /**
+     * Page Loaded Well
+     * 
+     * @returns {void}
+     */
+    private _pageLoadedWell = ():void => {
+
+        // Get root
+        let rootEl = DomRoot.getEl();
+
+        // Get state
+        let state = State.get().page();
+
+        // Check root el
+        if(rootEl && rootEl.childElementCount == 0 && Array.isArray(state) && state.length === 0){
+        
+            // Detect language of navigator
+            let language = Crazylanguage.getNavigatorLanguage();
+
+            // Reload page
+            this.redirectByName(Home.className, { 
+                arguments: {
+                    language: language
+                }
+            });
+
+        }
 
     }
 

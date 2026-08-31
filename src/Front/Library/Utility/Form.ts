@@ -12,10 +12,11 @@
  * Dependances
  */
 import { FormSelect } from "@materializecss/materialize";
+import type { FormInputType } from './Form/FormType';
+import FormType from './Form/FormType';
 import {default as PageError} from './../Error/Page';
 import {default as UtilityStrings} from './Strings';
 import UtilityBoolean from '../Utility/Boolean';
-import type FormInputType from './Form/Type';
 import CheckboxType from './Form/Checkbox';
 import PasswordType from './Form/Password';
 import Crazyrequest from '../Crazyrequest';
@@ -31,7 +32,6 @@ import TextType from './Form/Text';
 import FileType from './Form/File';
 import Root from '../Dom/Root';
 import State from '../State';
-
 
 /**
  * Form
@@ -99,9 +99,9 @@ export default class Form {
             ).then(
                 this._initForm
             ).then(
-                this._initFilter
-            ).then(
                 this._initOnReady
+            ).then(
+                this._initFilter
             ).then(
                 this._initEventOnSubmit
             ).then(
@@ -280,7 +280,7 @@ export default class Form {
                     let currentItem = items[i] as HTMLSelectElement|HTMLInputElement;
 
                     // Get name
-                    currentName = currentItem["name"]/* .replace(`${formName}_`, "") */;
+                    currentName = currentItem["name"].replace("[]", "")/* .replace(`${formName}_`, "") */;
 
                     // Get type
                     currentType = currentItem.type ?? "";
@@ -297,7 +297,14 @@ export default class Form {
                         // Check type handler
                         let currentTypeHandler = this._typeRegistry[currentType];
 
-                        // Check itemEl
+                        // Check if filter set
+                        if(this._options.filter && currentTypeHandler?.filterSet){
+
+                            // Set result
+                            currentTypeHandler.filterSet(currentItem, values[currentName], valuesID, this._formEl, this._options);
+
+                        }else
+                        // Check itemEl to use set
                         if(currentTypeHandler?.set){
 
                             // Set result
@@ -473,10 +480,11 @@ export default class Form {
      */
     public getFormData = (formName:string|HTMLElement):FormData => {
 
+        // Set result
+        let result:FormData;
+
         // Declare var
         let formEl:HTMLElement|null;
-        let itemResult:Array<string|Blob>|null;
-        let itemResults:[Array<string|Blob>]|null;
 
         // Check form name
         if(typeof formName == "string"){
@@ -495,94 +503,80 @@ export default class Form {
             // Set form el
             formEl = formName;
 
+        // Build form data
+        result = this._buildFormData(formEl, this._options.filter === true);
+
+        // Return
+        return result;
+
+    }
+
+    /**
+     * Build Form Data
+     *
+     * @param formEl
+     * @param combineFilter
+     * @returns {FormData}
+     */
+    private _buildFormData = (formEl:HTMLElement, combineFilter:boolean):FormData => {
+
         // Set formdata
         let result:FormData = new FormData();
 
-        // Get all select and input on form el
-        let items = formEl.querySelectorAll("select[name], input[name]");
+        // Iteration items
+        this._iterateFormItems(formEl, (currentItem, mutliple) => {
 
-        // Radio already checked
-        let radioAlreadyChecked:string[] = [];
+            // Check if multiple
+            if(!mutliple){
 
-        // Check items
-        if(items.length)
+                // Get result
+                let itemResult = combineFilter
+                    ? this.extractFilterKeyValue(currentItem, formEl as HTMLFormElement)
+                    : this.extractKeyValue(currentItem)
+                ;
 
-            // Iteration items
-            iterationItems:for (let i = 0; i < items.length; i++){
+                // Check itemResult
+                if(itemResult !== null && itemResult[0] !== "")
 
-                // Get current item
-                let currentItem = items[i];
+                    // Push value of current input
+                    result.append(itemResult[0] as string, itemResult[1]);
 
-                // Check if radio
-                if(currentItem instanceof HTMLInputElement && currentItem.name && currentItem.type === "radio"){
+            }else
+            // If multiple
+            {
 
-                    // Check if radio already checked
-                    if(radioAlreadyChecked.includes(currentItem.name))
+                // Get result
+                let itemResults = combineFilter
+                    ? this.extractFilterKeyMultipleValue(currentItem, formEl as HTMLFormElement)
+                    : this.extractKeyMultipleValue(currentItem)
+                ;
 
-                        // Continue
-                        continue iterationItems;
+                // Check itemResult
+                if(itemResults !== null && Array.isArray(itemResults) && itemResults.length)
 
-                    // Else
-                    else{
+                    // Iteration result
+                    for(let itemResult of itemResults) if(itemResult !== null && itemResult[0] !== ""){
 
-                        // Add item in checked list
-                        radioAlreadyChecked.push(currentItem.name);
+                        // Get name
+                        let name = (itemResult[0] as string).replace("[]", "");
+
+                        // Check if multiple value
+                        if(Array.isArray(itemResult[1])) for(let temp of itemResult[1])
+
+                            // Append value
+                            result.append(name, temp);
+
+                        // If single value
+                        else
+
+                            // Push value of current input
+                            result.append(name, itemResult[1]);
 
                     }
 
-                }
-
-                // Get multiple
-                let mutliple = (currentItem instanceof HTMLInputElement || currentItem instanceof HTMLSelectElement) && currentItem.multiple
-                    ? currentItem.getAttribute("multiple") ? currentItem.getAttribute("multiple") : true
-                    : false
-                ;
-
-                // Check if multiple
-                if(!mutliple){
-
-                    // Get result
-                    itemResult = this.extractKeyValue(items[i] as HTMLElement);
-
-                    // Check itemResult
-                    if(itemResult !== null && itemResult[0] !== "")
-
-                        // Push value of current input
-                        result.append(itemResult[0] as string, itemResult[1]);
-
-                }else
-                // If multiple
-                {
-
-                    // Get result
-                    itemResults = this.extractKeyMultipleValue(items[i] as HTMLElement);
-
-                    // Check itemResult
-                    if(itemResults !== null && Array.isArray(itemResults) && itemResults.length)
-
-                        // Iteration result
-                        for(let itemResult of itemResults) if(itemResult !== null && itemResult[0] !== ""){
-
-                            // Get name
-                            let name = itemResult[0] as string;
-
-                            // Check if multiple value
-                            if(Array.isArray(itemResult[1]) && itemResult[1].length > 1) for(let temp of itemResult[1])
-
-                                // Append value
-                                result.append(name, temp);
-
-                            // If single value
-                            else
-
-                                // Push value of current input
-                                result.append(name, itemResult[1]);
-
-                        }
-
-                }
-
             }
+
+        });
 
         // Return result
         return result;
@@ -1323,9 +1317,9 @@ export default class Form {
 
     /**
      * Init Filter
-     * 
+     *
      * Check if form el is filter
-     * 
+     *
      * @returns {Promise<void>}
      */
     private _initFilter = async():Promise<void> => {
@@ -1335,9 +1329,6 @@ export default class Form {
 
             // Set operator
             this._initOperator(this._formEl)
-
-            // Ingest Filter From Query
-            this._ingestFilterFromQuery(this._formEl);
 
             // Call event
             this._options.onFilterReady && this._options.onFilterReady(this.getFormData(this._formEl));
@@ -1410,8 +1401,8 @@ export default class Form {
             // Iteration
             for(let inputEl of Array.from(allInputEls)){
 
-                // Check if item given is input or select
-                if(inputEl instanceof HTMLInputElement || inputEl instanceof HTMLSelectElement){
+                // Check if item given is input or select and skip `.filter-operator`
+                if((inputEl instanceof HTMLInputElement || inputEl instanceof HTMLSelectElement) && !inputEl.classList.contains("filter-operator")){
 
                     // Check is validate is enable
                     if(inputEl.classList.contains("validate"))
@@ -1539,11 +1530,18 @@ export default class Form {
                 })
             ;
 
-        // If not action, unlock form
-        }else
-            
+        
+        }
+        // Ingest from params
+        else{
+
             // Unlock
             this.unlock();
+
+            // Ingest values from query/state
+            this._ingestFilterFromQuery(this._formEl);
+
+        }
 
     }
 
@@ -1596,35 +1594,108 @@ export default class Form {
             // Change
             this._formEl.addEventListener(eventType, (event) => {
 
-                // Set current target
-                const currentTarget = event.currentTarget;
-
-                // Get target
-                const target = event.target;
-
-                // Process Filter
-                if(currentTarget instanceof HTMLFormElement && this._options.filter){
-
-                    // Process for filter
-                    this._processForFilter(currentTarget)
-
-                }
-
-                // Check options
-                if(this._onChangeCallable && currentTarget && target && currentTarget instanceof HTMLFormElement && ( target instanceof HTMLInputElement || target instanceof HTMLSelectElement ) && this._onChangeOptions.eventType === eventType){
-
-                    // Call callable
-                    this._onChangeCallable({
-                        formEl: currentTarget,
-                        formData: this.getFormData(currentTarget),
-                        itemEl: target,
-                        type: eventType,
-                        valid: this.isValid(currentTarget),
-                    });
-
-                }
+                // Delegate to the shared handler
+                this._handleChangeEvent(eventType, event.currentTarget, event.target);
 
             });
+
+    }
+
+    /**
+     * Handle Change Event
+     *
+     * Call "change"/"input" called by a `.filter-operator`
+     *
+     * @param eventType
+     * @param currentTarget
+     * @param target
+     * @returns {void}
+     */
+    private _handleChangeEvent = (eventType:string, currentTarget:EventTarget|null, target:EventTarget|null):void => {
+
+        // Check filter mode : a checkbox/switch/radio's "*" operator means "omit this
+        // filter" (any value passes) — the moment the user actually picks a value,
+        // that intent is gone, so snap the paired operator back to "=" first. Set
+        // directly (no dispatchEvent) so this doesn't recurse into another change event.
+        if(
+            currentTarget instanceof HTMLFormElement &&
+            this._options.filter &&
+            target instanceof Element
+        )
+
+            // Auto switch wildcard operator
+            this._autoSwitchWildcardOperator(currentTarget, target);
+
+        // Process Filter
+        if(currentTarget instanceof HTMLFormElement && this._options.filter)
+
+            // Process for filter
+            this._processForFilter(currentTarget);
+
+        // Check options
+        if(
+            this._onChangeCallable && 
+            currentTarget && 
+            target && 
+            currentTarget instanceof HTMLFormElement && 
+            ( 
+                target instanceof HTMLInputElement || 
+                target instanceof HTMLSelectElement 
+            ) && 
+            this._onChangeOptions.eventType === eventType
+        )
+
+            // Call callable
+            this._onChangeCallable({
+                formEl: currentTarget,
+                formData: this.getFormData(currentTarget),
+                itemEl: target,
+                type: eventType,
+                valid: this.isValid(currentTarget),
+            });
+
+    }
+
+    /**
+     * Auto Switch Wildcard Operator
+     *
+     * A checkbox/switch (native `<input type="checkbox">`) or radio (TomSelect-backed
+     * `<select data-type="radio">`) filter's "*" operator means "omit this filter" —
+     * once the user actually touches the value, that intent no longer applies, so snap
+     * the paired operator select back to "=". Skips `<select data-type="select">` on
+     * purpose : a plain select's "*" only ever omits the filter when its value is empty,
+     * which is already handled elsewhere, and doesn't need this auto-switch.
+     *
+     * Sets `.value` directly (no `dispatchEvent`) so this never fires another
+     * "change"/"input" event and re-enters `_handleChangeEvent`.
+     *
+     * @param formEl
+     * @param target
+     * @returns {void}
+     */
+    private _autoSwitchWildcardOperator = (formEl:HTMLFormElement, target:Element):void => {
+
+        // Skip the operator select itself, and anything that isn't a checkbox/switch/radio value control
+        const isCheckboxLike = target instanceof HTMLInputElement && target.type === "checkbox";
+        const isRadioLike = target instanceof HTMLSelectElement && target.dataset.type === "radio";
+
+        // Check target is a value control we care about
+        if(!isCheckboxLike && !isRadioLike) return;
+
+        // Get name (strip the "[]" multi-value suffix, if any)
+        const name = (target as HTMLInputElement|HTMLSelectElement).name?.replace("[]", "");
+
+        // Check name
+        if(!name) return;
+
+        // Get paired operator select
+        const operatorEl = formEl.querySelector(`[data-operator-name="${name}"]`);
+
+        // Check operator currently on wildcard : switch it to equal
+        if(operatorEl instanceof HTMLSelectElement && operatorEl.value === "*")
+
+            // Set directly : no dispatchEvent, so no recursive change event
+            operatorEl.value = "=";
 
     }
 
@@ -1750,7 +1821,66 @@ export default class Form {
     /** Private methods | Retrieve value
      ******************************************************
      */
-    
+
+    /**
+     * Iterate Form Items
+     *
+     * @param containerEl
+     * @param onItem Called once per resolved item, with its "multiple" flag
+     * @return void
+     */
+    private _iterateFormItems = (containerEl:HTMLElement, onItem:(itemEl:HTMLElement, multiple:string|boolean|null) => void):void => {
+
+        // Get all select and input on form el
+        let items = containerEl.querySelectorAll("select[name], input[name]");
+
+        // Radio already checked
+        let radioAlreadyChecked:string[] = [];
+
+        // Check items
+        if(items.length)
+
+            // Iteration items
+            iterationItems:for (let i = 0; i < items.length; i++){
+
+                // Get current item
+                let currentItem = items[i];
+
+                // Check if radio
+                if(currentItem instanceof HTMLInputElement && currentItem.name && currentItem.type === "radio"){
+
+                    // Check if radio already checked
+                    if(radioAlreadyChecked.includes(currentItem.name))
+
+                        // Continue
+                        continue iterationItems;
+
+                    // Else
+                    else{
+
+                        // Add item in checked list
+                        radioAlreadyChecked.push(currentItem.name);
+
+                    }
+
+                }
+
+                // Get multiple
+                let mutliple = (
+                    currentItem instanceof HTMLInputElement || 
+                    currentItem instanceof HTMLSelectElement
+                ) && currentItem.multiple
+                    ? currentItem.getAttribute("multiple") ? currentItem.getAttribute("multiple") : true
+                    : false
+                ;
+
+                // Call back
+                onItem(currentItem as HTMLElement, mutliple);
+
+            }
+
+    }
+
     /**
      * Extract Key Value
      * 
@@ -1828,22 +1958,85 @@ export default class Form {
 
     }
 
-    /** Private methods | Retrieve
-     ******************************************************
+    /**
+     * Extract Filter Key Value
      *
-     * Per-type value readers ({type}Retrieve / {type}RetrieveMultiple)
-     * have been migrated to Form/{Type}.ts as get()/getMultiple() (see
-     * this._typeRegistry above) - extractKeyValue()/extractKeyMultipleValue()
-     * dispatch to them directly.
+     * Same as `extractKeyValue()`, but dispatches to the type handler's `filterGet()` instead of `get()`
+     *
+     * @param itemEl:HTMLElement
+     * @param formEl:HTMLFormElement
+     * @return null|Array<any>
      */
+    private extractFilterKeyValue = (itemEl:HTMLElement, formEl:HTMLFormElement):null|Array<any> => {
 
-    /** Private methods | Set value
-     ******************************************************
+        // Declare result
+        let result:any = null;
+
+        // Get type
+        let type:string|null = null;
+
+        // Get type of input el
+        if("type" in itemEl && itemEl.type && typeof itemEl.type === "string")
+
+            // Set type
+            type = itemEl.type;
+
+        // Get type of input el
+        if("type" in itemEl.dataset && itemEl.dataset.type && typeof itemEl.dataset.type === "string")
+
+            // Set type
+            type = itemEl.dataset.type;
+
+        // Check type
+        if(typeof type === "string" && this._typeRegistry[type])
+
+            // Set result
+            result = this._typeRegistry[type].filterGet(itemEl, formEl, this._options);
+
+        // Return result
+        return result;
+
+    }
+
+    /**
+     * Extract Filter Key Multiple Value
      *
-     * Per-type value writers ({type}Set) have been migrated to
-     * Form/{Type}.ts (see this._typeRegistry above) - setValue() above
-     * dispatches to them directly.
+     * Same as `extractKeyMultipleValue()`, but dispatches to the type handler's `filterGetMultiple()` instead of `getMultiple()`
+     *
+     * @param itemEl:HTMLElement
+     * @param formEl:HTMLFormElement
+     * @return null|Array<any>[]
      */
+    private extractFilterKeyMultipleValue = (itemEl:HTMLElement, formEl:HTMLFormElement):null|[Array<any>] => {
+
+        // Declare result
+        let result:any = null;
+
+        // Get type
+        let type:string|null = null;
+
+        // Get type of input el
+        if("type" in itemEl && itemEl.type && typeof itemEl.type === "string")
+
+            // Set type
+            type = itemEl.type;
+
+        // Get type of input el
+        if("type" in itemEl.dataset && itemEl.dataset.type && typeof itemEl.dataset.type === "string")
+
+            // Set type
+            type = itemEl.dataset.type;
+
+        // Check type
+        if(typeof type === "string" && this._typeRegistry[type])
+
+            // Set result
+            result = this._typeRegistry[type].filterGetMultiple(itemEl, formEl, this._options);
+
+        // Return result
+        return result;
+
+    }
 
     /** Public static methods | Set value
      ******************************************************
@@ -2665,21 +2858,31 @@ export default class Form {
             // Init select
             let formInstance = FormSelect.init(operatorEl, {});
 
+            // Attach event
+            operatorEl.addEventListener("change", (event) => {
+
+                // Stop propagation
+                event.stopPropagation();
+
+                // Run the shared handler directly
+                this._handleChangeEvent("change", currentTarget, operatorEl);
+
+            });
+
         }
-        
 
     }
 
     /**
      * Ingest Filter From Query
-     * 
-     * @param currentTarget 
+     *
+     * @param currentTarget
      * @returns {void}
      */
     private _ingestFilterFromQuery = (currentTarget:HTMLFormElement):void => {
 
         // Get id
-        let currentId = currentTarget.id;
+        let currentId = currentTarget.getAttribute("id");
 
         // Set querys
         let querys:object = {};
@@ -2707,13 +2910,13 @@ export default class Form {
             // Set root
             let root = `filters.${currentId}`;
 
-            // Get getQueryParameters 
+            // Get getQueryParameters
             let currentQueryParameters = Crazyurl.getQueryParameters(root);
 
             // Check querys
             if(
-                (currentQueryParameters[root] ?? false) && 
-                typeof currentQueryParameters[root] === "object" && 
+                (currentQueryParameters[root] ?? false) &&
+                typeof currentQueryParameters[root] === "object" &&
                 Object.keys(currentQueryParameters[root]).length
             ){
 
@@ -2730,8 +2933,36 @@ export default class Form {
         // Check querys
         if(Object.keys(querys).length){
 
-            // Iteration
-            for(let name in querys) if(typeof querys[name] === "string"){
+            // Strip a field's operator prefix/wrap off one raw string value
+            const stripOperator = (raw:string, options:string[]):{value:string, operator:string|null} => {
+
+                // Set result
+                let value = raw;
+                let operator:string|null = null;
+
+                // Iteration options
+                for(let option of options) if(value.startsWith(option)){
+
+                    // Clean value
+                    value = value.slice(option.length);
+
+                    // For the "*" (contains) operator
+                    if(option === "*" && value.endsWith("*"))
+
+                        value = value.slice(0, -1);
+
+                    // Set operator found
+                    operator = option;
+
+                }
+
+                // Return result
+                return {value, operator};
+
+            };
+
+            // Iteration of querys
+            for(let name in querys) if(typeof querys[name] === "string" || Array.isArray(querys[name])){
 
                 // Check operator
                 let operatorEl = currentTarget.querySelector(`[data-operator-name="${name}"]`);
@@ -2757,17 +2988,58 @@ export default class Form {
                         // Sort by -length
                         options.sort((a, b) => b.length - a.length);
 
-                        // Iteration options
-                        for(let option of options) if(querys[name].startsWith(option)){
+                        // Check if multi-value
+                        if(Array.isArray(querys[name])){
 
-                            // Clean value
-                            querys[name] = querys[name].slice(option.length);
+                            // Set raw array
+                            let rawArray = querys[name] as string[];
+
+                            // Check the array leads with its operator (see combineFilterOperatorValue's
+                            // array branch / _processForFilter : "[operator, ...values]"), matched
+                            // exactly rather than as a prefix since a raw value could itself start
+                            // with e.g. "=" here
+                            if(rawArray.length && options.includes(rawArray[0])){
+
+                                // Set operator select's value
+                                operatorEl.value = rawArray[0];
+
+                                // Drop the leading operator, values are already raw
+                                querys[name] = rawArray.slice(1);
+
+                            }else{
+
+                                // Legacy shape : each entry carries its own operator prefix
+                                let operatorFound:string|null = null;
+
+                                // Strip every entry, keeping track of the operator
+                                querys[name] = rawArray.map((rawValue:string) => {
+
+                                    // Strip
+                                    let stripped = stripOperator(rawValue, options);
+
+                                    // Check operator found
+                                    if(stripped.operator) operatorFound = stripped.operator;
+
+                                    // Return cleaned value
+                                    return stripped.value;
+
+                                });
+
+                                // Set operator select's value
+                                if(operatorFound) operatorEl.value = operatorFound;
+
+                            }
+
+                        }else{
+
+                            // Strip
+                            let stripped = stripOperator(querys[name], options);
+
+                            // Set value
+                            querys[name] = stripped.value;
 
                             // Set value of option
-                            operatorEl.value = option;
-
-                            // Displatch event
-                            operatorEl.dispatchEvent(new Event('change', { bubbles: true }));
+                            if(stripped.operator) operatorEl.value = stripped.operator;
 
                         }
 
@@ -2776,7 +3048,7 @@ export default class Form {
                 }
 
             }
-            
+
             // Set values
             this.setValue(querys);
 
@@ -2786,8 +3058,9 @@ export default class Form {
 
     /**
      * Precess For Filter
-     * 
+     *
      * @param currentTarget 
+     * @returns {void}
      */
     private _processForFilter = (currentTarget:HTMLFormElement):void => {
 
@@ -2805,8 +3078,8 @@ export default class Form {
         // Set state result
         let stateResult:any = {};
 
-        // Get formdata from current target
-        let formData = this.getFormData(currentTarget);
+        // Get raw (uncombined) formdata from current target
+        let formData = this._buildFormData(currentTarget, false);
 
         // New search params
         let params = new URLSearchParams();
@@ -2814,64 +3087,124 @@ export default class Form {
         // Set key already use
         let keyAlreadyUsed:string[] = [];
 
-        // Iteration formdata
-        formData.forEach((value, key, parent) => {
+        // Group raw formdata entries by key first : a multi-value field (e.g. a multi-select)
+        // spans several FormData entries sharing the same key — combining the operator one
+        // entry at a time (the old behaviour) only ever produces a scalar "<operator>value"
+        // per entry (e.g. "=paris"), never the `[operator, ...values]` array SgFilterOperation
+        // expects. The full set of raw values for a key has to be combined in one shot.
+        let groupedByKey = new Map<string, FormDataEntryValue[]>();
 
+        // Iteration formdata : group
+        formData.forEach((value, key) => {
+
+            // Get (or create) this key's group
+            let group = groupedByKey.get(key) ?? [];
+
+            // Push value into group
+            group.push(value);
+
+            // Set group
+            groupedByKey.set(key, group);
+
+        });
+
+        // Iteration grouped formdata
+        groupedByKey.forEach((values, key) => {
 
             // Build the full key, e.g. "root[key]" or "root[user.name]"
-            let fullKey = parsedRoot 
-                ? `${parsedRoot}[${key}]` 
+            let fullKey = parsedRoot
+                ? `${parsedRoot}[${key}]`
                 : key
             ;
 
-            // Set value
-            let strValue = value instanceof File 
-                ? value.name 
-                : value
+            // Set raw values (File -> its name)
+            let rawValues = values.map(value => value instanceof File ? value.name : value);
+
+            // Combine operator with value
+            let itemEl =
+                currentTarget.querySelector(`[name="${key}"]`) ??
+                currentTarget.querySelector(`[name="${key}[]"]`)
             ;
 
-            // Check operator
-            let operatorEl = currentTarget.querySelector(`[data-operator-name="${key}"]`);
+            // Set multiple
+            let multiple = (
+                itemEl instanceof HTMLInputElement ||
+                itemEl instanceof HTMLSelectElement
+            ) && itemEl.multiple;
 
-            // Check operator
-            if(operatorEl instanceof HTMLSelectElement){
+            // Declare combined value(s)
+            let combined:any = multiple ? rawValues : rawValues[0];
 
-                // Get value
-                let operatorValue = operatorEl.value;
+            // Check item el
+            if(itemEl instanceof HTMLElement){
 
-                // Check value
-                if(operatorValue)
+                // Check multiple
+                if(multiple){
 
-                    // Push as prefix
-                    strValue = `${operatorValue}${strValue}`;
+                    // Combine the full set of raw values at once, so the operator can lead the array
+                    combined = FormType.combineFilterOperatorValue(
+                        FormType.getFilterOperatorValue(currentTarget, key),
+                        rawValues,
+                        key,
+                        this._options
+                    );
+
+                }else{
+
+                    // Get filter result
+                    let filterResult = this.extractFilterKeyValue(itemEl, currentTarget);
+
+                    // Check result
+                    if(filterResult)
+
+                        // Set value
+                        combined = filterResult[1];
+
+                }
 
             }
 
             // Check value and key
-            if(value && fullKey){
+            if(rawValues.length && rawValues.some(rawValue => rawValue !== "") && fullKey){
 
-                // Check if key end with []
-                if(fullKey.endsWith("[]]")){
+                // Check if multiple : append every element of the combined array under its own indexed key
+                if(multiple || fullKey.endsWith("[]]")){
 
-                    // Set i
-                    let i = 0;
+                    // Set combined array (combineFilterOperatorValue may return a scalar when there's nothing to combine)
+                    let combinedArray = Array.isArray(combined) ? combined : [combined];
 
-                    // Iteration number until not already used
-                    while(keyAlreadyUsed.includes(`${fullKey}[${i}]`)) i++;
+                    // Iteration combined array
+                    for(let entryValue of combinedArray){
 
-                    // Update full key
-                    fullKey += `[${i}]`;
+                        // Set i
+                        let i = 0;
 
-                    // Append key into keyAlreadyUsed
-                    keyAlreadyUsed.push(fullKey);
+                        // Iteration number until not already used
+                        while(keyAlreadyUsed.includes(`${fullKey}[${i}]`))
+
+                            // Increment i
+                            i++;
+
+                        // Set indexed key
+                        let indexedKey = `${fullKey}[${i}]`;
+
+                        // Append key into keyAlreadyUsed
+                        keyAlreadyUsed.push(indexedKey);
+
+                        // Append value to params
+                        params.append(indexedKey, entryValue);
+
+                    }
+
+                }else{
+
+                    // Append value to params
+                    params.append(fullKey, combined);
 
                 }
 
-                // Append value to params
-                params.append(fullKey, strValue);
-
-                // Push value
-                stateResult[key] = value;
+                // Push value : raw (uncombined) values, one per key
+                stateResult[key] = multiple ? rawValues : rawValues[0];
 
             }
 
@@ -2883,11 +3216,11 @@ export default class Form {
         // Get current pghe name
         let pageName = window.Crazyobject.currentPage.get()?.name;
 
-        // Check state
-        if(pageName && State.get().page(pageName, `_ui.partials.forms.${currentTarget.id}.values`)){
+        // Check state — read via getAttribute(), not `.id` (see _ingestFilterFromQuery)
+        if(pageName && State.get().page(pageName, `_ui.partials.forms.${currentTarget.getAttribute("id")}.values`)){
 
             // Push values
-            State.set().page(`${pageName}._ui.partials.forms.${currentTarget.id}.values`, stateResult);
+            State.set().page(`${pageName}._ui.partials.forms.${currentTarget.getAttribute("id")}.values`, stateResult);
 
         }
 
@@ -2999,22 +3332,6 @@ export default class Form {
         // Return result
         return query;
 
-    }
-
-    /** Public static methods
-     ******************************************************
-     */
-
-    /**
-     * Is Html Form Element
-     * 
-     * Check is element is Html Form Element
-     * 
-     * @param element 
-     * @returns 
-     */
-    public static isHTMLFormElement = (element: Element):element is HTMLFormElement => {
-        return element instanceof HTMLFormElement;
     }
 
 }

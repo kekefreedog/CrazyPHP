@@ -4,6 +4,7 @@
 <div class="col s12 mn-2{{#if _style.customClass.input-field}} {{_style.customClass.input-field}}{{/if}}" style="margin-bottom: 15px;">
 
     <div class="input-field">
+        {{#isnt _style.filter.operators false}}
         <div class="input-filter">
             <select
                 data-operator-id="{{form.id}}_{{name}}"
@@ -21,6 +22,7 @@
                 {{/if}}
             </select>
         </div>
+        {{/isnt}}
         <div id="dependency" class="suffix suffix-tomselect hide"><i class="material-icons">link_off</i></div>
         {{#if disabled}}<div class="suffix suffix-tomselect"><i class="material-icons">lock</i></div>{{else}}
         {{#if _style.suffix}}<div class="suffix suffix-tomselect"><i class="{{_style.suffix.class}}">{{_style.suffix.text}}</i></div>{{/if}}{{/if}}
@@ -30,6 +32,7 @@
             data-type="radio"
             name="{{name}}[]"
             multiple=""
+            {{#unless form.onready}}{{#if default includeZero=false}}default="{{#isArray default}}{{JSONstringify default}}{{else}}{{#isObject default}}{{JSONstringify default}}{{else}}{{default}}{{/isObject}}{{/isArray}}"{{/if}}{{/unless}}
             autocomplete="off"
             {{#if placeholder}}placeholder="{{placeholder}}"{{/if}}
             {{#if disabled}}disabled=""{{/if}}

@@ -90,6 +90,47 @@ export default class Strings {
             .join(' ')
         ;
     }
+    
+    /**
+     * Snake to Camel
+     *
+     * hello_tout_le_monde:
+     * - helloToutLeMonde
+     * - HelloToutLeMonde (capitalize)
+     *
+     * @param input Input string
+     * @param capitalizeFirstCharacter Whether to capitalize the first character
+     * @returns CamelCase string
+     */
+    public static snakeToCamel(input:string = '', capitalizeFirstCharacter:boolean = false):string {
+
+        // Set result
+        let result = input;
+
+        // Check result
+        if(result){
+
+            // Replace spaces with underscores
+            result = result.replace(/ /g, '_');
+
+            // Capitalize words
+            result = this.ucwords(result);
+
+            // Remove underscores
+            result = result.replace(/_/g, '');
+
+            // Lowercase first character if required
+            if(!capitalizeFirstCharacter)
+
+                // Set uc
+                result =`${result.charAt(0).toLowerCase()}${result.slice(1)}`;
+
+        }
+        
+        // Return result
+        return result;
+
+    }
 
     /**
      * kebabToCamel

@@ -11,8 +11,9 @@
 /**
  * Dependances
  */
-import type { FormInputTypeHelpers } from './Type';
-import type FormInputType from './Type';
+import type { FormInputTypeHelpers, FormInputType } from './FormType';
+import UtilityBoolean from '../Boolean';
+import FormType from './FormType';
 
 /**
  * Checkbox Type
@@ -23,7 +24,7 @@ import type FormInputType from './Type';
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2024 Kévin Zarshenas
  */
-export default class CheckboxType implements FormInputType {
+export default class CheckboxType extends FormType implements FormInputType {
 
     /** Private Parameters
      ******************************************************
@@ -40,6 +41,9 @@ export default class CheckboxType implements FormInputType {
      * @param options
      */
     constructor(options:Partial<FormOptions> = {}){
+
+        // Call parent constructor
+        super();
 
         // Ingest options
         this._options = {...this._options, ...options};
@@ -69,7 +73,7 @@ export default class CheckboxType implements FormInputType {
      * Get
      *
      * @param itemEl:HTMLElement
-     * @return null|Array<any>
+     * @returns {null|Array<any>}
      */
     public get = (itemEl:HTMLElement, options:Partial<FormOptions> = {}):null|Array<any> => {
 
@@ -118,7 +122,7 @@ export default class CheckboxType implements FormInputType {
      * Get Multiple
      *
      * @param itemEl:HTMLElement
-     * @return null|Array<any>[]
+     * @returns {null|Array<any>[]}
      */
     public getMultiple = (itemEl:HTMLElement, options:Partial<FormOptions> = {}):null|Array<any>[] => {
 
@@ -160,6 +164,95 @@ export default class CheckboxType implements FormInputType {
 
         // Return result
         return result;
+
+    }
+
+    /**
+     * Filter Get
+     *
+     * @param itemEl:HTMLElement
+     * @param formEl:HTMLFormElement
+     * @returns {null|Array<any>}
+     */
+    public filterGet = (itemEl:HTMLElement, formEl:HTMLFormElement, options:Partial<FormOptions> = {}):null|Array<any> => {
+
+        // Get plain key/value
+        let result = this.get(itemEl, options);
+
+        // Combine with operator
+        if(result) result = [result[0], FormType.combineFilterOperatorValue(FormType.getFilterOperatorValue(formEl, result[0]), result[1], result[0], options)];
+
+        // Return result
+        return result;
+
+    }
+
+    /**
+     * Filter Get Multiple
+     *
+     * @param itemEl:HTMLElement
+     * @param formEl:HTMLFormElement
+     * @returns {null|Array<any>[]}
+     */
+    public filterGetMultiple = (itemEl:HTMLElement, formEl:HTMLFormElement, options:Partial<FormOptions> = {}):null|Array<any>[] => {
+
+        // Get plain key/values
+        let results = this.getMultiple(itemEl, options);
+
+        // Combine with operator
+        if(results) results = results.map(result => [result[0], FormType.combineFilterOperatorValue(FormType.getFilterOperatorValue(formEl, result[0]), result[1], result[0], options)]);
+
+        // Return results
+        return results;
+
+    }
+
+    /**
+     * Set
+     *
+     * Set checked state in item
+     *
+     * @param itemEl:HTMLElement
+     * @param value:string
+     * @param valuesID
+     * @param formEl
+     * @returns {void}
+     */
+    public set = (itemEl:HTMLElement, value:any, valuesID:string|Object|null, formEl:HTMLFormElement, options:Partial<FormOptions> = {}):void => {
+
+        // Resync options
+        this._options = {...this._options, ...options};
+
+        // Check itemEl
+        if(itemEl instanceof HTMLInputElement && value !== null){
+
+            // Set checked state
+            itemEl.checked = UtilityBoolean.check(value);
+
+            // Dispatch event change
+            itemEl.dispatchEvent(new Event("change"));
+
+        }
+
+    }
+
+    /**
+     * Set Filter
+     *
+     * A checkbox's filter widget is the same as its normal one
+     * (see filter_checkbox.hbs), so setting it in filter mode is no different
+     *
+     * @param itemEl:HTMLElement
+     * @param value:string
+     * @param valuesID
+     * @param formEl
+     * @param options
+     * @returns {void}
+     */
+    public filterSet = (itemEl:HTMLElement, value:any, valuesID:string|Object|null, formEl:HTMLFormElement, options:Partial<FormOptions> = {}):void => {
+
+        // Delegate to the regular setter
+        this.set(itemEl, value, valuesID, formEl, options);
 
     }
 

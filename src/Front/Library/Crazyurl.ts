@@ -175,6 +175,32 @@ export default class Crazyurl {
 
         });
 
+        // Helper to turn a dense, zero-based numeric-keyed object
+        const arrayify = (value: any): any => {
+
+            // Only plain objects need converting — arrays/primitives pass through
+            if (value === null || typeof value !== 'object' || Array.isArray(value))
+
+                // Return value as is
+                return value;
+
+            // Recurse into children first
+            for (const key in value) value[key] = arrayify(value[key]);
+
+            // Get this object's own keys
+            const keys = Object.keys(value);
+
+            // Check every key is a dense 0-based integer index
+            const isDenseArray = keys.length > 0 && keys.every((key, index) => key === String(index));
+
+            // Return the array form if dense, else the (already recursed) object
+            return isDenseArray ? keys.map(key => value[key]) : value;
+
+        };
+
+        // Arrayify the whole result tree
+        result = arrayify(result);
+
         // Helper to get nested value by path "a.b.c"
         const getNestedValue = (obj: any, path: string): any => {
 

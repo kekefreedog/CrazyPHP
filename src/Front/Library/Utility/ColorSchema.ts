@@ -190,4 +190,152 @@ export default class ColorSchema {
         return hex.length == 1 ? "0" + hex : hex;
     }
 
+    /**
+     * Rgb Soften
+     * 
+     * @param r 
+     * @param g 
+     * @param b 
+     * @param amount 
+     * @returns {string}
+     */
+    public static rgbSoften = (r:string|number, g:string|number, b:string|number, amount:number = 0.5, saturation:number|null = null):string => {
+
+        // Set saturation
+        if(saturation == null) saturation = amount + 1;
+
+        // Parse r
+        r = Number(r);
+
+        // Parse g
+        g = Number(g);
+
+        // Parse b
+        b = Number(b);
+
+        // Mix color with white
+        r += (255 - r) * amount;
+        g += (255 - g) * amount;
+        b += (255 - b) * amount;
+
+        // Normalize r
+        const rn = r / 255;
+
+        // Normalize g
+        const gn = g / 255;
+
+        // Normalize b
+        const bn = b / 255;
+
+        // Set max
+        const max = Math.max(rn, gn, bn);
+
+        // Set min
+        const min = Math.min(rn, gn, bn);
+
+        // Set hue
+        let h = 0;
+
+        // Set saturation
+        let s = 0;
+
+        // Set lightness
+        const l = (max + min) / 2;
+
+        // Calculate HSL
+        if (max !== min) {
+
+            // Set delta
+            const d = max - min;
+
+            // Calculate saturation
+            s = l > 0.5
+                ? d / (2 - max - min)
+                : d / (max + min);
+
+            // Calculate hue
+            if (max === rn) {
+                h = (gn - bn) / d + (gn < bn ? 6 : 0);
+            } else if (max === gn) {
+                h = (bn - rn) / d + 2;
+            } else {
+                h = (rn - gn) / d + 4;
+            }
+
+            // Normalize hue
+            h /= 6;
+        }
+
+        // Reboost saturation
+        s = Math.min(1, s * saturation);
+
+        // Convert HSL to RGB
+        const hueToRgb = (p: number, q: number, t: number): number => {
+
+            // Normalize t
+            if (t < 0) {
+                t += 1;
+            }
+
+            // Normalize t
+            if (t > 1) {
+                t -= 1;
+            }
+
+            // Calculate RGB
+            if (t < 1 / 6) {
+                return p + (q - p) * 6 * t;
+            }
+
+            // Calculate RGB
+            if (t < 1 / 2) {
+                return q;
+            }
+
+            // Calculate RGB
+            if (t < 2 / 3) {
+                return p + (q - p) * (2 / 3 - t) * 6;
+            }
+
+            // Return RGB
+            return p;
+        };
+
+        // Convert HSL to RGB
+        if (s !== 0) {
+
+            // Set q
+            const q = l < 0.5
+                ? l * (1 + s)
+                : l + s - l * s;
+
+            // Set p
+            const p = 2 * l - q;
+
+            // Calculate r
+            r = hueToRgb(p, q, h + 1 / 3) * 255;
+
+            // Calculate g
+            g = hueToRgb(p, q, h) * 255;
+
+            // Calculate b
+            b = hueToRgb(p, q, h - 1 / 3) * 255;
+
+        } else {
+
+            // Set grayscale r
+            r = l * 255;
+
+            // Set grayscale g
+            g = l * 255;
+
+            // Set grayscale b
+            b = l * 255;
+        }
+
+        // Return result
+        return `${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)}`;
+
+    }
+
 }

@@ -4,6 +4,7 @@
 <div class="col s12 mn-2{{#if _style.customClass.input-field}} {{_style.customClass.input-field}}{{/if}}" style="margin-bottom: 15px;">
 
     <div class="input-field">
+        {{#isnt _style.filter.operators false}}
         <div class="input-filter">
             <select
                 data-operator-id="{{form.id}}_{{name}}"
@@ -15,12 +16,13 @@
                 {{#if _style.filter.operators}}
                     {{#each _style.filter.operators as |operator|}}<option value="{{operator.value}}"{{#if operator.default}} selected{{/if}}>{{operator.label}}</option>{{/each}}
                 {{else}}
-                    <option value="*">*</option>
+                    <option value="*" selected="">*</option>
                     <option value="=">=</option>
                     <option value="!=">≠</option>
                 {{/if}}
             </select>
         </div>
+        {{/isnt}}
         {{#if disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{else}}
         {{#if _style.suffix}}<div class="suffix"><i class="{{_style.suffix.class}}">{{_style.suffix.text}}</i></div>{{/if}}{{/if}}
         {{#if _style.prefix}}<div class="prefix"><i class="{{_style.prefix.class}}">{{_style.prefix.text}}</i></div>{{/if}}

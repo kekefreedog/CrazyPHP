@@ -377,22 +377,19 @@ export default class Objects {
      * @param objects:any[]
      * @returns {any}
      */
-    public static difference(...objects:any[]):any {
+    public static difference(onlyUpdated:boolean = false, ...objects:any[]):any {
 
         // Initialize the final result.
-        let result: any = {};
+        let result:any = {};
 
         // Check that at least two objects were provided.
         if(objects.length >= 2) {
 
             // Recursive function used to compare values.
-            const diff = (values: any[]): any => {
+            const diff = (values:any[], exists:boolean[]):any => {
 
                 // Initialize the result for the current level.
-                let currentResult: any = {};
-
-                // Check whether all values are objects.
-                let allObjects = true;
+                let currentResult:any = {};
 
                 // Check whether at least one value is an object.
                 let hasObject = false;
@@ -407,19 +404,23 @@ export default class Objects {
                 for(let i = 1; i < values.length; i++){
 
                     // Compare the current value with the first value.
-                    if (JSON.stringify(values[i]) !== JSON.stringify(values[0])) {
+                    if(
+                        JSON.stringify(values[i]) !==
+                        JSON.stringify(values[0])
+                    ) {
                         
                         // At least one value is different.
                         allEqual = false;
 
                     }
+
                 }
 
                 // Check every value to determine its type.
-                for (const value of values) {
+                for(const value of values) {
 
                     // Check if the value is an object.
-                    if (
+                    if(
                         value !== null &&
                         typeof value === "object" &&
                         !Array.isArray(value)
@@ -428,15 +429,10 @@ export default class Objects {
                         // At least one object exists.
                         hasObject = true;
 
-                    } else {
-                        
-                        // At least one value is not an object.
-                        allObjects = false;
-
                     }
 
                     // Check if the value is an array.
-                    if (Array.isArray(value)) {
+                    if(Array.isArray(value)) {
 
                         // At least one array exists.
                         hasArray = true;
@@ -446,12 +442,12 @@ export default class Objects {
                 }
 
                 // If all values are equal, there is no difference.
-                if (allEqual) {
+                if(allEqual) {
 
                     // Keep the current result empty.
 
                 // If at least one value is an object, compare its properties.
-                } else if (hasObject) {
+                } else if(hasObject) {
 
                     // Create a set containing every property name.
                     const keys = new Set<string>();
@@ -460,7 +456,7 @@ export default class Objects {
                     for(const value of values) {
 
                         // Only inspect objects.
-                        if (
+                        if(
                             value !== null &&
                             typeof value === "object" &&
                             !Array.isArray(value)
@@ -468,20 +464,24 @@ export default class Objects {
 
                             // Add all properties to the set.
                             Object.keys(value).forEach(key => {
+
+                                // Add the property.
                                 keys.add(key);
+
                             });
+
                         }
 
                     }
 
                     // Compare every property.
-                    for (const key of keys) {
+                    for(const key of keys) {
 
                         // Get the value of this property from every object.
                         const childValues = values.map(value => {
 
                             // Return the property when the value is an object.
-                            if (
+                            if(
                                 value !== null &&
                                 typeof value === "object" &&
                                 !Array.isArray(value)
@@ -496,39 +496,99 @@ export default class Objects {
 
                         });
 
+                        // Determine whether the property exists in each object.
+                        const childExists = values.map(value => {
+
+                            // Check whether the value is an object.
+                            if(
+                                value !== null &&
+                                typeof value === "object" &&
+                                !Array.isArray(value)
+                            ) {
+
+                                // Check whether the property actually exists.
+                                return Object.prototype.hasOwnProperty.call(
+                                    value,
+                                    key
+                                );
+
+                            }
+
+                            // Property does not exist.
+                            return false;
+
+                        });
+
+                        // Check if the property exists in the latest object.
+                        const existsInLatest =
+                            childExists[childExists.length - 1];
+
+                        // Check if the property existed in a previous object.
+                        const existedBefore =
+                            childExists
+                                .slice(0, -1)
+                                .some(exists => exists);
+
+                        // Skip new properties when only updated values
+                        // are requested.
+                        if(
+                            onlyUpdated &&
+                            existsInLatest &&
+                            !existedBefore
+                        ) {
+
+                            // Do not include the new property.
+                            continue;
+
+                        }
+
                         // Recursively calculate the difference.
-                        const childDiff = diff(childValues);
+                        const childDiff = diff(
+                            childValues,
+                            childExists
+                        );
 
                         // Add the difference if one was found.
-                        if (
+                        if(
                             childDiff !== undefined &&
                             (
                                 typeof childDiff !== "object" ||
+                                childDiff === null ||
                                 Object.keys(childDiff).length > 0
                             )
-                        )
+                        ) {
 
-                            // Set current
+                            // Set current.
                             currentResult[key] = childDiff;
+
+                        }
+
+                        // Explicitly keep deleted properties.
+                        if(
+                            existedBefore &&
+                            !existsInLatest
+                        ) {
+
+                            // Set the deleted value to undefined.
+                            currentResult[key] = undefined;
+
+                        }
 
                     }
 
                 } else
-                // If at least one value is an array, store all array values.
+                // If at least one value is an array, keep the latest array value.
                 if(hasArray) {
 
-                    // Store the values of the arrays.
-                    currentResult = {
-                        values
-                    };
+                    // Store the latest value.
+                    currentResult = values[values.length - 1];
 
                 // Otherwise, the values are primitive values.
                 } else {
 
-                    // Store all different primitive values.
-                    currentResult = {
-                        values
-                    };
+                    // Store the latest value.
+                    currentResult = values[values.length - 1];
+
                 }
 
                 // Return the result of this recursive level.
@@ -537,11 +597,14 @@ export default class Objects {
             };
 
             // Calculate the complete difference.
-            result = diff(objects);
+            result = diff(
+                objects,
+                objects.map(() => true)
+            );
 
         }
 
-        // Return the final result.
+        // Return the result.
         return result;
         
     }
@@ -595,6 +658,52 @@ export default class Objects {
         return result;
 
     }
+
+    /**
+     * Keys Prefix
+     * 
+     * @param obj 
+     * @param prefix 
+     * @param level 
+     * @param currentLevel 
+     * @returns {Record<string,unknown>}
+     */
+    public static keysPrefix = (
+        obj:Record<string,unknown>,
+        prefix:string,
+        level:number = 1,
+        currentLevel:number = 1
+    ):Record<string, unknown> => Object.fromEntries(
+
+        // Map of obj
+        Object.entries(obj).map(([key, value]) => {
+
+            // New key
+            const newKey = currentLevel === level
+                ? `${prefix}${key}`
+                : key
+            ;
+
+            // New value
+            const newValue = 
+                value !== null &&
+                typeof value === "object" &&
+                !Array.isArray(value)
+                    ? this.keysPrefix(
+                          value as Record<string, unknown>,
+                          prefix,
+                          level,
+                          currentLevel + 1
+                      )
+                    : value
+            ;
+
+            // Return
+            return [newKey, newValue];
+
+        })
+        
+    );
     
 }
 

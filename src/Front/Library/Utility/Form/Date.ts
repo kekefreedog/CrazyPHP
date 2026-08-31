@@ -11,6 +11,7 @@
 /**
  * Dependances
  */
+import type { FormInputTypeHelpers, FormInputType } from './FormType';
 import AirDatepicker, { AirDatepickerOptions } from 'air-datepicker';
 import airDatePickerLocaleFr from 'air-datepicker/locale/fr'
 import { IPickerConfig } from '@easepick/core/dist/types';
@@ -18,9 +19,8 @@ import { AmpPlugin } from '@easepick/amp-plugin';
 import { RangePlugin } from '@easepick/bundle';
 import { easepick } from '@easepick/bundle';
 import UtilityDateTime from '../DateTime';
-import type { FormInputTypeHelpers } from './Type';
-import type FormInputType from './Type';
 import {default as Form} from '../Form';
+import FormType from './FormType';
 
 /**
  * Date Type
@@ -31,7 +31,7 @@ import {default as Form} from '../Form';
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2024 Kévin Zarshenas
  */
-export default class DateType implements FormInputType {
+export default class DateType extends FormType implements FormInputType {
 
     /** Private Parameters
      ******************************************************
@@ -48,6 +48,9 @@ export default class DateType implements FormInputType {
      * @param options
      */
     constructor(options:Partial<FormOptions> = {}){
+
+        // Call parent constructor
+        super();
 
         // Ingest options
         this._options = {...this._options, ...options};
@@ -279,7 +282,7 @@ export default class DateType implements FormInputType {
      * Get
      *
      * @param itemEl:HTMLElement
-     * @return null|Array<any>
+     * @returns {null|Array<any>}
      */
     public get = (itemEl:HTMLElement, options:Partial<FormOptions> = {}):null|Array<any> => {
 
@@ -311,7 +314,7 @@ export default class DateType implements FormInputType {
      * Get Multiple
      *
      * @param itemEl:HTMLElement
-     * @return null|Array<any>[]
+     * @returns {null|Array<any>[]}
      */
     public getMultiple = (itemEl:HTMLElement, options:Partial<FormOptions> = {}):null|Array<any>[] => {
 
@@ -383,6 +386,46 @@ export default class DateType implements FormInputType {
     }
 
     /**
+     * Filter Get
+     *
+     * @param itemEl:HTMLElement
+     * @param formEl:HTMLFormElement
+     * @returns {null|Array<any>}
+     */
+    public filterGet = (itemEl:HTMLElement, formEl:HTMLFormElement, options:Partial<FormOptions> = {}):null|Array<any> => {
+
+        // Get plain key/value
+        let result = this.get(itemEl, options);
+
+        // Combine with operator
+        if(result) result = [result[0], FormType.combineFilterOperatorValue(FormType.getFilterOperatorValue(formEl, result[0]), result[1], result[0], options)];
+
+        // Return result
+        return result;
+
+    }
+
+    /**
+     * Filter Get Multiple
+     *
+     * @param itemEl:HTMLElement
+     * @param formEl:HTMLFormElement
+     * @returns {null|Array<any>[]}
+     */
+    public filterGetMultiple = (itemEl:HTMLElement, formEl:HTMLFormElement, options:Partial<FormOptions> = {}):null|Array<any>[] => {
+
+        // Get plain key/values — may already carry the "[a:b]" range syntax
+        let results = this.getMultiple(itemEl, options);
+
+        // Combine with operator
+        if(results) results = results.map(result => [result[0], FormType.combineFilterOperatorValue(FormType.getFilterOperatorValue(formEl, result[0]), result[1], result[0], options)]);
+
+        // Return results
+        return results;
+
+    }
+
+    /**
      * Set
      *
      * Set date in item
@@ -391,7 +434,7 @@ export default class DateType implements FormInputType {
      * @param value:string
      * @param valuesID
      * @param formEl
-     * @return void
+     * @returns {void}
      */
     public set = (itemEl:HTMLElement, value:string, valuesID:string|Object|null, formEl:HTMLFormElement, options:Partial<FormOptions> = {}):void => {
 
@@ -419,6 +462,23 @@ export default class DateType implements FormInputType {
             }
 
         }
+
+    }
+
+    /**
+     * Set Filter
+     *
+     * @param itemEl:HTMLElement
+     * @param value:string
+     * @param valuesID
+     * @param formEl
+     * @param options
+     * @returns {void}
+     */
+    public filterSet = (itemEl:HTMLElement, value:string, valuesID:string|Object|null, formEl:HTMLFormElement, options:Partial<FormOptions> = {}):void => {
+
+        // Delegate to the regular setter
+        this.set(itemEl, value, valuesID, formEl, options);
 
     }
 

@@ -53,7 +53,7 @@ The form is available in the Handlebars template via `_ui.forms`:
 
 ```handlebars
 {{#each _ui.forms}}
-    <div partial="form" data-id="{{this.id}}"></div>
+  <div partial="form" data-id="{{this.id}}"></div>
 {{/each}}
 ```
 
@@ -63,33 +63,33 @@ The `partial="form"` attribute tells the scanner to instantiate the TypeScript `
 
 ## Form definition schema
 
-| Field | Type | Purpose |
-|---|---|---|
-| `id` | string | Unique identifier, used to match template element to state |
-| `title` | string | Heading displayed above the form |
-| `post` | string | API endpoint for form submission |
-| `entity` | string? | Entity name used by the backend processor |
-| `onready` | string? | JS expression evaluated on form mount |
-| `reset` | bool | Show reset button |
-| `confirm` | bool/string/object | Show confirmation dialog before submit |
-| `items` | array | Field definitions (see below) |
+| Field     | Type               | Purpose                                                    |
+| --------- | ------------------ | ---------------------------------------------------------- |
+| `id`      | string             | Unique identifier, used to match template element to state |
+| `title`   | string             | Heading displayed above the form                           |
+| `post`    | string             | API endpoint for form submission                           |
+| `entity`  | string?            | Entity name used by the backend processor                  |
+| `onready` | string?            | JS expression evaluated on form mount                      |
+| `reset`   | bool               | Show reset button                                          |
+| `confirm` | bool/string/object | Show confirmation dialog before submit                     |
+| `items`   | array              | Field definitions (see below)                              |
 
 ### Item schema
 
-| Field | Type | Values |
-|---|---|---|
-| `name` | string | Field name (sent as POST key) |
-| `type` | string | `text` `email` `password` `number` `date` `color` `file` `select` `checkbox` `radio` `switch` `range` |
-| `label` | string | Display label |
-| `placeholder` | bool/string | `true` = use label as placeholder |
-| `required` | bool | — |
-| `readonly` | bool | — |
-| `disabled` | bool | — |
-| `default` | string/bool/number | Pre-filled value |
-| `multiple` | bool | Multi-value (select, file) |
-| `depends` | string | Show field only when another field has a non-empty value |
-| `select` | array/object | Options list or remote request config (for `type: select`) |
-| `_style` | object | CSS class overrides per element (wrapper, label, input…) |
+| Field         | Type               | Values                                                                                                |
+| ------------- | ------------------ | ----------------------------------------------------------------------------------------------------- |
+| `name`        | string             | Field name (sent as POST key)                                                                         |
+| `type`        | string             | `text` `email` `password` `number` `date` `color` `file` `select` `checkbox` `radio` `switch` `range` |
+| `label`       | string             | Display label                                                                                         |
+| `placeholder` | bool/string        | `true` = use label as placeholder                                                                     |
+| `required`    | bool               | —                                                                                                     |
+| `readonly`    | bool               | —                                                                                                     |
+| `disabled`    | bool               | —                                                                                                     |
+| `default`     | string/bool/number | Pre-filled value                                                                                      |
+| `multiple`    | bool               | Multi-value (select, file)                                                                            |
+| `depends`     | string             | Show field only when another field has a non-empty value                                              |
+| `select`      | array/object       | Options list or remote request config (for `type: select`)                                            |
+| `_style`      | object             | CSS class overrides per element (wrapper, label, input…)                                              |
 
 ### Remote select
 
@@ -118,12 +118,12 @@ let formPartial = this.getPartial("form");
 
 // Listen to submission
 formPartial.scriptRunning.onSubmit((result) => {
-    console.log(result); // parsed form data
+  console.log(result); // parsed form data
 });
 
 // Listen to any field change
 formPartial.scriptRunning.onChange((result, options) => {
-    // result = current form values
+  // result = current form values
 });
 
 // Listen to reset
@@ -135,12 +135,12 @@ let data = formPartial.scriptRunning.getFormData();
 
 ### Key methods
 
-| Method | Purpose |
-|---|---|
-| `onSubmit(callback)` | Called on valid submission; receives parsed field values |
-| `onReset(callback)` | Called when the reset button is clicked |
-| `onChange(callback, options)` | Called on any field change |
-| `getFormData()` | Returns current field values as an object |
+| Method                        | Purpose                                                  |
+| ----------------------------- | -------------------------------------------------------- |
+| `onSubmit(callback)`          | Called on valid submission; receives parsed field values |
+| `onReset(callback)`           | Called when the reset button is clicked                  |
+| `onChange(callback, options)` | Called on any field change                               |
+| `getFormData()`               | Returns current field values as an object                |
 
 ---
 
@@ -157,46 +157,46 @@ $processed = Process::getResultSummary($inputs["items"]);
 
 Applied via the `process` array in `REQUIRED_VALUES` or form item definitions:
 
-| Processor | Effect |
-|---|---|
-| `trim` | Strip whitespace |
-| `clean` | Remove special characters |
-| `cleanPath` | Sanitise as a file path |
-| `strtolower` | Lowercase |
-| `ucfirst` | Capitalise first letter |
-| `ucwords` | Capitalise each word |
-| `camelToSnake` | `myField` → `my_field` |
-| `snakeToCamel` | `my_field` → `myField` |
-| `email` | Validate as e-mail address |
-| `bool` | Cast to boolean |
-| `https` | Ensure URL starts with https |
+| Processor      | Effect                       |
+| -------------- | ---------------------------- |
+| `trim`         | Strip whitespace             |
+| `clean`        | Remove special characters    |
+| `cleanPath`    | Sanitise as a file path      |
+| `strtolower`   | Lowercase                    |
+| `ucfirst`      | Capitalise first letter      |
+| `ucwords`      | Capitalise each word         |
+| `camelToSnake` | `myField` → `my_field`       |
+| `snakeToCamel` | `my_field` → `myField`       |
+| `email`        | Validate as e-mail address   |
+| `bool`         | Cast to boolean              |
+| `https`        | Ensure URL starts with https |
 
 ### Validation
 
 `CrazyPHP\Library\Form\Validate` runs before processing and throws a `CrazyException` on failure. Built-in validators:
 
-| Validator | Checks |
-|---|---|
-| `isEmail` | FILTER_VALIDATE_EMAIL |
-| `isIpAddress` | FILTER_VALIDATE_IP |
-| `isValidUrl` | FILTER_VALIDATE_URL |
-| `isValidFile` | `$_FILES` array structure |
-| `isSemanticVersioning` | SemVer format |
-| `isMobilePhone` | Phone number pattern |
-| `isRegex` | Valid regex pattern |
-| `isStaticMethod` | `ClassName::methodName` format |
+| Validator              | Checks                         |
+| ---------------------- | ------------------------------ |
+| `isEmail`              | FILTER_VALIDATE_EMAIL          |
+| `isIpAddress`          | FILTER_VALIDATE_IP             |
+| `isValidUrl`           | FILTER_VALIDATE_URL            |
+| `isValidFile`          | `$_FILES` array structure      |
+| `isSemanticVersioning` | SemVer format                  |
+| `isMobilePhone`        | Phone number pattern           |
+| `isRegex`              | Valid regex pattern            |
+| `isStaticMethod`       | `ClassName::methodName` format |
 
 ---
 
 ## Supported input types and their integrations
 
-| Type | UI library |
-|---|---|
-| `date` | Easepick / Air Date Picker |
-| `select` | TomSelect (with remote loading) |
-| `file` | Filepond |
-| `color` | Native color picker |
-| `switch` / `range` / `checkbox` / `radio` | Custom SCSS components |
+| Type                                      | UI library                      |
+| ----------------------------------------- | ------------------------------- |
+| `date`                                    | Easepick / Air Date Picker      |
+| `select`                                  | TomSelect (with remote loading) |
+| `file`                                    | Filepond                        |
+| `color`                                   | Native color picker             |
+| `switch` / `range` / `checkbox` / `radio` | Custom SCSS components          |
 
 ---
 

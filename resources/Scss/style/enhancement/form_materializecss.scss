@@ -138,6 +138,42 @@ input[type="checkbox"] {
 
 }
 
+/*
+ * Fix checkbox focus outline appearing as a square
+ *
+ * Materialize sets `border-radius: 50%` on the checkbox's `:focus` state to
+ * turn the focus ring into a circle, but `outline` doesn't follow
+ * `border-radius` — it traces the element's box regardless — so the ring
+ * still renders as a plain square around the checkbox.
+ */
+input[type="checkbox"]:focus {
+
+    outline: none;
+
+}
+
+/*
+ * Fix checkbox hover border hardcoded to blue
+ *
+ * Materialize hardcodes the unchecked checkbox's `:hover` border to a fixed
+ * blue (`#85A9BB`/`#92C2DA`/`#3D7591`) instead of using the theme's color
+ * tokens, so it clashes with non-blue palettes. Use the same token as the
+ * resting border.
+ */
+input[type="checkbox"]:not(:disabled):hover:after {
+
+    // Color
+    border-color: var(--md-sys-color-on-surface-variant);
+
+}
+
+input[type="checkbox"]:not(:disabled):hover:before {
+
+    // Color
+    border-color: var(--md-sys-color-on-surface-variant);
+
+}
+
 /**
  * Fix .input-field border radius
  */
