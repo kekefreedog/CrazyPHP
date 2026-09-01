@@ -33,23 +33,41 @@ export default class Csv {
      * @returns {string}
      */
     public static render(results:any[]):string {
-        // This function converts your results array into CSV format
-        // It handles strings containing commas or line breaks by enclosing them in quotes
-        // and doubles any quotes within the strings.
 
-        const escapeField = (field: any) => {
-            if (typeof field === 'string' && (field.includes(',') || field.includes('\n') || field.includes('"'))) {
-                return `"${field.replace(/"/g, '""')}"`; // Enclose in quotes and escape existing quotes
-            }
-            return field;
-        };
+        // Set result
+        let result = "";
 
-        const headers = Object.keys(results[0]).join(',');
-        const rows = results.map(obj => 
-            Object.values(obj).map(escapeField).join(',')
-        );
+        // Check result
+        if(results.length){
 
-        return [headers, ...rows].join('\n');
+            // This function converts your results array into CSV format
+            const escapeField = (field: any) => {
+
+                // Check if string
+                if(typeof field === 'string' && (field.includes(',') || field.includes('\n') || field.includes('"')))
+
+                    // Enclose in quotes and escape existing quotes
+                    return `"${field.replace(/"/g, '""')}"`; 
+                    
+                // Return field
+                return field;
+
+            };
+
+            // Set headers
+            const headers = Object.keys(results[0]).join(',');
+            
+            // Set rows
+            const rows = results.map(obj => Object.values(obj).map(escapeField).join(','));
+
+            // Set result
+            result = [headers, ...rows].join('\n');
+
+        }
+
+        // Return result
+        return result;
+
     }
 
     /**

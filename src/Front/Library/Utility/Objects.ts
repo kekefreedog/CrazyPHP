@@ -41,30 +41,58 @@ export default class Objects {
         const result = {};
     
         // Iteration obj
-        for (const key in obj) {
+        for(const key in obj){
+
+            // Check has key
             if (obj.hasOwnProperty(key)) {
-                if (key.includes(separator)) {
+
+                // Check include separator
+                if(key.includes(separator)){
+
+                    // Set key
                     const keys = key.split(separator);
+
+                    // Set current
                     let current = result;
     
-                    for (let i = 0; i < keys.length; i++) {
-                        if (i === keys.length - 1) {
+                    // Iteration keys
+                    for(let i = 0; i < keys.length; i++){
+
+                        // Check key
+                        if (i === keys.length - 1)
+
+                            // Set current
                             current[keys[i]] = obj[key];
-                        } else {
+
+                        else {
+
+                            // Set current
                             current[keys[i]] = current[keys[i]] || {};
+
+                            // Update current
                             current = current[keys[i]];
+
                         }
+
                     }
-                } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+
+                }else
+                // Check if object    
+                if (typeof obj[key] === 'object' && obj[key] !== null)
+
+                    // Set result
                     result[key] = this.convertToNestedObject(obj[key], separator);
-                } else {
-                    result[key] = obj[key];
-                }
+
+                // Set result
+                else result[key] = obj[key];
+
             }
+
         }
     
         // Return result
         return result;
+        
     }
 
     /**

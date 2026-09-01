@@ -225,9 +225,6 @@ export default class Operation {
         // Is string
         let isString = false;
 
-        // Set current value (used by parseDefault fallback)
-        let lastValue: any = undefined;
-
         // Check input is array
         if(!Array.isArray(input)){
 
@@ -245,15 +242,11 @@ export default class Operation {
         // Iteration of current operation
         if(input.length && Object.keys(this._currentOperations).length){
 
-            // Operation found
-            let operationFound = false;
-
             // Iterations inputs
-            outer:
             for(const v of input){
 
-                // Set last value
-                lastValue = v;
+                // Operation found for this element
+                let elementMatched = false;
 
                 // Iteration of current operations
                 for(const key in this._currentOperations){
@@ -295,23 +288,35 @@ export default class Operation {
 
                             }
 
-                        // Set operation found
-                        operationFound = true;
+                        // Set operation found for this element
+                        elementMatched = true;
 
-                        // Continue
-                        break outer;
+                        // Stop looking for another matching operation for this element,
+                        // but keep iterating the remaining elements of the input array
+                        break;
 
                     }
 
                 }
 
+                // Check operation found for this element
+                if(!elementMatched)
+
+                    // Fallback to default parsing for this element only
+                    if(isString){
+
+                        // Set result
+                        result = this.parseDefault(v, runOptions);
+
+                    }else{
+
+                        // Set result
+                        result = result ?? [];
+                        result.push(this.parseDefault(v, runOptions));
+
+                    }
+
             }
-
-            // Check operation found
-            if(!operationFound)
-
-                // Set result
-                result = this.parseDefault(lastValue, runOptions);
 
         }else
         // check is string

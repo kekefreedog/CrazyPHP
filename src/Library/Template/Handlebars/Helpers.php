@@ -455,21 +455,46 @@ class Helpers {
      * If an inverse block is specified it will be rendered when falsy. 
      * Similar to eq but does not do strict equality.
      * 
-     * @param a Value to compare
-     * @param v Value to compare with
+     * @param mixed $a Value to compare
+     * @param mixed $b Value to compare with
+     * @param mixed $option
      * 
      * @return boolean
      */
     public static function is($a, $b, $option) {
 
-        # Check arguments are equivalent
-        return (
-            (!$a && !$b) || 
-            ($a == $b)
-        ) 
-            ? $option["fn"]() 
-            : $option["inverse"]()
+        # Set smooth
+        $exact = isset($option['hash']['exact'])
+            ? filter_var($option['hash']['exact'], FILTER_VALIDATE_BOOLEAN)
+            : false
         ;
+
+        # Check exact
+        if($exact)
+
+            # Set result
+            $result = (
+                (!$a && !$b) || 
+                ($a === $b)
+            ) 
+                ? $option["fn"]() 
+                : $option["inverse"]()
+            ;
+
+
+        else
+
+            # Check arguments are equivalent
+            $result = (
+                (!$a && !$b) || 
+                ($a == $b)
+            ) 
+                ? $option["fn"]() 
+                : $option["inverse"]()
+            ;
+
+        # Return result
+        return $result;
 
     }
 
@@ -531,15 +556,34 @@ class Helpers {
      * If an inverse block is specified it will be rendered when falsy. 
      * Similar to unlessEq but does not use strict equality for comparisons.
      * 
-     * @param a Value to compare
-     * @param v Value to compare with
+     * @param mixed $a Value to compare
+     * @param mixed $b Value to compare with
+     * @param mixed $option
      * 
      * @return boolean
      */
     public static function isnt($a, $b, $option) {
 
-        # Check arguments aren't equivalent
-        return $a != $b ? $option["fn"]() : $option["inverse"]();
+        # Set smooth
+        $exact = isset($option['hash']['exact'])
+            ? filter_var($option['hash']['exact'], FILTER_VALIDATE_BOOLEAN)
+            : false
+        ;
+
+        # Check exact
+        if($exact)
+
+            # Set result
+            $result = $a !== $b ? $option["fn"]() : $option["inverse"]();
+
+
+        else
+
+            # Check arguments are equivalent
+            $result = $a != $b ? $option["fn"]() : $option["inverse"]();
+
+        # Return result
+        return $result;
 
     }
 

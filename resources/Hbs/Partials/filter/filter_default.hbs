@@ -2,7 +2,7 @@
 <div partial="filter/filter_default" class="col s12 mn-2{{#if _style.customClass.input-field}} {{_style.customClass.input-field}}{{/if}}" style="margin-bottom: 15px;">
 
     <div class="input-field">
-        {{#isnt _style.filter.operators false}}
+        {{#isnt _style.filter.operators false exact=true}}
         <div class="input-filter">
             <select
                 data-operator-id="{{form.id}}_{{name}}"

@@ -17,15 +17,20 @@
         "url": "https://github.com/kekefreedog/CrazyPHP/issues"
     },
     "homepage": "https://github.com/kekefreedog/CrazyPHP#readme",
+    "scripts": {
+        "test": "find tests/Front -name '*.test.ts' -print0 | xargs -0 node --import tsx --test"
+    },
     "devDependencies": {
         "@materializecss/materialize": "^2.3.3",
         "@types/luxon": "^3.7.1",
         "@types/node": "^20.14.10",
         "@types/object-hash": "^3.0.6",
         "handlebars": "^4.7.8",
+        "jsdom": "^29.1.1",
         "localforage": "^1.10.0",
         "object-hash": "^3.0.0",
         "tslib": "^2.4.1",
+        "tsx": "^4.23.13",
         "type-fest": "^5.3.1"
     },
     "dependencies": {

@@ -31,80 +31,62 @@ export default class DateTime {
 
     /**
      * Get Utc string
-     * 
-     * @param date 
+     *
+     * @param date
      * @returns {string}
      */
     public static toUTCString = (date:Date):string => {
 
-        // Define pad
-        const pad = (n:number) => n < 10 ? '0' + n : n;
-    
         // Return
-        return date.getUTCFullYear() + '-' +
-               pad(date.getUTCMonth() + 1) + '-' + // Months are 0-indexed
-               pad(date.getUTCDate()) + ' ' +
-               pad(date.getUTCHours()) + ':' +
-               pad(date.getUTCMinutes()) + ':' +
-               pad(date.getUTCSeconds()) + ' UTC'
+        return Luxon
+            .fromJSDate(date)
+            .toUTC()
+            .toFormat("yyyy-LL-dd HH:mm:ss 'UTC'")
         ;
 
     }
 
     /**
      * To Iso String
-     * 
-     * @param date 
+     *
+     * @param date
      * @returns {string}
      */
     public static toISOString = (date:Date):string => {
 
-        // Define pad
-        const pad = (n:number) => n < 10 ? '0' + n : n;
-    
         // Return
-        return date.getUTCFullYear() +
-            '-' + pad(date.getUTCMonth() + 1) +
-            '-' + pad(date.getUTCDate()) +
-            'T' + pad(date.getUTCHours()) +
-            ':' + pad(date.getUTCMinutes()) +
-            ':' + pad(date.getUTCSeconds()) +
-            '.' + String((date.getUTCMilliseconds() / 1000).toFixed(3)).slice(2, 5) +
-            'Z';
+        return Luxon
+            .fromJSDate(date)
+            .toUTC()
+            .toFormat("yyyy-LL-dd'T'HH:mm:ss.SSS'Z'")
         ;
 
     }
 
     /**
      * To YYYYMMDD format
-     * 
+     *
      * To YYYY/MM/DD format
-     * 
+     *
      * @param date
      * @param separator
-     * @returns 
+     * @returns
      */
     public static toYYYYMMDDFormat = (date:Date, separator:string = "/"):string => {
 
-        // Gets the full year (e.g., 2024)
-        const year = date.getFullYear();
+        // Convert to Luxon (local zone, same as the native getters used before)
+        const luxonDate = Luxon.fromJSDate(date);
 
-        // Months are 0-indexed; pad with leading zero
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        
-        // Pad with leading zero if necessary
-        const day = String(date.getDate()).padStart(2, '0'); 
-    
         // Return result
-        return `${year}${separator}${month}${separator}${day}`;
+        return `${luxonDate.toFormat('yyyy')}${separator}${luxonDate.toFormat('LL')}${separator}${luxonDate.toFormat('dd')}`;
 
     }
 
     /**
      * Get Next Day
-     * 
+     *
      * Return in format YYYY/MM/DD
-     * 
+     *
      * @param weekday
      * @returns {string}
      */
@@ -115,80 +97,85 @@ export default class DateTime {
 
             // New error
             throw new Error("Invalid weekday number. Please enter a number between 1 (Monday) and 7 (Sunday).");
-    
-        // New date
-        const today = new Date();
-        const todayDayOfWeek = today.getUTCDay(); // Sunday - 0, Monday - 1, etc.
-        const daysUntilNext = (weekday - todayDayOfWeek + 7) % 7; // Calculate days until the next desired weekday
-    
+
+        // New date (UTC, since the original computation is entirely UTC-based)
+        let today = Luxon.fromJSDate(new Date()).toUTC();
+
+        // Sunday - 0, Monday - 1, etc. (Luxon's weekday is 1=Monday..7=Sunday)
+        const todayDayOfWeek = today.weekday % 7;
+
+        // Calculate days until the next desired weekday
+        const daysUntilNext = (weekday - todayDayOfWeek + 7) % 7;
+
         // Set the date to the next desired weekday
-        today.setUTCDate(today.getUTCDate() + daysUntilNext);
+        today = today.plus({days: daysUntilNext});
 
         // Check return date
         if(returnDate){
 
             // Return date
-            return today;
+            return today.toJSDate();
 
         }else{
-    
-            // Format the date as YYYY/MM/DD
-            const year = today.getUTCFullYear();
-            const month = (today.getUTCMonth() + 1).toString().padStart(2, '0'); // Months are zero-indexed
-            const day = today.getUTCDate().toString().padStart(2, '0');
-        
-            // Return date
-            return `${year}/${month}/${day}`;
+
+            // Return date formatted as YYYY/MM/DD
+            return today.toFormat('yyyy/LL/dd');
 
         }
     }
 
     /**
      * Get Today Date YYMMDD
-     * 
-     * @returns 
+     *
+     * @returns
      */
     public static getTodayDateYYMMDD = ():string => {
-        const date = new Date();
-        const year = date.getFullYear().toString().slice(-2); // Get last two digits of the year
-        const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-indexed, pad with zero
-        const day = date.getDate().toString().padStart(2, '0'); // Pad with zero if needed
-        return `${year}${month}${day}`;
+
+        // Set now
+        const now = Luxon.now();
+
+        // Return result
+        return `${now.toFormat('yy')}${now.toFormat('LL')}${now.toFormat('dd')}`;
+
     }
 
     /**
      * Get Today Date YYYYMMDD
-     * 
-     * @returns 
+     *
+     * @returns
      */
     public static getTodayDateYYYYMMDD = ():string => {
-        const date = new Date();
-        const year = date.getFullYear().toString(); // Get last two digits of the year
-        const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-indexed, pad with zero
-        const day = date.getDate().toString().padStart(2, '0'); // Pad with zero if needed
-        return `${year}${month}${day}`;
+
+        // Set now
+        const now = Luxon.now();
+
+        // Return result
+        return `${now.toFormat('yyyy')}${now.toFormat('LL')}${now.toFormat('dd')}`;
+
     }
 
     /**
      * Get Today Date YYYY-MM-DD
-     * 
-     * @returns 
+     *
+     * @returns
      */
     public static getTodayDateYYYY_MM_DD = ():string => {
-        const date = new Date();
-        const year = date.getFullYear().toString(); // Get last two digits of the year
-        const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-indexed, pad with zero
-        const day = date.getDate().toString().padStart(2, '0'); // Pad with zero if needed
-        return `${year}-${month}-${day}`;
+
+        // Set now
+        const now = Luxon.now();
+
+        // Return result
+        return `${now.toFormat('yyyy')}-${now.toFormat('LL')}-${now.toFormat('dd')}`;
+
     }
 
     /**
      * Convert Date Fromat
-     * 
+     *
      * To D/M/YYYY
-     * 
-     * @param dateStr 
-     * @returns 
+     *
+     * @param dateStr
+     * @returns
      */
     public static convertDateFormat = (dateStr:string):string => {
 
@@ -201,39 +188,38 @@ export default class DateTime {
             // Return result
             return result;
 
-        // Parse the input string into a Date object
-        const date = new Date(dateStr);
-    
-        // Format the date as D/M/YYYY
-        // Note: getMonth() returns 0 for January, 1 for February, etc., so we add 1.
-        result = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
-        
+        // Parse the input string into a Luxon DateTime (local zone, same as the native getters used before)
+        const date = Luxon.fromJSDate(new Date(dateStr));
+
+        // Format the date as M/D/YYYY
+        // Note: this has always actually produced M/D/YYYY, not the D/M/YYYY the docstring above claims.
+        result = `${date.month}/${date.day}/${date.year}`;
+
         // Return result
         return result;
     }
 
     /**
-     * Get Today Date 
-     * 
+     * Get Today Date
+     *
      * As YYYY-MM-DD
-     * 
+     *
      * @param separator By default "-"
      * @returns {string}
      */
     public static getTodayDate = (separator:string = "-"):string => {
 
-        const today = new Date();
-        const year = today.getFullYear(); // Gets the full year (e.g., 2024)
-        const month = (today.getMonth() + 1).toString().padStart(2, '0'); // Month is 0-indexed, add 1 to get 1-12
-        const day = today.getDate().toString().padStart(2, '0'); // Day of the month
-    
-        return `${year}${separator}${month}${separator}${day}`;
+        // Set now
+        const now = Luxon.now();
+
+        // Return result
+        return `${now.toFormat('yyyy')}${separator}${now.toFormat('LL')}${separator}${now.toFormat('dd')}`;
 
     }
-    
+
     /**
      * Get the first date of a week based on an offset from the current week.
-     * 
+     *
      * @param weekOffset - The week offset from the current week (0 for this week, -1 for previous week, 1 for next week).
      * @param format - Optional format for the returned date. Default is 'YYYY-MM-DD'.
      * @returns {string} The first date of the specified week in the given format.
@@ -241,116 +227,103 @@ export default class DateTime {
     public static getFirstDateOfWeek = (weekOffset: number, format:'YYYY-MM-DD'|'YYYYMMDD'|'MM/DD/YY'|'DD/MM/YYYY' = 'YYYY-MM-DD'):string => {
 
         // Get current date
-        const today = new Date();
+        const today = Luxon.now();
 
-        // Get day number 0 (Sunday) to 6 (Saturday)
-        const currentDay = today.getDay();
-
-        // Days since the last Monday
-        const daysSinceMonday = (currentDay + 6) % 7;
-
-        // Calculate the date of the last Monday
-        const lastMonday = new Date(today);
-        lastMonday.setDate(today.getDate() - daysSinceMonday);
+        // Days since the last Monday (Luxon's weekday is already 1=Monday..7=Sunday)
+        const daysSinceMonday = today.weekday - 1;
 
         // Calculate the first date of the target week
-        const targetMonday = new Date(lastMonday);
-        targetMonday.setDate(lastMonday.getDate() + weekOffset * 7);
+        const targetMonday = today
+            .minus({days: daysSinceMonday})
+            .plus({days: weekOffset * 7})
+        ;
 
         // Format the date
-        return DateTime.formatDate(targetMonday, format);
+        return DateTime.formatDate(targetMonday.toJSDate(), format);
 
     }
 
     /**
      * Is Date Current Week
-     * 
+     *
      * Check if a given date is in the current week.
-     * 
+     *
      * @param date - The date to check.
      * @returns True if the date is in the current week, false otherwise.
      */
     public static isDateInCurrentWeek = (date:Date|string):boolean => {
 
-        // check date
-        if(typeof date == "string")
+        // Set target as a Luxon DateTime
+        const target = typeof date === "string"
+            ? Luxon.fromJSDate(new Date(date))
+            : Luxon.fromJSDate(date)
+        ;
 
-            // Set date
-            date = new Date(date);
+        // Set today
+        const today = Luxon.now();
 
-        const today = new Date();
-        const dayOfWeek = today.getDay(); // 0 (Sunday) to 6 (Saturday)
-        const startOfWeek = new Date(today);
-        const endOfWeek = new Date(today);
-
-        // Calculate the start of the current week (Monday)
-        startOfWeek.setDate(today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
-
-        // Calculate the end of the current week (Sunday)
-        endOfWeek.setDate(startOfWeek.getDate() + 6);
-
-        // Set hours to 0 to compare only date parts
-        startOfWeek.setHours(0, 0, 0, 0);
-        endOfWeek.setHours(23, 59, 59, 999);
-        
-        // Compare the given date with the start and end of the current week
-        return date >= startOfWeek && date <= endOfWeek;
+        // Compare the given date with the start (Monday 00:00) and end (Sunday 23:59:59.999) of the current week
+        return target >= today.startOf('week') && target <= today.endOf('week');
 
     }
 
     /**
      * Is Date Next Week
-     * 
+     *
      * Check if a given date is in the next week.
-     * 
+     *
      * @param date - The date to check.
      * @returns True if the date is in the next week, false otherwise.
      */
     public static isDateInNextWeek = (date: Date | string): boolean => {
 
-        // Check date
-        if (typeof date === "string") {
-            date = new Date(date);
-        }
+        // Set target as a Luxon DateTime
+        const target = typeof date === "string"
+            ? Luxon.fromJSDate(new Date(date))
+            : Luxon.fromJSDate(date)
+        ;
 
-        const today = new Date();
-        const dayOfWeek = today.getDay(); // 0 (Sunday) to 6 (Saturday)
-        const startOfNextWeek = new Date(today);
-        const endOfNextWeek = new Date(today);
+        // Set today
+        const today = Luxon.now();
+
+        // Sunday - 0, Monday - 1, etc. (Luxon's weekday is 1=Monday..7=Sunday)
+        const dayOfWeek = today.weekday % 7;
 
         // Calculate the start of the next week (Monday)
-        startOfNextWeek.setDate(today.getDate() + (dayOfWeek === 0 ? 1 : 8 - dayOfWeek));
+        const startOfNextWeek = today.set({day: today.day + (dayOfWeek === 0 ? 1 : 8 - dayOfWeek)});
 
         // Calculate the end of the next week (Sunday)
-        endOfNextWeek.setDate(startOfNextWeek.getDate() + 6);
+        const endOfNextWeek = today.set({day: startOfNextWeek.day + 6});
 
         // Set hours to 0 to compare only date parts
-        startOfNextWeek.setHours(0, 0, 0, 0);
-        endOfNextWeek.setHours(23, 59, 59, 999);
+        const start = startOfNextWeek.set({hour: 0, minute: 0, second: 0, millisecond: 0});
+
+        // Set hour
+        const end = endOfNextWeek.set({hour: 23, minute: 59, second: 59, millisecond: 999});
 
         // Compare the given date with the start and end of the next week
-        return date >= startOfNextWeek && date <= endOfNextWeek;
+        return target >= start && target <= end;
 
     }
 
     /**
      * Is Valide Date
-     * 
+     *
      * Validate a simple date string
-     * 
-     * @param dateString 
+     *
+     * @param dateString
      * @returns {boolean}
      */
     public static isValidDate = (dateString:string):boolean => {
 
         // Return bool
-        return !isNaN(Date.parse(dateString));
+        return Luxon.fromJSDate(new Date(dateString)).isValid;
 
     }
 
     /**
      * Format a Date object into a string based on the given format.
-     * 
+     *
      * @param date - The Date object to format.
      * @param format - The format string :
      * - YYYY-MM-DD
@@ -363,32 +336,23 @@ export default class DateTime {
     public static formatDate = (date:Date|string, format:'YYYY-MM-DD'|'YYYYMMDD'|'MM/DD/YY'|'DD/MM/YYYY'|'YYYY/MM/DD'):string => {
 
         // Check date
-        if(typeof date === "string")
-
-            // Set date
-            date = new Date(date);
-
-        // Get full year
-        const year = date.getFullYear();
-
-        // Get month
-        const month = ('0' + (date.getMonth() + 1)).slice(-2);
-
-        // Get day
-        const day = ('0' + date.getDate()).slice(-2);
+        const luxonDate = typeof date === "string"
+            ? Luxon.fromJSDate(new Date(date))
+            : Luxon.fromJSDate(date)
+        ;
 
         // Swtich
         switch (format) {
             case 'YYYY-MM-DD':
-                return `${year}-${month}-${day}`;
+                return luxonDate.toFormat('yyyy-LL-dd');
             case 'YYYY/MM/DD':
-                return `${year}/${month}/${day}`;
+                return luxonDate.toFormat('yyyy/LL/dd');
             case 'YYYYMMDD':
-                return `${year}${month}${day}`;
+                return luxonDate.toFormat('yyyyLLdd');
             case 'MM/DD/YY':
-                return `${month}/${day}/${year.toString().slice(-2)}`;
+                return luxonDate.toFormat('LL/dd/yy');
             case 'DD/MM/YYYY':
-                return `${day}/${month}/${year}`;
+                return luxonDate.toFormat('dd/LL/yyyy');
             default:
                 throw new Error('Unsupported date format');
         }
@@ -397,31 +361,31 @@ export default class DateTime {
 
     /**
      * Get All Days Between
-     * 
-     * @param startDate 
-     * @param endDate 
-     * @returns 
+     *
+     * @param startDate
+     * @param endDate
+     * @returns
      */
     public static getAllDaysBetween = (startDate:Date, endDate:Date):Date[] => {
 
         // Prepare dates
         const dates: Date[] = [];
-    
+
         // Reset the time to midnight for both dates to avoid time discrepancies
-        const resetTime = (d: Date) => {
-            d.setHours(0, 0, 0, 0);
-            return d;
-        };
-    
-        let currentDate = resetTime(new Date(startDate)); // Clone startDate and reset time
-        const lastDate = resetTime(new Date(endDate));    // Clone endDate and reset time
-    
+        let currentDate = Luxon.fromJSDate(startDate).startOf('day');
+        const lastDate = Luxon.fromJSDate(endDate).startOf('day');
+
         // Loop through and add each day to the dates array
         while (currentDate <= lastDate) {
-            dates.push(new Date(currentDate)); // Push a clone of currentDate
-            currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
+
+            // Push a clone (native Date) of currentDate
+            dates.push(currentDate.toJSDate());
+
+            // Move to the next day
+            currentDate = currentDate.plus({days: 1});
+
         }
-    
+
         // Return dates
         return dates;
 
@@ -429,20 +393,25 @@ export default class DateTime {
 
     /**
      * Is Weekend
-     * 
-     * @param date 
-     * @returns 
+     *
+     * @param date
+     * @returns
      */
     public static isWeekend = (date:Date):boolean => {
-        const day = date.getDay(); // 0 is Sunday, 6 is Saturday
-        return day === 0 || day === 6; // Returns true if Saturday or Sunday
+
+        // Set day (Luxon's weekday is 1=Monday..7=Sunday)
+        const day = Luxon.fromJSDate(date).weekday;
+
+        // Returns true if Saturday(6) or Sunday(7)
+        return day === 6 || day === 7;
+
     }
 
     /**
      * Merge date
-     * 
+     *
      * Merge year, month and day as YYYY-MM-DD
-     * 
+     *
      * @param year:int|string
      * @param month:int|string
      * @param day:int|string
@@ -456,16 +425,14 @@ export default class DateTime {
         typeof day === "string" && (day = Number(day));
 
         // Validate inputs to ensure they create a valid date
-        const date = new Date(year, month - 1, day); // JavaScript months are 0-indexed
-    
-        if (
-            date.getFullYear() !== year ||
-            date.getMonth() + 1 !== month ||
-            date.getDate() !== day
-        ) {
+        const date = Luxon.local(year, month, day);
+
+        // Check date is valid
+        if(!date.isValid)
+
+            // New error
             throw new Error("Invalid date provided.");
-        }
-    
+
         // Format the date to YYYY-MM-DD
         return `${year.toString().padStart(4, '0')}-${month
             .toString()
@@ -475,44 +442,44 @@ export default class DateTime {
 
     /**
      * Explode Date
-     * 
+     *
      * Explode YYYY-MM-DD to array with [year, month, day]
-     * 
-     * @param date 
+     *
+     * @param date
      * @returns {string[]}
      */
     public static explodeDate = (date:string):number[] => {
 
         // Split the date by hyphens
         const parts = date.split("-");
-    
+
         // Ensure the parts array has exactly 3 elements
         if (parts.length !== 3)
-            
+
             throw new Error("Invalid date format. Expected YYYY-MM-DD.");
-    
+
         // Convert parts to integers and return as an array
         return parts.map(part => parseInt(part, 10));
     }
 
     /**
      * To Local Format
-     * 
-     * @param input 
-     * @param locale 
-     * @returns 
+     *
+     * @param input
+     * @param locale
+     * @returns
      */
     public static toLocalFormat = (input:string, locale:string):string => {
-    
+
         // Initialize the result with the input value
         let result = input;
-    
+
         // Check if input and locale are valid strings
         if (typeof input === "string" && input && typeof locale === "string" && locale) {
-            
-            // Convert input to a Date object
-            const timestamp = new Date(input);
-    
+
+            // Convert input to a Luxon DateTime (local zone, same as the native getters used before)
+            const timestamp = Luxon.fromJSDate(new Date(input));
+
             // Define weekday and month names for supported locales
             const locales = {
                 en_US: {
@@ -525,44 +492,42 @@ export default class DateTime {
                 }
                 // Add more locales as needed
             };
-    
+
             // Fallback to 'en_US' if the locale is not supported
             const localeData = locales[locale] || locales["en_US"];
-    
-            // Get the day of the week, day of the month, and month name
-            const weekday = localeData.weekdays[timestamp.getDay()];
-            const day = timestamp.getDate(); // Day of the month without leading zeros
-            const month = localeData.months[timestamp.getMonth()]; // Months are zero-based
-    
+
+            // Get the day of the week (Luxon's weekday is 1=Monday..7=Sunday; map to the Sunday-first index used above)
+            const weekday = localeData.weekdays[timestamp.weekday % 7];
+
+            // Day of the month without leading zeros
+            const day = timestamp.day;
+
+            // Month name (Luxon's month is 1-12; map to the 0-based index used above)
+            const month = localeData.months[timestamp.month - 1];
+
             // Combine and format the result
             result = `${weekday} ${day} ${month}`;
         }
-    
+
         // Return the result
         return result;
-    
+
     };
 
     /**
-     * 
+     *
      * Is Before Today
-     * 
-     * @param dateToCheck 
-     * @returns 
+     *
+     * @param dateToCheck
+     * @returns
      */
     public static isBeforeToday = (dateToCheck: Date):boolean => {
 
-        // Set todat
-        const today = new Date();
-
         // Normalize today's date to 00:00:00
-        today.setHours(0, 0, 0, 0); 
-
-        // Set date to check
-        const inputDate = new Date(dateToCheck);
+        const today = Luxon.now().startOf('day');
 
         // Normalize the input date
-        inputDate.setHours(0, 0, 0, 0); 
+        const inputDate = Luxon.fromJSDate(dateToCheck).startOf('day');
 
         // Return diff
         return inputDate < today;

@@ -22,10 +22,33 @@
  */
 module.exports = function(a, b, options) {
 
-    // Return result
-    return (a != b) 
-        ? options.fn(this) : 
-        options.inverse(this)
+    // Declare result
+    let result;
+    
+    // Set smotth (default: true)
+    let exact = [true, "true"].includes(options.hash?.exact)
+        ? true
+        : false
     ;
+
+    // Check exact
+    if(exact)
+
+        // Set result
+        result = (a !== b) 
+            ? options.fn(this) : 
+            options.inverse(this)
+        ;
+
+    else
+
+        // Return result
+        result = (a != b) 
+            ? options.fn(this) : 
+            options.inverse(this)
+        ;
+
+    // Return result
+    return result;
     
 };

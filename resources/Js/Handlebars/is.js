@@ -21,11 +21,34 @@
  * @return boolean
  */
 module.exports = function(a, b, options) {
+
+    // Declare result
+    let result;
     
-    // Return result
-    return (a == b) 
-        ? options.fn(this) 
-        : options.inverse(this)
+    // Set smotth (default: true)
+    let exact = [true, "true"].includes(options.hash?.exact)
+        ? true
+        : false
     ;
+
+    // Check exact
+    if(exact)
+
+        // Set result
+        result = (a === b) 
+            ? options.fn(this) : 
+            options.inverse(this)
+        ;
+
+    else
+
+        // Return result
+        result = (a == b) 
+            ? options.fn(this) : 
+            options.inverse(this)
+        ;
+
+    // Return result
+    return result;
     
 };

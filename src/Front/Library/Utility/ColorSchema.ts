@@ -111,18 +111,18 @@ export default class ColorSchema {
      * @return 'dark'|'light'
      */
     public static getTheme = (useLocalStorage:boolean = false):'dark'|'light' => {
-        
+
         // Result
-        let result:'dark'|'light' = ColorSchema.get();
+        let result: 'dark'|'light' = ColorSchema.get();
 
-        // if useLocalStorage
-        if("localStorage" in window && useLocalStorage){
+        // Check localStorage
+        if ('localStorage' in window && useLocalStorage) {
 
-            // Get in local storage
-            let localStorageValue = localStorage.getItem('crazy-theme') || ColorSchema.get();
+            // Get from localStorage
+            const localStorageValue = localStorage.getItem('crazy-theme');
 
             // Check value is light or dark
-            if(localStorageValue in ['dark','light'])
+            if (localStorageValue !== null && ['dark', 'light'].includes(localStorageValue))
 
                 // Set result
                 result = localStorageValue as 'dark'|'light';
@@ -155,26 +155,58 @@ export default class ColorSchema {
      */
     public static createVerticalGradient = (colors: string[], smooth:boolean = true):string => {
 
-        if (smooth) {
-            // Smooth gradient with normal blending between colors
-            const colorStops = colors
-              .map((color, index) => `rgba(${color}) ${(index / (colors.length - 1)) * 100}%`)
-              .join(', ');
-            
-            return `background: linear-gradient(to bottom, ${colorStops});`;
-          } else {
-            // Hard stop gradient without blending between colors
-            const colorStops = colors
-              .map((color, index) => {
-                const position = (index / colors.length) * 100;
-                return `rgba(${color}) ${position}%, rgba(${color}) ${(position + 100 / colors.length)}%`;
-              })
-              .join(', ');
-        
-            return `linear-gradient(to bottom, ${colorStops});`;
-          }
+        // Result
+        let result = '';
 
-      }
+        // Check colors
+        if(colors.length === 1)
+
+            // Single color
+            result = `background: rgba(${colors[0]});`;
+
+        else 
+        // If length
+        if(colors.length > 1){
+
+            // Check smooth
+            if(smooth){
+
+                // Smooth gradient with normal blending between colors
+                const colorStops = colors
+                    .map((color, index) =>`rgba(${color}) ${(index / (colors.length - 1)) * 100}%`)
+                    .join(', ')
+                ;
+
+                // Set result
+                result = `background: linear-gradient(to bottom, ${colorStops});`;
+
+            }else{
+
+                // Hard stop gradient without blending between colors
+                const colorStops = colors
+                    .map((color, index) => {
+
+                        // Set position
+                        const position = (index / colors.length) * 100;
+
+                        // Return
+                        return `rgba(${color}) ${position}%, rgba(${color}) ${position + 100 / colors.length}%`;
+
+                    })
+                    .join(', ')
+                ;
+
+                // Return result
+                result = `background: linear-gradient(to bottom, ${colorStops});`;
+
+            }
+
+        }
+
+        // Return result
+        return result;
+
+    }
 
     /** Private static methods
      ******************************************************
@@ -186,8 +218,19 @@ export default class ColorSchema {
      * @returns 
      */
     private static componentToHex = (c:number|string):string => {
-        var hex = c.toString(16);
-        return hex.length == 1 ? "0" + hex : hex;
+
+        // Set value
+        const value = Number(c);
+
+        // Set hex
+        const hex = value.toString(16);
+
+        // Return result
+        return hex.length === 1 
+            ? `0${hex}` 
+            : hex
+        ;
+
     }
 
     /**
