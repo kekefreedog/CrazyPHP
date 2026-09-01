@@ -26,10 +26,6 @@ use Exception;
  * Helpers
  * 
  * Add color suffix for convert material color to specific color propoerty
- * 
- * @param a Value to compare
- * @param v Value to compare with
- * @return string
  */
 class Helpers {
 
@@ -405,7 +401,7 @@ class Helpers {
      * 
      * @param $a Color
      * @param $v Suffix
-     * @param $t Theme
+     * @param $theme Theme
      * @return string
      */
     public static function colorThemeSuffix($a, $v, $theme) {
