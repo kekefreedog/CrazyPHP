@@ -48,6 +48,16 @@ describe("Front/Library/Utility/DateTime", () => {
 
         });
 
+        it("accepts a Luxon DateTime input", () => {
+
+            // Set input
+            const date = Luxon.fromISO("2024-01-05T08:06:03Z", { zone: "utc" });
+
+            // Check result
+            assert.equal(DateTime.toUTCString(date), "2024-01-05 08:06:03 UTC");
+
+        });
+
     });
 
     /** toISOString
@@ -75,6 +85,16 @@ describe("Front/Library/Utility/DateTime", () => {
 
         });
 
+        it("accepts a Luxon DateTime input", () => {
+
+            // Set input
+            const date = Luxon.fromISO("2024-01-05T08:06:03.500Z", { zone: "utc" });
+
+            // Check result
+            assert.equal(DateTime.toISOString(date), "2024-01-05T08:06:03.500Z");
+
+        });
+
     });
 
     /** toYYYYMMDDFormat
@@ -99,6 +119,16 @@ describe("Front/Library/Utility/DateTime", () => {
 
             // Check result
             assert.equal(DateTime.toYYYYMMDDFormat(date, "-"), "2024-03-07");
+
+        });
+
+        it("accepts a Luxon DateTime input", () => {
+
+            // Set input
+            const date = Luxon.fromObject({year: 2024, month: 3, day: 7});
+
+            // Check result
+            assert.equal(DateTime.toYYYYMMDDFormat(date), "2024/03/07");
 
         });
 
@@ -437,6 +467,20 @@ describe("Front/Library/Utility/DateTime", () => {
 
         });
 
+        it("accepts a Luxon DateTime input", () => {
+
+            // Set fixed now (Wednesday 2026-09-02)
+            const now = new Date(2026, 8, 2, 10, 0, 0);
+
+            // Check result
+            withFixedNow(now, () => {
+
+                assert.equal(DateTime.isDateInCurrentWeek(Luxon.fromObject({year: 2026, month: 9, day: 3})), true);
+
+            });
+
+        });
+
     });
 
     describe("isDateInNextWeek", () => {
@@ -509,6 +553,20 @@ describe("Front/Library/Utility/DateTime", () => {
             withFixedNow(now, () => {
 
                 assert.equal(typeof DateTime.isDateInNextWeek("2026-09-10T12:00:00"), "boolean");
+
+            });
+
+        });
+
+        it("accepts a Luxon DateTime input", () => {
+
+            // Set fixed now (Wednesday 2026-09-02; next week is 2026-09-07 to 2026-09-13, same month)
+            const now = new Date(2026, 8, 2, 10, 0, 0);
+
+            // Check result
+            withFixedNow(now, () => {
+
+                assert.equal(DateTime.isDateInNextWeek(Luxon.fromObject({year: 2026, month: 9, day: 10})), true);
 
             });
 
@@ -594,6 +652,16 @@ describe("Front/Library/Utility/DateTime", () => {
 
         });
 
+        it("accepts a Luxon DateTime input", () => {
+
+            // Set input
+            const luxonDate = Luxon.fromObject({year: 2024, month: 3, day: 7});
+
+            // Check result
+            assert.equal(DateTime.formatDate(luxonDate, "YYYY-MM-DD"), "2024-03-07");
+
+        });
+
         it("throws for an unsupported format", () => {
 
             // Check result
@@ -646,6 +714,25 @@ describe("Front/Library/Utility/DateTime", () => {
 
         });
 
+        it("accepts Luxon DateTime inputs (both, or mixed with a native Date)", () => {
+
+            // Set input
+            const start = Luxon.fromObject({year: 2024, month: 3, day: 1});
+            const end = Luxon.fromObject({year: 2024, month: 3, day: 3});
+
+            // Check result | both Luxon
+            const result = DateTime.getAllDaysBetween(start, end);
+            assert.equal(result.length, 3);
+            assert.equal(result[0].getDate(), 1);
+            assert.equal(result[1].getDate(), 2);
+            assert.equal(result[2].getDate(), 3);
+
+            // Check result | mixed Luxon / native Date
+            const mixed = DateTime.getAllDaysBetween(start, new Date(2024, 2, 3));
+            assert.equal(mixed.length, 3);
+
+        });
+
     });
 
     /** isWeekend
@@ -682,6 +769,16 @@ describe("Front/Library/Utility/DateTime", () => {
 
             // Check result
             assert.equal(DateTime.isWeekend(date), false);
+
+        });
+
+        it("accepts a Luxon DateTime input", () => {
+
+            // Set input (2024-03-09 is a Saturday)
+            const date = Luxon.fromObject({year: 2024, month: 3, day: 9});
+
+            // Check result
+            assert.equal(DateTime.isWeekend(date), true);
 
         });
 
@@ -830,6 +927,16 @@ describe("Front/Library/Utility/DateTime", () => {
 
             // Check result
             assert.equal(DateTime.isBeforeToday(tomorrow), false);
+
+        });
+
+        it("accepts a Luxon DateTime input", () => {
+
+            // Set input
+            const yesterday = Luxon.now().minus({days: 1});
+
+            // Check result
+            assert.equal(DateTime.isBeforeToday(yesterday), true);
 
         });
 

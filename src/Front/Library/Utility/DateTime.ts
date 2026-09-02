@@ -34,12 +34,12 @@ export default class DateTime {
      *
      * @param date
      * @returns {string}
+     * @see {@link ../../../../tests/Front/Library/Utility/DateTime.test.ts} - describe("toUTCString", ...)
      */
-    public static toUTCString = (date:Date):string => {
+    public static toUTCString = (date:Date|Luxon):string => {
 
         // Return
-        return Luxon
-            .fromJSDate(date)
+        return (date instanceof Date ? Luxon.fromJSDate(date) : date)
             .toUTC()
             .toFormat("yyyy-LL-dd HH:mm:ss 'UTC'")
         ;
@@ -51,12 +51,12 @@ export default class DateTime {
      *
      * @param date
      * @returns {string}
+     * @see {@link ../../../../tests/Front/Library/Utility/DateTime.test.ts} - describe("toISOString", ...)
      */
-    public static toISOString = (date:Date):string => {
+    public static toISOString = (date:Date|Luxon):string => {
 
         // Return
-        return Luxon
-            .fromJSDate(date)
+        return (date instanceof Date ? Luxon.fromJSDate(date) : date)
             .toUTC()
             .toFormat("yyyy-LL-dd'T'HH:mm:ss.SSS'Z'")
         ;
@@ -71,11 +71,12 @@ export default class DateTime {
      * @param date
      * @param separator
      * @returns
+     * @see {@link ../../../../tests/Front/Library/Utility/DateTime.test.ts} - describe("toYYYYMMDDFormat", ...)
      */
-    public static toYYYYMMDDFormat = (date:Date, separator:string = "/"):string => {
+    public static toYYYYMMDDFormat = (date:Date|Luxon, separator:string = "/"):string => {
 
         // Convert to Luxon (local zone, same as the native getters used before)
-        const luxonDate = Luxon.fromJSDate(date);
+        const luxonDate = date instanceof Date ? Luxon.fromJSDate(date) : date;
 
         // Return result
         return `${luxonDate.toFormat('yyyy')}${separator}${luxonDate.toFormat('LL')}${separator}${luxonDate.toFormat('dd')}`;
@@ -89,6 +90,7 @@ export default class DateTime {
      *
      * @param weekday
      * @returns {string}
+     * @see {@link ../../../../tests/Front/Library/Utility/DateTime.test.ts} - describe("getNextDay", ...)
      */
     public static getNextDay = (weekday:1|2|3|4|5|6|7, returnDate:boolean = false):string|Date => {
 
@@ -128,6 +130,7 @@ export default class DateTime {
      * Get Today Date YYMMDD
      *
      * @returns
+     * @see {@link ../../../../tests/Front/Library/Utility/DateTime.test.ts} - describe("getTodayDateYYMMDD", ...)
      */
     public static getTodayDateYYMMDD = ():string => {
 
@@ -143,6 +146,7 @@ export default class DateTime {
      * Get Today Date YYYYMMDD
      *
      * @returns
+     * @see {@link ../../../../tests/Front/Library/Utility/DateTime.test.ts} - describe("getTodayDateYYYYMMDD", ...)
      */
     public static getTodayDateYYYYMMDD = ():string => {
 
@@ -158,6 +162,7 @@ export default class DateTime {
      * Get Today Date YYYY-MM-DD
      *
      * @returns
+     * @see {@link ../../../../tests/Front/Library/Utility/DateTime.test.ts} - describe("getTodayDateYYYY_MM_DD", ...)
      */
     public static getTodayDateYYYY_MM_DD = ():string => {
 
@@ -176,6 +181,7 @@ export default class DateTime {
      *
      * @param dateStr
      * @returns
+     * @see {@link ../../../../tests/Front/Library/Utility/DateTime.test.ts} - describe("convertDateFormat", ...)
      */
     public static convertDateFormat = (dateStr:string):string => {
 
@@ -206,6 +212,7 @@ export default class DateTime {
      *
      * @param separator By default "-"
      * @returns {string}
+     * @see {@link ../../../../tests/Front/Library/Utility/DateTime.test.ts} - describe("getTodayDate", ...)
      */
     public static getTodayDate = (separator:string = "-"):string => {
 
@@ -223,6 +230,7 @@ export default class DateTime {
      * @param weekOffset - The week offset from the current week (0 for this week, -1 for previous week, 1 for next week).
      * @param format - Optional format for the returned date. Default is 'YYYY-MM-DD'.
      * @returns {string} The first date of the specified week in the given format.
+     * @see {@link ../../../../tests/Front/Library/Utility/DateTime.test.ts} - describe("getFirstDateOfWeek", ...)
      */
     public static getFirstDateOfWeek = (weekOffset: number, format:'YYYY-MM-DD'|'YYYYMMDD'|'MM/DD/YY'|'DD/MM/YYYY' = 'YYYY-MM-DD'):string => {
 
@@ -250,13 +258,16 @@ export default class DateTime {
      *
      * @param date - The date to check.
      * @returns True if the date is in the current week, false otherwise.
+     * @see {@link ../../../../tests/Front/Library/Utility/DateTime.test.ts} - describe("isDateInCurrentWeek", ...)
      */
-    public static isDateInCurrentWeek = (date:Date|string):boolean => {
+    public static isDateInCurrentWeek = (date:Date|Luxon|string):boolean => {
 
         // Set target as a Luxon DateTime
         const target = typeof date === "string"
             ? Luxon.fromJSDate(new Date(date))
-            : Luxon.fromJSDate(date)
+            : date instanceof Date
+                ? Luxon.fromJSDate(date)
+                : date
         ;
 
         // Set today
@@ -274,13 +285,16 @@ export default class DateTime {
      *
      * @param date - The date to check.
      * @returns True if the date is in the next week, false otherwise.
+     * @see {@link ../../../../tests/Front/Library/Utility/DateTime.test.ts} - describe("isDateInNextWeek", ...)
      */
-    public static isDateInNextWeek = (date: Date | string): boolean => {
+    public static isDateInNextWeek = (date: Date | Luxon | string): boolean => {
 
         // Set target as a Luxon DateTime
         const target = typeof date === "string"
             ? Luxon.fromJSDate(new Date(date))
-            : Luxon.fromJSDate(date)
+            : date instanceof Date
+                ? Luxon.fromJSDate(date)
+                : date
         ;
 
         // Set today
@@ -313,6 +327,7 @@ export default class DateTime {
      *
      * @param dateString
      * @returns {boolean}
+     * @see {@link ../../../../tests/Front/Library/Utility/DateTime.test.ts} - describe("isValidDate", ...)
      */
     public static isValidDate = (dateString:string):boolean => {
 
@@ -332,13 +347,16 @@ export default class DateTime {
      * - MM/DD/YY
      * - DD/MM/YYYY
      * @returns {string} The formatted date string.
+     * @see {@link ../../../../tests/Front/Library/Utility/DateTime.test.ts} - describe("formatDate", ...)
      */
-    public static formatDate = (date:Date|string, format:'YYYY-MM-DD'|'YYYYMMDD'|'MM/DD/YY'|'DD/MM/YYYY'|'YYYY/MM/DD'):string => {
+    public static formatDate = (date:Date|Luxon|string, format:'YYYY-MM-DD'|'YYYYMMDD'|'MM/DD/YY'|'DD/MM/YYYY'|'YYYY/MM/DD'):string => {
 
         // Check date
         const luxonDate = typeof date === "string"
             ? Luxon.fromJSDate(new Date(date))
-            : Luxon.fromJSDate(date)
+            : date instanceof Date
+                ? Luxon.fromJSDate(date)
+                : date
         ;
 
         // Swtich
@@ -365,15 +383,18 @@ export default class DateTime {
      * @param startDate
      * @param endDate
      * @returns
+     * @see {@link ../../../../tests/Front/Library/Utility/DateTime.test.ts} - describe("getAllDaysBetween", ...)
      */
-    public static getAllDaysBetween = (startDate:Date, endDate:Date):Date[] => {
+    public static getAllDaysBetween = (startDate:Date|Luxon, endDate:Date|Luxon):Date[] => {
 
         // Prepare dates
         const dates: Date[] = [];
 
-        // Reset the time to midnight for both dates to avoid time discrepancies
-        let currentDate = Luxon.fromJSDate(startDate).startOf('day');
-        const lastDate = Luxon.fromJSDate(endDate).startOf('day');
+        // Get current date
+        let currentDate = (startDate instanceof Date ? Luxon.fromJSDate(startDate) : startDate).startOf('day');
+
+        // GEt last date
+        const lastDate = (endDate instanceof Date ? Luxon.fromJSDate(endDate) : endDate).startOf('day');
 
         // Loop through and add each day to the dates array
         while (currentDate <= lastDate) {
@@ -396,11 +417,12 @@ export default class DateTime {
      *
      * @param date
      * @returns
+     * @see {@link ../../../../tests/Front/Library/Utility/DateTime.test.ts} - describe("isWeekend", ...)
      */
-    public static isWeekend = (date:Date):boolean => {
+    public static isWeekend = (date:Date|Luxon):boolean => {
 
         // Set day (Luxon's weekday is 1=Monday..7=Sunday)
-        const day = Luxon.fromJSDate(date).weekday;
+        const day = (date instanceof Date ? Luxon.fromJSDate(date) : date).weekday;
 
         // Returns true if Saturday(6) or Sunday(7)
         return day === 6 || day === 7;
@@ -416,6 +438,7 @@ export default class DateTime {
      * @param month:int|string
      * @param day:int|string
      * @return string
+     * @see {@link ../../../../tests/Front/Library/Utility/DateTime.test.ts} - describe("mergeDate", ...)
      */
     public static mergeDate = (year:string|number, month:string|number, day:string|number):string => {
 
@@ -447,6 +470,7 @@ export default class DateTime {
      *
      * @param date
      * @returns {string[]}
+     * @see {@link ../../../../tests/Front/Library/Utility/DateTime.test.ts} - describe("explodeDate", ...)
      */
     public static explodeDate = (date:string):number[] => {
 
@@ -468,6 +492,7 @@ export default class DateTime {
      * @param input
      * @param locale
      * @returns
+     * @see {@link ../../../../tests/Front/Library/Utility/DateTime.test.ts} - describe("toLocalFormat", ...)
      */
     public static toLocalFormat = (input:string, locale:string):string => {
 
@@ -520,14 +545,15 @@ export default class DateTime {
      *
      * @param dateToCheck
      * @returns
+     * @see {@link ../../../../tests/Front/Library/Utility/DateTime.test.ts} - describe("isBeforeToday", ...)
      */
-    public static isBeforeToday = (dateToCheck: Date):boolean => {
+    public static isBeforeToday = (dateToCheck: Date|Luxon):boolean => {
 
         // Normalize today's date to 00:00:00
         const today = Luxon.now().startOf('day');
 
         // Normalize the input date
-        const inputDate = Luxon.fromJSDate(dateToCheck).startOf('day');
+        const inputDate = (dateToCheck instanceof Date ? Luxon.fromJSDate(dateToCheck) : dateToCheck).startOf('day');
 
         // Return diff
         return inputDate < today;
@@ -546,6 +572,7 @@ export default class DateTime {
      * @param from 
      * @param to 
      * @returns {{start:Luxon,end:Luxon}}
+     * @see {@link ../../../../tests/Front/Library/Utility/DateTime.test.ts} - describe("normalize", ...)
      */
     public static normalize = (from:Date|Luxon,to:Date|Luxon):{start:Luxon,end:Luxon} => {
 
@@ -585,6 +612,7 @@ export default class DateTime {
      * @param direction 
      * @param ratio 
      * @returns {{from:Date, to:Date}}
+     * @see {@link ../../../../tests/Front/Library/Utility/DateTime.test.ts} - describe("offsetRange", ...)
      */
     public static offsetRange = (from:Date|Luxon,to:Date|Luxon,direction:"past"|"future"="future",ratio:number = 0.5):{from:Luxon, to:Luxon} => {
 
@@ -620,6 +648,7 @@ export default class DateTime {
      * @param to 
      * @param target 
      * @returns {{from:Luxon, to:Luxon}}
+     * @see {@link ../../../../tests/Front/Library/Utility/DateTime.test.ts} - describe("alignRange", ...)
      */
     public static alignRange = (from:Date|Luxon,to:Date|Luxon,target:Date|Luxon = Luxon.now()):{from:Luxon, to:Luxon} => {
         
@@ -659,6 +688,7 @@ export default class DateTime {
     * @param range 
     * @param ratio 
     * @returns {{from:Luxon, to:Luxon}}
+     * @see {@link ../../../../tests/Front/Library/Utility/DateTime.test.ts} - describe("alignRangeByRatio", ...)
     */
     public static alignRangeByRatio = (from:Date|Luxon, to:Date|Luxon, range:'week'|'month'|'semester'|'year', ratio:number = 0.5):{from:Luxon, to:Luxon} => {
 
