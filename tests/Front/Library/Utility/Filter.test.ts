@@ -355,7 +355,7 @@ describe("Front/Library/Utility/FilterItem", () => {
             const collection = {
                 name: "status",
                 el: {} as HTMLElement,
-                init: (item:FilterItem, value:any) => { initCalledWith = value; },
+                init: (item:FilterItemType, value:any) => { initCalledWith = value; },
             };
 
             // Set instance
@@ -384,7 +384,7 @@ describe("Front/Library/Utility/FilterItem", () => {
             const collection = {
                 name: "missing",
                 el: {} as HTMLElement,
-                init: (item:FilterItem, value:any) => { initCalledWith = value; },
+                init: (item:FilterItemType, value:any) => { initCalledWith = value; },
             };
 
             // Set instance
@@ -420,9 +420,13 @@ describe("Front/Library/Utility/FilterItem", () => {
             const { container, setValueCalls } = makeContainer(new FormData());
 
             // Set fake item element able to record/replay a listener
-            let registered:{ type:string, listener:EventListener } | null = null;
+            // (kept as an object property rather than a bare `let`: TS's control flow
+            // analysis narrows a bare `let` to its initializer and never revisits that
+            // narrowing for a reassignment that only happens inside a nested closure,
+            // which would otherwise make `registered` look like it's always `null`)
+            const state:{ registered:{ type:string, listener:EventListener } | null } = { registered: null };
             const itemEl:any = {
-                addEventListener: (type:string, listener:EventListener) => { registered = { type, listener }; },
+                addEventListener: (type:string, listener:EventListener) => { state.registered = { type, listener }; },
             };
 
             // Set collection
@@ -430,7 +434,7 @@ describe("Front/Library/Utility/FilterItem", () => {
                 name: "status",
                 el: itemEl,
                 event: "change" as keyof HTMLElementEventMap,
-                set: (item:FilterItem, current:any, next:any) => next,
+                set: (item:FilterItemType, current:any, next:any) => next,
             };
 
             // Set instance
@@ -440,10 +444,10 @@ describe("Front/Library/Utility/FilterItem", () => {
             item.init();
 
             // Check result: listener registered
-            assert.equal(registered?.type, "change");
+            assert.equal(state.registered?.type, "change");
 
             // Simulate the event firing
-            registered?.listener({ preventDefault: () => {} } as any);
+            state.registered?.listener({ preventDefault: () => {} } as any);
 
             // Check result: firing the event called set() with no argument, so the
             // collection's set callback receives `next === undefined`
@@ -504,7 +508,7 @@ describe("Front/Library/Utility/FilterItem", () => {
             const collection = {
                 name: "status",
                 el: {} as HTMLElement,
-                get: (item:FilterItem, current:any) => `${current}-processed`,
+                get: (item:FilterItemType, current:any) => `${current}-processed`,
             };
 
             // Set instance
@@ -547,7 +551,7 @@ describe("Front/Library/Utility/FilterItem", () => {
             const collection = {
                 name: "status",
                 el: {} as HTMLElement,
-                set: (item:FilterItem, current:any, next:any) => `${next}!`,
+                set: (item:FilterItemType, current:any, next:any) => `${next}!`,
             };
 
             // Set instance
