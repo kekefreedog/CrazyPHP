@@ -159,6 +159,8 @@ input[type="checkbox"]:focus {
  * blue (`#85A9BB`/`#92C2DA`/`#3D7591`) instead of using the theme's color
  * tokens, so it clashes with non-blue palettes. Use the same token as the
  * resting border.
+ *
+ * @migrated-to /Users/kzarshenas/Sites/CrazyProject/kmaterialize/components/checkbox/_checkboxes.scss
  */
 input[type="checkbox"]:not(:disabled):hover:after {
 

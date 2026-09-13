@@ -6,6 +6,8 @@
 /// @copyright  2022-2023 Kévin Zarshenas
 /// /// ///
 
+// @migrated-to kmaterialize/sass/_colors.scss ($gradient-colors + .gradient-* classes)
+
 /// Background Gradient
 $gradient-colors: (gradient-45deg-light-blue-teal: ('start-color' : color("light-blue", "lighten-4"),
     'end-color' : color("teal", "accent-2"),

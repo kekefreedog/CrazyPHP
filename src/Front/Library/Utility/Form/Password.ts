@@ -6,6 +6,8 @@
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2024 Kévin Zarshenas
+ *
+ * @migrated-to /Users/kzarshenas/Sites/CrazyProject/kmaterialize/components/password-input/password-input.ts
  */
 
 /**

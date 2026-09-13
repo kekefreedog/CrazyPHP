@@ -6,6 +6,12 @@
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2024 Kévin Zarshenas
+ *
+ * @migrated-to /Users/kzarshenas/Sites/CrazyProject/kmaterialize/components/tom-select/tom-select-field.ts
+ * (a scoped port - the remote-loading path here goes through this project's
+ * own Crazyrequest/Crazyurl HTTP client, which the kmaterialize port
+ * replaces with a plain fetch() since a standalone UI library has no
+ * equivalent app-specific request layer)
  */
 
 /**

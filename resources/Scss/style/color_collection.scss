@@ -8,6 +8,11 @@
 /// @copyright  2022-2023 Kévin Zarshenas
 /// /// ///
 
+// @migrated-to kmaterialize/sass/_colors.scss ($colors/$shades palette, already present)
+// This exact palette already ships in kmaterialize's own _colors.scss
+// (which also adds its own extra "gold" color) - color_class.scss/
+// color_gradient_collection.scss are what actually needed migrating.
+
 $materialize-red: (
   "base": #e51c23,
   "lighten-5": #fdeaeb,

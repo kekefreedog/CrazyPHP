@@ -1,0 +1,10 @@
+<article class="example-card-2">
+    <header>
+        <slot name="heading"><h2>{{attributes.label}}</h2></slot>
+    </header>
+    <div class="example-card-2__body"><slot></slot></div>
+    <footer>
+        <button type="button">Increment</button>
+        <output aria-live="polite">{{attributes.count}}</output>
+    </footer>
+</article>

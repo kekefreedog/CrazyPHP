@@ -1,0 +1,25 @@
+// The host selector is different in light DOM and shadow DOM.
+example-card-2 {
+    display: block;
+}
+
+:host {
+    display: block;
+}
+
+// A unique class scopes light-DOM rules; the same rules work inside a shadow root.
+.example-card-2 {
+    padding: 1rem;
+    border: 1px solid currentColor;
+    border-radius: 0.75rem;
+
+    &__body {
+        margin-block: 1rem;
+    }
+
+    footer {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+}

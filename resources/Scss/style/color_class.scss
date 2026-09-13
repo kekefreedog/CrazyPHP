@@ -77,6 +77,9 @@
 /// Declare color class
 ///////////////////////////////////////////////////////
 ///
+// @migrated-to kmaterialize/sass/_colors.scss (Color Classes, Shade classes)
+// Base/shade background+text already existed in kmaterialize; this added
+// the missing -border variant plus .light-mode-*/.dark-mode-* variants.
 
 /* Generate class for colors */
 @each $color_name,
@@ -264,7 +267,8 @@ $color_value in $shades {
 
 }
 
-/// Mixin printing a linear-gradient 
+// @migrated-to kmaterialize/sass/_colors.scss (linear-gradient mixin + angle/direction helpers)
+/// Mixin printing a linear-gradient
 /// as well as a plain color fallback 
 /// and the `-webkit-` prefixed declaration
 /// @access public
@@ -281,7 +285,8 @@ $color_value in $shades {
     background: linear-gradient($direction, $color-stops);
 }
 
-// Gradient color mixin 
+// @migrated-to kmaterialize/sass/_colors.scss ($gradient-colors + class loop)
+// Gradient color mixin
 @each $gcolor_name,
 $gcolor in $gradient-colors {
   $start-color: map-get($gcolor, start-color);

@@ -18,7 +18,6 @@ namespace CrazyPHP\Library\Database\Operation;
 
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Form\Operation;
-use MongoDB\BSON\Regex;
 
 /**
  * Process operations in string
@@ -427,7 +426,6 @@ class SqlOperation extends Operation {
      * Description : No operations found
      * 
      * @param string|array $input 
-     * @param array $operation
      * @param array $options
      * @return mixed
      */

@@ -133,6 +133,39 @@ export default class Strings {
     }
 
     /**
+     * Convert snake_case to camelCase or PascalCase.
+     *
+     * Examples:
+     * - hello_tout_le_monde → helloToutLeMonde
+     * - hello_tout_le_monde → HelloToutLeMonde (capitalize)
+     *
+     * @param input Input string
+     * @param capitalizeFirstCharacter Whether to capitalize the first character
+     * @returns CamelCase string
+     */
+    public static snakeToCamel2(input:string = '', capitalizeFirstCharacter:boolean = false):string {
+
+        // Replace spaces with underscores
+        let result = input.replace(/ /g, '_');
+
+        // Convert underscore + character to uppercase character
+        result = result.replace(/_+(.)/g, (_, char:string) => char.toUpperCase());
+
+        // Set first character
+        if(result)
+
+            // Set result
+            result = `${capitalizeFirstCharacter 
+                ? result.charAt(0).toUpperCase() 
+                : result.charAt(0).toLowerCase()}${result.slice(1)}`
+            ;
+
+        // Return result
+        return result;
+
+    }
+
+    /**
      * kebabToCamel
      * 
      * Convert a kebab-case string to PascalCase or camelCase

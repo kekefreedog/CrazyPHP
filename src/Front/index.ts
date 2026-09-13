@@ -23,6 +23,9 @@ export {default as UtilityProcess} from "./Library/Utility/Process";
 export {default as UtilityObjects} from "./Library/Utility/Objects";
 export {default as UtilityStrings} from "./Library/Utility/Strings";
 export {default as Crazycomponent} from "./Library/Crazycomponent";
+export {default as Crazycomponent2} from "./Library/Crazycomponent2";
+export type { Crazycomponent2Property, Crazycomponent2Properties, Crazycomponent2Options,
+    Crazycomponent2Context, Crazycomponent2Template, Crazycomponent2Styles } from "./Library/Crazycomponent2";
 export {default as Crazynavigator} from "./Library/Crazynavigator";
 export {default as UtilityEvents} from "./Library/Utility/Events";
 export {default as UtilityFilter} from "./Library/Utility/Filter";
