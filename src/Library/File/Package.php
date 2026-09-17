@@ -118,7 +118,7 @@ class Package{
         ]
     ];
 
-    /** @const array DEFAULT_DEPENDENCIES */
+    /** @var array DEFAULT_DEPENDENCIES */
     public const DEFAULT_DEV_DEPENDENCIES = [
         # Front
         "@fortawesome/fontawesome-free"             =>  "^6.5.1",
@@ -137,7 +137,6 @@ class Package{
         "material-icons"                            =>  "*",
         "@material-design-icons/font"               =>  "^0.14.2",
         "i18next"                                   =>  "^22.0.8",
-        "material-dynamic-colors"                   =>  "*",
         "tom-select"                                =>  "*",
         "@simonwep/pickr"                           =>  "^1.9.1",
         "maska"                                     =>  "^3.0.2",
@@ -181,14 +180,14 @@ class Package{
     const DEFAULT_VALUE = [
     ];
 
-    /** @const array DEFAULT_SCRIPTS */
+    /** @var array DEFAULT_SCRIPTS */
     public const DEFAULT_SCRIPTS = [
         "build" =>  "webpack --mode production --config webpack.prod.js",
         "dev"   =>  "webpack --mode development --config webpack.dev.js",
         "watch" =>  "webpack --watch --mode development --config webpack.dev.js"
     ];
 
-    /* @const array COMMAND_SUPPORTED supported command */
+    /** @var array COMMAND_SUPPORTED supported command */
     public const COMMAND_SUPPORTED = [
         "install"   =>  [
             "command"   =>  "i"
@@ -217,9 +216,8 @@ class Package{
     /**
      * Read value in package.json
      *
-     * @param string $parameter Parameter to read
-     * @param string $file File to read data
-     * @return string
+     * @param string $path
+     * @return array
      */
     public static function create(string $path):array{
 
@@ -424,7 +422,7 @@ class Package{
      * Delete value in package.json
      *
      * @param array $values Values to update on composer.json
-     * @return string
+     * @return bool
      */
     public static function delete(array $values = []):bool{
 
@@ -492,11 +490,11 @@ class Package{
      * 
      * @param string $commandName Command name to execute
      * @param string $argument Argument for the command
-     * @param string $checkError Check error of exec
+     * @param bool $checkError Check error of exec
      * @param bool $liveResult Display result in live
-     * @return
+     * @return mixed
      */
-    public static function exec(string $commandName = "", string $argument = "", bool $checkError = true, bool $liveResult = false) {
+    public static function exec(string $commandName = "", string $argument = "", bool $checkError = true, bool $liveResult = false):mixed {
 
         # Result
         $result = null;

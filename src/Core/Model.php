@@ -213,7 +213,7 @@ class Model implements CrazyModel {
      * 
      * @param ?array $filters Filters to use for read items
      * @param null|array|string $sort Options to use for sort items read
-     * @param ?array $sort Options to use for group items read
+     * @param ?array $group Options to use for group items read
      * @param ?array $options Optionnal options
      * @return array
      */
@@ -263,7 +263,7 @@ class Model implements CrazyModel {
      * Update With Filters
      * 
      * @param array $data Data with attributes values to use for update
-     * @param array $filters Filters to use for read itemsd
+     * @param ?array $filters Filters to use for read itemsd
      * @param ?array $options Optionnal options
      * @return array
      */

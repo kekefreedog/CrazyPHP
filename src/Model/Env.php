@@ -136,9 +136,9 @@ class Env{
      * @param string $input Input to process
      * @param bool $nullIfNotExists Return null is not exists
      * 
-     * @return
+     * @return mixed
      */
-    public static function get(string $input = "", bool $nullIfNotExists = false) {
+    public static function get(string $input = "", bool $nullIfNotExists = false):mixed {
 
         # Declare result
         $result = "";
@@ -316,10 +316,10 @@ class Env{
      ******************************************************
      */
 
-    /** @const string PREFIX used in global */
+    /** @var string PREFIX used in global */
     public const PREFIX = "__CRAZY_APP";
 
-    /** @const string REGEX Regex expression for select word starting after @ */
+    /** @var string REGEX Regex expression for select word starting after @ */
     # public const REGEX = '/@[\w]+/';
     public const REGEX = '/(?<![A-Za-z0-9._%+-])@[\w.]+(?!\.[A-Za-z]{2,})/';
 

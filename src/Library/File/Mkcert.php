@@ -63,7 +63,7 @@ class Mkcert {
      * 
      * run creation of certificate
      * 
-     * @return void
+     * @return array
      */
     public static function run(string $target = "@app_root/docker/mkcert"):array {
 

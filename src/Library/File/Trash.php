@@ -40,7 +40,7 @@ class Trash {
      * Trash Path
      * Env "trash_path"
      * Path of the trash
-     * @const string TRASH_PATH
+     * @var string TRASH_PATH
      */
     public const TRASH_PATH = "@app_root/.trash/";
     
@@ -48,7 +48,7 @@ class Trash {
      * Trash Disable
      * Env "trash_disable"
      * Disable the trash methods
-     * @const bool TRASH_DISABLE
+     * @var bool TRASH_DISABLE
      */
     public const TRASH_DISABLE = false;
 

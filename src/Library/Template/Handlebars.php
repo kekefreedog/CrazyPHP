@@ -61,9 +61,9 @@ class Handlebars {
     private $key = null;
 
     /**
-     * @var ?string $key Key og the cache of the current template
+     * @var ?\Closure $renderableClass Compiled template renderer
      */
-    private $renderableClass = null;
+    private ?\Closure $renderableClass = null;
 
     /**
      * @var ?array $partials Partial
@@ -296,9 +296,9 @@ class Handlebars {
      * 
      * Return flags set
      * 
-     * @return ?Constant
+     * @return null
      */
-    public function getFlags() {
+    public function getFlags():null {
 
         # Declare result
         $result = null;
@@ -386,9 +386,9 @@ class Handlebars {
      * 
      * @param string $inputs Input to compile
      * @param array $preset Preset to use for compilation
-     * @return
+     * @return mixed
      */
-    public static function compile(string $inputs = "", array $preset = self::CRAZY_PRESET) {
+    public static function compile(string $inputs = "", array $preset = self::CRAZY_PRESET):mixed {
 
         # Declare result
         $result = LightnCandy::compile($inputs, $preset);

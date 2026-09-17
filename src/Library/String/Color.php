@@ -126,7 +126,7 @@ class Color {
      * To Hsl
      * 
      * Convert color to hex
-     * @return string|bool
+     * @return string
      */
     public function toHsl():string {
 
@@ -142,7 +142,7 @@ class Color {
      * To Hsla
      * 
      * Convert color to hex
-     * @return string|bool
+     * @return string
      */
     public function toHsla():string {
 
@@ -162,7 +162,8 @@ class Color {
      * Is Light
      * 
      * Check if color is light
-     * @return string
+     * 
+     * @return bool
      */
     public function isLight():bool {
 

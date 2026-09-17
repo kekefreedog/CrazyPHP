@@ -21,10 +21,8 @@ use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Interface\CrazyCommand;
 use Symfony\Component\Finder\Finder;
 use CrazyPHP\Library\File\Package;
-use CrazyPHP\Library\Cli\Command;
 use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\File\File;
-use CrazyPHP\Library\System\Os;
 use DateTime;
 
 /**
@@ -43,7 +41,7 @@ class Run extends CrazyModel implements CrazyCommand {
      * 
      * Ingest data
      * 
-     * @param array $formResult Collection of value to process
+     * @param array $inputs
      * @return self
      */
     public function __construct(array $inputs = []){
@@ -63,7 +61,7 @@ class Run extends CrazyModel implements CrazyCommand {
      ******************************************************
      */
 
-    /** @var array $input Input data received */
+    /** @var array $inputs Input data received */
     public array $inputs;
 
     /** Private Parameters
@@ -222,7 +220,7 @@ class Run extends CrazyModel implements CrazyCommand {
         $scripts = Package::read("scripts");
 
         # Get command of current script that will be executed
-        $command = $scripts[$this->script];
+        $command = $scripts[$this->script] ?? "";
 
         # Check if "--watch" in command
         if(strpos($command, "--watch") !== false){
@@ -435,7 +433,7 @@ class Run extends CrazyModel implements CrazyCommand {
      ******************************************************
      */
 
-    /** @const array FLAGS_ALLOWED */
+    /** @var array FLAGS_ALLOWED */
     public const FLAGS_ALLOWED = [
         # Get more errors
         "--stats-error-details",

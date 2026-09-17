@@ -38,7 +38,7 @@ class ApiResponse extends Response {
      ******************************************************
      */
     
-    /** @var null|StreamInterface|array $content */
+    /** @var null|StreamInterface|array $apiContent */
     public null|StreamInterface|array $apiContent = null;
     
     /** @var string|null $engineInstance Classe for convert to response format */
@@ -318,13 +318,13 @@ class ApiResponse extends Response {
      ******************************************************
      */
 
-    /** @const array DEFAULT_CONTENT */
+    /** @var array DEFAULT_CONTENT */
     public const DEFAULT_CONTENT = [
         # "errors"    =>  null,
         "results"   =>  null
     ];
 
-    /** @const SEPARATOR */
+    /** @var array */
     public const SEPARATOR = ["/", "."];
 
 }

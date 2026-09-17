@@ -37,7 +37,7 @@ class Logger {
      ******************************************************
      */
 
-    /** @var array $options */
+    /** @var array $_options */
     private array $_options = [
         "type"      =>  "back", # Front / Worker...
         "handlers"  =>  [
@@ -52,7 +52,7 @@ class Logger {
         ],
     ];
 
-    /** @var string $instance */
+    /** @var ?LoggerInstance $_instance */
     private ?LoggerInstance $_instance = null;
 
     /**
@@ -60,10 +60,10 @@ class Logger {
      * 
      * New FTP Connection
      * 
-     * @param string $host
-     * @param string $host
+     * @param string $name
+     * @param array $options
      */
-    public function __construct($name = "", $options = []){
+    public function __construct(string $name = "", array $options = []){
 
         # Ingest options
         $this->_ingestOptions($name, $options);
@@ -331,11 +331,11 @@ class Logger {
      ******************************************************
      */
 
-    /** @param string root */
-    public const ROOT = "@app_root/logs";
+    /** @var string $root */
+    public const string ROOT = "@app_root/logs";
 
-    /** @param array STREAMHANDLER_TEMPLATE */
-    public const STREAMHANDLER_TEMPLATE = [
+    /** @var array STREAMHANDLER_TEMPLATE */
+    public const array STREAMHANDLER_TEMPLATE = [
         'php://stdout',
         Level::Debug,
         "formatters"    =>  [

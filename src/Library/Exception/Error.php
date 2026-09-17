@@ -99,7 +99,7 @@ class Error{
      ******************************************************
      */
 
-    /** @const array DEFAULT */
+    /** @var array DEFAULT */
     public const DEFAULT = [
         "code"      =>  500,
         "type"      =>  "error",

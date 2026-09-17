@@ -86,7 +86,7 @@ class Process {
      * Ingest data
      * 
      * @param array $formResult Collection of value to process
-     * @return Form
+     * @return self
      */
     public function __construct(array $formResult = []){
 
@@ -494,7 +494,7 @@ class Process {
      * 
      * @param array $inputs Input to explore
      * @param ?callable $callable Function for !array value
-     * @return array
+     * @return void
      */
     private static function _recursiveArrayExploration(array &$inputs = [], ?callable $callable = null):void {
 
@@ -532,7 +532,6 @@ class Process {
      * 
      * Return result
      * 
-     * @param string $input
      * @return array
      */
     public function getResult():array {
@@ -553,7 +552,7 @@ class Process {
      * 
      * Warning, requierd valuue missing caused error
      * 
-     * @param array $input
+     * @param array $inputs
      * @return array
      */
     final public static function getResultSummary(array $inputs = []):array {
@@ -874,7 +873,7 @@ class Process {
      * 
      * HelloWorld => hello_world 
      * 
-     * @param $input
+     * @param string $input
      * @return string
 	 * 
 	 */
@@ -992,7 +991,7 @@ class Process {
      * 
      * Upper Case First
      * 
-     * @param string
+     * @param string $input
      * @return string
      */
     public static function ucfirst(string $input):string {
@@ -1007,7 +1006,7 @@ class Process {
      * 
      * Upper Case First For each Words
      * 
-     * @param string
+     * @param string $input
      * @return string
      */
     public static function ucwords(string $input):string {
@@ -1020,7 +1019,7 @@ class Process {
     /**
      * Lower Case
      * 
-     * @param string
+     * @param string $input
      * @return string
      */
     public static function strtolower(string $input):string {
@@ -1033,7 +1032,7 @@ class Process {
     /**
      * Integer
      * 
-     * @param string|int
+     * @param string|int $input
      * @return int
      */
     public static function integer(string|int $input):int {
@@ -1049,8 +1048,8 @@ class Process {
     /**
      * Alphanumeric
      * 
-     * @param string
-     * @param bool lowerCase
+     * @param string $input
+     * @param bool $lowerCase
      * @return string
      */
     public static function alphanumeric(string $input, bool $lowerCase = false):string {
@@ -1125,7 +1124,7 @@ class Process {
      * 
      * Compilate items to array with key => values
      * 
-     * @param array $input Input to process
+     * @param array $inputs Input to process
      * @param bool $keepNull Keep null or delete them from compilation
      * @return array
      */
@@ -1183,7 +1182,7 @@ class Process {
      * Sort items to array by conditions (all other items will but at the end
      * - Only sort first dimension array
      * 
-     * @param array $inputs Input to process
+     * @param array $array Input to process
      * @param array $conditions Conditon to respect
      * @param string $separator Separator to avoid multidimensional array
      * @return array
@@ -1201,6 +1200,8 @@ class Process {
 
                 # Check not multidimensional conditions
                 if(strpos($condition['name'], $separator) !== false)
+
+                    # Continue
                     continue;
 
                 # Check array as current condition
@@ -1234,7 +1235,7 @@ class Process {
      * 
      * @param string|array $inputs List of items to search
      * @param string $file File with equivalent shortcut to value
-     * @return array
+     * @return string|array
      */
     public static function shortcutsByFile(string|array $inputs = [], string $file = ""):string|array {
 
@@ -1368,7 +1369,7 @@ class Process {
      * 
      * @param mixed $valueRequired Default Value
      * @param array $arguments Argument to pass in case the default value is callable
-     * @param array $items Current items exisitng
+     * @param array $currentItems Current items exisitng
      * @return mixed
      */
     public static function setDefault(mixed $valueRequired = null, array $arguments = [], array $currentItems = []):mixed {

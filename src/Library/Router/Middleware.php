@@ -315,8 +315,8 @@ class Middleware {
     /**
      * Run Model Middleware
      * 
-     * @param ServerRequestInterface $request
-     * @return void|ServerRequestInterface
+     * @param ?ServerRequestInterface $request
+     * @return ?ServerRequestInterface
      */
     public static function runModelMiddleware(?ServerRequestInterface $request = null):?ServerRequestInterface {
 

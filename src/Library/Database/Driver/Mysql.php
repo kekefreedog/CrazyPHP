@@ -38,17 +38,17 @@ use PDO;
 class Mysql implements CrazyDatabaseDriver {
 
     /**
-     * @var $config Config of current database
+     * @var mixed $config Config of current database
      */
     public $config = null;
 
     /**
-     * @var $client Client of current database
+     * @var PDO|null $client Client of current database
      */
     public $client = null;
 
     /**
-     * @var $manager Manager of current database
+     * @var Query|null $manager Manager of current database
      */
     public $manager = null;
 
@@ -86,6 +86,7 @@ class Mysql implements CrazyDatabaseDriver {
         ]);
 
         # Set manager
+        /** @disregard P1009 */
         $this->manager = new Query($this->client);
 
         # Return self
@@ -104,7 +105,7 @@ class Mysql implements CrazyDatabaseDriver {
      * 
      * @param string $user User name
      * @param string $password Password
-     * @param string|array databases Name of database
+     * @param string|array $databases Name of database
      * @param string|array $options Options for create user
      * @return self
      */
@@ -138,6 +139,7 @@ class Mysql implements CrazyDatabaseDriver {
         $query = "CREATE USER :user IDENTIFIED BY :password";
 
         # Prepate statment
+        /** @disregard P1006 */
         $statment = $this->client->prepare($query);
 
         # Set user
@@ -176,6 +178,7 @@ class Mysql implements CrazyDatabaseDriver {
             $query = "GRANT ALL PRIVILEGES ON $database.* TO :user";
 
             # Prepare statment
+            /** @disregard P1006 */
             $statment = $this->client->prepare($query);
 
             # Set user
@@ -201,6 +204,7 @@ class Mysql implements CrazyDatabaseDriver {
         }
 
         // Flush privileges
+        /** @disregard P1006 */
         $this->client->exec("FLUSH PRIVILEGES");
 
         # Return result
@@ -253,7 +257,7 @@ class Mysql implements CrazyDatabaseDriver {
     /**
      * Create Database
      * 
-     * @param string $options
+     * @param string $option
      * @return void
      */
     public function createDatabase(string $option = "CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"):void {
@@ -271,6 +275,7 @@ class Mysql implements CrazyDatabaseDriver {
             );
 
         # Switch to database
+        /** @disregard P1006 */
         $database = $this->client->{$this->config["database"][0]};
 
         # Prepare query
@@ -284,6 +289,7 @@ class Mysql implements CrazyDatabaseDriver {
 
         try {
 
+            /** @disregard P1006 */
             $this->client->exec($query);
 
         } catch (PDOException $e) {
@@ -303,7 +309,7 @@ class Mysql implements CrazyDatabaseDriver {
     /**
      * Create Table
      * 
-     * @param string $table
+     * @param string $tableName
      * @param array $attributes
      * @param bool $replaceTable
      * @param array $option
@@ -328,6 +334,7 @@ class Mysql implements CrazyDatabaseDriver {
             return $result;
 
         # Switch to the specified database
+        /** @disregard P1006 */
         $this->client->exec("USE " . $database);
 
         # Prepare query
@@ -553,7 +560,7 @@ class Mysql implements CrazyDatabaseDriver {
             $columnType = strtolower($columnType);
 
             # Push result into columns
-            $columns[] = trim("`$columnName` $columnType $required $default").($isId ? " AUTO_INCREMENT" : "");
+            $columns[] = trim("`$columnName` $columnType ".($required ?? "")." ".($default ?? "")).($isId ? " AUTO_INCREMENT" : "");
 
             # Check if reference
             if(isset($attribute['reference']) && $attribute['reference']){
@@ -635,6 +642,7 @@ class Mysql implements CrazyDatabaseDriver {
         try {
 
             # Exec
+            /** @disregard P1006 */
             $result = $this->client->exec($query);
 
         } catch (PDOException $e) {
@@ -677,6 +685,7 @@ class Mysql implements CrazyDatabaseDriver {
         try {
 
             # Prepare query
+            /** @disregard P1006 */
             $query = $this->client->prepare("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = :databaseName");
 
             # Execute
@@ -732,6 +741,7 @@ class Mysql implements CrazyDatabaseDriver {
         try {
 
             # Preapre statment
+            /** @disregard P1006 */
             $stmt = $this->client->prepare("
                 SELECT COUNT(*)
                 FROM INFORMATION_SCHEMA.TABLES
@@ -798,6 +808,7 @@ class Mysql implements CrazyDatabaseDriver {
             return $result;
 
         # Use database
+        /** @disregard P1006 */
         $this->client->exec("USE " . $database);
 
         # Check has
@@ -817,6 +828,7 @@ class Mysql implements CrazyDatabaseDriver {
         try {
         
             // Insert chain
+            /** @disregard P1006 */
             $result = $this->manager
                 ->insertInto($table)
                 ->values($value)
@@ -868,11 +880,13 @@ class Mysql implements CrazyDatabaseDriver {
             $database = $this->_getDefaultDatabase();
 
         # Use database
+        /** @disregard P1006 */
         $this->client->exec("USE " . $database);
 
         try {
 
             # Update table
+            /** @disregard P1006 */
             $result = $this->manager
                 ->update($table)
                 ->set($value)
@@ -925,11 +939,13 @@ class Mysql implements CrazyDatabaseDriver {
             return $result;
 
         # Use database
+        /** @disregard P1006 */
         $this->client->exec("USE " . $database);
     
         try {
 
             # Update table
+            /** @disregard P1006 */
             $result = $this->manager
                 ->deleteFrom($table)
                 ->where('id', $id)
@@ -986,6 +1002,7 @@ class Mysql implements CrazyDatabaseDriver {
             $database = $this->_getDefaultDatabase();
 
         # Use database
+        /** @disregard P1006 */
         $this->client->exec("USE " . $database);
 
         # Check query
@@ -1006,6 +1023,7 @@ class Mysql implements CrazyDatabaseDriver {
             if($isQuery){
 
                 # Update table
+                /** @disregard P1006 */
                 $statment = $this->client->query($options["query"]);
 
                 # Set result
@@ -1232,6 +1250,7 @@ class Mysql implements CrazyDatabaseDriver {
                 }
 
                 # Update table
+                /** @disregard P1006 */
                 $statment = $this->client->query($query);
 
                 # Set result
@@ -1240,6 +1259,7 @@ class Mysql implements CrazyDatabaseDriver {
             }else{
 
                 # Instance
+                /** @disregard P1006 */
                 $instance = $this->manager->from($table);
 
                 # Check options sort
@@ -1328,6 +1348,7 @@ class Mysql implements CrazyDatabaseDriver {
             $database = $this->_getDefaultDatabase();
 
         # Use database
+        /** @disregard P1006 */
         $this->client->exec("USE " . $database);
 
         # Set filters
@@ -1339,6 +1360,7 @@ class Mysql implements CrazyDatabaseDriver {
         try {
 
             # Update table
+            /** @disregard P1006 */
             $result = $this->manager
                 ->from($table)
                 ->where($filters)
@@ -1395,6 +1417,7 @@ class Mysql implements CrazyDatabaseDriver {
             $database = $this->_getDefaultDatabase();
 
         # Use database
+        /** @disregard P1006 */
         $this->client->exec("USE " . $database);
 
         # Set filters
@@ -1406,6 +1429,7 @@ class Mysql implements CrazyDatabaseDriver {
         try {
 
             # Update table
+            /** @disregard P1006 */
             $result = $this->manager
                 ->from($table)
                 ->where($filters)
@@ -1442,7 +1466,7 @@ class Mysql implements CrazyDatabaseDriver {
      * Create audit table and create trigger based on operation and table to fill audit table automatically
      * 
      * @param string|array $tables to audit
-     * @param string|array $column to retrieve on audit
+     * @param string|array $columns to retrieve on audit
      * @param string|array $operations to audit ['INSERT'|'UPDATE'|'DELETE']
      * @param string $auditLogTableName audit table name (:-Audit_log)
      * @return void
@@ -1601,7 +1625,6 @@ class Mysql implements CrazyDatabaseDriver {
      * 
      * Test Database connection
      * 
-     * @param array $options Option from Config > Database
      * @return bool
      */
     public static function test():bool {
@@ -1735,6 +1758,7 @@ class Mysql implements CrazyDatabaseDriver {
     private function _getDefaultDatabase():string {
 
         # Get result
+        /** @disregard P1006 */
         $result = $this->config["database"][0];
 
         # Return result
@@ -1749,7 +1773,7 @@ class Mysql implements CrazyDatabaseDriver {
     /**
      * Append Sort
      * 
-     * @param array|null $sort
+     * @param array|string|null $sort
      * @param string $alias
      * @return string
      */
@@ -2057,7 +2081,7 @@ class Mysql implements CrazyDatabaseDriver {
      */
 
     /**
-     * @const string CONFIG_KEY Config key for current database
+     * @var string CONFIG_KEY Config key for current database
      */
     public const CONFIG_KEY = "Database.collection.mariadb";
 

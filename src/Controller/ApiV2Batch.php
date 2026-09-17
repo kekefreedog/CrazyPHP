@@ -15,9 +15,7 @@ namespace CrazyPHP\Controller;
 /**
  * Dependances
  */
-use CrazyPHP\Library\Router\Middleware;
 use CrazyPHP\Exception\CrazyException;
-use CrazyPHP\Core\ApiResponse;
 use CrazyPHP\Core\Controller;
 use Exception;
 

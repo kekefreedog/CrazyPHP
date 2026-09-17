@@ -55,8 +55,8 @@ class ExceptionResponse {
     /** @var mixed $render */
     private mixed $render;
 
-    /** @var $data */
-    private $data = [];
+    /** @var array $data */
+    private array $data = [];
 
     /**
      * Constructor
@@ -207,6 +207,7 @@ class ExceptionResponse {
         $error = Error::fromException($this->exception);
 
         # Push to data
+        /** @disregard P1006 */
         $this->data["errors"][] = $error;
 
     }

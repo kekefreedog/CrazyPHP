@@ -152,7 +152,7 @@ class Head {
      ******************************************************
      */
 
-    /** @const string CONFIG_PATH */
+    /** @var string CONFIG_PATH */
     public const CONFIG_PATH = "@app_root/config/Head.yml";
 
 }

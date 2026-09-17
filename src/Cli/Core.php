@@ -47,7 +47,7 @@ class Core extends CLI {
      ******************************************************
      */
 
-    /* @var string @scriptName Name of the current script executed */
+    /** @var string @scriptName Name of the current script executed */
     private $scriptName = "";
 
     /** Protected Methods

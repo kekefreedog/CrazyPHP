@@ -34,7 +34,7 @@ class ProcessTest extends TestCase{
      ******************************************************
      */
 
-    /** @const array INPUT */
+    /** @var array INPUT */
     public const INPUT = [
         "toto"  =>  [
             "toto"  =>  [
@@ -44,7 +44,7 @@ class ProcessTest extends TestCase{
         ]
     ];
 
-    /** @const array RESULT */
+    /** @var array RESULT */
     public const RESULT = [
         "toto"  =>  [
             "toto"  =>  [

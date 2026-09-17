@@ -39,7 +39,7 @@ class MariadbConnection implements CrazySingleton {
      ******************************************************
      */
 
-    /** @var mixed instance */
+    /** @var array instance */
     private static array $_instances = [];
 
     /** Public Static Methods
@@ -51,7 +51,7 @@ class MariadbConnection implements CrazySingleton {
      * 
      * Singleton method
      * 
-     * @param array options
+     * @param array $options
      * @return PDO
      */
     public static function getInstance(array $options = [
@@ -80,7 +80,7 @@ class MariadbConnection implements CrazySingleton {
      * 
      * Establish connection
      * 
-     * @return mixed
+     * @return void
      */
     public static function connect(array $options = [
         "user"  =>  0
@@ -210,8 +210,8 @@ class MariadbConnection implements CrazySingleton {
      * 
      * isconnect method
      * 
-     * @param array $option
-     * @return mixed
+     * @param array $options
+     * @return void
      */
     public static function disconnect(array $options = [
         "user"  =>  0

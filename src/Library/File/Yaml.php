@@ -39,9 +39,10 @@ class Yaml{
     /** 
      * Is Convertible in Yaml
      * 
+     * @param mixed $input
      * @return bool
      */
-    public static function isConvertible($input):bool {
+    public static function isConvertible(mixed $input):bool {
 
         # Declare Reponse
         $reponse = true;
@@ -60,7 +61,7 @@ class Yaml{
     /** 
      * Check if input is json
      * 
-     * @param mixed $string
+     * @param string $string
      * @return bool
      */
     public static function check(string $string = ""):bool {
@@ -113,16 +114,21 @@ class Yaml{
                 $path, 
                 $header.YamlS::dump($data, 10)
             ) === false
-        )
+        ){
+
+            # Set explode
+            $explode = explode("/", $path);
 
             # New Exception
             throw new CrazyException(
-                "Yaml file \"".array_pop(explode("/", $path))."\" can't be created...",
+                "Yaml file \"".array_pop($explode)."\" can't be created...",
                 403,
                 [
                     "custom_code"   =>  "yaml-002",
                 ]
             );
+
+        }
 
         # Return data
         return $data;

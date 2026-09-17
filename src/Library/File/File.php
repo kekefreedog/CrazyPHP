@@ -16,9 +16,9 @@ namespace CrazyPHP\Library\File;
  * 
  */
 use CrazyPHP\Exception\CrazyException;
+use CrazyPHP\Library\Time\DateTime;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\System\Os;
-use CrazyPHP\Library\Time\DateTime;
 use CrazyPHP\Model\Env;
 use finfo;
 
@@ -73,7 +73,7 @@ class File {
      * Get Mime Type of file
      *
      * @param string $input Parameter to read
-     * @return string
+     * @return string|false
      */
     public static function getMime(string $input = ""): string|false {
 
@@ -100,7 +100,7 @@ class File {
      * Get Mime Type of file
      *
      * @param string $buffer
-     * @return string|bool
+     * @return string|false
      */
     public static function getMimeFromBuffer(string $buffer = ""):string|false {
 
@@ -173,7 +173,7 @@ class File {
     * Get file Extension of the file given
     * 
     * @param string $input Parameter to read
-    * @return string
+    * @return string|false
     */
    public static function getFileExtension(string $input = ""): string|false {
 
@@ -200,7 +200,7 @@ class File {
      * 
      * @param string $input Parameter to read
      * @param bool $enableException Eneble exception
-     * @return string
+     * @return string|false
      */
     public static function getMimeByFileExtension(string $input = "", bool $enableException = true): string|false {
 
@@ -284,7 +284,7 @@ class File {
      * 
      * Read content of file
      * 
-     * @param string|array $dir Directory to get content
+     * @param string|array $paths Directory to get content
      * @return string
      */
     public static function read(string|array $paths = ""):string {
@@ -333,9 +333,9 @@ class File {
      * 
      * @param string $path path of file to open
      * @param string|false $customInstance Custom Instance for open file
-     * @return
+     * @return mixed
      */
-    public static function open(string $path = "", string|false $customInstance = false){
+    public static function open(string $path = "", string|false $customInstance = false):mixed {
 
         # Get path
         $path = self::path($path);
@@ -492,8 +492,8 @@ class File {
      * 
      * Get last modified date of file or group of files
      * 
-     * @param string|array $input Path to file or files to check
-     * @return DateTime
+     * @param string|array $inputs Path to file or files to check
+     * @return DateTime|null
      */
     public static function getLastModifiedDate(string|array $inputs = ""):DateTime|null {
 
@@ -1143,7 +1143,7 @@ class File {
         # TBC ...
     ];
 
-    /* @var array MIMTYPE_TO_CLASS */
+    /** @var array MIMTYPE_TO_CLASS */
     public const MIMTYPE_TO_CLASS = [
         # Yaml
         "text/yaml"             =>  "CrazyPHP\\Library\\File\\Yaml",

@@ -17,10 +17,8 @@ namespace CrazyPHP\Model;
  */
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Time\DateTime;
-use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\Cache\Cache;
 use CrazyPHP\Library\File\File;
-use CrazyPHP\Library\File\Yaml;
 
 /**
  * Asset
@@ -72,7 +70,7 @@ class Asset{
      * Register assets
      * 
      * @param bool $force Force register of the file
-     * @param string $file Path of the config file
+     * @param string $path Path of the config file
      * @return void
      */
     public static function registerConfig(bool $force = false, string $path = self::PATH):void {
@@ -162,7 +160,6 @@ class Asset{
      * 
      * Get context
      * 
-     * @param string $context
      * @return ?string
      */
     public function getContext():?string {
@@ -180,7 +177,7 @@ class Asset{
      * 
      * Get assets
      * 
-     * @param string|array $path
+     * @param string|array $inputs
      * @return string|array|null
      */
     public function get(string|array $inputs = []):string|array|null {
@@ -528,7 +525,7 @@ class Asset{
     /**
      * Parse Asset Iterator
      * 
-     * @param $input
+     * @param array $inputs
      * @return void
      */
     private static function _parseAssetIterator(array &$inputs = []):void {
@@ -606,17 +603,17 @@ class Asset{
      ******************************************************
      */
 
-    /** @const string PATH */
+    /** @var string PATH */
     public const PATH = "@app_root/config/Asset.yml";
 
-    /** @const array SEPARATOR */
+    /** @var array SEPARATOR */
     public const SEPARATOR = ["/", "."];
 
     /** Private constants
      ******************************************************
      */
 
-    /** @const string CONTEXT_SEPARATOR */
+    /** @var string CONTEXT_SEPARATOR */
     private const _CONTEXT_SEPARATOR = "\\";
 
 }

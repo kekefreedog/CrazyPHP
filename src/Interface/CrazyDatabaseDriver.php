@@ -67,7 +67,7 @@ interface CrazyDatabaseDriver {
      * 
      * @param string $user User name
      * @param string $password Password
-     * @param string|array databases Name of database
+     * @param string|array $databases Name of database
      * @param string|array $options Options for create user
      * @return self
      */
@@ -91,7 +91,6 @@ interface CrazyDatabaseDriver {
      * 
      * Test Database connection
      * 
-     * @param array $options Option from Config > Database
      * @return bool
      */
     public static function test():bool;
@@ -114,7 +113,7 @@ interface CrazyDatabaseDriver {
      */
 
     /**
-     * @const string CONFIG_KEY Config key for current database
+     * @var string CONFIG_KEY Config key for current database
      */
     public const CONFIG_KEY = "";
 

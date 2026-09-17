@@ -37,9 +37,10 @@ class Json{
     /** 
      * Is Convertible in Json
      * 
+     * @param mixed $input
      * @return bool
      */
-    public static function isConvertible($input):bool {
+    public static function isConvertible(mixed $input):bool {
 
         # Declare Reponse
         $reponse = true;
@@ -105,16 +106,21 @@ class Json{
                     true
                 )
             ) === false
-        )
+        ){
+
+            # Set popValue
+            $popValue = explode("/", $path);
 
             # New Exception
             throw new CrazyException(
-                "Json file \"".array_pop(explode("/", $path))."\" can't be created...",
+                "Json file \"".array_pop($popValue)."\" can't be created...",
                 403,
                 [
                     "custom_code"   =>  "json-002",
                 ]
             );
+
+        }
 
         # Return data
         return $data;
@@ -128,7 +134,7 @@ class Json{
      * 
      * @param string $filename
      * @param bool $arrayFormat decode as array (else as object)
-     * @return array
+     * @return array|null
      */
     public static function open(string $filename = "", bool $arrayFormat = true):array|null{
 

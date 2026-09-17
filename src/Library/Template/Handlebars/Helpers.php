@@ -55,7 +55,7 @@ class Helpers {
         $functionName = __FUNCTION__;
 
         # Remove current method
-        $staticMethods = array_filter($staticMethods, function($method) use ($functionName) {
+        $staticMethods = array_filter($staticMethods, function(mixed $method) use ($functionName):mixed {
             return $method->name !== $functionName;
         });
         
@@ -79,12 +79,12 @@ class Helpers {
      * 
      * Get Http Status Code Depending of code given
      * 
-     * @param code Code of the error
-     * @param what Wich parameter do you want, if you want all, set "*"
-     * 
-     * @return
+     * @param mixed $error Code of the error
+     * @param mixed $what Wich parameter do you want, if you want all, set "*"
+     * @param mixed $option
+     * @return mixed
      */
-    public static function httpStatusCode($error, $what, $option) {
+    public static function httpStatusCode(mixed $error, mixed $what, mixed $option):mixed {
 
         # Set code
         $code = $error["code"] ?? false;
@@ -106,7 +106,7 @@ class Helpers {
             );
 
             # Return
-            return;
+            return null;
 
         }
 
@@ -145,7 +145,7 @@ class Helpers {
             );
 
             # Return
-            return;
+            return null;
 
         }
 
@@ -159,11 +159,11 @@ class Helpers {
      * 
      * Add color suffix for convert material color to specific color propoerty
      * 
-     * @param a Value to compare
-     * @param v Value to compare with
-     * @return string
+     * @param mixed $a Value to compare
+     * @param mixed $v Value to compare with
+     * @return mixed
      */
-    public static function colorSuffix($a, $v) {
+    public static function colorSuffix(mixed $a, mixed $v):mixed {
 
         # Set result
         $result = $a;
@@ -194,11 +194,11 @@ class Helpers {
      * 
      * Add color prefix for convert material color to specific color propoerty
      * 
-     * @param a Value to compare
-     * @param v Value to compare with
-     * @return string
+     * @param mixed $a Value to compare
+     * @param mixed $v Value to compare with
+     * @return mixed
      */
-    public static function colorPrefix($a, $v) {
+    public static function colorPrefix(mixed $a, mixed $v):mixed {
 
         # Set result
         $result = $a;
@@ -274,7 +274,7 @@ class Helpers {
     /**
      * Expand Color Text
      * 
-     * @param $color Color object
+     * @param mixed $color Color object
      * @param string $type
      * @return string
      */
@@ -321,8 +321,9 @@ class Helpers {
     /**
      * Expand Color
      * 
-     * @param $color Color
-     * @param $inverse Without inverse, color is set as fill in light and text in dark. Just invert that fact
+     * @param mixed $color Color
+     * @param mixed $inverse Without inverse, color is set as fill in light and text in dark. Just invert that fact
+     * @param string $type
      * @return string
      */
     public static function expandColor(mixed $color, mixed $inverse = false, string $type="text"):string {
@@ -399,12 +400,12 @@ class Helpers {
      * 
      * Add color suffix for convert material color to specific color propoerty
      * 
-     * @param $a Color
-     * @param $v Suffix
-     * @param $theme Theme
-     * @return string
+     * @param mixed $a Color
+     * @param mixed $v Suffix
+     * @param mixed $theme Theme
+     * @return mixed
      */
-    public static function colorThemeSuffix($a, $v, $theme) {
+    public static function colorThemeSuffix(mixed $a, mixed $v, mixed $theme):mixed {
 
         # Set result
         $result = $a;
@@ -455,9 +456,9 @@ class Helpers {
      * @param mixed $b Value to compare with
      * @param mixed $option
      * 
-     * @return boolean
+     * @return mixed
      */
-    public static function is($a, $b, $option) {
+    public static function is(mixed $a, mixed $b, mixed $option):mixed {
 
         # Set smooth
         $exact = isset($option['hash']['exact'])
@@ -508,9 +509,12 @@ class Helpers {
      * <!-- results in: 'A' -->
      * ```
      * 
-     * @return boolean
+     * @param mixed $a
+     * @param mixed $b
+     * @param mixed $option
+     * @return mixed
      */
-    public static function and($a, $b, $option) {
+    public static function and(mixed $a, mixed $b, mixed $option):mixed {
 
         # Check arguments are equivalent
         return ($a && $b) 
@@ -533,9 +537,12 @@ class Helpers {
      * {{/or}}
      * ```
      * 
-     * @return boolean
+     * @param mixed $a
+     * @param mixed $b
+     * @param mixed $option
+     * @return mixed
      */
-    public static function or($a, $b, $option) {
+    public static function or(mixed $a, mixed $b, mixed $option):mixed {
 
         # Check arguments are equivalent
         return ($a || $b) 
@@ -556,9 +563,9 @@ class Helpers {
      * @param mixed $b Value to compare with
      * @param mixed $option
      * 
-     * @return boolean
+     * @return mixed
      */
-    public static function isnt($a, $b, $option) {
+    public static function isnt(mixed $a, mixed $b, mixed $option):mixed {
 
         # Set smooth
         $exact = isset($option['hash']['exact'])
@@ -588,11 +595,11 @@ class Helpers {
      * 
      * Stringify an object using JSON.stringify.
      * 
-     * @param a Object to stringify
+     * @param mixed $a Object to stringify
      * 
-     * @return string
+     * @return mixed
      */
-    public static function JSONstringify($a){
+    public static function JSONstringify(mixed $a):mixed{
 
         # Generate json
         $result = "";
@@ -621,7 +628,7 @@ class Helpers {
      * Get realpath of path
      * 
      * @param mixed $a
-     * @return string
+     * @return mixed
      */
     public static function resolve(mixed $a):mixed {
 
@@ -648,9 +655,10 @@ class Helpers {
      * 
      * @param mixed $array
      * @param mixed $value
-     * @param mixed $options
+     * @param mixed $option
+     * @return mixed
      */
-    public static function inArray(mixed $array, mixed $value, mixed $option) {
+    public static function inArray(mixed $array, mixed $value, mixed $option):mixed {
 
         # Check array
         if(is_array($array) && is_string($value) && $value && in_array($value, $array))
@@ -669,9 +677,9 @@ class Helpers {
      * Returns the length of the given string or array.
      * 
      * @param mixed $value
-     * @param mixed options
+     * @return mixed
      */
-    public static function length($value) {
+    public static function length(mixed $value):mixed {
 
         # Check if array
         if(is_array($value))
@@ -704,9 +712,10 @@ class Helpers {
      * ```
      * 
      * @param mixed $value
-     * @param mixed options
+     * @param mixed $n
+     * @return mixed
      */
-    public static function first($value, $n) {
+    public static function first(mixed $value, mixed $n):mixed {
 
         # Check if array
         if(is_array($value))
@@ -727,11 +736,11 @@ class Helpers {
      * Converts a timecode (TC) to the corresponding frame number if valid.
      * Returns the original timecode string if the input format or fps is invalid.
      *
-     * @param string $tc The timecode in the format "HH:MM:SS:FF" where HH = hours, MM = minutes, SS = seconds, FF = frames.
-     * @param int $fps The frames per second (fps) of the video.
-     * @return int|string The corresponding frame number if valid, otherwise the original `$tc` string.
+     * @param mixed $tc The timecode in the format "HH:MM:SS:FF" where HH = hours, MM = minutes, SS = seconds, FF = frames.
+     * @param mixed $fps The frames per second (fps) of the video.
+     * @return mixed The corresponding frame number if valid, otherwise the original `$tc` string.
      */
-    public static function timecodeToFrame($tc, $fps) {
+    public static function timecodeToFrame(mixed $tc, mixed $fps):mixed {
 
         # Check tx and fps
         if(!$fps|| !$tc)
@@ -803,9 +812,10 @@ class Helpers {
      * <!-- results in: ['c', 'd', 'e'] -->
      * 
      * @param mixed $value
-     * @param mixed options
+     * @param mixed $n
+     * @return mixed
      */
-    public static function last($value, $n) {
+    public static function last(mixed $value, mixed $n):mixed {
 
         # Check if array
         if(is_array($value)){
@@ -829,9 +839,9 @@ class Helpers {
      * Returns the length of the given string or array.
      * 
      * @param mixed $value
-     * @param mixed options
+     * @return mixed
      */
-    public static function round($value) {
+    public static function round(mixed $value):mixed {
 
         # Check if array
         if(is_int($value) || is_float($value) || ctype_digit($value))
@@ -852,9 +862,9 @@ class Helpers {
      * Returns the length of the given string or array.
      * 
      * @param mixed $value
-     * @param mixed options
+     * @return mixed
      */
-    public static function roundDecimal($value) {
+    public static function roundDecimal(mixed $value):mixed {
 
         # Check if array
         if(is_int($value) || is_float($value) || ctype_digit($value))
@@ -875,9 +885,9 @@ class Helpers {
      * Returns the string in uppercase
      * 
      * @param mixed $value
-     * @param mixed options
+     * @return mixed
      */
-    public static function uppercase($value) {
+    public static function uppercase(mixed $value):mixed {
 
         # Set result
         $result = $value;
@@ -912,9 +922,9 @@ class Helpers {
      * Returns the string in uppercase
      * 
      * @param mixed $value
-     * @param mixed options
+     * @return mixed
      */
-    public static function lowercase($value) {
+    public static function lowercase(mixed $value):mixed {
 
         # Set result
         $result = $value;
@@ -949,9 +959,9 @@ class Helpers {
      * Returns the string in capitalize
      * 
      * @param mixed $value
-     * @param mixed options
+     * @return mixed
      */
-    public static function capitalize($value) {
+    public static function capitalize(mixed $value):mixed {
 
         # Set result
         $result = $value;
@@ -995,7 +1005,7 @@ class Helpers {
      * <!-- results in: 'a-b-c' -->
      * ```
      * @param mixed $array `array`
-     * @param string $separator The separator to use. Defaults to `, `.
+     * @param mixed $separator The separator to use. Defaults to `, `.
      * @return string
      */
     public static function join(mixed $array, mixed $separator = ", "):string {
@@ -1040,12 +1050,13 @@ class Helpers {
      * Block helper that renders a block if a is greater than b.
      * If an inverse block is specified it will be rendered when falsy. You may optionally use the compare="" hash argument for the second value.
      * 
-     * @param a Value to compare
-     * @param b Value to compare with
+     * @param mixed $a Value to compare
+     * @param mixed $b Value to compare with
+     * @param mixed $option
      * 
-     * @return boolean
+     * @return mixed
      */
-    public static function gt($a, $b, $option) {
+    public static function gt(mixed $a, mixed $b, mixed $option):mixed {
 
         # Check arguments are equivalent
         return $a > $b ? $option["fn"]() : $option["inverse"]();
@@ -1061,12 +1072,13 @@ class Helpers {
      * You may optionally use the `compare=""` hash argument for the
      * second value. 
      * 
-     * @param a Value to compare
-     * @param b Value to compare with
+     * @param mixed $a Value to compare
+     * @param mixed $b Value to compare with
+     * @param mixed $option
      * 
-     * @return boolean
+     * @return mixed
      */
-    public static function gte($a, $b, $option) {
+    public static function gte(mixed $a, mixed $b, mixed $option):mixed {
 
         # Check arguments are equivalent
         return $a >= $b ? $option["fn"]() : $option["inverse"]();
@@ -1081,12 +1093,13 @@ class Helpers {
      * You may optionally use the `compare=""` hash argument for the
      * second value.
      * 
-     * @param a Value to compare
-     * @param b Value to compare with
+     * @param mixed $a Value to compare
+     * @param mixed $b Value to compare with
+     * @param mixed $option
      * 
-     * @return boolean
+     * @return mixed
      */
-    public static function lt($a, $b, $option) {
+    public static function lt(mixed $a, mixed $b, mixed $option):mixed {
 
         # Check arguments are equivalent
         return $a < $b ? $option["fn"]() : $option["inverse"]();
@@ -1102,12 +1115,13 @@ class Helpers {
      * You may optionally use the `compare=""` hash argument for the
      * second value.
      * 
-     * @param a Value to compare
-     * @param b Value to compare with
+     * @param mixed $a Value to compare
+     * @param mixed $b Value to compare with
+     * @param mixed $option
      * 
-     * @return boolean
+     * @return mixed
      */
-    public static function lte($a, $b, $option) {
+    public static function lte(mixed $a, mixed $b, mixed $option):mixed {
 
         # Check arguments are equivalent
         return $a <= $b ? $option["fn"]() : $option["inverse"]();
@@ -1119,12 +1133,13 @@ class Helpers {
      * 
      * Split string a by the given character b.
      * 
-     * @param a Value to compare
-     * @param b Value to compare with
+     * @param mixed $a Value to compare
+     * @param mixed $b Value to compare with
+     * @param mixed $option
      * 
      * @return mixed
      */
-    public static function split($a, $b, $option) {
+    public static function split(mixed $a, mixed $b, mixed $option):mixed {
 
         # Check if both are strings
         if (is_string($a) && is_string($b))
@@ -1145,12 +1160,13 @@ class Helpers {
      * 
      * Return the sum of `a` plus `b`.
      * 
-     * @param a Value to compare
-     * @param b Value to compare with
+     * @param mixed $a Value to compare
+     * @param mixed $b Value to compare with
+     * @param mixed $option
      * 
      * @return mixed
      */
-    public static function add($a, $b, $option) {
+    public static function add(mixed $a, mixed $b, mixed $option):mixed {
 
         # Check if both are numbers
         if (is_numeric($a) && is_numeric($b))
@@ -1174,12 +1190,13 @@ class Helpers {
      * 
      * Return the sum of `a` % `b`.
      * 
-     * @param a Value to compare
-     * @param b Value to compare with
+     * @param mixed $a Value to compare
+     * @param mixed $b Value to compare with
+     * @param mixed $option
      * 
      * @return mixed
      */
-    public static function modulo($a, $b, $option) {
+    public static function modulo(mixed $a, mixed $b, mixed $option):mixed {
 
         # Check if both are numbers
         if (is_numeric($a) && is_numeric($b))
@@ -1197,12 +1214,13 @@ class Helpers {
      * 
      * Return the difference of `a` by `b`.
      * 
-     * @param a Value to compare
-     * @param b Value to compare with
+     * @param mixed $a Value to compare
+     * @param mixed $b Value to compare with
+     * @param mixed $option
      * 
      * @return mixed
      */
-    public static function subtract($a, $b, $option) {
+    public static function subtract(mixed $a, mixed $b, mixed $option):mixed {
 
         # Check if both are numbers
         if (is_numeric($a) && is_numeric($b))
@@ -1226,12 +1244,13 @@ class Helpers {
      * 
      * Block helper that renders a block if index gien is the last of the list given
      * 
-     * @param $index Value to compare
-     * @param $list Value to compare with
+     * @param mixed $index Value to compare
+     * @param mixed $list Value to compare with
+     * @param mixed $option
      * 
-     * @return boolean
+     * @return mixed
      */
-    public static function isLast($index, $list, $option) {
+    public static function isLast(mixed $index, mixed $list, mixed $option):mixed {
 
         # Set result
         $result = (
@@ -1255,9 +1274,10 @@ class Helpers {
      * 
      * @param mixed $a
      * @param mixed $b
-     * @param mixed options
+     * @param mixed $option
+     * @return mixed
      */
-    public static function divide($a, $b, $option) {
+    public static function divide(mixed $a, mixed $b, mixed $option):mixed {
 
         # Check if array
         if(is_numeric($a) && is_numeric($b) && intval($b) != 0)
@@ -1279,9 +1299,10 @@ class Helpers {
      * 
      * @param mixed $a
      * @param mixed $b
-     * @param mixed options
+     * @param mixed $option
+     * @return mixed
      */
-    public static function multiply($a, $b, $option) {
+    public static function multiply(mixed $a, mixed $b, mixed $option):mixed {
 
         # Check if array
         if(is_numeric($a) && is_numeric($b))
@@ -1303,9 +1324,10 @@ class Helpers {
      * Date given YYYY-MM-DD
      * 
      * @param mixed $date
-     * @param mixed options
+     * @param mixed $option
+     * @return mixed
      */
-    public static function date_status_day($date, $option) {
+    public static function date_status_day(mixed $date, mixed $option):mixed {
 
         # Check input
         if(!is_string($date) || !strtotime($date))
@@ -1348,9 +1370,10 @@ class Helpers {
      * Date given YYYY-MM-DD
      * 
      * @param mixed $date
-     * @param mixed options
+     * @param mixed $option
+     * @return mixed
      */
-    public static function date_status_week($date, $option) {
+    public static function date_status_week(mixed $date, mixed $option):mixed {
 
         # Check input
         if (!is_string($date) || !strtotime($date))
@@ -1397,8 +1420,6 @@ class Helpers {
      * 
      * Block helper that renders a block if index gien is the last of the list given
      * 
-     * @param $index Value to compare
-     * @param $list Value to compare with
      * 
      * @return boolean
      */
@@ -1417,9 +1438,11 @@ class Helpers {
      * <!-- results in: true -->
      * ```
      * 
-     * @param $value The value to test.
+     * @param mixed $input The value to test.
+     * @param mixed $option
+     * @return mixed
      */
-    public static function isArray($input, $option) {
+    public static function isArray(mixed $input, mixed $option):mixed {
 
         # Set result
         $result = is_array($input) 
@@ -1440,9 +1463,11 @@ class Helpers {
      * 
      * Return true if value is an object.
      * 
-     * @param $value The value to test.
+     * @param mixed $input The value to test.
+     * @param mixed $option
+     * @return mixed
      */
-    public static function isObject($input, $option) {
+    public static function isObject(mixed $input, mixed $option):mixed {
 
         # Set result
         $result = false;
@@ -1487,10 +1512,11 @@ class Helpers {
      * <!-- results in:  'true' -->
      * ``
      * 
-     * @param $input The value to test.
-     * @param $option The value to test.
+     * @param mixed $input The value to test.
+     * @param mixed $option The value to test.
+     * @return mixed
      */
-    public static function isString($input, $option) {
+    public static function isString(mixed $input, mixed $option):mixed {
 
         # Set result
         return is_string($input) 
@@ -1505,10 +1531,10 @@ class Helpers {
      * 
      * Return random color hex format
      * 
-     * @param $input The value to test.
-     * @param $option The value to test.
+     * @param mixed $option The value to test.
+     * @return mixed
      */
-    public static function colorHexRandom($option) {
+    public static function colorHexRandom(mixed $option):mixed {
 
         # Generate a random integer between 0 and 16777215 (0xFFFFFF)
         $randomColor = mt_rand(0, 16777215);
@@ -1525,9 +1551,10 @@ class Helpers {
      * 
      * @param mixed $value Number to use
      * @param mixed $currency "dollar" or "euro"
-     * @return string
+     * @param mixed $option
+     * @return mixed
      */
-    public static function formatCurrency($value, $currency, $option) {
+    public static function formatCurrency(mixed $value, mixed $currency, mixed $option):mixed {
 
         # Set result
         $result = $value;
@@ -1564,11 +1591,12 @@ class Helpers {
      * 
      * Handlebars helper to get all days of a given month and year 
      * 
-     * @param int $year  The year (e.g., 2025).
-     * @param int $month The month (1 for January, 12 for December).
-     * @return array An array of days in the format YYYY-MM-DD.
+     * @param mixed $year  The year (e.g., 2025).
+     * @param mixed $month The month (1 for January, 12 for December).
+     * @param mixed $option
+     * @return mixed An array of days in the format YYYY-MM-DD.
      */
-    public static function daysOfMonth($year, $month, $option) {
+    public static function daysOfMonth(mixed $year, mixed $month, mixed $option):mixed {
 
         # Get current date
         $now = new DateTime();
@@ -1604,10 +1632,11 @@ class Helpers {
      * 
      * Returns true if value (2025-01-05) is the current day
      * 
-     * @param input like 2025-01-12
-     * @return boolean
+     * @param mixed $input like 2025-01-12
+     * @param mixed $option
+     * @return mixed
      */
-    public static function isCurrentDay($input, $option) {
+    public static function isCurrentDay(mixed $input, mixed $option):mixed {
 
         # Set result
         $result = is_string($input) && $input && $input === date('Y-m-d')
@@ -1625,10 +1654,11 @@ class Helpers {
      * 
      * Returns true if value (2025-01-05) is the weekend
      * 
-     * @param input like 2025-01-12
-     * @return boolean
+     * @param mixed $input like 2025-01-12
+     * @param mixed $option
+     * @return mixed
      */
-    public static function isWeekend($input, $option) {
+    public static function isWeekend(mixed $input, mixed $option):mixed {
 
         # Set result
         $result = false;
@@ -1665,9 +1695,10 @@ class Helpers {
      * 
      * @param mixed $input
      * @param mixed $locale exemple : 
-     * @param mixed options
+     * @param mixed $option
+     * @return mixed
      */
-    public static function dateToLocalFormat($input, $locale, $option) {
+    public static function dateToLocalFormat(mixed $input, mixed $locale, mixed $option):mixed {
 
         # Set result
         $result = $input;
@@ -1718,11 +1749,13 @@ class Helpers {
      * 
      * Return date to local format Janvier 2025
      * 
-     * @param mixed $input
+     * @param mixed $month
+     * @param mixed $year
      * @param mixed $locale exemple : 
-     * @param mixed options
+     * @param mixed $option
+     * @return mixed
      */
-    public static function dateToLocalFormatMonthYear($month, $year, $locale, $option) {
+    public static function dateToLocalFormatMonthYear(mixed $month, mixed $year, mixed $locale, mixed $option):mixed {
 
         # Set result
         $result = "";
@@ -1767,15 +1800,17 @@ class Helpers {
     }
 
     /**
-     * Date To Local Format Month Year 
+     * Date To YYYY-MM-DD
      * 
-     * Return date to local format Janvier 2025
+     * Return a date formatted as YYYY-MM-DD
      * 
-     * @param mixed $input
-     * @param mixed $locale exemple : 
-     * @param mixed options
+     * @param mixed $year
+     * @param mixed $month
+     * @param mixed $day
+     * @param mixed $options
+     * @return mixed
      */
-    public static function dateToYYYYMMDD($year, $month, $day, $options = []) {
+    public static function dateToYYYYMMDD(mixed $year, mixed $month, mixed $day, mixed $options = []):mixed {
         
         // Create a DateTime object
         $date = new DateTime();
@@ -1800,10 +1835,11 @@ class Helpers {
      * 
      * Exemple: {{backgroundGradient colors smooth=true}}
      * 
-     * @param mixed $value
-     * @param mixed options
+     * @param mixed $colors
+     * @param mixed $options
+     * @return mixed
      */
-    public static function backgroundGradient($colors, $options) {    
+    public static function backgroundGradient(mixed $colors, mixed $options):mixed {    
         
         # Set smooth
         $smooth = false;
@@ -1833,7 +1869,7 @@ class Helpers {
             $total = count($colors) - 1;
 
             # Array map
-            $parts = array_map(function($color, $i) use ($total) {
+            $parts = array_map(function(mixed $color, mixed $i) use ($total):mixed {
 
                 # Set pos
                 $pos = ($i / $total) * 100;
@@ -1850,7 +1886,7 @@ class Helpers {
             $len = count($colors);
 
             # Set parts
-            $parts = array_map(function($color, $i) use ($len) {
+            $parts = array_map(function(mixed $color, mixed $i) use ($len):mixed {
 
                 # Set start
                 $start = ($i / $len) * 100;
@@ -1879,9 +1915,9 @@ class Helpers {
      * Returns the string in uppercase
      * 
      * @param mixed $value
-     * @param mixed options
+     * @return mixed
      */
-    public static function normalize($value) {
+    public static function normalize(mixed $value):mixed {
 
         # Set result
         $input = $value;
@@ -1942,9 +1978,10 @@ class Helpers {
      * Injects a loop range into the template.
      * 
      * @param mixed $max
-     * @param mixed options
+     * @param mixed $options
+     * @return mixed
      */
-    public static function iterateUntil($max, $options) {
+    public static function iterateUntil(mixed $max, mixed $options):mixed {
 
         # Get start at one
         $startAtOne = true;
@@ -2016,10 +2053,11 @@ class Helpers {
      * 
      * Return color string to hex
      * 
-     * @param mixed $max
-     * @param mixed options
+     * @param mixed $input
+     * @param mixed $options
+     * @return mixed
      */
-    public static function toHexColor($input, $options) {
+    public static function toHexColor(mixed $input, mixed $options):mixed {
 
         $input = trim($input);
 
@@ -2066,10 +2104,11 @@ class Helpers {
      * 
      * Convert markdown
      * 
-     * @param mixed $max
-     * @param mixed options
+     * @param mixed $input
+     * @param mixed $options
+     * @return mixed
      */
-    public static function markdown($input, $options) {
+    public static function markdown(mixed $input, mixed $options):mixed {
 
         # Set result
         $result = $input;
@@ -2109,7 +2148,7 @@ class Helpers {
 
             // Paragraphs
             $blocks = preg_split("/\n{2,}/", $html);
-            $blocks = array_map(function ($block) {
+            $blocks = array_map(function (mixed $block):mixed {
                 if (preg_match('/^<h\d|^<ul|^<ol|^<p|^<blockquote/', $block)) {
                     return $block;
                 }

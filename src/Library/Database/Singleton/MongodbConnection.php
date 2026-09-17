@@ -43,7 +43,7 @@ class MongodbConnection implements CrazySingleton {
      ******************************************************
      */
 
-    /** @var mixed instance */
+    /** @var array instance */
     private static array $_instances = [];
 
     /** Public Static Methods
@@ -55,7 +55,7 @@ class MongodbConnection implements CrazySingleton {
      * 
      * Singleton method
      * 
-     * @param array options
+     * @param array $options
      * @return array [Client, Manager]
      */
     public static function getInstance(array $options = [
@@ -84,7 +84,7 @@ class MongodbConnection implements CrazySingleton {
      * 
      * Establish connection
      * 
-     * @return mixed
+     * @return void 
      */
     public static function connect(array $options = [
         "user"  =>  0
@@ -184,13 +184,22 @@ class MongodbConnection implements CrazySingleton {
         # Try
         try{
 
+            # New client
+            /** @disregard P1009 */
+            $newClient = new Client($connectionString);
+
+            # New manager
+            /** @disregard P1009 */
+            $newManager = new Manager($connectionString);
+
             # Set client
             static::$_instances[$user] = [
-                new Client($connectionString),
-                new Manager($connectionString)
+                $newClient,
+                $newManager
             ];
 
         # Catch
+        /** @disregard P1009 */
         }catch(InvalidArgumentException|RuntimeException|Exception $e) {
 
             # New Exception
@@ -211,8 +220,8 @@ class MongodbConnection implements CrazySingleton {
      * 
      * isconnect method
      * 
-     * @param array $option
-     * @return mixed
+     * @param array $options
+     * @return void
      */
     public static function disconnect(array $options = [
         "user"  =>  0

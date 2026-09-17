@@ -47,7 +47,7 @@ class Config implements CrazyDriverModel {
     /** @var array $arrayData */
     private array $arrayData = [];
 
-    /** @var array $actions */
+    /** @var array $filterParser */
     private array $filterParser = [
         # "ids"       =>  null,
         "filterBy"  =>  null,
@@ -60,9 +60,10 @@ class Config implements CrazyDriverModel {
     /**
      * Constructor
      * 
+     * @param mixed ...$inputs
      * @return self
      */
-    public function __construct(...$inputs) {
+    public function __construct(mixed ...$inputs) {
 
         # Set name
         $this->ingestParameters($inputs);
@@ -156,7 +157,7 @@ class Config implements CrazyDriverModel {
     /**
      * Parse Filters
      * 
-     * @param array $filters Filter to process
+     * @param ?array $filters Filter to process
      * @param ?array $options Optionnal options
      * @return self
      */
@@ -170,6 +171,7 @@ class Config implements CrazyDriverModel {
         if(!empty($filters) && $filters !== null){
 
             # Push filters by in schema
+            /** @disregard P1125 */
             $filters = $this->schema->filtersValues($filters, $options);
 
             # Set filters in filter parser
@@ -243,7 +245,7 @@ class Config implements CrazyDriverModel {
     /**
      * Parse Group
      * 
-     * @param array $group Group to process
+     * @param ?array $group Group to process
      * @param ?array $options Optionnal options
      */
     public function parseGroup(?array $group, ?array $options = null):self {
@@ -297,7 +299,7 @@ class Config implements CrazyDriverModel {
      * Put to trash current value
      * 
      * @param ?array $options Optionnal options
-     * @param 
+     * @return self
      */
     public function pushToTrash(?array $options = null):self {
 
@@ -617,13 +619,13 @@ class Config implements CrazyDriverModel {
      ******************************************************
      */
 
-    /** @const array Supported Config */
+    /** @var array Supported Config */
     public const SUPPORTED = [
         "Router",
         "Model"
     ];
 
-    /** @const array */
+    /** @var array */
     public const ARGUMENTS = [
         "name"          =>  "",
         "root"          =>  "",

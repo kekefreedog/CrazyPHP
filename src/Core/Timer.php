@@ -17,7 +17,6 @@ namespace CrazyPHP\Core;
  */
 use Monolog\Handler\StreamHandler;
 use Workerman\Worker;
-use Monolog\Logger;
 
 /**
  * Timer
@@ -34,7 +33,7 @@ class Timer {
      ******************************************************
      */
 
-    /** @var string $_pollInterval Check every pollInterval time */
+    /** @var int $_pollInterval Check every pollInterval time */
     private int $_pollInterval = 5;
 
     /** Parameters | Websocket

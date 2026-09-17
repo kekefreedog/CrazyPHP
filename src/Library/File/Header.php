@@ -159,11 +159,6 @@ class Header{
      * 
      * Get Json Header
      * 
-     * @param array $input Custom data for header :
-     *  - name
-     *  - description
-     *  - author
-     *  - copyright
      * @return string
      */
     public static function json(/* array $input = [] */):string {
@@ -296,7 +291,7 @@ class Header{
      * If empty return text/html
      * 
      * @param ?array $headerList Collection of headers
-     * @return string|null
+     * @return string
      */
     public static function getHeaderAccept(?array $headerList = null):string {
 

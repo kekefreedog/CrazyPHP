@@ -46,7 +46,7 @@ class Database {
      * 
      * Setup config of database given using default value
      * 
-     * @param string $databse Name of the database
+     * @param string $database Name of the database
      * @return void
      */
     public static function setupConfig(string $database = "") {
@@ -66,7 +66,7 @@ class Database {
      ******************************************************
      */
 
-    /* @const array CONFIG */
+    /** @var array CONFIG */
     public const CONFIG = [
         # MongoDB
         "mongodb"   =>  [

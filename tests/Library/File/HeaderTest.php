@@ -36,7 +36,7 @@ class HeaderTest extends TestCase{
      ******************************************************
      */
 
-    /* @var null|Cache Cache */
+    /** @var null|Cache Cache */
     public $cache = null;
 
     /** Public method | Preparation

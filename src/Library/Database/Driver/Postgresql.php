@@ -29,12 +29,12 @@ use CrazyPHP\Interface\CrazyDatabaseDriver;
 class Postgresql implements CrazyDatabaseDriver {
 
     /**
-     * @var $config Config of current database
+     * @var mixed $config Config of current database
      */
     public $config = null;
 
     /**
-     * @var $client Client of current database
+     * @var mixed $client Client of current database
      */
     public $client = null;
 
@@ -81,7 +81,7 @@ class Postgresql implements CrazyDatabaseDriver {
      * 
      * @param string $user User name
      * @param string $password Password
-     * @param string|array databases Name of database
+     * @param string|array $databases Name of database
      * @param string|array $options Options for create user
      * @return self
      */
@@ -115,7 +115,6 @@ class Postgresql implements CrazyDatabaseDriver {
      * 
      * Test Database connection
      * 
-     * @param array $options Option from Config > Database
      * @return bool
      */
     public static function test():bool {
@@ -150,7 +149,7 @@ class Postgresql implements CrazyDatabaseDriver {
      */
 
     /**
-     * @const string CONFIG_KEY Config key for current database
+     * @var string CONFIG_KEY Config key for current database
      */
     public const CONFIG_KEY = "Database.collection.postgresql";
 

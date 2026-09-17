@@ -20,8 +20,6 @@ use CrazyPHP\Library\Router\Middleware;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Core\ApiResponse;
 use CrazyPHP\Core\Controller;
-use CrazyPHP\Model\Context;
-use CrazyPHP\Core\Model;
 
 /**
  * Api V2 Count

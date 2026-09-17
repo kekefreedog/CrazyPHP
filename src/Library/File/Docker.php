@@ -15,8 +15,6 @@ namespace CrazyPHP\Library\File;
 /** Dependances
  * 
  */
-use CrazyPHP\Exception\CrazyException;
-use CrazyPHP\Library\File\Structure;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\Cli\Command;
 use CrazyPHP\Library\File\Yaml;
@@ -44,9 +42,9 @@ class Docker{
      * Run Docker Compose
      * 
      * @param bool $detach Run container in background and print container ID
-     * @return
+     * @return mixed
      */
-    public static function up(bool $detach = true, string $loadEnvFile = self::ENV_FILE) {
+    public static function up(bool $detach = true, string $loadEnvFile = self::ENV_FILE):mixed {
 
         # Set result
         $result = "";
@@ -96,9 +94,9 @@ class Docker{
      * 
      * Down Docker Compose
      * 
-     * @return
+     * @return mixed
      */
-    public static function down(string $loadEnvFile = self::ENV_FILE) {
+    public static function down(string $loadEnvFile = self::ENV_FILE):mixed {
 
         # Set result
         $result = "";
@@ -148,10 +146,11 @@ class Docker{
      * 
      * Run Docker Compose
      * 
-     * @param bool $detach Run container in background and print container ID
-     * @return
+     * @param string $argument
+     * @param string $loadEnvFile
+     * @return mixed
      */
-    public static function run(string $argument = "", string $loadEnvFile = self::ENV_FILE) {
+    public static function run(string $argument = "", string $loadEnvFile = self::ENV_FILE):mixed {
 
         # Set result
         $result = "";
@@ -224,7 +223,7 @@ class Docker{
      * 
      * Return external http port 
      * 
-     * @param int $lolookingPort
+     * @param int $lookingPort
      * @return int|null
      */
     public static function getHttpPort(int $lookingPort=80):int|null {
@@ -283,19 +282,19 @@ class Docker{
      */
     public const STRUCTURE_PATH = "@crazyphp_root/resources/Docker/Structure.yml";
 
-    /** @const string DOCKER_COMPOSE_PATH */
+    /** @var string DOCKER_COMPOSE_PATH */
     public const DOCKER_COMPOSE_PATH = "@app_root/docker-compose.yml";
 
-    /** @const string DOCKER_COMPOSE_COMMAND */
+    /** @var string DOCKER_COMPOSE_COMMAND */
     public const DOCKER_COMPOSE_COMMAND = "docker-compose";
 
-    /** @const string DOCKER_COMPOSE_ENV_VARIABLES_PATH */
+    /** @var string DOCKER_COMPOSE_ENV_VARIABLES_PATH */
     public const DOCKER_COMPOSE_ENV_VARIABLES_PATH = "@app_root/docker/variables.env";
 
-    /** @const string DOCKER_COMPOSE_COMMAND */
+    /** @var string DOCKER_COMPOSE_COMMAND */
     public const DOCKER_COMMAND = "docker";
 
-    /** @const array NAME_TO_SERVICE Name to services */
+    /** @var array NAME_TO_SERVICE Name to services */
     public const NAME_TO_SERVICE = [
         "http"      =>  "webserver",
         "php"       =>  "php-fpm",
@@ -306,7 +305,7 @@ class Docker{
         "postgresql"=>  "postgresql",
     ];
 
-    /** @const array DATABASE_TO_SERVICE */
+    /** @var array DATABASE_TO_SERVICE */
     public const DATABASE_TO_SERVICE = [
         "mongodb"   =>  "mongo",
         "mysql"     =>  "mysql",
@@ -314,7 +313,7 @@ class Docker{
         "postgresql"=>  "postgresql",
     ];
 
-    /** @const string ENV_FILE */
+    /** @var string ENV_FILE */
     public const ENV_FILE = "./docker/variables.env";
 
 }

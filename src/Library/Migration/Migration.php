@@ -41,30 +41,30 @@ class Migration {
      ******************************************************
      */
 
-    /** @param bool $preview Preview mode */
+    /** @var bool $_preview Preview mode */
     private bool $_preview;
 
-    /** @param array $preview Check if preview has been ran */
+    /** @var bool $_previewRan Check if preview has been ran */
     private bool $_previewRan = false;
 
-    /** @param array $_actions List of actions */
+    /** @var array $_actions List of actions */
     private array $_actions = [];
 
-    /** @param bool $_isFrontBuildRequired */
+    /** @var bool $_isFrontBuildRequired */
     private bool $_isFrontBuildRequired = false;
 
     /** Private parameters | Cli
      ******************************************************
      */
 
-    /** @param bool $_cliMessage */
+    /** @var bool $_cliMessage */
     private bool $_cliMessage = false;
 
-    /** @param array $_cliMessageSummary */
+    /** @var array $_cliMessageSummary */
     private array $_cliMessageSummary = [];
     private array $_cliMessageSummaryTemp = [];
 
-    /** @param array $_cliMessageCallable */
+    /** @var ?array $_cliMessageCallable */
     private ?array $_cliMessageCallable = [
         "before"    =>  null,
         "after"     =>  null
@@ -74,13 +74,13 @@ class Migration {
      ******************************************************
      */
 
-    /** @param bool $_useTrash */
+    /** @var bool $_useTrash */
     private bool $_useTrash = true;
 
-    /** @param string $_useTrash */
+    /** @var string $_trashSubFolder */
     private string $_trashSubFolder = "";
 
-    /** @param array $_trashSummary */
+    /** @var array $_trashSummary */
     private array $_trashSummary = [];
 
     /**
@@ -324,7 +324,7 @@ class Migration {
      * 
      * Return action using name parameter
      * 
-     * @param string actionName Name of the action
+     * @param string $actionName Name of the action
      * @return array|null
      */
     public function getActionByName(string $actionName):array|null {
@@ -433,9 +433,8 @@ class Migration {
      * 
      * @param string $from 
      * @param string $to 
-     * @param string|array $name = "*" Name of the file, can be regex
      * @param string|array $in
-     * @param bool $_preview = true
+     * @param string|array $name = "*" Name of the file, can be regex
      * @return array|null
      */
     public function previewStringReplace(
@@ -1210,7 +1209,7 @@ class Migration {
      * 
      * Send file to trash
      * 
-     * @param string filePath
+     * @param string $filePath
      * @return void
      */
     private function _sendToTrash(string $filePath):void {
@@ -1268,15 +1267,15 @@ class Migration {
      ******************************************************
      */
 
-    /** @const string CONFIG_PATH */
+    /** @var string CONFIG_PATH */
     public const CRAZY_PHP_MIGRATION_PATH = "@crazyphp_root/resources/Yml/Migration.yml";
 
     /** Private constants
      ******************************************************
      */
 
-    /** @var const FOLDERS_TO_IGNORE */
-    private const FOLDERS_TO_IGNORE = [
+    /** @var array FOLDERS_TO_IGNORE */
+    private const array FOLDERS_TO_IGNORE = [
         "vendor", 
         "node_modules"
     ];

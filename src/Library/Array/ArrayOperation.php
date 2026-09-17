@@ -33,7 +33,7 @@ class ArrayOperation extends Operation {
      ******************************************************
      */
 
-    /** @var Collection $_filtered Table */
+    /** @var Collection $_engine Table */
     private Collection $_engine;
 
     /** @var array $_collection Collection */
@@ -45,7 +45,8 @@ class ArrayOperation extends Operation {
      * Construct and prepare instance
      * 
      * @param array $collection Array collection to filter
-     * @param string|array $Operation Exemple ["=", "[]"] or ["contains", "between"] or "@>" or "contains" or "@all" (for all operations)
+     * @param string|array $operations Exemple ["=", "[]"] or ["contains", "between"] or "@>" or "contains" or "@all" (for all operations)
+     * @param array $options
      * @return self
      */
     private function __construct(array $collection = [], string|array $operations = "@all", array $options = []){
@@ -118,7 +119,7 @@ class ArrayOperation extends Operation {
      * @param string|array $input 
      * @param array $operation
      * @param array $options
-     * @return mixed
+     * @return null
      */
     public function parseEqual(string|array $input, array $operation, array $options = []):null {
 
@@ -444,8 +445,7 @@ class ArrayOperation extends Operation {
      * 
      * Description : No operations found
      * 
-     * @param string|array $input 
-     * @param array $operation
+     * @param mixed $input
      * @param array $options
      * @return mixed
      */

@@ -34,7 +34,7 @@ class ValidateTest extends TestCase{
      ******************************************************
      */
 
-    /** @const array INPUT */
+    /** @var array INPUT */
     public const INPUT = [
         "phoneNumber"  =>  [
             "0694450403",
@@ -44,7 +44,7 @@ class ValidateTest extends TestCase{
         ]
     ];
 
-    /** @const array RESULT */
+    /** @var array RESULT */
     public const OUTPUT = [
         "phoneNumber"  =>  [
             true,

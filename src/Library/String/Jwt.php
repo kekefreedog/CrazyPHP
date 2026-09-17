@@ -43,7 +43,7 @@ class Jwt {
      * 
      * Ingest data
      * 
-     * @param string $color (Can be hsl / rgb / hex...)
+     * @param string $token
      * @return self
      */
     public function __construct(string $token) {

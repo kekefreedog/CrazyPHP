@@ -38,7 +38,7 @@ class DateTime extends LegacyDateTime {
      * 
      * Get current date time
      * 
-     * @return static
+     * @return int
      */
     public static function getCurrent():int {
 

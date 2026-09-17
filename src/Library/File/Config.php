@@ -42,8 +42,7 @@ class Config{
      * 
      * Get single of multiple config 
      * 
-     * @param string|array $input Name of config(s)
-     * 
+     * @param string|array $inputs Name of config(s)
      * @return array
      */
     public static function get(string|array $inputs = ""):array {
@@ -82,6 +81,7 @@ class Config{
 
                     # Get content
                     # $content = $GLOBALS[self::PREFIX][$configFolder];
+                    /** @disregard P1125 */
                     $content = self::_getGlobalCache($configFolder);
 
                 ### Else get it
@@ -136,7 +136,7 @@ class Config{
                     }
 
                     # Check file path and file mime
-                    if(!$filePath || !$fileMime || !isset(File::MIMTYPE_TO_CLASS[$fileMime]))
+                    if(!($filePath ?? false) || !($fileMime ?? false) || !isset(File::MIMTYPE_TO_CLASS[$fileMime]))
 
                         # Return result
                         return $result;
@@ -211,6 +211,7 @@ class Config{
 
                 # Get content
                 # $content = $GLOBALS[self::PREFIX][$configFolder];
+                /** @disregard P1125 */
                 $content = self::_getGlobalCache($configFolder);
 
             # Get content and set cache
@@ -265,7 +266,7 @@ class Config{
                 }
 
                 # Check file path and file mime
-                if(!$filePath || !$fileMime || !isset(File::MIMTYPE_TO_CLASS[$fileMime]))
+                if(!($filePath ?? false) || !($fileMime ?? false) || !isset(File::MIMTYPE_TO_CLASS[$fileMime]))
 
                     # Return result
                     return $result;
@@ -301,9 +302,9 @@ class Config{
      * Get value on config from key
      * 
      * @param string $key Name of config(s)
-     * @return null
+     * @return DateTime
      */
-    public static function getLastModified(string $key = ""):DateTime{
+    public static function getLastModified(string $key = ""):DateTime {
 
         # Let result
         $result = null;
@@ -385,8 +386,7 @@ class Config{
      * Get single file of parameter exists 
      * 
      * @param string $input Name of config(s)
-     * 
-     * @return array
+     * @return bool
      */
     public static function has(string $input = "") :bool {
 
@@ -414,6 +414,7 @@ class Config{
 
             # Get content
             # $content = $GLOBALS[self::PREFIX][$configFolder];
+            /** @disregard P1125 */
             $content = self::_getGlobalCache($configFolder);
 
         # Check in files
@@ -474,10 +475,10 @@ class Config{
             }
 
             # Set file instance class
-            $fileInstance = File::MIMTYPE_TO_CLASS[$fileMime];
+            $fileInstance = File::MIMTYPE_TO_CLASS[$fileMime ?? null];
 
             # Read file path
-            $content = $fileInstance::open($filePath);
+            $content = $fileInstance::open($filePath ?? null);
 
             # Set content
             # $GLOBALS[self::PREFIX][$configFolder] = $content;
@@ -505,11 +506,11 @@ class Config{
      * Set value in config
      * 
      * @param string $input Name of config(s)
-     * @param any $data Data to put inside parameter
+     * @param mixed $data Data to put inside parameter
      * 
      * @return void
      */
-    public static function set(string $input = "", $data = null) :void {
+    public static function set(string $input = "", mixed $data = null):void {
 
         # Check input
         if(!$input)
@@ -575,7 +576,7 @@ class Config{
         }
 
         # Set file instance class
-        $fileInstance = File::MIMTYPE_TO_CLASS[$fileMime];
+        $fileInstance = File::MIMTYPE_TO_CLASS[$fileMime ?? null];
 
         # Create content
         $content = [];
@@ -584,7 +585,7 @@ class Config{
         Arrays::fill($content, $input, $data);
 
         # Update config
-        $content = $fileInstance::update($filePath, $content, true);
+        $content = $fileInstance::update($filePath ?? null, $content, true);
 
         # Update or set global cache
         # $GLOBALS[self::PREFIX][$configFolder] = $content;
@@ -598,10 +599,12 @@ class Config{
      * Set Value in Config file
      * 
      * @param string $key Parameter of config to set
-     * @param $data to push in key parameter
+     * @param mixed $data to push in key parameter
+     * @param bool $createIfNotExists to push in key parameter
+     * @param string $path to push in key parameter
      * @return void
      */
-    public static function setValue(string $key = "", $data = null, $createIfNotExists = true, $path = self::FOLDER_PATH):void {
+    public static function setValue(string $key = "", mixed $data = null, bool $createIfNotExists = true, string $path = self::FOLDER_PATH):void {
 
         # Prepare config folder
         $path = File::path(self::FOLDER_PATH);
@@ -664,14 +667,14 @@ class Config{
         }
 
         # Get mime type
-        $fileMime = File::guessMime($filePath);
+        $fileMime = File::guessMime($filePath ?? null);
 
         # Set file instance class
-        $fileInstance = File::MIMTYPE_TO_CLASS[$fileMime];
+        $fileInstance = File::MIMTYPE_TO_CLASS[$fileMime ?? null];
 
 
         # Get mime type
-        $fileData = $fileInstance::open($filePath);
+        $fileData = $fileInstance::open($filePath ?? null);
 
         # Check if is array
         if(!is_array($fileData))
@@ -732,12 +735,11 @@ class Config{
      * Update value in config
      * 
      * @param string $input Name of config(s)
-     * @param any $data Data to put inside parameter
-     * @param bool $setValueIFNotExits Set value if not exists
-     * 
+     * @param mixed $data Data to put inside parameter
+     * @param bool $setValueIfNotExits Set value if not exists 
      * @return void
      */
-    public static function update(string $input = "", $data = null, bool $setValueIfNotExits = false) :void {
+    public static function update(string $input = "", mixed $data = null, bool $setValueIfNotExits = false):void {
 
         # Return result
         return;
@@ -750,10 +752,9 @@ class Config{
      * Delete value in config
      * 
      * @param string $input Name of config(s) to delete
-     * 
      * @return void
      */
-    public static function delete(string $input = "") :void {
+    public static function delete(string $input = ""):void {
 
         # Return result
         return;
@@ -832,14 +833,14 @@ class Config{
         }
 
         # Get mime type
-        $fileMime = File::guessMime($filePath);
+        $fileMime = File::guessMime($filePath ?? null);
 
         # Set file instance class
         $fileInstance = File::MIMTYPE_TO_CLASS[$fileMime];
 
 
         # Get mime type
-        $fileData = $fileInstance::open($filePath);
+        $fileData = $fileInstance::open($filePath ?? null);
 
         # Check if is array
         if(!is_array($fileData))
@@ -1033,13 +1034,13 @@ class Config{
      ******************************************************
      */
 
-    /** @const config path */
+    /** @var string path */
     public const FOLDER_PATH = "@app_root/config";
 
-    /** @const separator */
+    /** @var array */
     public const SEPARATOR = ["/", ".", "___"];
 
-    /** @const string PREFIX  */
+    /** @var string PREFIX */
     public const PREFIX = "__CRAZY_CONFIG";
 
 }

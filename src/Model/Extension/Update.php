@@ -15,7 +15,6 @@ namespace CrazyPHP\Model\Extension;
 /**
  * Dependances
  */
-use CrazyPHP\Library\File\Config as FileConfig;
 use CrazyPHP\Library\Model\CrazyModel;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Interface\CrazyCommand;
@@ -61,7 +60,7 @@ class Update extends CrazyModel implements CrazyCommand {
      * 
      * Ingest data
      * 
-     * @param array $formResult Collection of value to process
+     * @param array $inputs
      * @return self
      */
     public function __construct(array $inputs = []){

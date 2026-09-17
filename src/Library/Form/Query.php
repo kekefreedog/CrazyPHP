@@ -157,16 +157,16 @@ class Query {
      ******************************************************
      */
 
-    /** @const array FILTERS_NAMES */
+    /** @var array FILTERS_NAMES */
     public const FILTERS_NAMES = ["filters", "filter"];
 
-    /** @const array SORT_NAMES */
+    /** @var array SORT_NAMES */
     public const SORT_NAMES = ["sort", "sorting"];
 
-    /** @const array GROUP_NAMES */
+    /** @var array GROUP_NAMES */
     public const GROUP_NAMES = ["group", "grouping"];
 
-    /** @const array OPTIONS_NAMES */
+    /** @var array OPTIONS_NAMES */
     public const OPTIONS_NAMES = ["option", "options"];
 
 }

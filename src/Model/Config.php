@@ -40,13 +40,13 @@ class Config{
      ******************************************************
      */
     
-    /** @const DEFAULT_PATH PATH by default where stored config files */
+    /** @var string PATH by default where stored config files */
     public const DEFAULT_PATH = "@app_root/config";
 
-    /** @const string REGEX */
+    /** @var string REGEX */
     public const REGEX = "{{(.*?)}}";
 
-    /** @const string PREFIX  */
+    /** @var string PREFIX */
     public const PREFIX = "__CRAZY_CONFIG";
 
     /**
@@ -97,7 +97,7 @@ class Config{
      * 
      * Setup config files
      * 
-     * @param array|string $config Config to set
+     * @param array|string $configs Config to set
      * 
      * @return void
      */
@@ -147,7 +147,7 @@ class Config{
      * 
      * Update config files
      * 
-     * @param array|string $config Config to set
+     * @param array|string $configs Config to set
      * 
      * @return void
      */
@@ -319,7 +319,7 @@ class Config{
      * 
      * Methods for convert json composer.json to yml config
      * 
-     * @param string $config Config array with the pAth of the composer.json file
+     * @param array $config
      * @return void
      */
     private static function _setAppConfig(array $config = []):void {

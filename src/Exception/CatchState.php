@@ -34,22 +34,25 @@ class CatchState extends Exception implements InterfaceException{
      ******************************************************
      */
 
-    # Exception message
+    /** @var string $message Exception message */
     protected $message = '';
 
-    # User-defined exception code                       
+    /** @var int $code User-defined exception code */
     protected $code = 0;
 
-    # Source of the error LuckyPHP or App or Vendor
-    public $source = null;
+    /** @var mixed $source Source of the error LuckyPHP or App or Vendor */
+    public mixed $source = null;
 
     # State
-    public $state = [];
+    public array $state = [];
 
     /**
      * Constructor
      * 
-     * @param array|null $extra State array
+     * @param ?array $extra State array
+     * @param ?string $message
+     * @param int $code
+     * @param ?Throwable $previous
      */
     public function __construct(?string $message = "Catch State", int $code = 0, ?array $extra = null, ?Throwable $previous = null){
 

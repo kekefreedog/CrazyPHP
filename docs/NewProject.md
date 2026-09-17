@@ -4,7 +4,7 @@ Open a terminal and go on the directory where you want create your project (Exem
 
 ## 1. Check requirements
 
-- [ ] Check [PHP](https://www.php.net/) version is >= 8.2 by using :
+- [ ] Check [PHP](https://www.php.net/) version is >= 8.3 by using :
 
 ```sh
 php -v

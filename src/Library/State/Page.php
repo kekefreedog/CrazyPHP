@@ -52,11 +52,11 @@ class Page {
     /** @var array $options */
     private $options = [];
 
-    /** @var array $result */
+    /** @var mixed $result */
     private mixed $result = [];
 
-    /** @var string $status code */
-    private $status_code = 200;
+    /** @var int $status_code code */
+    private int $status_code = 200;
 
     /** @var array $errors */
     private $errors = [];
@@ -64,7 +64,7 @@ class Page {
     /** @var array $ui */
     private $ui = [];
 
-    /** @var array $ui */
+    /** @var array $api */
     private $api = [];
 
     /** @var array $events */
@@ -75,7 +75,7 @@ class Page {
      * 
      * Construct
      * 
-     * @param bool $process Just instance the class or run all process
+     * @param array $options
      * @return self
      */
     public function __construct(array $options = []){
@@ -205,8 +205,8 @@ class Page {
      * 
      * Push results in content
      * 
-     * @param mixed $results
-     * @param string $entity
+     * @param mixed $result
+     * @param ?string $entity
      * @return Page
      */
     public function pushResults(mixed $result = [], ?string $entity = null):Page {
@@ -242,8 +242,8 @@ class Page {
      * 
      * Push results in content
      * 
-     * @param mixed $results
-     * @param string $entity
+     * @param string $key
+     * @param mixed $result
      * @return Page
      */
     public function pushResultsWithKey(string $key, mixed $result = []):Page {
@@ -418,7 +418,7 @@ class Page {
      * 
      * Push event of type redirection
      * @param string $nameOrUrl
-     * @param bool $nameOrUrl Open into a new page
+     * @param bool $openInNewTab Open into a new page
      * @param ?array $arguments Arguments
      * @return self
      */
@@ -643,7 +643,7 @@ class Page {
     /**
      * Push Exception
      * 
-     * @param Exception $crazyException
+     * @param Exception $exception
      * @return Page
      */
     public function pushException(Exception $exception):self {
@@ -707,7 +707,7 @@ class Page {
      * 
      * Get result
      * 
-     * @return $result
+     * @return mixed
      */
     public function render():mixed {
 
@@ -828,7 +828,7 @@ class Page {
      * 
      * Check catch state
      * 
-     * @param array $result of the page state
+     * @param mixed $result of the page state
      * @return void
      */
     private function _catchState(mixed $result = []):void {
@@ -850,6 +850,7 @@ class Page {
         ){
 
             # Set response
+            /** @disregard P1119 */
             (new ApiResponse())
                 ->setStatusCode(200)
                 ->pushContent("", $result)
@@ -866,9 +867,9 @@ class Page {
     /**
      * Check If Catch State With Uuid
      * 
-     * @param void
+     * @return void
      */
-    private function checkIfCatchStateWithUuid() {
+    private function checkIfCatchStateWithUuid():void {
 
         # Check env
         if(
@@ -892,6 +893,7 @@ class Page {
             $result["_uuid"] = $uuid;
 
             # Set response
+            /** @disregard P1119 */
             (new ApiResponse())
                 ->setStatusCode(200)
                 ->pushContent("", $result)

@@ -37,7 +37,7 @@ class Edl {
      * 
      * Open EDL file content
      *
-     * @param string $input Parameter to read
+     * @param string $path Parameter to read
      * @return mixed
      */
     public static function open(string $path = ""):mixed {

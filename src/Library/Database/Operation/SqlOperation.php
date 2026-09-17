@@ -425,7 +425,7 @@ class SqlOperation extends Operation {
      * 
      * Description : No operations found
      * 
-     * @param string|array $input 
+     * @param mixed $input
      * @param array $options
      * @return mixed
      */

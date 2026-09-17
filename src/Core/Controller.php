@@ -181,7 +181,7 @@ class Controller {
      * Get parameters from url
      * 
      * @param string $name Name of the parameter  
-     * @return array|null
+     * @return string|int|array|null
      */
     public static function getParametersUrl(string $name = ""):string|int|array|null {
 

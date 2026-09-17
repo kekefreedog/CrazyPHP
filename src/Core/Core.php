@@ -37,7 +37,7 @@ class Core extends Kernel {
      */
 
     /**
-     * @var Instance $instance Instance of your app
+     * @var ?Instance $instance Instance of your app
      * ->router()
      */
     public ?Instance $instance = null;
@@ -83,9 +83,9 @@ class Core extends Kernel {
      * 
      * Check if request call a resource in dist folder
      * 
-     * @return self
+     * @return void
      */
-    public function runCheckIfDist(): void{
+    public function runCheckIfDist():void{
         
         $requestUri = $_SERVER["REQUEST_URI"] ?? '';
     
@@ -105,21 +105,35 @@ class Core extends Kernel {
                     ->depth('== 0')
                     ->in(realpath("./dist/page/app"));
     
-                if ($finder->hasResults()) {
-                    foreach ($finder as $file) {
-                        header('Content-Type: application/javascript');
-                        $fileContent = file_get_contents($file->getRealPath());
-    
-                        if ($fileContent !== false) {
-                            echo $fileContent;
-                        } else {
-                            echo "Error reading the file.";
-                        }
-                        exit;
-                    }
+                # Check result & iterate file
+                if($finder->hasResults()) foreach ($finder as $file) {
+
+                    # Set header
+                    header('Content-Type: application/javascript');
+
+                    # Set file content
+                    $fileContent = file_get_contents($file->getRealPath());
+
+                    # Check file content
+                    if($fileContent !== false)
+
+                        # Echo file content
+                        echo $fileContent;
+
+                    else
+
+                        # Echo error message
+                        echo "Error reading the file.";
+
+                    # Exit
+                    exit;
+                    
                 }
+
             }
+
         }
+        
     }
     
 

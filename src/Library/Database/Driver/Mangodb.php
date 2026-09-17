@@ -41,18 +41,16 @@ class Mangodb implements CrazyDatabaseDriver {
      */
 
     /**
-     * @var $config Config of current database
+     * @var mixed $config Config of current database
      */
     public $config = null;
 
-    /**
-     * @var $client Client of current database
-     */
+    /** @var ?Client $client Client of current database */
+    /** @disregard P1009 */
     public ?Client $client = null;
 
-    /**
-     * @var $manager Manager of current database
-     */
+    /** @var ?Manager $manager Manager of current database */
+    /** @disregard P1009 */
     public ?Manager $manager = null;
 
     /**
@@ -103,11 +101,11 @@ class Mangodb implements CrazyDatabaseDriver {
      * 
      * @param string $user User name
      * @param string $password Password
-     * @param string|array databases Name of database
+     * @param string|array $databases Name of database
      * @param string|array $options Options for create user
      * @return self
      */
-    public function createUser(string $user = "", string $password = "", string|array $databases = [], string|array $options = []):self{
+    public function createUser(string $user = "", string $password = "", string|array $databases = [], string|array $options = []):self {
 
         # Check client
         if(!$this->manager)
@@ -164,6 +162,7 @@ class Mangodb implements CrazyDatabaseDriver {
                 # Create user
                 $result = $databaseInstance->command($command);
 
+            /** @disregard P1009 */
             }catch(MongoDbCommandException $e){
 
                 # Get message
@@ -240,6 +239,7 @@ class Mangodb implements CrazyDatabaseDriver {
     public function createDatabase():void {
 
         # Switch to database
+        /** @disregard P1006 */
         $database = $this->client->{$this->config["database"][0]};
 
         # Check if current database has collection
@@ -279,9 +279,10 @@ class Mangodb implements CrazyDatabaseDriver {
      * 
      * Get Collection from database
      * 
-     * @param string $database Name of the database (by default take the first one in config file)
+     * @param string|Database $database Name of the database (by default take the first one in config file)
      * @return array|null
      */
+    /** @disregard P1009 */
     public function getAllCollections(string|Database $database = ""):array|null {
 
         # Set result
@@ -294,7 +295,8 @@ class Mangodb implements CrazyDatabaseDriver {
             if(!$database)
 
                 # Get main database
-                $database = $this->config["database"][0];
+                /** @disregard P1006 */
+                $database = $this->config["database"][0] ?? null;
                 
             # Get database object
             $databaseObject = $this->client->$database;
@@ -320,10 +322,11 @@ class Mangodb implements CrazyDatabaseDriver {
      * 
      * Check database has collection
      * 
-     * @param string $name Name of the collection
-     * @param string $database Name of the database (by default the first one in config file)
-     * @return array|null
+     * @param string $collection Name of the collection
+     * @param string|Database $database Name of the database (by default the first one in config file)
+     * @return bool
      */
+    /** @disregard P1009 */
     public function hasCollection(string $collection = "", string|Database $database = ""):bool {
 
         # Set result
@@ -342,7 +345,8 @@ class Mangodb implements CrazyDatabaseDriver {
             if(!$database)
 
                 # Get main database
-                $database = $this->config["database"][0];
+                /** @disregard P1006 */
+                $database = $this->config["database"][0] ?? null;
                 
             # Get database object
             $databaseObject = $this->client->$database;
@@ -456,6 +460,7 @@ class Mangodb implements CrazyDatabaseDriver {
         $collection = $database->$collectionName;
 
         # Prepare id
+        /** @disregard P1009 */
         $criteria = ['_id' => new ObjectId($id)];
 
         # Prepare value to set
@@ -514,6 +519,7 @@ class Mangodb implements CrazyDatabaseDriver {
         $collection = $database->$collectionName;
 
         # Prepare id
+        /** @disregard P1009 */
         $criteria = ['_id' => new ObjectId($id)];
 
         # Result
@@ -629,6 +635,7 @@ class Mangodb implements CrazyDatabaseDriver {
             if($key === "_id")
 
                 # Convert string
+                /** @disregard P1009 */
                 $filter = new ObjectId($filter);
 
         # Last result
@@ -683,7 +690,6 @@ class Mangodb implements CrazyDatabaseDriver {
      * 
      * Test Database connection
      * 
-     * @param array $options Option from Config > Database
      * @return bool
      */
     public static function test():bool {
@@ -749,7 +755,7 @@ class Mangodb implements CrazyDatabaseDriver {
     /** 
      * Convert Crazy Schema to Mongodb Schema
      * 
-     * @param schema
+     * @param array $schema
      * @return array
      */
     public static function convertToMongoSchema(array $schema = []):array {
@@ -998,7 +1004,7 @@ class Mangodb implements CrazyDatabaseDriver {
      */
 
     /**
-     * @const string CONFIG_KEY Config key for current database
+     * @var string CONFIG_KEY Config key for current database
      */
     public const CONFIG_KEY = "Database.collection.mongodb";
 

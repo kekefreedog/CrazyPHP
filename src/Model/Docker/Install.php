@@ -25,7 +25,6 @@ use CrazyPHP\Library\File\Mkcert;
 use CrazyPHP\Library\Cli\Command;
 use CrazyPHP\Library\System\Os;
 use CrazyPHP\Library\File\File;
-use League\CLImate\CLImate;
 use CrazyPHP\Model\Env;
 
 /**
@@ -78,8 +77,8 @@ class Install implements CrazyCommand {
      * 
      * Ingest data
      * 
-     * @param array $formResult Collection of value to process
-     * @return Create
+     * @param array $inputs
+     * @return self
      */
     public function __construct(array $inputs = []){
 

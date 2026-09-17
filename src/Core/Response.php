@@ -57,8 +57,8 @@ class Response {
     /** @var ?ResponseInterface $response */
     public $response = null;
 
-    /** @var ?ServerRequestInterface $response */
-    public $request = null;
+    /** @var ?ServerRequestInterface $request */
+    public ?ServerRequestInterface $request = null;
 
     /** @var array */
     public $header = [];
@@ -67,7 +67,7 @@ class Response {
      ******************************************************
      */
 
-    /** @var array $cookies */
+    /** @var array $_cookies */
     private array $_cookies = [
         "delete"    =>  [],
         "add"       =>  [],
@@ -110,7 +110,7 @@ class Response {
      * 
      * Set content of response
      * 
-     * @param $body
+     * @param mixed $body
      * @return self
      */
     public function setContent(mixed $body = ""):self {
@@ -339,7 +339,7 @@ class Response {
      * 
      * Set statut code of response
      * 
-     * @param int
+     * @param int $statutCode
      * @return self
      */
     public function setStatusCode(int $statutCode = 200):self {

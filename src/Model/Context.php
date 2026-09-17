@@ -148,10 +148,13 @@ class Context{
         $cursor = &$context;
 
         # Check config file
-        if(!empty($keys))
+        if(!empty($keys)){
 
             # Iteration filedata
-            $i=0;while(isset($keys[$i])){
+            $i = 0;
+            
+            # While
+            while(isset($keys[$i])){
 
                 # Set current key
                 $currentKey = strtoupper($keys[$i]);
@@ -167,7 +170,11 @@ class Context{
                     # Stop function
                     return;
 
-            $i++;}
+                $i++;
+            
+            }
+
+        }
 
         # Check if what is array 
         if(is_array($what))
@@ -216,10 +223,10 @@ class Context{
     /**
      * Get Current Route
      * 
-     * @param $attributes Optionnal specific attributes you want load
-     * @return
+     * @param string|array|null $attributes Optionnal specific attributes you want load
+     * @return mixed
      */
-    public static function getCurrentRoute(string|array|null $attributes = null) {
+    public static function getCurrentRoute(string|array|null $attributes = null):mixed {
 
         # Check current
         if(!isset($GLOBALS[static::PREFIX]["ROUTES"]["CURRENT"]))
@@ -364,10 +371,10 @@ class Context{
      ******************************************************
      */
 
-    /** @const PREFIX */
+    /** @var string */
     public const PREFIX = "__CRAZY_CONTEXT";
 
-    /** @const SEPARATOR */
+    /** @var array */
     public const SEPARATOR = ["/", "."];
 
 }

@@ -40,10 +40,9 @@ class Arrays{
      * 
 	 * @param array $array content
      * @param string $input Name in the array
-     * 
-     * @return array
+     * @return bool
      */
-    public static function has(array $array, string $input = "") :bool {
+    public static function has(array $array, string $input = ""):bool {
 
         # Declare result
         $result = false;
@@ -133,7 +132,7 @@ class Arrays{
 	 * Find parameter than some child parameter correspond to key value
 	 * 
 	 * @param array $array Array to process
-	 * @param mixed $key Child parameter to use in filter
+	 * @param string $key Child parameter to use in filter
 	 * @param mixed $keyValue Child parameter value's to use in filter
 	 * @return array 
      */
@@ -332,10 +331,10 @@ class Arrays{
 	 * 
 	 * @param string $key Key to parse
 	 * @param array $array
-	 * @param string|array $separator
-	 * @return
+	 * @param string|array $separators
+	 * @return mixed
 	 */
-	public static function parseKey(string $key = "", array $array = [], string|array $separators = [".", "/"]) {
+	public static function parseKey(string $key = "", array $array = [], string|array $separators = [".", "/"]):mixed {
 
 		# Set result
 		$result = null;
@@ -387,7 +386,7 @@ class Arrays{
 	 * 
 	 * @param array &$array Array to process
 	 * @param string $key Key to parse
-	 * @param $value Value to fill in array
+	 * @param mixed $value Value to fill in array
 	 * @param string|array $separators Separator for key
 	 * @return void
 	 */
@@ -433,23 +432,35 @@ class Arrays{
 	 * @source https://www.php.net/manual/en/function.array-change-key-case.php#114914
 	 * 
 	 * @param array $array
-	 * @param string $case CASE_UPPER or CASE_LOWER  
+	 * @param int $case CASE_UPPER or CASE_LOWER  
 	 * @return array
 	 */
 	public static function changeKeyCaseRecursively(array $array = [], int $case = CASE_LOWER):array {
-		$case = in_array($case, [CASE_UPPER, CASE_LOWER]) ? $case : 1; 
+
+		# Set case
+		$case = in_array($case, [CASE_UPPER, CASE_LOWER]) 
+			? $case 
+			: 1
+		; 
+
+		# Retrun result
 		return array_map(function($item)use($case){
-			if(is_array($item))
-				$item = static::changeKeyCaseRecursively($item, $case);
+
+			# Check is array
+			if(is_array($item)) $item = static::changeKeyCaseRecursively($item, $case);
+
+			# Return item
 			return $item;
+
 		},array_change_key_case($array, $case));
+
 	}
 
 	/**
 	 * Remove Column
 	 * 
 	 * @param array $array Array to process
-	 * @param string $column_key Name of key of the column to delete
+	 * @param string|array $column_key Name of key of the column to delete
 	 * @return void
 	 */
 	public static function removeColumn(array &$array = [], string|array $column_key = "") {
@@ -461,12 +472,21 @@ class Arrays{
 			array_walk(
 				$array, 
 				function (&$v) use ($column_key) {
+
+					# Check if is string
 					if(is_string($column_key))
+
+						# Unset value
 						unset($v[$column_key]);
-					else
-						foreach($column_key as $key)
-							unset($v[$key]);
+
+					# Iteration key
+					else foreach($column_key as $key)
+							
+						# Unset value
+						unset($v[$key]);
+
 				}
+				
 			);
 
 	}
@@ -1038,7 +1058,7 @@ class Arrays{
      ******************************************************
      */
 
-    /** @const separator */
+    /** @var array */
     public const SEPARATOR = ["/", ".", "___"];
 
 }

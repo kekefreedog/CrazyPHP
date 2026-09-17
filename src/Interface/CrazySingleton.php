@@ -43,7 +43,7 @@ interface CrazySingleton {
      * 
      * Singleton method
      * 
-     * @param array $option
+     * @param array $options
      * @return mixed
      */
     public static function getInstance(array $options = []):mixed;
@@ -53,8 +53,8 @@ interface CrazySingleton {
      * 
      * Establish connection
      * 
-     * @param array $option
-     * @return mixed
+     * @param array $options
+     * @return void
      */
     public static function connect(array $options = []):void;
 
@@ -63,8 +63,8 @@ interface CrazySingleton {
      * 
      * isconnect method
      *
-     * @param array $option
-     * @return mixed
+     * @param array $options
+     * @return void
      */
     public static function disconnect(array $options = []):void;
 

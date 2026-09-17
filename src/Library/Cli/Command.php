@@ -70,9 +70,9 @@ class Command{
      * @param string $command Command  to execute
      * @param string $argument Argument for the command
      * @param bool $liveResult Display result in live
-     * @return
+     * @return ?array
      */
-    public static function exec(string $command = "", string $argument = "", bool $liveResult = false) {
+    public static function exec(string $command = "", string $argument = "", bool $liveResult = false):?array {
 
         # Prepare result
         $result = [

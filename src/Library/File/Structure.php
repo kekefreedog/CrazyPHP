@@ -310,7 +310,7 @@ class Structure{
      * 
      * @deprecated
      *
-     * @param array $structure
+     * @param array $folders
      * @param string $path
      * @param string $action 'create', 'update' or 'delete'
      * @return void
@@ -441,7 +441,7 @@ class Structure{
     * 
     * @source https://stackoverflow.com/questions/1653771/how-do-i-remove-a-directory-that-is-not-empty
     *
-    * @param array $structure
+    * @param array $folders
     * @param string $path
     * @param bool $deleteFirst Private params
     * @return void
@@ -548,8 +548,8 @@ class Structure{
      * 
      * @source https://gist.github.com/timw4mail/4172083
      *
-     * @param array $structure
-     * @param string $path
+     * @param array $folders
+     * @param string $action
      * @return array
      */
     public static function treeFolderGeneratorPreview($folders = [], $action = 'create'):array {
@@ -870,7 +870,7 @@ class Structure{
     * Check structure has been correctly check
     * 
     * @param string|array $schema Path of the schema or schema itself
-    * @return array
+    * @return bool
     */
     public static function check(string|array $schema = ""):bool {
 
@@ -947,7 +947,7 @@ class Structure{
     * Remove structure
     * 
     * @param string|array $schema Path of the schema or schema itself
-    * @return array
+    * @return void
     */
     public static function remove(string|array $schema = ""):void {
 
@@ -1164,7 +1164,7 @@ class Structure{
      * 
      * Loop for iterate inside structure
      * 
-     * @param array $collection
+     * @param ?array $collection
      * @param ?callable $folder Function to execute for folder
      * @param ?callable $file Function to execute for file
      * @param bool $preview Preview mode

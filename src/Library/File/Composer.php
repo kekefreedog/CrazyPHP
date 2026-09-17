@@ -124,7 +124,7 @@ class Composer {
         ]
     ];
 
-    /* @const array COMMAND_SUPPORTED supported command */
+    /** @var array COMMAND_SUPPORTED supported command */
     public const COMMAND_SUPPORTED = [
         "install"   =>  [
             "command"   =>  "i"
@@ -150,9 +150,8 @@ class Composer {
     /**
      * Read value in composer.json
      *
-     * @param string $parameter Parameter to read
-     * @param string $file File to read data
-     * @return string
+     * @param string $path Parameter to read
+     * @return array
      */
     public static function create(string $path):array{
 
@@ -353,9 +352,9 @@ class Composer {
      *
      * @param string $input Input to search in composer.json
      * @param string $file File composer.json
-     * @return
+     * @return mixed
      */
-    public static function get(string $input = "", string $file = "composer.json"){
+    public static function get(string $input = "", string $file = "composer.json"):mixed {
 
         # Declare result
         $result = null;
@@ -422,11 +421,11 @@ class Composer {
      * Read value in composer.json
      *
      * @param array $values Values to update on composer.json
-     * @param string $createIfNotExists create parameter if doesn't exists
+     * @param bool $createIfNotExists create parameter if doesn't exists
      * @param string $file File composer.json
      * @return array
      */
-    public static function update(array $values = [], bool $createIfNotExists = false, string $file = "composer.json"):array{
+    public static function update(array $values = [], bool $createIfNotExists = false, string $file = "composer.json"):array {
 
         # Set result
         $result = true;
@@ -448,10 +447,10 @@ class Composer {
     /**
      * Delete value in composer.json
      *
-     * @param string  $values Values to update on composer.json
-     * @return string
+     * @param array $values Values to update on composer.json
+     * @return bool
      */
-    public static function delete(array $values = []):bool{
+    public static function delete(array $values = []):bool {
 
         # Set result
         $result = true;
@@ -467,7 +466,7 @@ class Composer {
      * Set Value in composer file
      * 
      * @param string $key Parameter of config to set
-     * @param string $path Path of the config
+     * @param string $file Path of the config
      * @return void
      */
     public static function removeValue(string $key = "", string $file = "composer.json"):void {
@@ -580,10 +579,10 @@ class Composer {
      * 
      * @param string $commandName Command name to execute
      * @param string $argument Argument for the command
-     * @param string $checkError Check error of exec
-     * @return
+     * @param bool $checkError Check error of exec
+     * @return mixed
      */
-    public static function exec(string $commandName = "", string $argument = "", bool $checkError = true) {
+    public static function exec(string $commandName = "", string $argument = "", bool $checkError = true):mixed {
 
         # Result
         $result = null;
@@ -755,7 +754,7 @@ class Composer {
      * 
      * Remove package in composer config file
      * 
-     * @param string $package Package to remove in composer
+     * @param string|array $package Package to remove in composer
      * @param bool $updateComposer Update composer
      * @param string $file Composer file
      * @return void
@@ -991,7 +990,7 @@ class Composer {
      ******************************************************
      */
 
-    /** @const separator */
+    /** @var array */
     public const SEPARATOR = [".", "___"];
 
     /**

@@ -36,14 +36,14 @@ class PageTest extends TestCase{
      ******************************************************
      */
 
-    /** @const array INPUT */
+    /** @var array INPUT */
     public const INPUT = [
         "context"   =>  true,
         "cookie"    =>  true,
         "config"    =>  ["Middleware"]
     ];
 
-    /** @const array RESULT */
+    /** @var array RESULT */
     public const RESULT = [];
 
     /** Public method | Preparation

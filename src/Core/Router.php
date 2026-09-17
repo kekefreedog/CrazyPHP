@@ -45,19 +45,19 @@ class Router extends VendorRouter {
      ******************************************************
      */
 
-    /** @var Cache|null $cache Cache instance */
+    /** @var ?Cache $cache Cache instance */
     public ?Cache $cache = null;
 
     /** Various parameters */
     public $staticRoutes, $paramRoutes, $routeNames, $cachedRegExps, $cachedParameters, $regExpsWereCompiled;
 
-    /** @var Datetime lastModifiedDateRouter */
+    /** @var DateTime lastModifiedDateRouter */
     private DateTime $_lastModifiedDateRouter;
 
-    /** @var Datetime lastModifiedDateApi */
+    /** @var DateTime lastModifiedDateApi */
     private DateTime $_lastModifiedDateApi;
 
-    /** @var Datetime lastModifiedDateMiddleware */
+    /** @var DateTime lastModifiedDateMiddleware */
     private DateTime $_lastModifiedDateMiddleware;
 
     /**
@@ -573,10 +573,10 @@ class Router extends VendorRouter {
      ******************************************************
      */
 
-    /** @param string PARAMETER_NAME_REGEX */
+    /** @var string PARAMETER_NAME_REGEX */
     public const PARAMETER_NAME_REGEX = VendorBaseType::PARAMETER_NAME_REGEXP;
 
-    /** @const CACHE_ROUTER */
+    /** @var string */
     public const CACHE_PATH = "@app_root/.cache/app/router/";
 
 }

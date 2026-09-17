@@ -83,7 +83,7 @@ class Operation {
         ],
     ];
 
-    /** @param array $_options */
+    /** @var array $options */
     public $options = [
         "prefix"    =>  "",
         "suffix"    =>  "",
@@ -94,7 +94,7 @@ class Operation {
      ******************************************************
      */
 
-    /** @param string $_currentOperations */
+    /** @var string $_currentOperations */
     private $_currentOperations = [];
 
     /**
@@ -216,7 +216,7 @@ class Operation {
      * 
      * Process input value
      * 
-     * @param string|array $input
+     * @param mixed $input
      * @param array $options OVerride existing options
      */
     final public function run(mixed $input, array $options = []):mixed {

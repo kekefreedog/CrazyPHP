@@ -57,8 +57,8 @@ class HttpStatusCode {
      * 
      * Get Http Status Code by code
      * 
-     * @param $code Http Status Code
-     * @param $option Option to merge with result
+     * @param int $code Http Status Code
+     * @param array $option Option to merge with result
      * @return array
      */
     public static function get(int $code, array $option = []):array {

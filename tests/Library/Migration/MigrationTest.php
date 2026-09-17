@@ -159,7 +159,7 @@ class MigrationTest extends TestCase {
      ******************************************************
      */
 
-    /** @const TEMP_FOLDER for test */
+    /** @var string for test */
     const TEMP_FOLDER = "@crazyphp_root/tests/.temp";
 
 }

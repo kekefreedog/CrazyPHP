@@ -33,10 +33,10 @@ class Api {
      ******************************************************
      */
 
-    /** @param array $_map */
+    /** @var array $_map */
     private array $_map;
 
-    /** @param array|null $_aliasClass */
+    /** @var array|null $_aliasClass */
     private array|null $_aliasClass = null;
 
     /** Constructor
@@ -47,7 +47,7 @@ class Api {
      * Constructor
      * 
      * @param string|array $mapOrMapPath
-     * @param array|null $aliasClass
+     * @param string|array|null $aliasClass
      * @return self
      */
     public function __construct(string|array $mapOrMapPath, string|array|null $aliasClass = null) {

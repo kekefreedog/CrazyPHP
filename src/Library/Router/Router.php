@@ -124,7 +124,6 @@ class Router {
      * 
      * Parse config router collection
      * 
-     * @param array $collection Collection of api router
      * @return array
      */
     public static function parseApiCollection():array {
@@ -214,7 +213,7 @@ class Router {
      * 
      * Parse router from collection
      * 
-     * @param array $router Router collection
+     * @param array|null $router Router collection
      * @param string $prefix Prefix to put on pattern before
      * @param array $methodsAllowed Methods allowed
      * @return array
@@ -386,6 +385,7 @@ class Router {
             );
 
         # Set result
+        /** @disregard P1006 */
         $result = $routersCollection[$routerName];
 
         # Return result
@@ -530,7 +530,7 @@ class Router {
      * 
      * Cache router collection
      * 
-     * @return array;
+     * @return array
      */
     public static function loadFromCache():array {
 
@@ -575,9 +575,7 @@ class Router {
         $result = $routerInstance->reverse($name, $arguments ?: []);
 
         # Fix issue from mezon
-        foreach ($arguments as $name => $value) {
-            $result = preg_replace('/\[([A-Za-z_-]*)\:' . $name . ']/', $value, $result);
-        }
+        foreach ($arguments as $nameBis => $value) $result = preg_replace('/\[([A-Za-z_-]*)\:' . $nameBis . ']/', $value, $result);
 
         # Return result
         return $result;
@@ -725,7 +723,7 @@ class Router {
      ******************************************************
      */
 
-    /** @const array METHODS Methods supported */
+    /** @var array METHODS Methods supported */
     public const METHODS = [
         'GET',
         'POST',
@@ -735,16 +733,16 @@ class Router {
         'PATCH'
     ];
 
-    /** @const array GROUPS Type of router */
+    /** @var array GROUPS Type of router */
     public const GROUPS = ["app", "api", "asset"];
 
-    /** @const string ROUTER_APP_PATH */
+    /** @var string ROUTER_APP_PATH */
     public const ROUTER_APP_PATH = "@app_root/app/Environment/Page/";
 
-    /** @const public ROUTER_CONTROLLER_PATH */
+    /** @var string ROUTER_CONTROLLER_PATH */
     public const ROUTER_CONTROLLER_PATH = "@app_root/app/Controller/";
 
-    /** @const public ROUTER_TYPE_PATH */
+    /** @var string ROUTER_TYPE_PATH */
     public const ROUTER_TYPE_PATH = "@app_root/app/Library/Router/Type/";
 
 }

@@ -56,16 +56,16 @@ class Form {
     /** @var array $_items of the form */
     private array $_items = [];
 
-    /** @var boolean $_reset */
+    /** @var bool $_reset */
     private bool $_reset = false;
 
     /** @var bool|string|array $_confirm */
     private bool|string|array $_confirm = true;
 
-    /** @var bool|string|array $_filter */
+    /** @var bool $_filter */
     private bool $_filter = false;
 
-    /** @var array $_items_schema Schema of an item */
+    /** @var array $_item_schema Schema of an item */
     private array $_item_schema = [
         "name"          =>  "",
         "type"          =>  "",
@@ -90,7 +90,7 @@ class Form {
      * 
      * Construct
      * 
-     * @param bool $process Just instance the class or run all process
+     * @param array|null $form
      * @return self
      */
     public function __construct(array|null $form = null){
@@ -185,7 +185,7 @@ class Form {
      * 
      * Set Entity of the form
      * 
-     * @param string|null $title Title of the form
+     * @param string|null $entity Title of the form
      * @return Form
      */
     public function setEntity(string|null $entity = null):Form {
@@ -203,7 +203,7 @@ class Form {
      * 
      * Set post url of the form
      * 
-     * @param string|null $url Url of the post
+     * @param string|null $post Url of the post
      * @return Form
      */
     public function setPost(string|null $post = null):Form {
@@ -275,7 +275,7 @@ class Form {
      * 
      * Set Confirm action of the form
      * 
-     * @param bool $confirm Confirm of the form
+     * @param bool|string|array $confirm Confirm of the form
      * @return Form
      */
     public function setConfirm(bool|string|array $confirm = true):Form {
@@ -293,7 +293,7 @@ class Form {
      * 
      * Set Filter
      * 
-     * @param bool $confirm Confirm of the form
+     * @param bool $filter Confirm of the form
      * @return Form
      */
     public function setFilter(bool $filter = false):Form {

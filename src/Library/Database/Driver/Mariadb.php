@@ -38,7 +38,7 @@ use PDO;
 class Mariadb implements CrazyDatabaseDriver {
 
     /**
-     * @var array $config Config of current database
+     * @var ?array $config Config of current database
      */
     public ?array $config = null;
 
@@ -47,9 +47,9 @@ class Mariadb implements CrazyDatabaseDriver {
      */
     public ?PDO $client = null;
 
-    /**
-     * @var ?Query $manager Manager of current database
-     */
+    /** @disregard P1133 */
+    /** @var ?Query $manager Manager of current database */
+    /** @disregard P1009 */
     public ?Query $manager = null;
 
     /**
@@ -86,6 +86,7 @@ class Mariadb implements CrazyDatabaseDriver {
         ]);
 
         # Set manager
+        /** @disregard P1009 */
         $this->manager = new Query($this->client);
 
         # Return self
@@ -104,7 +105,7 @@ class Mariadb implements CrazyDatabaseDriver {
      * 
      * @param string $user User name
      * @param string $password Password
-     * @param string|array databases Name of database
+     * @param string|array $databases Name of database
      * @param string|array $options Options for create user
      * @return self
      */
@@ -784,7 +785,7 @@ class Mariadb implements CrazyDatabaseDriver {
      * @param array $value
      * @param string $database
      * @param bool $createIfNotExists
-     * @param array $uniquesException
+     * @param ?array $uniquesException
      */
     public function insertToTable(string $table, array $value, string $database = "", bool $createIfNotExists = false, ?array $uniquesException = null) {
 
@@ -1835,7 +1836,7 @@ class Mariadb implements CrazyDatabaseDriver {
     /**
      * Append Sort
      * 
-     * @param array|null $sort
+     * @param array|string|null $sort
      * @param string $alias
      * @return string
      */
@@ -2143,7 +2144,7 @@ class Mariadb implements CrazyDatabaseDriver {
      */
 
     /**
-     * @const string CONFIG_KEY Config key for current database
+     * @var string CONFIG_KEY Config key for current database
      */
     public const CONFIG_KEY = "Database.collection.mariadb";
 

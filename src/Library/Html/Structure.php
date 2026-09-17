@@ -63,18 +63,17 @@ class Structure {
     /** @var string UUID */
     private $_uuid;
 
-    /** @var Cache $cache */
-    private $_cache;
+    /** @var Cache $_cache */
+    private Cache $_cache;
 
-    /** @var bool $is_chached */
-    private $_is_cached = false;
+    /** @var bool $_is_cached */
+    private bool $_is_cached = false;
 
     /**
      * Constructor
      * 
      * Construct
      * 
-     * @param array $options Options
      * @return self
      */
     public function __construct(){
@@ -124,7 +123,7 @@ class Structure {
      * 
      * @param ?array $customResponse Custom Response in the data
      * @param bool $merge Merge custom response with current data
-     * @return self
+     * @return string
      */
     public function render(?array $customResponse = null, bool $merge = true):string {
 
@@ -164,9 +163,10 @@ class Structure {
      * Set element in html structure
      * 
      * @param string $parent Parent of element
-     * @param array|string $attributesOrContent Attributes of element
-     * @param string $tag Tag name of element
+     * @param array|string|null $attributesOrContent Attributes of element
+     * @param ?string $tag Tag name of element
      * @param bool $createParentIfNotExists Create parent if not exists
+     * @param ?array $children
      * @return self
      */
     public function setElement(
@@ -442,7 +442,7 @@ class Structure {
      * Set Head Tag
      * 
      * @param string $config Config name to load
-     * @param string $attributes Attributes for head
+     * @param array $attributes Attributes for head
      * @return self
      */
     public function setHead(string $config = "main", array $attributes = []):self {
@@ -466,7 +466,7 @@ class Structure {
      * 
      * Set Title Page
      * 
-     * @param ?string $content Content to put in body
+     * @param ?string $title Content to put in body
      * @return self
      */
     public function setTitle(?string $title = ""):self {
@@ -558,9 +558,9 @@ class Structure {
      * Set Body Hbs Template 
      * 
      * @param string|array|null $template Template to load
-     * @param $preset Preset of the template
+     * @param mixed $preset Preset of the template
      * @param ?array $data Data for template
-     * @param ?string customNameForTemplateCache
+     * @param ?string $customNameForTemplateCache
      * @return self
      */
     public function setBodyTemplate(string|array|null $template = null, $preset = null, ?array $data = [], ?string $customNameForTemplateCache = null):self {
@@ -620,9 +620,10 @@ class Structure {
      * Set Body Hbs Template format for email 
      * 
      * @param string|array|null $template Template to load
-     * @param $preset Preset of the template
+     * @param mixed $preset Preset of the template
      * @param ?array $data Data for template
-     * @param ?string customNameForTemplateCache
+     * @param ?string $customNameForTemplateCache
+     * @param null|string|array $cssFiles
      * @return self
      */
     public function setBodyEmailTemplate(string|array|null $template = null, $preset = null, ?array $data = [], null|string|array $cssFiles = null, ?string $customNameForTemplateCache = null):self {
@@ -884,7 +885,7 @@ class Structure {
     /**
      * Set Hash
      * 
-     * @param $input
+     * @param string $input
      * @return void
      */
     private function _setHash(string &$input):void {
@@ -1030,7 +1031,7 @@ class Structure {
      ******************************************************
      */
 
-    /** @const array HTML_VERSIONS */
+    /** @var array HTML_VERSIONS */
     public const HTML_VERSIONS = [
         # HTML 4
         "HTML4.01"  =>  "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">",
@@ -1040,12 +1041,12 @@ class Structure {
         "HTML5"     =>  "<!DOCTYPE html>"
     ];
 
-    /** @const TEMPLATES */
+    /** @var array */
     public const TEMPLATES = [
         "index" =>  "@crazyphp_root/resources/Hbs/App/index.hbs"
     ];
 
-    /** @const string PARTIAL_BLOCK for Handlbars Js engine */
+    /** @var array PARTIAL_BLOCK for Handlbars Js engine */
     public const PARTIAL_BLOCK = [
         # Generate html structure from `elements` objects 
         "htmlElement"      =>  "{{#if elements}}".

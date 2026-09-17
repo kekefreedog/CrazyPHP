@@ -53,8 +53,8 @@ class Delete extends CrazyModel implements CrazyCommand {
      * 
      * Ingest data
      * 
-     * @param array $formResult Collection of value to process
-     * @return Create
+     * @param array $inputs
+     * @return self
      */
     public function __construct(array $inputs = []){
 

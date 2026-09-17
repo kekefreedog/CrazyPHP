@@ -34,7 +34,7 @@ class SqlOperationTest extends TestCase {
      ******************************************************
      */
 
-    /** @var @sqlOperation */
+    /** @var SqlOperation */
     public static SqlOperation $sqlOperation;
     
     /** Public method | Preparation

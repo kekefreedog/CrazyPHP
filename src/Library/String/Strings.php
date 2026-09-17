@@ -180,7 +180,7 @@ class Strings {
     /**
      * Make Hash
      * 
-     * @param mixed
+     * @param mixed ...$inputs
      * @return string
      */
     public static function hash(mixed ...$inputs):string {

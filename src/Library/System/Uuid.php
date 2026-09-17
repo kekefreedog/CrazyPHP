@@ -107,7 +107,7 @@ class Uuid {
      ******************************************************
      */
 
-    /** @param string HEADER */
+    /** @var string HEADER */
     public const HEADER = 'X-Request-ID';
 
 }

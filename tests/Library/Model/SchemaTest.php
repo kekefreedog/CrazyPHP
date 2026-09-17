@@ -35,7 +35,7 @@ class SchemaTest extends TestCase {
      ******************************************************
      */
 
-    /** @const array SCHEMA */
+    /** @var array SCHEMA */
     public const SCHEMA = [
         [
             'name' => 'type',
@@ -69,7 +69,7 @@ class SchemaTest extends TestCase {
         ],
     ];
 
-    /** @const array ITEM */
+    /** @var array ITEM */
     public const ITEM = [
         'type' => 'Project',
         'attributes' => [
@@ -84,7 +84,7 @@ class SchemaTest extends TestCase {
         ],
     ];
 
-    /** @const array ITEM_FILTERED */
+    /** @var array ITEM_FILTERED */
     public const ITEM_FILTERED = [
         'attributes' => [
             'image' => 'toto',

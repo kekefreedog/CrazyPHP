@@ -168,7 +168,6 @@ class MessagePack {
      * 
      * @param string $path Path of the json file
      * @param array $data Data to put on the json file
-     * @param string $header Custom header file
      * @return array|null
      */
     public static function create(string $path = "", array $data = []):array|null {
@@ -220,9 +219,9 @@ class MessagePack {
      * 
      * Open json file and return its content decodes
      * 
-     * @param string $filename
+     * @param string $path
      * @param bool $arrayFormat decode as array (else as object)
-     * @return array
+     * @return array|null
      */
     public static function open(string $path = "", bool $arrayFormat = true):array|null{
 
@@ -466,7 +465,7 @@ class MessagePack {
      *
      * Decode json
      *
-     * @param string $jsonString
+     * @param string $input
      * @param bool $decodeAsObject Decode as object, else as array
      * @param bool $gzipBrotli Ungzip the input before decoding
      * @return mixed

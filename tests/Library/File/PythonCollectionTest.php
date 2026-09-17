@@ -108,7 +108,7 @@ class PythonCollectionTest extends TestCase {
     public const INPUT = "{'key1': 'O\'Reilly', 'key2': 'He said, \"Hello!\"', 'key3': 'Backslash: \\\ test', 'key4': True, 'key5': None, 'key6': [1, 'Two', 'Three\'s'], 'key7': {'nestedKey1': 'Line with \'quotes\'', 'nestedKey2': 'Backslash \\\ and quotes \'\"'}}";
 
 
-    /** @var string OUTPUT */
+    /** @var array OUTPUT */
     public const OUTPUT = [
         "key1" => "O'Reilly",
         "key2" => 'He said, "Hello!"',

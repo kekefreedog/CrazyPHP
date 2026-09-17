@@ -35,10 +35,10 @@ class Websocket {
     /** @var string $_protocol */
     private string $_protocol = "websocket";
 
-    /** @var string $_adress */
+    /** @var string $_address */
     private string $_address = "0.0.0.0";
 
-    /** @var string $_port */
+    /** @var int $_port */
     private int $_port = 2346;
 
     /** Parameters | Router

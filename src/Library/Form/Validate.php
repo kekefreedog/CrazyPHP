@@ -522,7 +522,6 @@ class Validate {
      * 
      * Return result
      * 
-     * @param string $input
      * @return array
      */
     public function getResult():array {
@@ -543,7 +542,7 @@ class Validate {
      * 
      * Return a result summary as {<parameter>:<value>}
      * 
-     * @param array $input
+     * @param array $inputs
      * @param bool $upperCaseOnName Define if name will be process with upper case
      * @param bool $rawName Keep name as is
      * @return array
@@ -555,6 +554,8 @@ class Validate {
 
         # Check empty
         if(empty($inputs))
+
+            # Return result
             return $result;
 
         # Iteration of input
@@ -854,8 +855,9 @@ class Validate {
      * 
      * Check if the file is a valid file
      * 
-     * @param array give content from file $_FILE
-     * @param bool
+     * @param array $file give content from file $_FILE
+     * @param bool $exception
+     * @return bool
      */
     public static function isValidFile(array $file = [], bool $exception = false):bool {
 

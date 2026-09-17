@@ -33,7 +33,7 @@ abstract class Map {
      ******************************************************
      */
 
-    /** @param array $_simpleCache */
+    /** @var array $_simpleCache */
     private static array $_simpleCache = [];
 
     /** Public static class

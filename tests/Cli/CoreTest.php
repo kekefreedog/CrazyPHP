@@ -35,10 +35,10 @@ class CoreTest extends TestCase{
      ******************************************************
      */
 
-    /** @const array INPUT */
+    /** @var array INPUT */
     public const INPUT = [];
 
-    /** @const array RESULT */
+    /** @var array RESULT */
     public const RESULT = [];
 
     /** Public method | Preparation

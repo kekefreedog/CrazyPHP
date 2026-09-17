@@ -15,8 +15,8 @@ namespace CrazyPHP\Model\Router;
 /**
  * Dependances
  */
-use CrazyPHP\Library\Model\CrazyModel;
 use CrazyPHP\Exception\CrazyException;
+use CrazyPHP\Library\Model\CrazyModel;
 use CrazyPHP\Interface\CrazyCommand;
 use CrazyPHP\Library\Router\Router;
 use CrazyPHP\Library\Array\Arrays;

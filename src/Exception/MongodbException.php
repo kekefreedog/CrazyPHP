@@ -33,14 +33,14 @@ class MongodbException extends Exception {
      ******************************************************
      */
 
-    # Exception message
+    /** @var string $message Exception message */
     protected $message = 'Unknown exception';
 
-    # User-defined exception code                       
+    /** @var int $code User-defined exception code */
     protected $code = 0;
 
-    # Source of the error LuckyPHP or App or Vendor
-    public $source = null;
+    /** @var mixed $source Source of the error LuckyPHP or App or Vendor */
+    public mixed $source = null;
 
     /** Public methods
      ******************************************************
@@ -86,7 +86,7 @@ class MongodbException extends Exception {
      ******************************************************
      */
 
-    /** @const array CODE_TO_MESSAGE */
+    /** @var array CODE_TO_MESSAGE */
     public const CODE_TO_MESSAGE = [
         255 =>  [
             "message"   =>  "It's fine. First time you are trying to up docker you have to execute the current command again and everything should work well :".PHP_EOL."<white>`php vendor/kzarshenas/crazyphp/bin/CrazyDocker up`</white>",

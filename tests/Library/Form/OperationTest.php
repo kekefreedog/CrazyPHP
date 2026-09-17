@@ -281,46 +281,35 @@ class OperationTest extends TestCase{
      * @return void
      */
     /* public function testOperationLike():void {
-
         # New instance
         $instance = new Operation();
-
         # Run empty
         $result = $instance->run("*value");
-        
         # Check result
         $this->assertEquals([
             "*value",
             "value",
         ] , $result["value"] ?? []);
-
         # check position
         # $this->assertEquals("start", $result["position"]);
-
         # Run empty
         $result = $instance->run("value*");
-
         # Check result
         $this->assertEquals([
             "value*",
             "value",
         ] , $result["value"] ?? []);
-
         # check position
         $this->assertEquals("end", $result["position"]);
-
         # Run empty
         $result = $instance->run("*value*");
-
         # Check result
         $this->assertEquals([
             "*value*",
             "value",
         ] , $result["value"] ?? []);
-
         # check position
         $this->assertEquals("start,end", $result["position"]);
-
     } */
 
     /**

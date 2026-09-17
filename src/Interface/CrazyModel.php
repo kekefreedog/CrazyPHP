@@ -97,7 +97,7 @@ interface CrazyModel {
      * Update With Filters
      * 
      * @param array $data Data with attributes values to use for update
-     * @param array $filters Filters to use for read itemsd
+     * @param ?array $filters Filters to use for read itemsd
      * @param ?array $options Optionnal options
      * @return array
      */

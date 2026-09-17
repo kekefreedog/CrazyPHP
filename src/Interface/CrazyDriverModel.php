@@ -77,7 +77,7 @@ interface CrazyDriverModel {
     /**
      * Parse Filters
      * 
-     * @param array $filters Filter to process
+     * @param ?array $filters Filter to process
      * @param ?array $options Optionnal options
      * @return self
      */
@@ -95,7 +95,7 @@ interface CrazyDriverModel {
     /**
      * Parse Group
      * 
-     * @param array $group Group to process
+     * @param ?array $group Group to process
      * @param ?array $options Optionnal options
      */
     public function parseGroup(?array $group, ?array $options = null):self;
@@ -134,7 +134,7 @@ interface CrazyDriverModel {
      * Put to trash current value
      * 
      * @param ?array $options Optionnal options
-     * @param 
+     * @return self
      */
     public function pushToTrash(?array $options = null):self;
 

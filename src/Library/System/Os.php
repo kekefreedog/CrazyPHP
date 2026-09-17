@@ -17,8 +17,6 @@ namespace CrazyPHP\Library\System;
  */
 use CrazyPHP\Exception\CrazyException;
 
-use function PHPUnit\Framework\returnSelf;
-
 /**
  * Form
  *

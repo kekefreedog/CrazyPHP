@@ -126,7 +126,7 @@ class TrashTest extends TestCase {
      ******************************************************
      */
 
-    /** @const public TRASH_PATH */
+    /** @var string TRASH_PATH */
     public const TRASH_PATH = "@crazyphp_root/tests/.trash/";
 
 }

@@ -32,7 +32,7 @@ class Instance {
      */
 
     /* Router */
-    public $router;
+    public Router $router;
 
     /**
      * Constructor
@@ -56,7 +56,7 @@ class Instance {
      ******************************************************
      */
 
-    /* @const array LIST List of instances loaded */
+    /** @var array LIST List of instances loaded */
     public const LIST = [
         "router"    =>  [
             "class"     =>  "CrazyPHP\Core\Router"

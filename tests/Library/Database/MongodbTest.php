@@ -34,7 +34,7 @@ class MongodbTest extends TestCase {
      ******************************************************
      */
 
-    /** @const array SCHEMA */
+    /** @var array SCHEMA */
     public const SCHEMA = [
         [
             'name'  => 'type',
@@ -70,7 +70,7 @@ class MongodbTest extends TestCase {
         ],
     ];
 
-    /** @const array SCHEMA */
+    /** @var array SCHEMA */
     public const SCHEMA_BIS = [
         [
             'name'  => 'attributes.sg_department_1.Department.sg_division',

@@ -60,10 +60,13 @@ class Cache extends Psr16Adapter {
      * Ingest data
      * 
      * @param string|ExtendedCacheItemPoolInterface $driver Driver of the cache
-     * @param ConfigurationOptionInterface $config Config of the cache
-     * @return Create
+     * @param ConfigurationOptionInterface|null $config Config of the cache
+     * @return self
      */
-    public function __construct(string|ExtendedCacheItemPoolInterface $driver = "", ConfigurationOptionInterface|null $config = null){
+    public function __construct(string|ExtendedCacheItemPoolInterface $driver = "", ConfigurationOptionInterface|null $config = null) {
+
+        # Declare driver instance
+        $driverInstance = "";
 
         # Get Configuration
         $configuration = $this->getConfiguration($driver, $config);
@@ -344,7 +347,7 @@ class Cache extends Psr16Adapter {
      * Get configuration driver & options
      * 
      * @param string|ExtendedCacheItemPoolInterface $driver Driver to force
-     * @param ConfigurationOptionInterface $config Config to force
+     * @param ?ConfigurationOptionInterface $config Config to force
      * @return array
      */
     public function getConfiguration(string|ExtendedCacheItemPoolInterface $driver = "", ?ConfigurationOptionInterface $config = null){
@@ -472,7 +475,7 @@ class Cache extends Psr16Adapter {
         ],
     ];
 
-    /* @const array DRIVERS_ALLOWED */
+    /** @var array DRIVERS_ALLOWED */
     public const DRIVERS_ALLOWED = [
         "Files", "Mongodb"
     ];

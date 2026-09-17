@@ -50,7 +50,7 @@ class Api {
      * 
      * Construct
      * 
-     * @param bool $process Just instance the class or run all process
+     * @param array $options
      * @return self
      */
     public function __construct(array $options = []){
@@ -69,8 +69,8 @@ class Api {
      * 
      * Push results in content
      * 
-     * @param mixed $results
-     * @param string $entity
+     * @param mixed $result
+     * @param ?string $entity
      * @return self
      */
     public function pushResults(mixed $result = [], ?string $entity = null):self {
@@ -150,7 +150,7 @@ class Api {
     /**
      * Push Exception
      * 
-     * @param Exception $crazyException
+     * @param Exception $exception
      * @return self
      */
     public function pushException(Exception $exception):self {
@@ -173,7 +173,7 @@ class Api {
      * Push Errors
      * 
      * @param array $errors
-     * @return Page
+     * @return self
      */
     public function pushErrors(array $errors = []):self {
 
@@ -199,7 +199,7 @@ class Api {
      * 
      * Get result
      * 
-     * @return $result
+     * @return array
      */
     public function render():array {
 

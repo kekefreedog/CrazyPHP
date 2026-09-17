@@ -129,7 +129,7 @@ class Schema {
      * > If empty remove all value
      * 
      * @param ?array $values Values to set in schema
-     * @param ?array $option Custom options
+     * @param ?array $options Custom options
      * @return void
      */
     public function setValues(?array $values = [], ?array $options = null):void {
@@ -684,7 +684,7 @@ class Schema {
      ******************************************************
      */
 
-    /** @const array DEFAULT_OPTIONS Options by default */
+    /** @var array DEFAULT_OPTIONS Options by default */
     private const DEFAULT_OPTIONS = [
         # Define the root of the schema in given array
         "array_root"    =>  "",
@@ -696,7 +696,7 @@ class Schema {
         "phpunit_test"  =>  false,
     ];
 
-    /** @const array DEFAULT_VALUES_OPTIONS Options by default */
+    /** @var array DEFAULT_VALUES_OPTIONS Options by default */
     private const DEFAULT_VALUES_OPTIONS = [
         # Define if multiple value
         "multiple"      =>  false

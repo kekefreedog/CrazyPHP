@@ -127,15 +127,11 @@ class Create extends CrazyModel implements CrazyCommand {
      ******************************************************
      */
 
-    /**
-     * Inputs
-     */
-    private $inputs = [];
+    /** @var array $inputs */
+    private array $inputs = [];
 
-    /**
-     * Logs
-     */
-    private $logs = true;
+    /** @var bool $logs */
+    private bool $logs = true;
 
     /** @var bool $npm_local */
     private $npm_local = false;
@@ -145,7 +141,7 @@ class Create extends CrazyModel implements CrazyCommand {
      * 
      * Ingest data
      * 
-     * @param array $formResult Collection of value to process
+     * @param array $inputs Collection of value to process
      * @return Create
      */
     public function __construct(array $inputs = []){

@@ -20,13 +20,9 @@ use CrazyPHP\Library\File\Config as FileConfig;
 use CrazyPHP\Library\Database\Driver\Mangodb;
 use CrazyPHP\Interface\CrazyDriverModel;
 use CrazyPHP\Exception\CrazyException;
-use CrazyPHP\Library\Router\Router;
 use CrazyPHP\Library\Model\Schema;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\Form\Process;
-use CrazyPHP\Library\Form\Query;
-use CrazyPHP\Model\Context;
-use MongoDB\Client;
 
 /**
  * Config
@@ -46,23 +42,23 @@ class Mongo implements CrazyDriverModel {
     /** @var array $arguments */
     private array $arguments;
 
-    /** @var Mongodb $mongodb */
+    /** @var Mangodb $mongodb */
     private Mangodb $mongodb;
 
-    /** @var Schema $schema */
+    /** @var Schema|null $schema */
     private Schema|null $schema = null;
 
     /** @var string|null $id for select one item */
     private string|null $id = null;
 
-    /** @var book $delete */
+    /** @var bool $delete */
     private bool $delete = false;
 
     /** @var array find options */
     private $findOptions = [];
 
-    /** @var array|null $field to retrieve */
-    private $_fields = null;
+    /** @var array|null $_fields to retrieve */
+    private array|null $_fields = null;
 
     /** Private parameters
      ******************************************************
@@ -160,7 +156,7 @@ class Mongo implements CrazyDriverModel {
     /**
      * Parse Filters
      * 
-     * @param array $filters Filter to process
+     * @param ?array $filters Filter to process
      * @param ?array $options Optionnal options
      * @return self
      */
@@ -230,7 +226,7 @@ class Mongo implements CrazyDriverModel {
     /**
      * Parse Group
      * 
-     * @param array $group Group to process
+     * @param ?array $group Group to process
      * @param ?array $options Optionnal options
      */
     public function parseGroup(?array $group, ?array $options = null):self {
@@ -301,7 +297,7 @@ class Mongo implements CrazyDriverModel {
      * Put to trash current value
      * 
      * @param ?array $options Optionnal options
-     * @param 
+     * @return self
      */
     public function pushToTrash(?array $options = null):self {
 
@@ -554,7 +550,7 @@ class Mongo implements CrazyDriverModel {
     /**
      * Process Operations In Filters
      * 
-     * @param array $input
+     * @param array $filters
      * @return array
      */
     private function _processOperationsInFilters(array $filters = []):array {
@@ -745,7 +741,7 @@ class Mongo implements CrazyDriverModel {
      ******************************************************
      */
 
-    /** @const array */
+    /** @var array */
     public const ARGUMENTS = [
         "collection"        =>  "",
         "schema"            =>  [],

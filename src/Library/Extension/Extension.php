@@ -35,22 +35,22 @@ class Extension {
      ******************************************************
      */
 
-    /** @var array $properties */
+    /** @var array $_properties */
     private array $_properties = [];
 
-    /** @var array $scripts */
+    /** @var array $_scripts */
     private array $_scripts = [];
 
-    /** @var array $dependencies */
+    /** @var array $_dependencies */
     private array $_dependencies = [];
 
-    /** @var array $dependencies */
+    /** @var string $_version */
     private string $_version = "";
 
-    /** @var array $name */
+    /** @var string $_name */
     private string $_name = "";
 
-    /** @var array $description */
+    /** @var string $_description */
     private string $_description = "";
 
     /**

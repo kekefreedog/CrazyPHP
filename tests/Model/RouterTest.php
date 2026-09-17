@@ -41,11 +41,11 @@ class RouterTest extends TestCase {
      ******************************************************
      */
 
-    /** @var Create $create */
+    /** @var Create $createSimple */
     public Create $createSimple;
     public Create $createAdvance;
 
-    /** @var Delete $delete */
+    /** @var Delete $deleteSimple */
     public Delete $deleteSimple;
     public Delete $deleteAdvance;
 

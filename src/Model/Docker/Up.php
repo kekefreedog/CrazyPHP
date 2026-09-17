@@ -21,7 +21,6 @@ use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Interface\CrazyCommand;
 use CrazyPHP\Library\File\Composer;
 use CrazyPHP\Library\Array\Arrays;
-use CrazyPHP\Library\File\Package;
 use CrazyPHP\Library\Cli\Command;
 use CrazyPHP\Library\File\Docker;
 use CrazyPHP\Library\File\File;
@@ -45,10 +44,8 @@ class Up implements CrazyCommand {
      ******************************************************
      */
 
-    /**
-     * Inputs
-     */
-    private $inputs = [];
+    /** @var array $inputs */
+    private array $inputs = [];
 
     /** @var bool $isDatabaseEnable Check if at least one database in enable on the current app */
     private $isDatabaseEnable = false;
@@ -58,8 +55,8 @@ class Up implements CrazyCommand {
      * 
      * Ingest data
      * 
-     * @param array $formResult Collection of value to process
-     * @return Create
+     * @param array $inputs Collection of value to process
+     * @return self
      */
     public function __construct(array $inputs = []){
 

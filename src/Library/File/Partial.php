@@ -15,13 +15,9 @@ namespace CrazyPHP\Library\File;
 /**
  * Dependances
  */
-use Symfony\Component\Yaml\Exception\ParseException;
-use Symfony\Component\Yaml\Yaml as YamlS;
-use CrazyPHP\Exception\CrazyException;
-use CrazyPHP\Library\Array\Arrays;
-use CrazyPHP\Library\File\File;
-use CrazyPHP\Library\Form\Process;
 use Symfony\Component\Finder\Finder;
+use CrazyPHP\Library\Form\Process;
+use CrazyPHP\Library\File\File;
 
 /**
  * Partial

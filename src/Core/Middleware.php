@@ -15,7 +15,6 @@ namespace CrazyPHP\Core;
 /**
  * Dependances
  */
-use Psr\Http\Message\ServerRequestInterface;
 use Nyholm\Psr7Server\ServerRequestCreator;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use CrazyPHP\Library\File\Webpack;
@@ -23,6 +22,7 @@ use CrazyPHP\Library\Cache\Cache;
 use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\File\Header;
 use CrazyPHP\Model\Context;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Middleware
@@ -33,14 +33,18 @@ use CrazyPHP\Model\Context;
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2024 Kévin Zarshenas
  */
-class Middleware{
+class Middleware {
 
     /**
      * Fill Context
      * 
      * Fill context with current router settings
+     * 
+     * @param string $route
+     * @param mixed ...$parameters
+     * @return void
      */
-    public static function FillContext(string $route, ...$parameters){
+    public static function FillContext(string $route, mixed ...$parameters):void {
 
         # Set current route in context
         Context::set(
@@ -59,8 +63,12 @@ class Middleware{
      * 
      * Check Lucky Php Special Parameters :
      * - LUCKYPHP___CLEAR_CACHE
+     * 
+     * @param string $route
+     * @param mixed ...$parameters
+     * @return void
      */
-    public static function LuckyPhpSpecialsParameters(string $route, ...$parameters) {
+    public static function LuckyPhpSpecialsParameters(string $route, mixed ...$parameters):void {
 
         # Check get values
         if(empty($_GET))
@@ -83,8 +91,12 @@ class Middleware{
 
     /**
      * Update front config is in watch mode
+     * 
+     * @param string $route
+     * @param mixed ...$parameters
+     * @return void
      */
-    public static function UpdateFrontConfigIfWatchMode(string $route, ...$parameters) {
+    public static function UpdateFrontConfigIfWatchMode(string $route, mixed ...$parameters):void {
 
         # If watch mode, search the last hash and set it in the config front
         if(Config::getValue("Front.lastBuild.watch"))
@@ -99,19 +111,25 @@ class Middleware{
      * 
      * Create server request
      * 
-     * @return 
+     * @param string $route
+     * @param mixed ...$parameters
+     * @return ServerRequestInterface
      */
-    public static function ServerRequestCreator(string $route, ...$parameters){
+    public static function ServerRequestCreator(string $route, mixed ...$parameters):ServerRequestInterface {
 
         # Create PSR-7 Object
         $psr17Factory = new Psr17Factory();
 
         # New server request
         $creator = new ServerRequestCreator(
-            $psr17Factory, // ServerRequestFactory
-            $psr17Factory, // UriFactory
-            $psr17Factory, // UploadedFileFactory
-            $psr17Factory  // StreamFactory
+            # ServerRequestFactory    
+            $psr17Factory,
+            # UriFactory
+            $psr17Factory,
+            # UploadedFileFactory
+            $psr17Factory,
+            # StreamFactory
+            $psr17Factory 
         );
 
         # Create server request

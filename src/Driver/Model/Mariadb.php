@@ -45,10 +45,10 @@ class Mariadb implements CrazyDriverModel {
     /** @var array $arguments */
     private array $arguments;
 
-    /** @var Mysql Instance */
+    /** @var MariadbModel Instance */
     public MariadbModel $mariadb;
 
-    /** @var Schema $schema */
+    /** @var Schema|null $schema */
     private Schema|null $schema = null;
 
     /** @var string|int|null $id for select one item */
@@ -57,19 +57,19 @@ class Mariadb implements CrazyDriverModel {
     /** @var string|null $rawQuery for select one item */
     private string|null $rawQuery = null;
 
-    /** @var bool $attributesAsValues Indicate if attributes is set as values in current schema */
+    /** @var array|null $_fields Indicate if attributes is set as values in current schema */
     # private bool $attributesAsValues = false;
 
-    /** @var array|null $field to retrieve */
-    private $_fields = null;
+    /** @var array|null $_fields to retrieve */
+    private array|null $_fields = null;
 
     /** @var bool $_delete */
     private $_delete = false;
 
-    /** @var null|array conditions */
+    /** @var array|null conditions */
     private array|null $conditions = null;
 
-    /** @var null|array sort */
+    /** @var array|null sort */
     private array|null $sort = null;
 
     /** @var null|int limit */
@@ -87,9 +87,10 @@ class Mariadb implements CrazyDriverModel {
     /**
      * Constructor
      * 
+     * @param mixed ...$inputs
      * @return self
      */
-    public function __construct(...$inputs) {
+    public function __construct(mixed ...$inputs) {
 
         # Set name
         $this->ingestParameters($inputs);
@@ -181,7 +182,7 @@ class Mariadb implements CrazyDriverModel {
     /**
      * Parse Filters
      * 
-     * @param array $filters Filter to process
+     * @param ?array $filters Filter to process
      * @param ?array $options Optionnal options
      * @return self
      */
@@ -240,7 +241,7 @@ class Mariadb implements CrazyDriverModel {
     /**
      * Parse Group
      * 
-     * @param array $group Group to process
+     * @param ?array $group Group to process
      * @param ?array $options Optionnal options
      */
     public function parseGroup(?array $group, ?array $options = null):self {
@@ -511,7 +512,7 @@ class Mariadb implements CrazyDriverModel {
      * Put to trash current value
      * 
      * @param ?array $options Optionnal options
-     * @param 
+     * @return self
      */
     public function pushToTrash(?array $options = null):self {
 
@@ -1060,7 +1061,7 @@ class Mariadb implements CrazyDriverModel {
     /**
      * Process Operations In Filters
      * 
-     * @param array $input
+     * @param array $filters
      * @return array
      */
     private function _processOperationsInFilters(array $filters = []):array {
@@ -1260,7 +1261,7 @@ class Mariadb implements CrazyDriverModel {
      ******************************************************
      */
 
-    /** @const array */
+    /** @var array */
     public const ARGUMENTS = [
         "table"             =>  "",
         "sanity"            =>  false,

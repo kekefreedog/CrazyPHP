@@ -29,11 +29,11 @@ class Url {
 
     /**
      * Check Url
-     * 
+     *
      * @source https://stackoverflow.com/questions/2280394/how-can-i-check-if-a-url-exists-via-php
-     * 
+     *
      * Ingest data
-     * 
+     *
      * @param string $url Url to check
      * @param bool $validUrl Check if url is valid
      * @return bool
@@ -44,7 +44,7 @@ class Url {
         if(!$url || !is_string($url))
             return false;
 
-        # Quick check url is roughly a valid http request: ( http://blah/... ) 
+        # Quick check url is roughly a valid http request: ( http://blah/... )
         if(!preg_match('/^http(s)?:\/\/[a-z0-9-]+(\.[a-z0-9-]+)*(:[0-9]+)?(\/.*)?$/i', $url) )
             return false;
 
@@ -65,85 +65,138 @@ class Url {
 
     /**
      * @depending check
-     * 
+     *
      * @source https://stackoverflow.com/questions/2280394/how-can-i-check-if-a-url-exists-via-php
-     * 
+     *
+     * @param mixed $url
+     * @param bool $followredirects
+     * @return mixed
      */
-    public static function getHttpResponseCode_using_curl($url, $followredirects = true){
-        // returns int responsecode, or false (if url does not exist or connection timeout occurs)
-        // NOTE: could potentially take up to 0-30 seconds , blocking further code execution (more or less depending on connection, target site, and local timeout settings))
-        // if $followredirects == false: return the FIRST known httpcode (ignore redirects)
-        // if $followredirects == true : return the LAST  known httpcode (when redirected)
-        if(! $url || ! is_string($url)){
-            return false;
-        }
+    public static function getHttpResponseCode_using_curl(mixed $url, bool $followredirects = true):mixed {
+
+        # returns int responsecode, or false (if url does not exist or connection timeout occurs)
+        # NOTE: could potentially take up to 0-30 seconds , blocking further code execution (more or less depending on connection, target site, and local timeout settings))
+        # if $followredirects == false: return the FIRST known httpcode (ignore redirects)
+        # if $followredirects == true : return the LAST  known httpcode (when redirected)
+        if(! $url || ! is_string($url)) return false;
+
+        # Set ch
         $ch = @curl_init($url);
-        if($ch === false){
-            return false;
-        }
-        @curl_setopt($ch, CURLOPT_HEADER         ,true);    // we want headers
-        @curl_setopt($ch, CURLOPT_NOBODY         ,true);    // dont need body
-        @curl_setopt($ch, CURLOPT_RETURNTRANSFER ,true);    // catch output (do NOT print!)
+
+        # check cg
+        if($ch === false) return false;
+
+        # we want headers
+        @curl_setopt($ch, CURLOPT_HEADER,true);
+
+        # dont need body
+        @curl_setopt($ch, CURLOPT_NOBODY,true);
+
+        # catch output (do NOT print!)
+        @curl_setopt($ch, CURLOPT_RETURNTRANSFER ,true);
+
+        # Check followes redirects
         if($followredirects){
+
+            # Setopt
             @curl_setopt($ch, CURLOPT_FOLLOWLOCATION ,true);
-            @curl_setopt($ch, CURLOPT_MAXREDIRS      ,10);  // fairly random number, but could prevent unwanted endless redirects with followlocation=true
-        }else{
-            @curl_setopt($ch, CURLOPT_FOLLOWLOCATION ,false);
-        }
+
+            # fairly random number, but could prevent unwanted endless redirects with followlocation=true
+            @curl_setopt($ch, CURLOPT_MAXREDIRS,10);
+
+        # Set otp
+        }else @curl_setopt($ch, CURLOPT_FOLLOWLOCATION ,false);
+
         //      @curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,5);   // fairly random number (seconds)... but could prevent waiting forever to get a result
         //      @curl_setopt($ch, CURLOPT_TIMEOUT        ,6);   // fairly random number (seconds)... but could prevent waiting forever to get a result
         //      @curl_setopt($ch, CURLOPT_USERAGENT      ,"Mozilla/5.0 (Windows NT 6.0) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1");   // pretend we're a regular browser
         @curl_exec($ch);
-        if(@curl_errno($ch)){   // should be 0
+
+        # should be 0
+        if(@curl_errno($ch)){
+
+            # Close
             @curl_close($ch);
+
+            # Return false
             return false;
+
         }
-        $code = @curl_getinfo($ch, CURLINFO_HTTP_CODE); // note: php.net documentation shows this returns a string, but really it returns an int
+
+        # note: php.net documentation shows this returns a string, but really it returns an int
+        $code = @curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        # Close
         @curl_close($ch);
+
+        # Return code
         return $code;
     }
-    
+
     /**
      * @depending check
-     * 
+     *
      * @source https://stackoverflow.com/questions/2280394/how-can-i-check-if-a-url-exists-via-php
-     * 
+     *
+     * @param mixed $url
+     * @param bool $followredirects
+     * @return mixed
      */
-    public static function getHttpResponseCode_using_getheaders($url, $followredirects = true){
-        // returns string responsecode, or false if no responsecode found in headers (or url does not exist)
-        // NOTE: could potentially take up to 0-30 seconds , blocking further code execution (more or less depending on connection, target site, and local timeout settings))
-        // if $followredirects == false: return the FIRST known httpcode (ignore redirects)
-        // if $followredirects == true : return the LAST  known httpcode (when redirected)
-        if(! $url || ! is_string($url)){
-            return false;
-        }
+    public static function getHttpResponseCode_using_getheaders(mixed $url, bool $followredirects = true):mixed {
+
+        # returns string responsecode, or false if no responsecode found in headers (or url does not exist)
+        # NOTE: could potentially take up to 0-30 seconds , blocking further code execution (more or less depending on connection, target site, and local timeout settings))
+        # if $followredirects == false: return the FIRST known httpcode (ignore redirects)
+        # if $followredirects == true : return the LAST  known httpcode (when redirected)
+        if(! $url || ! is_string($url))return false;
+
+        # Set headers
         $headers = @get_headers($url);
+
+        # Check headers
         if($headers && is_array($headers)){
+
+            # Check follow
             if($followredirects){
-                // we want the last errorcode, reverse array so we start at the end:
+
+                # we want the last errorcode, reverse array so we start at the end:
                 $headers = array_reverse($headers);
+
             }
+
+            # Iteration headers
             foreach($headers as $hline){
-                // search for things like "HTTP/1.1 200 OK" , "HTTP/1.0 200 OK" , "HTTP/1.1 301 PERMANENTLY MOVED" , "HTTP/1.1 400 Not Found" , etc.
-                // note that the exact syntax/version/output differs, so there is some string magic involved here
+
+                # search for things like "HTTP/1.1 200 OK" , "HTTP/1.0 200 OK" , "HTTP/1.1 301 PERMANENTLY MOVED" , "HTTP/1.1 400 Not Found" , etc.
+                # note that the exact syntax/version/output differs, so there is some string magic involved here
                 if(preg_match('/^HTTP\/\S+\s+([1-9][0-9][0-9])\s+.*/', $hline, $matches) ){// "HTTP/*** ### ***"
+
+                    # Set code
                     $code = $matches[1];
+
+                    # Return code
                     return $code;
+
                 }
+
             }
-            // no HTTP/xxx found in headers:
+
+            # no HTTP/xxx found in headers:
             return false;
+
         }
-        // no headers :
+
+        # no headers
         return false;
+
     }
 
-	/** 
+	/**
      * Decompose
-     * 
+     *
      * Decommpose path
      * - Exemple : "/toto/titi/tata" => [ "/toto/", "/toto/titi/" ]
-     * 
+     *
      * @param string $path Path to process
      * @param string $delimiter Delimiter for decomposer path
 	 * @return array
@@ -174,16 +227,16 @@ class Url {
 
 		endwhile;
 
-		# Return result 
+		# Return result
 		return $result;
 
 	}
 
     /**
      * Is External
-     * 
+     *
      * Check if given url is external
-     * 
+     *
      * @param string $url Url to check
      * @param string $host Host to check with, if empty is set with `$_SERVER['HTTP_HOST']`
      */
@@ -197,7 +250,7 @@ class Url {
 
         # Check again host
         if(!$host) return true;
-        
+
         # Get components
         $components = parse_url($url);
 
@@ -215,9 +268,9 @@ class Url {
 
     /**
      * Is Internal
-     * 
+     *
      * Check if given url is internal
-     * 
+     *
      * @param string $url Url to check
      * @param string $host Host to check with, if empty is set with `$_SERVER['HTTP_HOST']`
      */
@@ -230,9 +283,9 @@ class Url {
 
     /**
      * Get Current
-     * 
+     *
      * Get current url based on $_SERVER
-     * 
+     *
      * @return string
      */
     public static function getCurrent():string {

@@ -113,7 +113,7 @@ class Create extends CrazyModel implements CrazyCommand {
      * 
      * Ingest data
      * 
-     * @param array $formResult Collection of value to process
+     * @param array $inputs Collection of value to process
      * @return Create
      */
     public function __construct(array $inputs = []){

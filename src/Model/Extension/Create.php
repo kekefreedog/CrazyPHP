@@ -21,7 +21,6 @@ use CrazyPHP\Library\Model\CrazyModel;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Interface\CrazyCommand;
 use CrazyPHP\Library\File\Composer;
-use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Library\System\Os;
@@ -91,7 +90,7 @@ class Create extends CrazyModel implements CrazyCommand {
      * 
      * Ingest data
      * 
-     * @param array $formResult Collection of value to process
+     * @param array $inputs
      * @return self
      */
     public function __construct(array $inputs = []){
