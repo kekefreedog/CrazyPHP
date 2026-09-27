@@ -169,7 +169,31 @@ export default class NumberType extends FormType implements FormInputType {
         let result = this.get(itemEl, options);
 
         // Combine with operator
-        if(result) result = [result[0], FormType.combineFilterOperatorValue(FormType.getFilterOperatorValue(formEl, result[0]), String(result[1]), result[0], options)];
+        if(result){
+
+            // Set operator
+            const operator = FormType.getFilterOperatorValue(formEl, result[0]);
+
+            // Set value
+            const value = String(result[1]);
+
+            // Only inequality contributes a condition when the number is empty.
+            if(value === "" && operator !== "!="){
+
+                // Set result
+                result = null;
+
+            }else{
+
+                // Set result
+                result = [result[0], value === "" && operator === "!="
+                    ? "!="
+                    : FormType.combineFilterOperatorValue(operator, value, result[0], options)
+                ];
+
+            }
+            
+        }
 
         // Return result
         return result;
@@ -185,14 +209,9 @@ export default class NumberType extends FormType implements FormInputType {
      */
     public filterGetMultiple = (itemEl:HTMLElement, formEl:HTMLFormElement, options:Partial<FormOptions> = {}):null|Array<any>[] => {
 
-        // Get plain key/values
-        let results = this.getMultiple(itemEl, options);
-
-        // Combine with operator
-        if(results) results = results.map(result => [result[0], FormType.combineFilterOperatorValue(FormType.getFilterOperatorValue(formEl, result[0]), String(result[1]), result[0], options)]);
-
-        // Return results
-        return results;
+        // Number inputs contribute a single value, even when configured as multiple.
+        const result = this.filterGet(itemEl, formEl, options);
+        return result ? [result] : null;
 
     }
 

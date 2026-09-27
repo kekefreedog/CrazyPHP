@@ -1,0 +1,29 @@
+{{!-- Form / chips --}}
+<div partial="form/form_chips" class="input-field s12{{#if _style.customClass.input-field}} {{_style.customClass.input-field}}{{/if}}">
+
+    <select
+        id="{{form.id}}_{{name}}"
+        class="tomselected no-autoinit"
+        multiple
+        data-select-tag
+        placeholder="{{placeholder}}"
+        {{#if label}}aria-labelledby="{{form.id}}_{{name}}_label"{{/if}}
+        {{#if disabled}}disabled{{else}}{{#if form.onready}}disabled="loading"{{/if}}{{/if}}
+        {{#if required}}required{{/if}}
+    >
+        {{#each default}}<option value="{{this}}" selected>{{this}}</option>{{/each}}
+    </select>
+    {{#if label}}<label id="{{form.id}}_{{name}}_label" for="{{form.id}}_{{name}}">{{label}}{{#if required}}*{{/if}}</label>{{/if}}
+    <input
+        type="hidden"
+        name="{{name}}"
+        data-type="text"
+        data-chips-target="{{form.id}}_{{name}}"
+        value="{{#if default}}{{JSONstringify default}}{{else}}[]{{/if}}"
+        default="{{#if default}}{{JSONstringify default}}{{else}}[]{{/if}}"
+        {{#if disabled}}disabled{{else}}{{#if form.onready}}disabled="loading"{{/if}}{{/if}}
+        {{#if readonly}}readonly{{/if}}
+        {{#if required}}data-chips-required{{/if}}
+    >
+
+</div>

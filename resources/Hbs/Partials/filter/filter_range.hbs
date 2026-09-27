@@ -1,2 +1,8 @@
-{{!-- TODO: design filter-specific markup for "range" --}}
-{{> form/form_range}}
+{{!-- Filter / range --}}
+<div partial="filter/filter_range" class="filter-field s12"{{#if readonly}} data-filter-readonly{{/if}}>
+    {{> filter/_operator ordered=true allowAny=true}}
+    <div class="filter-value">
+        <fieldset class="filter-control-outline" aria-hidden="true">{{#if label}}<legend>{{#if required}}<b>{{/if}}{{label}}{{#if required}}</b>*{{/if}}</legend>{{/if}}</fieldset>
+        {{#if _style.range.interval}}{{> filter/_range_interval}}{{else}}{{> form/form_range filterLegend=true}}{{/if}}
+    </div>
+</div>

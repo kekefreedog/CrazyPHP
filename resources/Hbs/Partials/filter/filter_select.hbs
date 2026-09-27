@@ -1,62 +1,53 @@
-{{!--
-  ! Filter / select
-  !--}}
-<div partial="filter/filter_select" class="col s12 mn-2{{#if _style.customClass.input-field}} {{_style.customClass.input-field}}{{/if}}" style="margin-bottom: 15px;">
+{{!-- Filter / select and radio choices --}}
+<div partial="filter/filter_select" class="filter-field s12"{{#if readonly}} data-filter-readonly{{/if}}>
+    {{#if filterColor}}{{> filter/_operator}}{{else}}{{#if filterRadio}}{{> filter/_operator}}{{else}}{{> filter/_operator wildcard=true}}{{/if}}{{/if}}
+    <div class="filter-value">
+{{!-- Form / select --}}
+<div partial="filter/filter_select_value" class="input-field s12{{#if _style.customClass.input-field}} {{_style.customClass.input-field}}{{/if}}">
 
-    <div class="input-field">
-        {{#isnt _style.filter.operators false exact=true}}
-        <div class="input-filter">
-            <select
-                data-operator-id="{{form.id}}_{{name}}"
-                data-operator-name="{{name}}"
-                class="filter-operator"
-                aria-label="{{#if label}}{{label}} {{/if}}comparison"
-                {{#if disabled}}disabled=""{{else}}{{#if form.onready}}disabled="loading"{{/if}}{{/if}}
-            >
-                {{#if _style.filter.operators}}
-                    {{#each _style.filter.operators as |operator|}}<option value="{{operator.value}}"{{#if operator.default}} selected=""{{/if}}>{{operator.label}}</option>{{/each}}
-                {{else}}
-                    <option value="=">=</option>
-                    <option value="!=">≠</option>
-                    <option value="*" selected="">*</option>
-                {{/if}}
-            </select>
-        </div>
-        {{/isnt}}
-        <div id="dependency" class="suffix suffix-tomselect hide"><i class="material-icons">link_off</i></div>
-        {{#if disabled}}<div class="suffix suffix-tomselect"><i class="material-icons">lock</i></div>{{else}}
-        {{#if _style.suffix}}<div class="suffix suffix-tomselect"><i class="{{_style.suffix.class}}">{{_style.suffix.text}}</i></div>{{/if}}{{/if}}
-        {{#if label}}<span>{{label}}</span>{{/if}}
-        <{{#if _style.select.tag}}input{{else}}select{{/if}}
-            id="{{form.id}}_{{name}}"
-            data-type="select"
-            {{#if _style.select.tag}}data-select-tag=""{{/if}}
-            {{#if _style.select.clear}}data-select-clear="{{#is _style.select.clear "true"}}Clear{{else}}{{_style.select.clear}}{{/is}}"{{/if}}
-            name="{{name}}{{#if _style.filter}}{{#is _style.filter.multiple false}}{{else}}[]{{/is}}{{else}}[]{{/if}}"
-            {{#if _style.filter}}{{#is _style.filter.multiple false}}{{else}}multiple=""{{/is}}{{else}}multiple=""{{/if}}
-            {{#if _style.select.tag}}{{#isArray default}}value="{{join default ","}}"{{/isArray}}{{/if}}
-            {{#unless form.onready}}{{#if default includeZero=false}}default="{{#isArray default}}{{JSONstringify default}}{{else}}{{#isObject default}}{{JSONstringify default}}{{else}}{{default}}{{/isObject}}{{/isArray}}"{{/if}}{{/unless}}
-            autocomplete="off"
-            {{#if placeholder}}placeholder="{{placeholder}}"{{/if}}
-            {{#if disabled}}disabled=""{{/if}}
-            {{#if required}}required=""{{/if}}
-            {{#if select.url}}data-select-remote="{{JSONstringify select}}"{{/if}}
-            {{#if valuePrefix}}data-form-value-prefix="{{valuePrefix}}"{{/if}}
-            {{#if valueSuffix}}data-form-value-suffix="{{valueSuffix}}"{{/if}}
-            {{#if depends}}data-depends="{{#isArray depends}}{{join depends ","}}{{else}}{{depends}}{{/isArray}}" default="true"{{/if}}
-        {{#if _style.select.tag}}/>{{else}}>{{#if select}}{{#if select.url}}{{else}}
-            {{#each select}}{{#isObject this}}<option
-                {{#if this.value includeZero=false}}value="{{this.value}}"{{/if}}
-                {{#unless ../form.onready}}{{#if ../default includeZero=false}}{{#is ../default this.value}}selected=""{{/is}}{{else}}{{#if this.default}}selected=""{{/if}}{{/if}}{{/unless}}
-                {{#unless ../form.onready}}{{#if this.default}}default=""{{/if}}{{/unless}}
-                {{#if this.disabled}}disabled=""{{/if}}
-            >{{this.label}}</option>{{else}}<option
-                {{#if this includeZero=false}}value="{{this}}"{{/if}}
-                {{#unless ../form.onready}}{{#if ../default includeZero=false}}{{#is ../default this}}selected=""{{/is}}{{else}}{{#if option.default}}selected=""{{/if}}{{/if}}{{/unless}}
-                {{#unless ../form.onready}}{{#if option.default}}default=""{{/if}}{{/unless}}
-                {{#if option.disabled}}disabled=""{{/if}}
-            >{{this}}</option>{{/isObject}}{{/each}}
-        {{/if}}{{/if}}</select>
-        {{#if select.url}}<div class="progress mt-0 mb-0" data-select-id="{{form.id}}_{{name}}"><div class="indeterminate"></div></div>{{/if}}{{/if}}
+    <div id="dependency" class="suffix transparent suffix-tomselect hide"><i class="material-icons">link_off</i></div>
+    {{#if disabled}}<div class="suffix transparent suffix-tomselect"><i class="material-icons">lock</i></div>{{else}}
+    {{#if _style.suffix}}<div class="suffix transparent suffix-tomselect"><i class="{{_style.suffix.class}}">{{_style.suffix.text}}</i></div>{{/if}}{{/if}}
+    {{#if _style.select.tag}}{{#if label}}<div id="{{form.id}}_{{name}}_label" class="body-small on-surface-variant-text mb-2">{{#if required}}<b>{{/if}}{{label}}{{#if required}}</b>*{{/if}}</div>{{/if}}{{/if}}
+    <{{#if _style.select.tag}}input{{else}}select{{/if}}
+        id="{{form.id}}_{{name}}"
+        {{#if filterColor}}data-filter-color=""{{/if}}
+        data-type="{{#if filterRadio}}radio{{else}}select{{/if}}"
+        class="tomselected no-autoinit{{#if _style.customClass.input}} {{_style.customClass.input}}{{/if}}"
+        {{#if label}}aria-labelledby="{{form.id}}_{{name}}_label"{{/if}}
+        {{#if readonly}}readonly="readonly"{{/if}}
+        {{#if _style.select.tag}}data-select-tag=""{{/if}}
+        {{#if _style.select.clear}}data-select-clear="{{#isString _style.select.clear}}{{#is _style.select.clear "true"}}Clear{{else}}{{_style.select.clear}}{{/is}}{{else}}Clear{{/isString}}"{{/if}}
+        {{#if filterColor}}
+        name="{{name}}{{#if multiple}}[]{{/if}}"
+        {{#if multiple}}multiple=""{{/if}}
+        {{else}}
+        name="{{name}}{{#isnt _style.filter.multiple false exact=true}}[]{{/isnt}}"
+        {{#isnt _style.filter.multiple false exact=true}}multiple=""{{/isnt}}
+        {{/if}}
+        {{#if _style.select.tag}}{{#isArray default}}value="{{join default ","}}"{{/isArray}}{{/if}}
+        {{#unless form.onready}}{{#if default includeZero=true}}default="{{#isArray default}}{{JSONstringify default}}{{else}}{{#isObject default}}{{JSONstringify default}}{{else}}{{default}}{{/isObject}}{{/isArray}}"{{/if}}{{/unless}}
+        autocomplete="off"
+        {{#if placeholder}}placeholder="{{placeholder}}"{{/if}}
+        {{#if disabled}}disabled=""{{else}}{{#if form.onready}}disabled="loading"{{/if}}{{/if}}
+        {{#if required}}required=""{{/if}}
+        {{#if select.url}}data-select-remote="{{JSONstringify select}}"{{/if}}
+        {{#if valuePrefix}}data-form-value-prefix="{{valuePrefix}}"{{/if}}
+        {{#if valueSuffix}}data-form-value-suffix="{{valueSuffix}}"{{/if}}
+        {{#if depends}}data-depends="{{#isArray depends}}{{join depends ","}}{{else}}{{depends}}{{/isArray}}"{{/if}}
+    {{#if _style.select.tag}}/>{{else}}>{{#if select}}{{#if select.url}}{{else}}
+        {{#if filterColor}}{{#unless multiple}}<option value=""></option>{{/unless}}{{/if}}
+        {{!-- Iteration options --}}
+        {{#each select as |option|}}<option
+            {{#if option.value includeZero=true}}value="{{option.value}}"{{/if}}
+            {{#unless ../form.onready}}{{#isArray ../default}}{{#each ../default}}{{#is this option.value}}selected="" default=""{{/is}}{{/each}}{{else}}{{#if ../default includeZero=true}}{{#is ../default option.value}}selected="" default=""{{/is}}{{else}}{{#if option.default}}selected="" default=""{{/if}}{{/if}}{{/isArray}}{{/unless}}
+            {{#if ../filterColor}}data-color="{{#if option.color}}{{option.color}}{{else}}{{option.value}}{{/if}}"{{/if}}
+            {{#if option.disabled}}disabled=""{{/if}}
+        >{{option.label}}</option>{{/each}}
+    {{/if}}{{/if}}</select>
+    {{#if label}}<label id="{{form.id}}_{{name}}_label" for="{{form.id}}_{{name}}">{{#if required}}<b>{{/if}}{{label}}{{#if required}}</b>*{{/if}}</label>{{/if}}
+    {{#if select.url}}<div class="progress mt-0 mb-0" data-select-id="{{form.id}}_{{name}}"><div class="indeterminate"></div></div>{{/if}}{{/if}}
+
+</div>
     </div>
 </div>

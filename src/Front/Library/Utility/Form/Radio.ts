@@ -851,6 +851,13 @@ export default class RadioType extends FormType implements FormInputType {
             // Set key
             let key:string = itemEl.name as string;
 
+            // Native selected options are authoritative, including enhanced select widgets.
+            if(itemEl instanceof HTMLSelectElement){
+
+                // Set value
+                value = Array.from(itemEl.selectedOptions, option => option.value);
+                
+            }else
             // Check if tomselect
             if("tomselect" in itemEl && itemEl.tomselect instanceof TomSelect){
 

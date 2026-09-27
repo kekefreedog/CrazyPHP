@@ -1,0 +1,18 @@
+{{!-- One named interval value; slider handles and number fields are view controls. --}}
+<input type="hidden" data-type="text" data-filter-range-interval
+    id="{{form.id}}_{{name}}" name="{{name}}"
+    value="[{{#if _style.range.start includeZero=true}}{{_style.range.start}}{{else}}{{#if select.[0].value includeZero=true}}{{select.[0].value}}{{else}}0{{/if}}{{/if}}:{{#if _style.range.end includeZero=true}}{{_style.range.end}}{{else}}{{#if select.[1].value includeZero=true}}{{select.[1].value}}{{else}}100{{/if}}{{/if}}]" default="[{{#if _style.range.start includeZero=true}}{{_style.range.start}}{{else}}{{#if select.[0].value includeZero=true}}{{select.[0].value}}{{else}}0{{/if}}{{/if}}:{{#if _style.range.end includeZero=true}}{{_style.range.end}}{{else}}{{#if select.[1].value includeZero=true}}{{select.[1].value}}{{else}}100{{/if}}{{/if}}]"
+    {{#if disabled}}disabled{{else}}{{#if form.onready}}disabled="loading"{{/if}}{{/if}} {{#if readonly}}readonly{{/if}}
+    data-range-start-label="{{#if _style.range.startLabel}}{{_style.range.startLabel}}{{else}}From{{/if}}"
+    data-range-end-label="{{#if _style.range.endLabel}}{{_style.range.endLabel}}{{else}}To{{/if}}"
+>
+<div class="range-interval no-autoinit" data-range-inputs>
+    <input type="range" min="{{#if select.[0].value includeZero=true}}{{select.[0].value}}{{else}}0{{/if}}" max="{{#if select.[1].value includeZero=true}}{{select.[1].value}}{{else}}100{{/if}}" value="{{#if _style.range.start includeZero=true}}{{_style.range.start}}{{else}}{{#if select.[0].value includeZero=true}}{{select.[0].value}}{{else}}0{{/if}}{{/if}}"
+        step="{{#if _style.range.step}}{{_style.range.step}}{{else}}1{{/if}}"
+        aria-label="{{label}} — From" {{#if disabled}}disabled{{else}}{{#if form.onready}}disabled="loading"{{/if}}{{/if}}
+    >
+    <input type="range" min="{{#if select.[0].value includeZero=true}}{{select.[0].value}}{{else}}0{{/if}}" max="{{#if select.[1].value includeZero=true}}{{select.[1].value}}{{else}}100{{/if}}" value="{{#if _style.range.end includeZero=true}}{{_style.range.end}}{{else}}{{#if select.[1].value includeZero=true}}{{select.[1].value}}{{else}}100{{/if}}{{/if}}"
+        step="{{#if _style.range.step}}{{_style.range.step}}{{else}}1{{/if}}"
+        aria-label="{{label}} — To" {{#if disabled}}disabled{{else}}{{#if form.onready}}disabled="loading"{{/if}}{{/if}}
+    >
+</div>

@@ -11,14 +11,14 @@
 /**
  * Dependances
  */
+import Money from "../../../../src/Front/Library/Utility/Money";
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import Money from "../../../../src/Front/Library/Utility/Money";
 
 /**
  * Money
  *
- * Methods for test money methods
+ * Verify money behavior.
  */
 describe("Front/Library/Utility/Money", () => {
 

@@ -153,8 +153,16 @@ export default class TextType extends FormType implements FormInputType {
             // Get operator paired with this field
             let operatorValue = FormType.getFilterOperatorValue(formEl, result[0]);
 
-            // Combine, wrapping the "*" operator on both sides
-            result = [result[0], FormType.combineFilterOperatorValue(operatorValue, result[1], result[0], options, true)];
+            // An empty contains search contributes no condition.
+            if(operatorValue === "*" && result[1] === ""){
+                
+                // Set result null
+                result = null;
+
+            }else
+
+                // Combine, wrapping the "*" operator on both sides
+                result = [result[0], FormType.combineFilterOperatorValue(operatorValue, result[1], result[0], options, true)];
 
         }
 
@@ -176,7 +184,10 @@ export default class TextType extends FormType implements FormInputType {
         let results = this.getMultiple(itemEl, options);
 
         // Check results
-        if(results) results = results.map(result => {
+        if(results) results = results.filter(result =>
+            FormType.getFilterOperatorValue(formEl, result[0]) !== "*" || 
+            result[1] !== ""
+        ).map(result => {
 
             // Get operator paired with this field
             let operatorValue = FormType.getFilterOperatorValue(formEl, result[0]);

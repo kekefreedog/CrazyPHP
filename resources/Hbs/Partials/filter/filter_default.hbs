@@ -1,43 +1,7 @@
-{{!-- Filter-specific markup for the default/generic input type --}}
-<div partial="filter/filter_default" class="col s12 mn-2{{#if _style.customClass.input-field}} {{_style.customClass.input-field}}{{/if}}" style="margin-bottom: 15px;">
-
-    <div class="input-field">
-        {{#isnt _style.filter.operators false exact=true}}
-        <div class="input-filter">
-            <select
-                data-operator-id="{{form.id}}_{{name}}"
-                data-operator-name="{{name}}"
-                class="filter-operator"
-                aria-label="{{#if label}}{{label}} {{/if}}comparison"
-                {{#if disabled}}disabled=""{{else}}{{#if form.onready}}disabled="loading"{{/if}}{{/if}}
-            >
-                {{#if _style.filter.operators}}
-                    {{#each _style.filter.operators as |operator|}}<option value="{{operator.value}}"{{#if operator.default}} selected=""{{/if}}>{{operator.label}}</option>{{/each}}
-                {{else}}
-                    <option value="=">=</option>
-                    <option value="!=">≠</option>
-                    <option value="*">*</option>
-                {{/if}}
-            </select>
-        </div>
-        {{/isnt}}
-        {{#if disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{else}}
-        {{#if _style.suffix}}<div class="suffix"><i class="{{_style.suffix.class}}">{{_style.suffix.text}}</i></div>{{/if}}{{/if}}
-        {{#if _style.prefix}}<div class="prefix"><i class="{{_style.prefix.class}}">{{_style.prefix.text}}</i></div>{{/if}}
-        <input
-            id="{{form.id}}_{{name}}"
-            name="{{name}}"
-            class="validate {{#if _style.customClass.input}} {{_style.customClass.input}}{{/if}}"
-            {{#if disabled}}disabled=""{{else}}{{#if form.onready}}disabled="loading"{{/if}}{{/if}}
-            {{#if type}}type="{{type}}"{{else}}type="text"{{/if}}
-            {{#if placeholder}}placeholder="{{placeholder}}"{{else}}placeholder=" "{{/if}}
-            {{#if readonly}}readonly=""{{/if}}
-            {{#if required}}required=""{{/if}}
-            {{#unless form.onready}}{{#if default}}value="{{default}}" default="{{default}}"{{/if}}{{/unless}}
-            {{#if _style.text.minlength includeZero=false}}minlength="{{_style.text.minlength}}"{{/if}}
-            {{#if _style.text.maxlength includeZero=false}}maxlength="{{_style.text.maxlength}}"{{/if}}
-        >
-        {{#if label}}<label for="{{form.id}}_{{name}}">{{#if required}}<b>{{/if}}{{label}}{{#if required}}</b>*{{/if}}</label>{{/if}}
+{{!-- Filter / default --}}
+<div partial="filter/filter_default" class="filter-field s12"{{#if readonly}} data-filter-readonly{{/if}}>
+    {{> filter/_operator}}
+    <div class="filter-value">
+        {{> form/form_default}}
     </div>
-
 </div>

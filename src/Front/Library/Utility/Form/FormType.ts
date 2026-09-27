@@ -77,7 +77,7 @@ export default class FormType {
 
         else
         // No operator selected, or nothing to combine it with
-        if(!operator || !value)
+        if(!operator || value === "" || value === null || value === undefined)
 
             // Set result
             result = value;

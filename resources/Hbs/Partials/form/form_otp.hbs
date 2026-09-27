@@ -1,0 +1,22 @@
+{{!-- Form / one-time code --}}
+<div partial="form/form_otp" class="input-field s12{{#if _style.customClass.input-field}} {{_style.customClass.input-field}}{{/if}}">
+
+    <input
+        id="{{form.id}}_{{name}}"
+        name="{{name}}"
+        type="text"
+        class="validate no-autoinit{{#if _style.customClass.input}} {{_style.customClass.input}}{{/if}}"
+        data-otp
+        {{#if _style.otp.length}}data-otp-length="{{_style.otp.length}}"{{/if}}
+        {{#if _style.otp.pattern}}data-otp-pattern="{{_style.otp.pattern}}"{{/if}}
+        {{#if _style.otp.characters}}data-otp-characters="{{_style.otp.characters}}"{{/if}}
+        {{#if _style.otp.groupSize}}data-otp-group-size="{{_style.otp.groupSize}}"{{/if}}
+        {{#if _style.otp.masked}}data-otp-masked="true"{{/if}}
+        {{#if disabled}}disabled{{else}}{{#if form.onready}}disabled="loading"{{/if}}{{/if}}
+        {{#if readonly}}readonly{{/if}}
+        {{#if required}}required{{/if}}
+        {{#unless form.onready}}{{#if default includeZero=true}}value="{{default}}" default="{{default}}"{{/if}}{{/unless}}
+    >
+    {{#if label}}<label for="{{form.id}}_{{name}}">{{label}}{{#if required}}*{{/if}}</label>{{/if}}
+
+</div>

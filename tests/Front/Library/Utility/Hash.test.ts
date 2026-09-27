@@ -11,15 +11,15 @@
 /**
  * Dependances
  */
+import Hash from "../../../../src/Front/Library/Utility/Hash";
 import { describe, it, before, after } from "node:test";
 import assert from "node:assert/strict";
 import { JSDOM } from "jsdom";
-import Hash from "../../../../src/Front/Library/Utility/Hash";
 
 /**
  * Hash
  *
- * Methods for test hash methods
+ * Verify hash behavior.
  *
  * `Hash` reads `document.querySelector()`/`HTMLMetaElement` (for the meta
  * tag lookups) which node:test does not provide. We install a JSDOM window
@@ -28,9 +28,9 @@ import Hash from "../../../../src/Front/Library/Utility/Hash";
 describe("Front/Library/Utility/Hash", () => {
 
     // Set originals (undefined outside a browser/jsdom)
-    let originalWindow: any;
-    let originalDocument: any;
-    let originalHTMLMetaElement: any;
+    let originalWindow:any;
+    let originalDocument:any;
+    let originalHTMLMetaElement:any;
 
     before(() => {
 
@@ -196,6 +196,7 @@ describe("Front/Library/Utility/Hash", () => {
 
             // Set meta tag
             const meta = document.createElement("meta");
+
             meta.setAttribute("name", "application-watch");
             meta.setAttribute("content", "true");
             document.head.appendChild(meta);
@@ -215,6 +216,7 @@ describe("Front/Library/Utility/Hash", () => {
 
             // Set meta tag
             const meta = document.createElement("meta");
+
             meta.setAttribute("name", "application-watch");
             meta.setAttribute("content", "false");
             document.head.appendChild(meta);
@@ -241,6 +243,7 @@ describe("Front/Library/Utility/Hash", () => {
 
             // Set meta tag
             const meta = document.createElement("meta");
+
             meta.setAttribute("name", "application-hash");
             meta.setAttribute("content", "4fe1efd8");
             document.head.appendChild(meta);
@@ -266,6 +269,7 @@ describe("Front/Library/Utility/Hash", () => {
 
             // Set meta tag
             const meta = document.createElement("meta");
+
             meta.setAttribute("name", "custom-hash");
             meta.setAttribute("content", "custom123");
             document.head.appendChild(meta);

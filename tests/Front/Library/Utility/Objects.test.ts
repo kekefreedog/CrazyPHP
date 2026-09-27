@@ -11,14 +11,14 @@
 /**
  * Dependances
  */
+import Objects from "../../../../src/Front/Library/Utility/Objects";
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import Objects from "../../../../src/Front/Library/Utility/Objects";
 
 /**
  * Objects
  *
- * Methods for test objects methods
+ * Verify objects behavior.
  */
 describe("Front/Library/Utility/Objects", () => {
 
@@ -317,7 +317,7 @@ describe("Front/Library/Utility/Objects", () => {
         it("sets a nested value using a dotted string path", () => {
 
             // Set input
-            const obj: any = { a: { b: 1 } };
+            const obj:any = { a: { b: 1 } };
 
             // Set value
             Objects.setValue(obj, "a.c", 5);
@@ -330,7 +330,7 @@ describe("Front/Library/Utility/Objects", () => {
         it("creates the intermediate objects when they don't exist", () => {
 
             // Set input
-            const obj: any = {};
+            const obj:any = {};
 
             // Set value
             Objects.setValue(obj, "x.y", 10);
@@ -343,7 +343,7 @@ describe("Front/Library/Utility/Objects", () => {
         it("accepts an already-split array path and ignores the separator", () => {
 
             // Set input
-            const obj: any = {};
+            const obj:any = {};
 
             // Set value
             Objects.setValue(obj, ["x", "y"], 10, null);
@@ -356,7 +356,7 @@ describe("Front/Library/Utility/Objects", () => {
         it("sets a top-level key when the path has no separator", () => {
 
             // Set input
-            const obj: any = {};
+            const obj:any = {};
 
             // Set value
             Objects.setValue(obj, "single", 1);

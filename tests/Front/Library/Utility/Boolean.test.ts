@@ -11,14 +11,14 @@
 /**
  * Dependances
  */
+import Boolean from "../../../../src/Front/Library/Utility/Boolean";
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import Boolean from "../../../../src/Front/Library/Utility/Boolean";
 
 /**
  * Boolean
  *
- * Methods for test boolean methods
+ * Verify boolean behavior.
  */
 describe("Front/Library/Utility/Boolean", () => {
 
@@ -27,7 +27,7 @@ describe("Front/Library/Utility/Boolean", () => {
      */
     describe("check", () => {
 
-        const truthyCases: unknown[] = [
+        const truthyCases:unknown[] = [
             true,
             1,
             -1,
@@ -40,7 +40,7 @@ describe("Front/Library/Utility/Boolean", () => {
             " ",
         ];
 
-        for (const value of truthyCases) {
+        for(const value of truthyCases){
 
             it(`check(${JSON.stringify(value)}) -> true`, () => {
 
@@ -51,7 +51,7 @@ describe("Front/Library/Utility/Boolean", () => {
 
         }
 
-        const falsyCases: unknown[] = [
+        const falsyCases:unknown[] = [
             false,
             null,
             undefined,
@@ -62,7 +62,7 @@ describe("Front/Library/Utility/Boolean", () => {
             "off",
         ];
 
-        for (const value of falsyCases) {
+        for(const value of falsyCases){
 
             it(`check(${JSON.stringify(value)}) -> false`, () => {
 

@@ -1,17 +1,18 @@
 {{!-- Form / file --}}
-<div partial="form/form_file" class="input-field col s12 mn-2{{#if _style.customClass.input-field}} {{_style.customClass.input-field}}{{/if}}" style="margin-bottom: 15px;">
+<div partial="form/form_file" class="input-field s12{{#if _style.customClass.input-field}} {{_style.customClass.input-field}}{{/if}}">
 
-    {{#if disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{else}}
-    {{#if _style.suffix}}<div class="suffix"><i class="{{_style.suffix.class}}">{{_style.suffix.text}}</i></div>{{/if}}{{/if}}
+    {{#if disabled}}<div class="suffix transparent"><i class="material-icons">lock</i></div>{{else}}
+    {{#if _style.suffix}}<div class="suffix transparent"><i class="{{_style.suffix.class}}">{{_style.suffix.text}}</i></div>{{/if}}{{/if}}
     {{#if _style.prefix}}<div class="prefix"><i class="{{_style.prefix.class}}">{{_style.prefix.text}}</i></div>{{/if}}
         {{!-- Filepond --}}
         {{#is _style.file.picker "filepond"}}
+            <div class="file-field no-autoinit" data-file-picker="filepond" data-file-plugins="image-exif-orientation{{#if _style.file.preview}},image-preview{{/if}}">
+            {{#if label}}<label for="{{form.id}}_{{name}}">{{#if required}}<b>{{/if}}{{label}}{{#if required}}</b>*{{/if}}</label>{{/if}}
             <input
                 id="{{form.id}}_{{name}}"
                 name="{{name}}{{#if multiple}}[]{{/if}}"
                 {{#if _style.file.preview}}data-file-preview=""{{/if}}
                 {{#if multiple}}multiple=""{{/if}}
-                {{#if _style.customClass.input}}class="{{_style.customClass.input}}"{{/if}}
                 {{#if disabled}}disabled=""{{else}}{{#if form.onready}}disabled="loading"{{/if}}{{/if}}
                 type="file"
                 {{#if placeholder}}placeholder="{{placeholder}}"{{else}}placeholder=" "{{/if}}
@@ -20,17 +21,17 @@
                 {{#if select.[0].value}}min="{{select.[0].value}}"{{/if}}
                 {{#if select.[1].value}}max="{{select.[1].value}}"{{/if}}
                 {{#if required}}required=""{{/if}}
-                {{#if required}}required=""{{/if}}
                 {{!-- Filepond specific --}}
                 {{#if _style.file.maxFiles}}data-max-files="{{_style.file.maxFiles}}"{{/if}}
-                class="filepond"
+                class="filepond no-autoinit{{#if _style.customClass.input}} {{_style.customClass.input}}{{/if}}"
+                {{#if label}}aria-label="{{label}}"{{/if}}
                 {{#if _style.file.acceptedFileTypes}}accept="{{join _style.file.acceptedFileTypes ","}}"{{/if}}
                 {{#if _style.file.locale}}data-file-locale="{{_style.file.locale}}"{{/if}}
             >
-            {{#if label}}<label for="{{form.id}}_{{name}}">{{#if required}}<b>{{/if}}{{label}}{{#if required}}</b>*{{/if}}</label>{{/if}}
+            </div>
         {{!-- Legacy file input --}}
         {{else}}<div class="file-field">
-            <div class="btn">
+            <div class="btn filled">
                 <span>{{#if label}}{{#if required}}<b>{{/if}}{{label}}{{#if required}}</b>*{{/if}}{{/if}}</span>
                 <input
                     id="{{form.id}}_{{name}}"
@@ -49,7 +50,7 @@
                 >
             </div>
             <div class="file-path-wrapper">
-                <input class="file-path validate" type="text">
+                <input class="file-path validate" type="text" placeholder=" " aria-label="Selected files">
             </div>
         </div>{{/is}}
 

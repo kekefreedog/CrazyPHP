@@ -1,0 +1,26 @@
+{{!-- Shared filter operator. It has no name, so only CrazyPHP serializes it. --}}
+{{#isnt _style.filter.operators false exact=true}}
+<div class="filter-operator-slot">
+    <select
+        class="filter-operator no-autoinit"
+        data-operator-id="{{form.id}}_{{name}}"
+        data-operator-name="{{name}}"
+        aria-label="{{#if label}}{{label}}{{else}}{{name}}{{/if}} comparison"
+        {{#if disabled}}disabled{{else}}{{#if readonly}}disabled{{else}}{{#if form.onready}}disabled="loading"{{/if}}{{/if}}{{/if}}
+    >
+        {{#if _style.filter.operators}}
+            {{#each _style.filter.operators}}<option value="{{value}}"{{#if default}} selected{{/if}}>{{label}}</option>{{/each}}
+        {{else}}
+            <option value="="{{#unless wildcard}} selected{{/unless}}>=</option>
+            <option value="!=">≠</option>
+            {{#if ordered}}
+            <option value="<">&lt;</option>
+            <option value="<=">≤</option>
+            <option value=">">&gt;</option>
+            <option value=">=">≥</option>
+            {{#if allowAny}}<option value="*">*</option>{{/if}}
+            {{else}}<option value="*"{{#if wildcard}} selected{{/if}}>*</option>{{/if}}
+        {{/if}}
+    </select>
+</div>
+{{/isnt}}

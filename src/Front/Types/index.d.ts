@@ -30,8 +30,6 @@ export {default as UtilityStrings} from "./../Library/Utility/Strings";
 export {default as UtilityFilter} from "./..//Library/Utility/Filter";
 export {default as Crazycomponent} from "./../Library/Crazycomponent";
 export {default as Crazycomponent2} from "./../Library/Crazycomponent2";
-export type { Crazycomponent2Property, Crazycomponent2Properties, Crazycomponent2Options,
-    Crazycomponent2Context, Crazycomponent2Template, Crazycomponent2Styles } from "./../Library/Crazycomponent2";
 export {default as Crazynavigator} from "./../Library/Crazynavigator";
 export {default as UtilityArrays} from "./../Library/Utility/Arrays";
 export {default as UtilityEvents} from "./../Library/Utility/Events";
@@ -68,6 +66,16 @@ export {default as Hash} from "./../Library/Utility/Hash";
 export {default as DomRoot} from "./../Library/Dom/Root";
 export {default as MapApi} from './../Library/Map/Api';
 export {default as State} from './../Library/State';
+
+/** Export crazy compoenent 2 */
+export type { 
+    Crazycomponent2Property,
+    Crazycomponent2Properties,
+    Crazycomponent2Options,
+    Crazycomponent2Context,
+    Crazycomponent2Template,
+    Crazycomponent2Styles 
+} from "./../Library/Crazycomponent2";
 
 /* Modules to export */
 
@@ -478,6 +486,7 @@ declare global {
         alertDriver:string,
         filter:boolean,
         onFilterReady?:(formData:FormData)=>void,
+        initializeInput?:(inputEl:HTMLInputElement|HTMLSelectElement, formEl:HTMLFormElement) => Promise<boolean>,
         filterOperators?:Record<string, (value:string, key:string) => string>,
     }
 

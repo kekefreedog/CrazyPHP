@@ -1,29 +1,29 @@
 {{!-- Form / color --}}
-<div partial="form/form_color" class="input-field col s12 mn-2{{#if _style.customClass.input-field}} {{_style.customClass.input-field}}{{/if}}" style="margin-bottom: 15px;">
+<div partial="form/form_color" class="input-field s12{{#if _style.customClass.input-field}} {{_style.customClass.input-field}}{{/if}}">
 
-    {{#if required}}<b>{{/if}}{{label}}{{#if required}}</b>*{{/if}}<br>
-    {{#if disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{else}}
-    {{#if _style.suffix}}<div class="suffix"><i class="{{_style.suffix.class}}">{{_style.suffix.text}}</i></div>{{/if}}{{/if}}
+    {{#if disabled}}<div class="suffix transparent"><i class="material-icons">lock</i></div>{{else}}
+    {{#if _style.suffix}}<div class="suffix transparent"><i class="{{_style.suffix.class}}">{{_style.suffix.text}}</i></div>{{/if}}{{/if}}
     {{#if _style.prefix}}<div class="prefix"><i class="{{_style.prefix.class}}">{{_style.prefix.text}}</i></div>{{/if}}
     <input
         id="{{form.id}}_{{name}}"
         name="{{name}}"
-        {{#if _style.customClass.input}}class="{{_style.customClass.input}}"{{/if}}
+        class="no-autoinit{{#if _style.customClass.input}} {{_style.customClass.input}}{{/if}}"
         {{#if disabled}}disabled=""{{else}}{{#if form.onready}}disabled="loading"{{/if}}{{/if}}
         type="color"
+        data-color-picker="{{#if _style.color.picker}}{{_style.color.picker}}{{else}}native{{/if}}"
         {{#if _style.color.picker}}
-            data-color-picker="{{_style.color.picker}}"
             {{#if _style.color.theme}}data-color-theme="{{_style.color.theme}}"{{/if}}
             data-color-opacity="{{_style.color.opacity}}"
             {{#if _style.color.locale}}data-color-locale="{{_style.color.locale}}"{{/if}}
         {{/if}}
-        {{!-- data-type="color" --}}
         {{#if placeholder}}placeholder="{{placeholder}}"{{else}}placeholder=" "{{/if}}
         {{#if readonly}}readonly=""{{/if}}
-        {{#unless form.onready}}{{#if default includeZero=false}}value="{{#is default "randomHex()"}}{{colorHexRandom}}{{else}}{{default}}{{/is}}" default="{{default}}"{{/if}}{{/unless}}
-        {{#if select.[0].value includeZero=false}}min="{{select.[0].value}}"{{/if}}
-        {{#if select.[1].value includeZero=false}}max="{{select.[1].value}}"{{/if}}
+        {{#unless form.onready}}{{#if default includeZero=true}}value="{{#is default "randomHex()"}}{{colorHexRandom}}{{else}}{{default}}{{/is}}" default="{{default}}"{{/if}}{{/unless}}
+        {{#if select.[0].value includeZero=true}}min="{{select.[0].value}}"{{/if}}
+        {{#if select.[1].value includeZero=true}}max="{{select.[1].value}}"{{/if}}
         {{#if required}}required=""{{/if}}
     >
+
+    {{#if label}}<label for="{{form.id}}_{{name}}">{{#if required}}<b>{{/if}}{{label}}{{#if required}}</b>*{{/if}}</label>{{/if}}
 
 </div>

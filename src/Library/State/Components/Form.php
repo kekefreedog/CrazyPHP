@@ -747,6 +747,28 @@ class Form {
         # Set result
         $result = null;
 
+        # Range defaults retain both validated endpoints for the date picker.
+        if(
+            ($currentItem["multiple"] ?? false) ||
+            ($currentItem["_style"]["date"]["range"] ?? false)
+        ){
+
+            # Set dates
+            $dates = is_string($value) 
+                ? explode(" - ", $value) 
+                : []
+            ;
+
+            # Check dates
+            if(
+                count($dates) === 2 && 
+                static::_isYmdDate($dates[0]) && 
+                static::_isYmdDate($dates[1]) && 
+                $dates[0] <= $dates[1]
+            )
+                $result = implode(" - ", $dates);
+
+        }else
         # Check value 
         if($value){
 

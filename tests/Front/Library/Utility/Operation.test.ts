@@ -11,14 +11,14 @@
 /**
  * Dependances
  */
+import Operation from "../../../../src/Front/Library/Utility/Operation";
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import Operation from "../../../../src/Front/Library/Utility/Operation";
 
 /**
  * Operation
  *
- * Methods for test Operation methods
+ * Verify Operation behavior.
  */
 describe("Front/Library/Utility/Operation", () => {
 

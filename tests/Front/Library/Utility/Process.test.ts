@@ -11,14 +11,14 @@
 /**
  * Dependances
  */
+import Process from "../../../../src/Front/Library/Utility/Process";
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import Process from "../../../../src/Front/Library/Utility/Process";
 
 /**
  * Process
  *
- * Methods for test process methods
+ * Verify process behavior.
  */
 describe("Front/Library/Utility/Process", () => {
 

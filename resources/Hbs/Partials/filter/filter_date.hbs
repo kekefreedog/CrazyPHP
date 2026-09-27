@@ -1,2 +1,7 @@
-{{!-- TODO: design filter-specific markup for "date" --}}
-{{> form/form_date}}
+{{!-- Filter / date --}}
+<div partial="filter/filter_date" class="filter-field s12"{{#if readonly}} data-filter-readonly{{/if}}>
+    {{> filter/_operator ordered=true}}
+    <div class="filter-value">
+        {{> form/form_date filterDate=true}}
+    </div>
+</div>

@@ -1,8 +1,8 @@
 {{!-- Form / radio --}}
-<div partial="form/form_radio" class="input-field col s12 mn-2{{#if _style.customClass.input-field}} {{_style.customClass.input-field}}{{/if}}" style="margin-bottom: 15px;">
+<div partial="form/form_radio" class="input-field s12{{#if _style.customClass.input-field}} {{_style.customClass.input-field}}{{/if}}">
 
     <div id="{{form.id}}_{{name}}" data-radio-name="{{name}}">
-        {{#if disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{/if}}
+        {{#if disabled}}<div class="suffix transparent"><i class="material-icons">lock</i></div>{{/if}}
         {{#if label}}{{#if required}}<b>{{/if}}{{label}}{{#if required}}</b>*{{/if}}{{/if}}
         {{!-- Multiple choice Radio --}}
         {{#each select as |radioItem|}}{{#if ../multiple}}<p><label>
@@ -11,16 +11,11 @@
                 type="checkbox"
                 {{#if ../required}}required=""{{/if}}
                 class="filled-in{{#if ../_style.customClass.input}} {{../_style.customClass.input}}{{/if}}"
-                {{#if ../disabled}}disabled=""{{else}}{{#if disabled}}disabled=""{{else}}disabled="loading"{{/if}}{{/if}}
-                {{#if ../disabled}}disabled=""{{else}}{{#if ../form.onready}}disabled="loading"{{/if}}{{/if}}
-                {{#unless form.onready}}{{#if ../default includeZero=false}}
-                    {{#is ../default value}}checked="" default=""{{/is}}
-                {{else}}
-                    {{#is default value}}checked="" default=""{{/is}}
-                {{/if}}{{/unless}}
-                {{#if value includeZero=false}}value="{{value}}"{{/if}}
+                {{#if ../disabled}}disabled=""{{else}}{{#if disabled}}disabled=""{{else}}{{#if ../form.onready}}disabled="loading"{{/if}}{{/if}}{{/if}}
+                {{#unless ../form.onready}}{{#isArray ../default}}{{#each ../default}}{{#is this radioItem.value}}checked="" default=""{{/is}}{{/each}}{{else}}{{#if ../default includeZero=true}}{{#is ../default value}}checked="" default=""{{/is}}{{else}}{{#if default}}checked="" default=""{{/if}}{{/if}}{{/isArray}}{{/unless}}
+                {{#if value includeZero=true}}value="{{value}}"{{/if}}
             />
-            <span>{{label}}{{#if disabled}}<i class="material-icons ml-3">lock</i>{{/if}}</span>
+            <span>{{label}}{{#if radioItem.disabled}}<i class="material-icons ml-3">lock</i>{{/if}}</span>
         {{!-- Singe choice Radio --}}
         </label></p>{{else}}<p><label>
             <input
@@ -28,12 +23,11 @@
                 type="radio"
                 {{#if ../required}}required=""{{/if}}
                 {{#if ../_style.customClass.input}}class="{{../_style.customClass.input}}"{{/if}}
-                {{#if ../disabled}}disabled=""{{else}}{{#if disabled}}disabled=""{{else}}disabled="loading"{{/if}}{{/if}}
-                {{#unless form.onready}}{{#if ../default includeZero=false}}{{#is ../default value}}checked="" default=""{{/is}}{{else}}{{#if default}}checked="" default=""{{/if}}{{/if}}{{/unless}}
-                {{#if value}}value="{{value}}"{{/if}}
-                {{#unless form.onready}}{{#if default}}default=""{{/if}}{{/unless}}
+                {{#if ../disabled}}disabled=""{{else}}{{#if disabled}}disabled=""{{else}}{{#if ../form.onready}}disabled="loading"{{/if}}{{/if}}{{/if}}
+                {{#unless ../form.onready}}{{#if ../default includeZero=true}}{{#is ../default value}}checked="" default=""{{/is}}{{else}}{{#if default}}checked="" default=""{{/if}}{{/if}}{{/unless}}
+                {{#if value includeZero=true}}value="{{value}}"{{/if}}
             />
-            <span>{{label}}{{#if disabled}}<i class="material-icons ml-3">lock</i>{{/if}}</span>
+            <span>{{label}}{{#if radioItem.disabled}}<i class="material-icons ml-3">lock</i>{{/if}}</span>
         </label></p>{{/if}}{{/each}}
     </div>
 

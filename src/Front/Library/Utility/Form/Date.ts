@@ -397,8 +397,32 @@ export default class DateType extends FormType implements FormInputType {
         // Get plain key/value
         let result = this.get(itemEl, options);
 
+        // Date ranges use the same wire format whether the field is scalar or multiple.
+        if(result && itemEl instanceof HTMLInputElement && (itemEl.multiple || itemEl.dataset.dateRange === "true")){
+
+            // Set dates
+            const dates = String(result[1]).split(" - ");
+
+            // Check dates
+            if(dates.length !== 2 || dates.some(date => !date.trim())){
+
+                // Set result null 
+                result = null;
+
+            }else{
+            
+                // Set result
+                result = [result[0].replace(/\[\]$/, ""), `[${dates[0]}:${dates[1]}]`];
+
+            }
+
+        }
+
         // Combine with operator
-        if(result) result = [result[0], FormType.combineFilterOperatorValue(FormType.getFilterOperatorValue(formEl, result[0]), result[1], result[0], options)];
+        if(result) result = [
+            result[0],
+            FormType.combineFilterOperatorValue(FormType.getFilterOperatorValue(formEl, result[0]), result[1], result[0], options)
+        ];
 
         // Return result
         return result;
@@ -414,11 +438,32 @@ export default class DateType extends FormType implements FormInputType {
      */
     public filterGetMultiple = (itemEl:HTMLElement, formEl:HTMLFormElement, options:Partial<FormOptions> = {}):null|Array<any>[] => {
 
-        // Get plain key/values — may already carry the "[a:b]" range syntax
-        let results = this.getMultiple(itemEl, options);
+        // Set results
+        let results:null|Array<any>[];
 
-        // Combine with operator
-        if(results) results = results.map(result => [result[0], FormType.combineFilterOperatorValue(FormType.getFilterOperatorValue(formEl, result[0]), result[1], result[0], options)]);
+        if(itemEl instanceof HTMLInputElement && (itemEl.multiple || itemEl.dataset.dateRange === "true")){
+
+            // Set result
+            const result = this.filterGet(itemEl, formEl, options);
+            
+            // Set results
+            results = result 
+                ? [result] 
+                : null
+            ;
+
+        }else{
+
+            // Get plain key/values — may already carry the "[a:b]" range syntax
+            results = this.getMultiple(itemEl, options);
+
+            // Combine with operator
+            if(results) results = results.map(result => [
+                result[0], 
+                FormType.combineFilterOperatorValue(FormType.getFilterOperatorValue(formEl, result[0]), result[1], result[0], options)
+            ]);
+
+        }
 
         // Return results
         return results;
@@ -477,8 +522,42 @@ export default class DateType extends FormType implements FormInputType {
      */
     public filterSet = (itemEl:HTMLElement, value:string, valuesID:string|Object|null, formEl:HTMLFormElement, options:Partial<FormOptions> = {}):void => {
 
-        // Delegate to the regular setter
-        this.set(itemEl, value, valuesID, formEl, options);
+        // Check airdatepicker
+        if(itemEl instanceof HTMLInputElement && itemEl.dataset.datePicker === "airdatepicker"){
+
+            // Set raw
+            const raw = Array.isArray(value) 
+                ? String(value[0] ?? "") 
+                : String(value ?? "")
+            ;
+
+            // Set range 
+            const range = raw.match(/^\[(.*):(.*)\]$/);
+
+            // Set display
+            const display = range 
+                ? `${range[1]} - ${range[2]}` 
+                : raw
+            ;
+
+            // Set value
+            itemEl.value = display;
+
+            // Set attribute
+            itemEl.setAttribute("value", display);
+            
+            // Dispatch envent
+            itemEl.dispatchEvent(new Event("change"));
+
+            // Set form id
+            Form.setId(formEl, valuesID, itemEl);
+
+        }else{
+
+            // Set
+            this.set(itemEl, value, valuesID, formEl, options);
+
+        }
 
     }
 

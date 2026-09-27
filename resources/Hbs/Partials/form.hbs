@@ -10,26 +10,27 @@
   ! @copyright  2022-2023 Kévin Zarshenas
   !--}}
 {{#if form}}{{!-- Form --}}
-<form 
+<form
     id="{{form.id}}"
-    class="row crazy-form g-0"
+    class="row g-2"
     {{!-- Entity --}}
     {{#if form.entity}}entity="{{form.entity}}"{{/if}}
     {{!-- On Ready --}}
     {{#if form.onready}}onready="{{form.onready}}"{{/if}}
     {{!-- Url where Post --}}
-    {{#if form.post}}post="{{form.post}}"{{/if}} 
+    {{#if form.post}}post="{{form.post}}"{{/if}}
     {{!-- Filter --}}
-    {{#if form.filter}}data-form-filter=""{{/if}} 
+    {{#if form.filter}}data-form-filter=""{{/if}}
     {{!-- Title --}}
-    {{#if form.title}}data-name="{{form.title}}"{{/if}} 
+    {{#if form.title}}data-name="{{form.title}}"{{/if}}
     {{!-- Declare partial --}}
     partial="form"
 >
     {{!-- Items --}}
     {{#each form.items as |item|}}
     {{#if ../form.filter}}
-        {{#is item.type "text"}}{{> filter/filter_text item form=../form}}
+        {{#is item.type "textarea"}}{{> filter/filter_text item form=../form type="text"}}
+        {{else}}{{#is item.type "text"}}{{> filter/filter_text item form=../form}}
         {{else}}{{#is item.type "file"}}{{> filter/filter_file item form=../form}}
         {{else}}{{#is item.type "color"}}{{> filter/filter_color item form=../form}}
         {{else}}{{#is item.type "select"}}{{> filter/filter_select item form=../form}}
@@ -43,8 +44,12 @@
         {{else}}{{#is item.type "hidden"}}{{> filter/filter_hidden item form=../form}}
         {{else}}{{> filter/filter_default item form=../form}}
         {{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}
+        {{/is}}
     {{else}}
-        {{#is item.type "file"}}{{> form/form_file item form=../form}}
+        {{#is item.type "otp"}}{{> form/form_otp item form=../form}}
+        {{else}}{{#is item.type "textarea"}}{{> form/form_textarea item form=../form}}
+        {{else}}{{#is item.type "chips"}}{{> form/form_chips item form=../form}}
+        {{else}}{{#is item.type "file"}}{{> form/form_file item form=../form}}
         {{else}}{{#is item.type "color"}}{{> form/form_color item form=../form}}
         {{else}}{{#is item.type "select"}}{{> form/form_select item form=../form}}
         {{else}}{{#is item.type "password"}}{{> form/form_password item form=../form}}
@@ -56,20 +61,22 @@
         {{else}}{{#is item.type "checkbox"}}{{> form/form_checkbox item form=../form}}
         {{else}}{{#is item.type "hidden"}}{{> form/form_hidden item form=../form}}
         {{else}}{{> form/form_default item form=../form}}
-        {{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}
+        {{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}
     {{/if}}
     {{/each}}
 
     {{!-- Submit --}}
-    <div class="col s12 screen-flex screen-{{#if form.confirm.align}}{{form.confirm.align}}{{else}}left{{/if}}{{#if form.confirm.invert}} screen-direction-x-desc{{/if}}">
+    {{#or form.reset form.confirm}}
+    <div class="s12 screen-flex screen-wrap g-2 screen-{{#if form.confirm.align}}{{form.confirm.align}}{{else}}left{{/if}}{{#if form.confirm.invert}} screen-direction-x-desc{{/if}}">
         {{!-- Reset Button --}}
-        {{#if form.reset}}<button class="btn waves-effect waves-light red white-text m{{#if form.confirm.invert}}l{{else}}r{{/if}}-5" type="reset" {{#if form.onready}}disabled="loading"{{/if}}>Reset
+        {{#if form.reset}}<button class="btn outlined waves-effect waves-light" type="reset" {{#if form.onready}}disabled="loading"{{/if}}>Reset
             <i class="material-icons right">delete_forever</i>
         </button>{{/if}}
         {{!-- Submit button --}}
-        {{#if form.confirm}}<button class="btn waves-effect waves-light green" type="submit" {{#if form.onready}}disabled="loading"{{/if}}>{{#isString form.confirm}}{{form.confirm}}{{else}}{{#isObject form.confirm}}{{#if form.confirm.title}}{{form.confirm.title}}{{/if}}{{else}}Save{{/isObject}}{{/isString}}
+        {{#if form.confirm}}<button class="btn filled waves-effect waves-light" type="submit" {{#if form.onready}}disabled="loading"{{/if}}>{{#isString form.confirm}}{{form.confirm}}{{else}}{{#isObject form.confirm}}{{#if form.confirm.title}}{{form.confirm.title}}{{/if}}{{else}}Save{{/isObject}}{{/isString}}
             {{#isObject form.confirm}}{{#if form.confirm.icon}}<i class="ml-2 {{form.confirm.icon.class}} right">{{form.confirm.icon.text}}</i>{{/if}}{{else}}<i class="ml-2 material-icons right">save</i>{{/isObject}}
         </button>{{/if}}
     </div>
+    {{/or}}
 
 </form>{{/if}}

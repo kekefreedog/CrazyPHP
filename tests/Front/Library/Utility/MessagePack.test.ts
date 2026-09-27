@@ -11,14 +11,14 @@
 /**
  * Dependances
  */
+import MessagePack from "../../../../src/Front/Library/Utility/MessagePack";
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import MessagePack from "../../../../src/Front/Library/Utility/MessagePack";
 
 /**
  * MessagePack
  *
- * Methods for test message pack methods
+ * Verify message pack behavior.
  */
 describe("Front/Library/Utility/MessagePack", () => {
 

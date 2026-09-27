@@ -54,6 +54,9 @@ export default class Form {
     /** @var _options */
     private _options:Partial<FormOptions>;
 
+    /** Suppress filter changes while restoring values and operators. */
+    private _restoringFilter:boolean = false;
+
     /** @var _typeRegistry */
     private _typeRegistry:Record<string, FormInputType>;
 
@@ -330,91 +333,137 @@ export default class Form {
      */
     public resetValue = (clear:boolean = false):void => {
 
-        // Get all select and input on form el
-        let items = this._formEl.querySelectorAll("select, input");
+        if(this._options.filter){
 
-        // Check items
-        if(items.length)
+            // Reset filters
+            this._resetFilterValues(clear);
 
-            // Iteration items
-            for (let i = 0; i < items.length; i++){
+        }else
+        // If not filter
+        {
 
-                // Check if name
-                if((items[i] instanceof HTMLSelectElement || items[i] instanceof HTMLInputElement ) && "name" in items[i] && items[i]["name"] !== ""){
+            // Get all select and input on form el
+            let items = this._formEl.querySelectorAll("select, input");
 
-                    /**
-                     * Retrieve default value
-                     */
+            // Check items
+            if(items.length)
 
-                    // Get default value
-                    let defaultValue = clear 
-                        ? null
-                        : this._getDefaultOfInput(items[i] as (HTMLSelectElement|HTMLInputElement))
-                    ;
+                // Iteration items
+                for (let i = 0; i < items.length; i++){
 
-                    /**
-                     * Clean current value
-                     */
+                    // Check if name
+                    if((items[i] instanceof HTMLSelectElement || items[i] instanceof HTMLInputElement ) && "name" in items[i] && items[i]["name"] !== ""){
 
-                    // Check is tom select
-                    if("tomselect" in items[i]){
+                        /**
+                         * Retrieve default value
+                         */
 
-                        // Get tome select instance
-                        // @ts-ignore
-                        let tomSelectInstance = items[i].tomselect;
+                        // Get default value
+                        let defaultValue = clear 
+                            ? null
+                            : this._getDefaultOfInput(items[i] as (HTMLSelectElement|HTMLInputElement))
+                        ;
 
-                        // Check value
-                        if(defaultValue){
+                        /**
+                         * Clean current value
+                         */
 
-                            // Set value
-                            tomSelectInstance.setValue(defaultValue);
+                        // Check is tom select
+                        if("tomselect" in items[i]){
 
-                        }else{
+                            // Get tome select instance
+                            // @ts-ignore
+                            let tomSelectInstance = items[i].tomselect;
 
-                            // Clear
-                            tomSelectInstance.clear();
+                            // Check value
+                            if(defaultValue){
 
-                        }
-
-                        // Continue iteration
-                        continue;
-
-                    }
-
-                    // Check if item has value
-                    if(items[i].hasAttribute("value")){
-
-                        // Check if defaultValue
-                        if(defaultValue === null)
-
-                            // Reset value
-                            items[i].removeAttribute("value");
-
-                        else
-                        // Check default value is string
-                        if(defaultValue){
-
-                            // Check if date
-                            if(defaultValue instanceof Date){
-
-                                // Check html inpit
-                                if(items[i] instanceof HTMLInputElement)
-
-                                    // Set value
-                                    // @ts-ignore
-                                    items[i].valueAsDate = defaultValue;
+                                // Set value
+                                tomSelectInstance.setValue(defaultValue);
 
                             }else{
 
-                                // Set value
-                                items[i].setAttribute("value", defaultValue.toString());
+                                // Clear
+                                tomSelectInstance.clear();
+
+                            }
+
+                            // Continue iteration
+                            continue;
+
+                        }
+
+                        // Check if item has value
+                        if(items[i].hasAttribute("value")){
+
+                            // Check if defaultValue
+                            if(defaultValue === null)
+
+                                // Reset value
+                                items[i].removeAttribute("value");
+
+                            else
+                            // Check default value is string
+                            if(defaultValue){
+
+                                // Check if date
+                                if(defaultValue instanceof Date){
+
+                                    // Check html inpit
+                                    if(items[i] instanceof HTMLInputElement)
+
+                                        // Set value
+                                        // @ts-ignore
+                                        items[i].valueAsDate = defaultValue;
+
+                                }else{
+
+                                    // Set value
+                                    items[i].setAttribute("value", defaultValue.toString());
+
+                                    // Check html inpit
+                                    if(items[i] instanceof HTMLInputElement)
+
+                                        // Set value
+                                        // @ts-ignore
+                                        items[i].value = defaultValue.toString();
+
+                                }
+
+                            }
+
+                        }
+
+                        // Check if item has value_id
+                        if(items[i].hasAttribute("value_id"))
+
+                            // Reset value
+                            items[i].removeAttribute("value_id");
+
+                        // Check if item has checked
+                        // @ts-ignore
+                        if(items[i].hasAttribute("checked") || items[i].type == "checkbox" ){
+
+                            // Check if defaultValue
+                            if(defaultValue === null){
+
+                                // Remove checked
+                                items[i].removeAttribute("checked");
+
+                                // Remove check
+                                // @ts-ignore
+                                items[i].checked = false;
+
+                            }else
+                            // Check default value is string
+                            if(defaultValue){
 
                                 // Check html inpit
                                 if(items[i] instanceof HTMLInputElement)
 
                                     // Set value
                                     // @ts-ignore
-                                    items[i].value = defaultValue.toString();
+                                    items[i].checked = defaultValue;
 
                             }
 
@@ -422,44 +471,9 @@ export default class Form {
 
                     }
 
-                    // Check if item has value_id
-                    if(items[i].hasAttribute("value_id"))
-
-                        // Reset value
-                        items[i].removeAttribute("value_id");
-
-                    // Check if item has checked
-                    // @ts-ignore
-                    if(items[i].hasAttribute("checked") || items[i].type == "checkbox" ){
-
-                        // Check if defaultValue
-                        if(defaultValue === null){
-
-                            // Remove checked
-                            items[i].removeAttribute("checked");
-
-                            // Remove check
-                            // @ts-ignore
-                            items[i].checked = false;
-
-                        }else
-                        // Check default value is string
-                        if(defaultValue){
-
-                            // Check html inpit
-                            if(items[i] instanceof HTMLInputElement)
-
-                                // Set value
-                                // @ts-ignore
-                                items[i].checked = defaultValue;
-
-                        }
-
-                    }
-
                 }
 
-            }
+        }
 
         // Check if form has value_id
         if(this._formEl.hasAttribute("value_id"))
@@ -507,78 +521,6 @@ export default class Form {
         result = this._buildFormData(formEl, this._options.filter === true);
 
         // Return
-        return result;
-
-    }
-
-    /**
-     * Build Form Data
-     *
-     * @param formEl
-     * @param combineFilter
-     * @returns {FormData}
-     */
-    private _buildFormData = (formEl:HTMLElement, combineFilter:boolean):FormData => {
-
-        // Set formdata
-        let result:FormData = new FormData();
-
-        // Iteration items
-        this._iterateFormItems(formEl, (currentItem, mutliple) => {
-
-            // Check if multiple
-            if(!mutliple){
-
-                // Get result
-                let itemResult = combineFilter
-                    ? this.extractFilterKeyValue(currentItem, formEl as HTMLFormElement)
-                    : this.extractKeyValue(currentItem)
-                ;
-
-                // Check itemResult
-                if(itemResult !== null && itemResult[0] !== "")
-
-                    // Push value of current input
-                    result.append(itemResult[0] as string, itemResult[1]);
-
-            }else
-            // If multiple
-            {
-
-                // Get result
-                let itemResults = combineFilter
-                    ? this.extractFilterKeyMultipleValue(currentItem, formEl as HTMLFormElement)
-                    : this.extractKeyMultipleValue(currentItem)
-                ;
-
-                // Check itemResult
-                if(itemResults !== null && Array.isArray(itemResults) && itemResults.length)
-
-                    // Iteration result
-                    for(let itemResult of itemResults) if(itemResult !== null && itemResult[0] !== ""){
-
-                        // Get name
-                        let name = (itemResult[0] as string).replace("[]", "");
-
-                        // Check if multiple value
-                        if(Array.isArray(itemResult[1])) for(let temp of itemResult[1])
-
-                            // Append value
-                            result.append(name, temp);
-
-                        // If single value
-                        else
-
-                            // Push value of current input
-                            result.append(name, itemResult[1]);
-
-                    }
-
-            }
-
-        });
-
-        // Return result
         return result;
 
     }
@@ -657,13 +599,272 @@ export default class Form {
 
     }
 
-    /**
-     * Clear values
-     * 
-     * Clear values from form
-     * @param formName:string
-     * @return void
+    /** Private methods | Filter
+     ******************************************************
      */
+
+    /**
+     * Reset Filter Values
+     * 
+     * Reset filter controls and operators atomically, including empty and zero defaults.
+     * 
+     * @param clear 
+     */
+    private _resetFilterValues = (clear:boolean):void => {
+
+        // Set restoring filter
+        this._restoringFilter = true;
+
+        // Try
+        try{
+
+            // Get inputs
+            let inputs = this._formEl.querySelectorAll<HTMLInputElement|HTMLSelectElement>("input[name], select[name]");
+
+            // Iteration of input
+            if(inputs instanceof HTMLInputElement || inputs instanceof HTMLSelectElement) for(const input of inputs){
+
+                // Set value
+                const value = clear 
+                    ? null 
+                    : (
+                        input.dataset.dateRange === "true" 
+                            ? input.getAttribute("default") 
+                            : this._getDefaultOfInput(input)
+                    )
+                ;
+
+                // Set select
+                const select = (input as HTMLSelectElement & {tomselect?:{setValue:(value:any, silent?:boolean) => void}}).tomselect;
+                
+                // Check select
+                if(select){
+
+                    // Set values
+                    select.setValue(value ?? [], true);
+                
+                }else 
+                // If input    
+                if(input instanceof HTMLInputElement){
+
+                    // Check if chekbox
+                    if(input.type === "checkbox" || input.type === "radio")
+
+                        // Checl boolian value
+                        input.checked = UtilityBoolean.check(value);
+
+                    else 
+                    // Check if file    
+                    if(input.type === "file")
+
+                        // Set value
+                        input.value = "";
+
+                    // Else is basic input
+                    else{
+
+                        // Set value
+                        input.value = value instanceof Date 
+                            ? value.toISOString().slice(0, 10) 
+                            : String(value ?? "")
+                        ;
+
+                        // Set attribute
+                        input.setAttribute("value", input.value);
+
+                        // Dispatch
+                        input.dispatchEvent(new Event("input", {bubbles: true}));
+
+                    }
+
+                }else{
+
+                    // Set values
+                    const values = Array.isArray(value) 
+                        ? value.map(String) 
+                        : [String(value ?? "")]
+                    ;
+
+                    // Iteration options
+                    for(const option of input.options)
+
+                        // Set selected
+                        option.selected = values.includes(option.value);
+
+                }
+
+            }
+
+            // Get operators
+            let operatorEls = this._formEl.querySelectorAll<HTMLSelectElement>(".filter-operator");
+
+            // Iteration operators
+            if(operatorEls instanceof HTMLSelectElement) for(const operator of operatorEls){
+
+                // Set inital
+                const initial = Array.from(operator.options).find(option => option.defaultSelected) ?? operator.options[0];
+
+                // Set value
+                operator.value = initial?.value ?? "";
+
+                // Check not browser default
+                if(!operator.classList.contains("browser-default"))
+
+                    // Init form select
+                    FormSelect.init(operator, {});
+
+            }
+            
+        }finally{
+
+            // Set restoring
+            this._restoringFilter = false;
+
+        }
+        
+        // The reset handler unlocks controls before this serialization runs.
+        queueMicrotask(() => this._processForFilter(this._formEl));
+
+    }
+
+    /**
+     * Is Empty Selection Inequality
+     * 
+     * Empty selection inequality contributes an operator-only condition.
+     * 
+     * @param itemEl 
+     * @param formEl 
+     * @returns 
+     */
+    private _isEmptySelectionInequality = (itemEl:Element|null, formEl:HTMLElement):boolean => {
+
+        // Set result
+        let result:boolean;
+
+        // Check filter
+        if(
+            !this._options.filter || 
+            !(
+                itemEl instanceof HTMLInputElement || 
+                itemEl instanceof HTMLSelectElement
+            )
+        ){
+
+            // Set result
+            result = false;
+
+        }else{
+
+            // Set is selection
+            const isSelection = 
+                itemEl instanceof HTMLSelectElement ||
+                itemEl.type === "radio" ||
+                itemEl.dataset.type === "select" ||
+                itemEl.dataset.type === "radio"
+            ;
+
+            // Set has value
+            const hasValue = itemEl instanceof HTMLSelectElement
+                ? Array.from(itemEl.selectedOptions).some(option => option.value !== "")
+                : itemEl.value !== ""
+            ;
+        
+            // Set result
+            result = 
+                isSelection && 
+                !hasValue && 
+                FormType.getFilterOperatorValue(formEl as HTMLFormElement, itemEl.name) === "!="
+            ;
+
+        }
+
+        // Return result
+        return result;
+
+    };
+
+    /**
+     * Build Form Data
+     *
+     * @param formEl
+     * @param combineFilter
+     * @returns {FormData}
+     */
+    private _buildFormData = (formEl:HTMLElement, combineFilter:boolean):FormData => {
+
+        // Set formdata
+        let result:FormData = new FormData();
+
+        // Iteration items
+        this._iterateFormItems(formEl, (currentItem, mutliple) => {
+
+            // Keep one scalar condition when an inequality selection is empty.
+            if(this._isEmptySelectionInequality(currentItem, formEl)){
+
+                // Set result
+                result.set((currentItem as HTMLInputElement|HTMLSelectElement).name.replace(/\[\]$/, ""), "!=");
+            
+            // Else
+            }else{
+
+                // Check if multiple
+                if(!mutliple){
+
+                    // Get result
+                    let itemResult = combineFilter
+                        ? this.extractFilterKeyValue(currentItem, formEl as HTMLFormElement)
+                        : this.extractKeyValue(currentItem)
+                    ;
+
+                    // Check itemResult
+                    if(itemResult !== null && itemResult[0] !== "")
+
+                        // Push value of current input
+                        result.append(itemResult[0] as string, itemResult[1]);
+
+                }else
+                // If multiple
+                {
+
+                    // Get result
+                    let itemResults = combineFilter
+                        ? this.extractFilterKeyMultipleValue(currentItem, formEl as HTMLFormElement)
+                        : this.extractKeyMultipleValue(currentItem)
+                    ;
+
+                    // Check itemResult
+                    if(itemResults !== null && Array.isArray(itemResults) && itemResults.length)
+
+                        // Iteration result
+                        for(let itemResult of itemResults) if(itemResult !== null && itemResult[0] !== ""){
+
+                            // Get name
+                            let name = (itemResult[0] as string).replace("[]", "");
+
+                            // Check if multiple value
+                            if(Array.isArray(itemResult[1])) for(let temp of itemResult[1])
+
+                                // Append value
+                                result.append(name, temp);
+
+                            // If single value
+                            else
+
+                                // Push value of current input
+                                result.append(name, itemResult[1]);
+
+                        }
+
+                }
+
+            }
+
+        });
+
+        // Return result
+        return result;
+
+    }
 
     /** Private methods | Event
      ******************************************************
@@ -1182,20 +1383,21 @@ export default class Form {
             for (let i = 0; i < items.length; i++){
 
                 // Check tag name
-                if(items[i].tagName == "INPUT"){
+                if(items[i].tagName == "INPUT" && !items[i].hasAttribute("readonly")){
 
                     // Set Read only
                     items[i].setAttribute("readonly", "loading");
 
                 }else
-                if(items[i].tagName == "SELECT"){
+                // Check select
+                if(items[i].tagName == "SELECT" && !items[i].hasAttribute("disabled")){
 
                     // Set Read only
                     items[i].setAttribute("disabled", "loading");
 
                 }else
                 // Chech button
-                if(items[i].tagName == "BUTTON"){
+                if(items[i].tagName == "BUTTON" && !items[i].hasAttribute("disabled")){
 
                     // Set Read only
                     items[i].setAttribute("disabled", "loading");
@@ -1369,6 +1571,7 @@ export default class Form {
         // Registery
         this._typeRegistry = {
             text: new TextType(this._options),
+            url: new TextType(this._options),
             email: new EmailType(this._options),
             password: new PasswordType(this._options),
             hidden: new HiddenType(this._options),
@@ -1430,6 +1633,12 @@ export default class Form {
 
                     // Get type handler
                     let inputTypeHandler = this._typeRegistry[inputType.toLowerCase()];
+
+                    // Allow the application to initialize its own input widget
+                    if(await this._options.initializeInput?.(inputEl, this._formEl))
+
+                        // Continue
+                        continue;
 
                     // Check type handler has init
                     if(inputTypeHandler?.init){
@@ -1613,58 +1822,59 @@ export default class Form {
      */
     private _handleChangeEvent = (eventType:string, currentTarget:EventTarget|null, target:EventTarget|null):void => {
 
-        // Check filter mode : a checkbox/switch/radio's "*" operator means "omit this
-        // filter" (any value passes) — the moment the user actually picks a value,
-        // that intent is gone, so snap the paired operator back to "=" first. Set
-        // directly (no dispatchEvent) so this doesn't recurse into another change event.
-        if(
-            currentTarget instanceof HTMLFormElement &&
-            this._options.filter &&
-            target instanceof Element
-        )
+        // Check restoring filter
+        if(!this._restoringFilter){
 
-            // Auto switch wildcard operator
-            this._autoSwitchWildcardOperator(currentTarget, target);
+            // Check filter mode : a checkbox/switch/radio's "*" operator means "omit this
+            // filter" (any value passes) — the moment the user actually picks a value,
+            // that intent is gone, so snap the paired operator back to "=" first. Set
+            // directly (no dispatchEvent) so this doesn't recurse into another change event.
+            if(
+                currentTarget instanceof HTMLFormElement &&
+                this._options.filter &&
+                target instanceof Element
+            )
 
-        // Process Filter
-        if(currentTarget instanceof HTMLFormElement && this._options.filter)
+                // Auto switch wildcard operator
+                this._autoSwitchWildcardOperator(currentTarget, target);
 
-            // Process for filter
-            this._processForFilter(currentTarget);
+            // Process Filter
+            if(currentTarget instanceof HTMLFormElement && this._options.filter)
 
-        // Check options
-        if(
-            this._onChangeCallable && 
-            currentTarget && 
-            target && 
-            currentTarget instanceof HTMLFormElement && 
-            ( 
-                target instanceof HTMLInputElement || 
-                target instanceof HTMLSelectElement 
-            ) && 
-            this._onChangeOptions.eventType === eventType
-        )
+                // Process for filter
+                this._processForFilter(currentTarget);
 
-            // Call callable
-            this._onChangeCallable({
-                formEl: currentTarget,
-                formData: this.getFormData(currentTarget),
-                itemEl: target,
-                type: eventType,
-                valid: this.isValid(currentTarget),
-            });
+            // Check options
+            if(
+                this._onChangeCallable && 
+                currentTarget && 
+                target && 
+                currentTarget instanceof HTMLFormElement && 
+                ( 
+                    target instanceof HTMLInputElement || 
+                    target instanceof HTMLSelectElement 
+                ) && 
+                this._onChangeOptions.eventType === eventType
+            )
+
+                // Call callable
+                this._onChangeCallable({
+                    formEl: currentTarget,
+                    formData: this.getFormData(currentTarget),
+                    itemEl: target,
+                    type: eventType,
+                    valid: this.isValid(currentTarget),
+                });
+
+        }
 
     }
 
     /**
      * Auto Switch Wildcard Operator
      *
-     * A checkbox/switch (native `<input type="checkbox">`) or radio (TomSelect-backed
-     * `<select data-type="radio">`) filter's "*" operator means "omit this filter" —
-     * once the user actually touches the value, that intent no longer applies, so snap
-     * the paired operator select back to "=". Skips `<select data-type="select">` on
-     * purpose : a plain select's "*" only ever omits the filter when its value is empty,
-     * which is already handled elsewhere, and doesn't need this auto-switch.
+     * Activate wildcard boolean and select filters when their value changes.
+     * Explicit comparison operators remain unchanged; operator controls are excluded.
      *
      * Sets `.value` directly (no `dispatchEvent`) so this never fires another
      * "change"/"input" event and re-enters `_handleChangeEvent`.
@@ -1675,12 +1885,12 @@ export default class Form {
      */
     private _autoSwitchWildcardOperator = (formEl:HTMLFormElement, target:Element):void => {
 
-        // Skip the operator select itself, and anything that isn't a checkbox/switch/radio value control
+        // Operator dropdowns must never activate themselves.
+        if(target.classList.contains("filter-operator")) return;
         const isCheckboxLike = target instanceof HTMLInputElement && target.type === "checkbox";
-        const isRadioLike = target instanceof HTMLSelectElement && target.dataset.type === "radio";
+        const isSelectLike = target instanceof HTMLSelectElement || (target instanceof HTMLInputElement && (target.dataset.type === "select" || target.hasAttribute("data-select-tag")));
 
-        // Check target is a value control we care about
-        if(!isCheckboxLike && !isRadioLike) return;
+        if(!isCheckboxLike && !isSelectLike) return;
 
         // Get name (strip the "[]" multi-value suffix, if any)
         const name = (target as HTMLInputElement|HTMLSelectElement).name?.replace("[]", "");
@@ -1694,8 +1904,15 @@ export default class Form {
         // Check operator currently on wildcard : switch it to equal
         if(operatorEl instanceof HTMLSelectElement && operatorEl.value === "*")
 
-            // Set directly : no dispatchEvent, so no recursive change event
-            operatorEl.value = "=";
+            {
+                // Custom menus may omit equality; selecting a value still activates the filter.
+                if(!Array.from(operatorEl.options).some(option => option.value === "="))
+                    operatorEl.add(new Option("=", "="));
+                operatorEl.value = "=";
+                // Native operator selects reflect value directly; refresh legacy dropdowns too.
+                if(!operatorEl.classList.contains("browser-default"))
+                    FormSelect.init(operatorEl, {});
+            }
 
     }
 
@@ -1862,6 +2079,40 @@ export default class Form {
                         radioAlreadyChecked.push(currentItem.name);
 
                     }
+
+                }
+
+                // Disabled filters and wildcard boolean, radio, or slider filters contribute no condition.
+                if(
+                    this._options.filter && 
+                    (
+                        currentItem instanceof HTMLInputElement || 
+                        currentItem instanceof HTMLSelectElement
+                    )
+                ){
+
+                    // Check it item match disabled
+                    if(currentItem.matches(":disabled"))
+
+                        // Continue
+                        continue;
+
+                    // Get operator 
+                    const operator = FormType.getFilterOperatorValue(containerEl as HTMLFormElement, currentItem.name);
+
+                    // Check operator
+                    if(
+                        operator === "*" && 
+                        (
+                            currentItem.type === "checkbox" ||
+                            currentItem.dataset.type === "radio" ||
+                            currentItem.type === "range" ||
+                            currentItem.hasAttribute("data-filter-range-interval")
+                        )
+                    )
+
+                        // Continue
+                        continue;
 
                 }
 
@@ -2856,7 +3107,8 @@ export default class Form {
         if(operatorEls.length) for(let operatorEl of operatorEls) if(operatorEl instanceof HTMLSelectElement){
 
             // Init select
-            let formInstance = FormSelect.init(operatorEl, {});
+            if(!operatorEl.classList.contains("browser-default"))
+                FormSelect.init(operatorEl, {});
 
             // Attach event
             operatorEl.addEventListener("change", (event) => {
@@ -2967,6 +3219,15 @@ export default class Form {
                 // Check operator
                 let operatorEl = currentTarget.querySelector(`[data-operator-name="${name}"]`);
 
+                // Equality may have been added dynamically by a previous boolean/select edit.
+                const valueEl = currentTarget.querySelector<HTMLInputElement|HTMLSelectElement>(`[name="${name}"], [name="${name}[]"]`);
+                if(operatorEl instanceof HTMLSelectElement && valueEl && (valueEl.type === "checkbox" || valueEl instanceof HTMLSelectElement || valueEl.dataset.type === "select" || valueEl.hasAttribute("data-select-tag"))){
+                    const operators = Array.from(operatorEl.options, option => option.value);
+                    if(operators.includes("*") && !operators.includes("="))
+                        operatorEl.add(new Option("=", "="));
+                }
+
+
                 // Get optionEls
                 let optionsEls = currentTarget.querySelectorAll(`[data-operator-name="${name}"] option[value]`);
 
@@ -3049,8 +3310,13 @@ export default class Form {
 
             }
 
-            // Set values
-            this.setValue(querys);
+            // Hydration must not convert restored wildcard conditions to equality.
+            this._restoringFilter = true;
+            try{
+                this.setValue(querys);
+            }finally{
+                this._restoringFilter = false;
+            }
 
         }
 
@@ -3164,8 +3430,14 @@ export default class Form {
 
             }
 
+            // Empty selection inequality remains scalar for multiple controls.
+            if(this._isEmptySelectionInequality(itemEl, currentTarget)){
+                combined = "!=";
+                multiple = false;
+            }
+
             // Check value and key
-            if(rawValues.length && rawValues.some(rawValue => rawValue !== "") && fullKey){
+            if(rawValues.length && (rawValues.some(rawValue => rawValue !== "") || combined === "!=") && fullKey){
 
                 // Check if multiple : append every element of the combined array under its own indexed key
                 if(multiple || fullKey.endsWith("[]]")){
@@ -3203,15 +3475,32 @@ export default class Form {
 
                 }
 
-                // Push value : raw (uncombined) values, one per key
-                stateResult[key] = multiple ? rawValues : rawValues[0];
+                // Store the encoded condition so SPA restoration retains its operator.
+                stateResult[key] = combined;
 
             }
 
         });
 
-        // Update
-        Crazyurl.updateQueryParameters(params);
+        // Remove stale conditions belonging to this form, preserving other forms and query keys.
+        const changes:Record<string, string|null> = {};
+
+        // Iteration params
+        params.forEach((value, key) => { changes[key] = value; });
+
+        // New urls
+        new URLSearchParams(window.location.search).forEach((_value, key) => {
+
+            //Check parse root
+            if(key.startsWith(`${parsedRoot}[`) && !params.has(key))
+
+                // Set changes
+                changes[key] = null;
+
+        });
+
+        // Update url
+        Crazyurl.updateQueryParameters(changes);
 
         // Get current pghe name
         let pageName = window.Crazyobject.currentPage.get()?.name;
@@ -3223,6 +3512,12 @@ export default class Form {
             State.set().page(`${pageName}._ui.partials.forms.${currentTarget.getAttribute("id")}.values`, stateResult);
 
         }
+
+        // Set content target
+        currentTarget.dispatchEvent(new CustomEvent("filterchange", {
+            bubbles: true,
+            detail: { formData: this.getFormData(currentTarget), query: params.toString() }
+        }));
 
     }
 

@@ -46,6 +46,12 @@ Structure:
                   # One partial per form item.type, included by form.hbs's dispatch chain
                   form:
                     files:
+                      form_chips.hbs:
+                        source: "@crazyphp_root/resources/Hbs/Partials/form/form_chips.hbs"
+                      form_otp.hbs:
+                        source: "@crazyphp_root/resources/Hbs/Partials/form/form_otp.hbs"
+                      form_textarea.hbs:
+                        source: "@crazyphp_root/resources/Hbs/Partials/form/form_textarea.hbs"
                       form_file.hbs:
                         source: "@crazyphp_root/resources/Hbs/Partials/form/form_file.hbs"
                       form_color.hbs:
@@ -70,9 +76,15 @@ Structure:
                         source: "@crazyphp_root/resources/Hbs/Partials/form/form_hidden.hbs"
                       form_default.hbs:
                         source: "@crazyphp_root/resources/Hbs/Partials/form/form_default.hbs"
-                  # Filter-mode variant per form item.type (stubs delegate to form/ until designed)
+                  # Filter controls and shared operator/interval partials
                   filter:
                     files:
+                      _operator.hbs:
+                        source: "@crazyphp_root/resources/Hbs/Partials/filter/_operator.hbs"
+                      _range_interval.hbs:
+                        source: "@crazyphp_root/resources/Hbs/Partials/filter/_range_interval.hbs"
+                      filter_text.hbs:
+                        source: "@crazyphp_root/resources/Hbs/Partials/filter/filter_text.hbs"
                       filter_file.hbs:
                         source: "@crazyphp_root/resources/Hbs/Partials/filter/filter_file.hbs"
                       filter_color.hbs:

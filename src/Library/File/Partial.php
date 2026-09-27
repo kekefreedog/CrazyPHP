@@ -88,12 +88,28 @@ class Partial {
                     # If type template
                     if($type === "template"){
 
-                        # snake_case each path segment individually, rejoin with "/" so nested
-                        # partials (e.g. "Form/FormColor") reconstruct to their real nested path
+                        # snake_case each path segment individually, rejoin with "/" so nested partials (e.g. "Form/FormColor") reconstruct to their real nested path
                         $segments = array_map(fn($segment) => Process::camelToSnake($segment), explode("/", $item));
 
                         # Set temp value
                         $tempValue = rtrim($templatePath, "/")."/".implode("/", $segments).".hbs";
+
+                        # Resolve underscore-prefixed templates when the plain filename is absent
+                        if(!File::exists($tempValue)){
+
+                            # Check segements
+                            $segments[count($segments) - 1] = "_".end($segments);
+
+                            # Set prefix path
+                            $prefixedPath = rtrim($templatePath, "/")."/".implode("/", $segments).".hbs";
+
+                            # Check prefix path exists
+                            if(File::exists($prefixedPath))
+
+                                # Set temp value
+                                $tempValue = $prefixedPath;
+
+                        }
 
                     }
 

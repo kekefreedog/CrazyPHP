@@ -11,14 +11,14 @@
 /**
  * Dependances
  */
+import Path from "../../../../src/Front/Library/Utility/Path";
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import Path from "../../../../src/Front/Library/Utility/Path";
 
 /**
  * Path
  *
- * Methods for test path methods
+ * Verify path behavior.
  */
 describe("Front/Library/Utility/Path", () => {
 

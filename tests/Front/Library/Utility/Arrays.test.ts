@@ -11,14 +11,14 @@
 /**
  * Dependances
  */
+import Arrays from "../../../../src/Front/Library/Utility/Arrays";
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import Arrays from "../../../../src/Front/Library/Utility/Arrays";
 
 /**
  * Arrays
  *
- * Methods for test arrays methods
+ * Verify arrays behavior.
  */
 describe("Front/Library/Utility/Arrays", () => {
 

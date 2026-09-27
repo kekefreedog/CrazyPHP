@@ -11,15 +11,15 @@
 /**
  * Dependances
  */
+import ColorSchema from "../../../../src/Front/Library/Utility/ColorSchema";
 import { describe, it, before, after, beforeEach } from "node:test";
 import assert from "node:assert/strict";
 import { JSDOM } from "jsdom";
-import ColorSchema from "../../../../src/Front/Library/Utility/ColorSchema";
 
 /**
  * ColorSchema
  *
- * Methods for test color schema methods
+ * Verify color schema behavior.
  *
  * `ColorSchema` reads/writes `window`, `document` and `localStorage`, which
  * node:test does not provide. We install a JSDOM window for the duration of
@@ -29,9 +29,9 @@ import ColorSchema from "../../../../src/Front/Library/Utility/ColorSchema";
 describe("Front/Library/Utility/ColorSchema", () => {
 
     // Set originals (undefined outside a browser/jsdom)
-    let originalWindow: any;
-    let originalDocument: any;
-    let originalLocalStorage: any;
+    let originalWindow:any;
+    let originalDocument:any;
+    let originalLocalStorage:any;
 
     // Set controllable "prefers-color-scheme: dark" state used by the matchMedia stub
     let matchMediaMatches = false;
@@ -47,7 +47,7 @@ describe("Front/Library/Utility/ColorSchema", () => {
         originalLocalStorage = (globalThis as any).localStorage;
 
         // Install a controllable matchMedia stub (jsdom doesn't implement it)
-        (dom.window as any).matchMedia = (query: string) => ({
+        (dom.window as any).matchMedia = (query:string) => ({
             matches: matchMediaMatches,
             media: query,
             addEventListener: () => {},

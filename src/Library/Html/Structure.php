@@ -628,6 +628,9 @@ class Structure {
      */
     public function setBodyEmailTemplate(string|array|null $template = null, $preset = null, ?array $data = [], null|string|array $cssFiles = null, ?string $customNameForTemplateCache = null):self {
 
+        # Set instance
+        $instance = null;
+
         # Check template
         if(!$template || empty($template))
 
@@ -657,42 +660,47 @@ class Structure {
                 'partials'  =>  Handlebars::loadAppPartials()
             ];
 
-        # Prepare template
-        $templateInstance = new $instance($option);
+        # Check instance
+        if($instance){
 
-        # Load template
-        $templateInstance->load($template, $customNameForTemplateCache ? $customNameForTemplateCache : Context::get("routes.current.name"));
+            # Prepare template
+            $templateInstance = new $instance($option);
 
-        # Rendered template in html
-        $renderedTemplate = $templateInstance->render($data);
+            # Load template
+            $templateInstance->load($template, $customNameForTemplateCache ? $customNameForTemplateCache : Context::get("routes.current.name"));
 
-        # css inliner
-        $cssInliner = CssInliner::fromHtml($renderedTemplate);
+            # Rendered template in html
+            $renderedTemplate = $templateInstance->render($data);
 
-        # Check css
-        if(!empty($cssFiles)){
+            # css inliner
+            $cssInliner = CssInliner::fromHtml($renderedTemplate)->inlineCss();
 
-            # ->inlineCss($renderedTemplate)
+            # Check css
+            if(!empty($cssFiles)){
+
+                # ->inlineCss($renderedTemplate)
+
+            }
+
+            # Dom Document
+            $domDocument = $cssInliner->getDomDocument();
+            
+            # Clean html
+            HtmlPruner::fromDomDocument($domDocument)
+                ->removeElementsWithDisplayNone()
+                ->removeRedundantClassesAfterCssInlined($cssInliner)
+            ;
+
+            # Convert attribute if needed
+            $finalHtml = CssToAttributeConverter::fromDomDocument($domDocument)
+                # ->convertCssToVisualAttributes()
+                ->renderBodyContent()
+            ;
+
+            # Set body with template render
+            $this->setBodyContent($finalHtml);
 
         }
-
-        # Dom Document
-        $domDocument = $cssInliner->getDomDocument();
-        
-        # Clean html
-        HtmlPruner::fromDomDocument($domDocument)
-            ->removeElementsWithDisplayNone()
-            ->removeRedundantClassesAfterCssInlined($cssInliner)
-        ;
-
-        # Convert attribute if needed
-        $finalHtml = CssToAttributeConverter::fromDomDocument($domDocument)
-            # ->convertCssToVisualAttributes()
-            ->renderBodyContent()
-        ;
-
-        # Set body with template render
-        $this->setBodyContent($finalHtml);
 
         # Return current instance
         return $this;
@@ -704,10 +712,10 @@ class Structure {
      * 
      * Set Js Scripts in body
      * 
-     * @param string $forceCurrentName Force a current name (error page for exemple)
+     * @param ?string $forceCurrentName Force a current name (error page for exemple)
      * @return self
      */
-    public function setJsScripts(string $forceCurrentName = null):self {
+    public function setJsScripts(?string $forceCurrentName = null):self {
 
         # Declare scripts
         $configFront = [];

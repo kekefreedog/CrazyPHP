@@ -24,7 +24,8 @@ CrazyAuth:
       source: "@crazyphp_root/resources/Extensions/CrazyAuth/Scripts/Interface/UserInterface.php"
       destination: "@app_root/app/Library/CrazyAuth/Interface/UserInterface.php"
   dependencies:
-    composer: []
+    composer: 
+      delight-im/auth: ^8.3
   autoload:
     psr-4:
       "CrazyAuth\\": "app/Library/CrazyAuth/"

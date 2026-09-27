@@ -12,14 +12,14 @@
  * Dependances
  */
 import { describe, it, before, after, beforeEach } from "node:test";
+import Cookie from "../../../../src/Front/Library/Utility/Cookie";
 import assert from "node:assert/strict";
 import { JSDOM } from "jsdom";
-import Cookie from "../../../../src/Front/Library/Utility/Cookie";
 
 /**
  * Cookie
  *
- * Methods for test cookie methods
+ * Verify cookie behavior.
  *
  * `Cookie` reads/writes the browser `document.cookie` global, which node:test
  * does not provide. We install a JSDOM window for the duration of this
@@ -28,7 +28,7 @@ import Cookie from "../../../../src/Front/Library/Utility/Cookie";
 describe("Front/Library/Utility/Cookie", () => {
 
     // Set original document (undefined outside a browser/jsdom)
-    let originalDocument: typeof document | undefined;
+    let originalDocument:typeof document | undefined;
 
     before(() => {
 

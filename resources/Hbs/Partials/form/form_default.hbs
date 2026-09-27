@@ -1,21 +1,30 @@
 {{!-- Form / default --}}
-<div partial="form/form_default" class="input-field col s12 mn-2{{#if _style.customClass.input-field}} {{_style.customClass.input-field}}{{/if}}" style="margin-bottom: 15px;">
+<div partial="form/form_default" class="input-field s12{{#if _style.customClass.input-field}} {{_style.customClass.input-field}}{{/if}}">
 
-    {{#if disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{else}}
-    {{#if _style.suffix}}<div class="suffix"><i class="{{_style.suffix.class}}">{{_style.suffix.text}}</i></div>{{/if}}{{/if}}
+    {{#if disabled}}<div class="suffix transparent"><i class="material-icons">lock</i></div>{{else}}
+    {{#if _style.suffix}}<div class="suffix transparent"><i class="{{_style.suffix.class}}">{{_style.suffix.text}}</i></div>{{/if}}{{/if}}
     {{#if _style.prefix}}<div class="prefix"><i class="{{_style.prefix.class}}">{{_style.prefix.text}}</i></div>{{/if}}
     <input
         id="{{form.id}}_{{name}}"
         name="{{name}}"
-        class="validate {{#if _style.customClass.input}} {{_style.customClass.input}}{{/if}}"
+        class="validate no-autoinit{{#if _style.customClass.input}} {{_style.customClass.input}}{{/if}}"
         {{#if disabled}}disabled=""{{else}}{{#if form.onready}}disabled="loading"{{/if}}{{/if}}
-        {{#if type}}type="{{type}}"{{else}}type="text"{{/if}}
+        {{#is type "email"}}
+            {{#if form.filter}}type="text" data-type="email"{{else}}type="email"{{/if}}
+        {{else}}{{#is type "url"}}
+            {{#if form.filter}}type="text" data-type="url"{{else}}type="url" data-type="text"{{/if}}
+        {{else}}
+            {{#if type}}type="{{type}}"{{else}}type="text"{{/if}}
+            data-type="text"
+        {{/is}}{{/is}}
+        {{#if _style.maskito}}data-maskito="{{#if _style.maskito.preset}}{{_style.maskito.preset}}{{else}}pattern{{/if}}" data-maskito-options="{{JSONstringify _style.maskito}}"{{/if}}
+        {{#if _style.autocomplete}}data-autocomplete-options="{{JSONstringify _style.autocomplete}}" autocomplete="off"{{/if}}
         {{#if placeholder}}placeholder="{{placeholder}}"{{else}}placeholder=" "{{/if}}
         {{#if readonly}}readonly=""{{/if}}
         {{#if required}}required=""{{/if}}
-        {{#unless form.onready}}{{#if default}}value="{{default}}" default="{{default}}"{{/if}}{{/unless}}
-        {{#if _style.text.minlength includeZero=false}}minlength="{{_style.text.minlength}}"{{/if}}
-        {{#if _style.text.maxlength includeZero=false}}maxlength="{{_style.text.maxlength}}"{{/if}}
+        {{#unless form.onready}}{{#if default includeZero=true}}value="{{default}}" default="{{default}}"{{/if}}{{/unless}}
+        {{#if _style.text.minlength includeZero=true}}minlength="{{_style.text.minlength}}"{{/if}}
+        {{#if _style.text.maxlength includeZero=true}}maxlength="{{_style.text.maxlength}}"{{/if}}
     >
     {{#if label}}<label for="{{form.id}}_{{name}}">{{#if required}}<b>{{/if}}{{label}}{{#if required}}</b>*{{/if}}</label>{{/if}}
 

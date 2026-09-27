@@ -1,39 +1,7 @@
-{{!-- TODO: design filter-specific markup for "checkbox" --}}
-<div class="col s12 mn-2{{#if _style.customClass.input-field}} {{_style.customClass.input-field}}{{/if}}" style="margin-bottom: 15px;">
-
-    <div class="input-field">
-        {{#isnt _style.filter.operators false exact=true}}
-        <div class="input-filter">
-            <select
-                data-operator-id="{{form.id}}_{{name}}"
-                data-operator-name="{{name}}"
-                class="filter-operator"
-                aria-label="{{#if label}}{{label}} {{/if}}comparison"
-                {{#if disabled}}disabled=""{{else}}{{#if form.onready}}disabled="loading"{{/if}}{{/if}}
-            >
-                {{#if _style.filter.operators}}
-                    {{#each _style.filter.operators as |operator|}}<option value="{{operator.value}}"{{#if operator.default}} selected=""{{/if}}>{{operator.label}}</option>{{/each}}
-                {{else}}
-                    <option value="=">=</option>
-                    <option value="!=">≠</option>
-                    <option value="*" selected="">*</option>
-                {{/if}}
-            </select>
-        </div>
-        {{/isnt}}
-        <div id="dependency" class="suffix hide"><i class="material-icons">link_off</i></div>
-        <p><label>
-            {{#if disabled}}<div class="suffix"><i class="material-icons">lock</i></div>{{/if}}
-            <input
-                id="{{form.id}}_{{name}}"
-                name="{{name}}"
-                type="checkbox"
-                {{#if _style.customClass.input}}class="{{_style.customClass.input}}"{{/if}}
-                {{#if disabled}}disabled=""{{else}}{{#if form.onready}}disabled="loading"{{/if}}{{/if}}
-                {{#unless form.onready}}{{#if default}}checked="" default="true"{{/if}}{{/unless}}
-            />
-            {{#if label}}<span>{{#if required}}<b>{{/if}}{{label}}{{#if required}}</b>*{{/if}}</span>{{/if}}
-        </label></p>
+{{!-- Filter / checkbox --}}
+<div partial="filter/filter_checkbox" class="filter-field s12"{{#if readonly}} data-filter-readonly{{/if}}>
+    {{> filter/_operator wildcard=true}}
+    <div class="filter-value">
+        {{> form/form_checkbox}}
     </div>
-
 </div>

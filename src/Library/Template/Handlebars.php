@@ -495,7 +495,10 @@ class Handlebars {
                             # Get content
                             $content = $file->getContents();
 
-                            # Push in result
+                            # Preserve the filename used by browser partial imports
+                            $result[$nameNoExt] = $content;
+
+                            # Keep the legacy alias without a leading underscore
                             $result[$name] = $content;
 
                         }

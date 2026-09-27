@@ -11,15 +11,15 @@
 /**
  * Dependances
  */
-import { describe, it, before, after } from "node:test";
-import assert from "node:assert/strict";
-import { JSDOM, VirtualConsole } from "jsdom";
 import Csv from "../../../../src/Front/Library/Utility/Csv";
+import { describe, it, before, after } from "node:test";
+import { JSDOM, VirtualConsole } from "jsdom";
+import assert from "node:assert/strict";
 
 /**
  * Csv
  *
- * Methods for test csv methods
+ * Verify csv behavior.
  */
 describe("Front/Library/Utility/Csv", () => {
 
@@ -101,10 +101,10 @@ describe("Front/Library/Utility/Csv", () => {
     describe("download", () => {
 
         // Set originals (undefined outside a browser/jsdom)
-        let originalWindow: any;
-        let originalDocument: any;
-        let originalBlob: any;
-        let originalURL: any;
+        let originalWindow:any;
+        let originalDocument:any;
+        let originalBlob:any;
+        let originalURL:any;
 
         before(() => {
 
@@ -149,13 +149,13 @@ describe("Front/Library/Utility/Csv", () => {
             const input = [{ name: "Foo", age: 20 }];
 
             // Set captured attributes
-            let captured: { href: string | null; download: string | null } | undefined;
+            let captured:{ href:string | null; download:string | null } | undefined;
 
             // Set original appendChild
             const originalAppendChild = document.body.appendChild.bind(document.body);
 
             // Spy on appendChild to capture the link before it gets removed
-            (document.body as any).appendChild = (node: any) => {
+            (document.body as any).appendChild = (node:any) => {
 
                 // Capture attributes
                 captured = {

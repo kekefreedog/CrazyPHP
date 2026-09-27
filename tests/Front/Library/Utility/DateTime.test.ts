@@ -11,15 +11,15 @@
 /**
  * Dependances
  */
+import DateTime from "../../../../src/Front/Library/Utility/DateTime";
+import { DateTime as Luxon } from "luxon";
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { DateTime as Luxon } from "luxon";
-import DateTime from "../../../../src/Front/Library/Utility/DateTime";
 
 /**
  * DateTime
  *
- * Methods for test DateTime methods
+ * Verify DateTime behavior.
  */
 describe("Front/Library/Utility/DateTime", () => {
 
@@ -312,6 +312,7 @@ describe("Front/Library/Utility/DateTime", () => {
 
             // Check result
             const diffDays = (toDate(week1).getTime() - toDate(week0).getTime()) / 86400000;
+
             assert.equal(diffDays, 7);
 
         });
@@ -351,12 +352,14 @@ describe("Front/Library/Utility/DateTime", () => {
 
         // Set mock date
         class MockDate extends RealDate {
-            constructor(...args:any[]) {
+            constructor(...args:any[]){
+
                 if(args.length === 0)
                     super(fixedNow.getTime());
                 else
                     // @ts-ignore - forwarding constructor args
                     super(...args);
+
             }
             static now(){ return fixedNow.getTime(); }
         }
@@ -365,13 +368,14 @@ describe("Front/Library/Utility/DateTime", () => {
         (globalThis as any).Date = MockDate;
 
         // Try
-        try {
+        try{
 
             // Return result
             return fn();
 
         // Restore real date
-        } finally {
+
+        } finally{
 
             // Restore
             (globalThis as any).Date = RealDate;
@@ -722,6 +726,7 @@ describe("Front/Library/Utility/DateTime", () => {
 
             // Check result | both Luxon
             const result = DateTime.getAllDaysBetween(start, end);
+
             assert.equal(result.length, 3);
             assert.equal(result[0].getDate(), 1);
             assert.equal(result[1].getDate(), 2);
@@ -729,6 +734,7 @@ describe("Front/Library/Utility/DateTime", () => {
 
             // Check result | mixed Luxon / native Date
             const mixed = DateTime.getAllDaysBetween(start, new Date(2024, 2, 3));
+
             assert.equal(mixed.length, 3);
 
         });
@@ -905,6 +911,7 @@ describe("Front/Library/Utility/DateTime", () => {
 
             // Set input
             const yesterday = new Date();
+
             yesterday.setDate(yesterday.getDate() - 1);
 
             // Check result
@@ -923,6 +930,7 @@ describe("Front/Library/Utility/DateTime", () => {
 
             // Set input
             const tomorrow = new Date();
+
             tomorrow.setDate(tomorrow.getDate() + 1);
 
             // Check result

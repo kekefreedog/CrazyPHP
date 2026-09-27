@@ -11,15 +11,15 @@
 /**
  * Dependances
  */
+import Strings from "../../../../src/Front/Library/Utility/Strings";
 import { describe, it, before, after } from "node:test";
 import assert from "node:assert/strict";
 import { JSDOM } from "jsdom";
-import Strings from "../../../../src/Front/Library/Utility/Strings";
 
 /**
  * Strings
  *
- * Methods for test strings methods
+ * Verify strings behavior.
  */
 describe("Front/Library/Utility/Strings", () => {
 
@@ -175,7 +175,7 @@ describe("Front/Library/Utility/Strings", () => {
     describe("decodeHTML", () => {
 
         // Set original DOMParser (undefined outside a browser/jsdom)
-        let originalDOMParser: typeof DOMParser | undefined;
+        let originalDOMParser:typeof DOMParser | undefined;
 
         before(() => {
 
@@ -232,7 +232,7 @@ describe("Front/Library/Utility/Strings", () => {
      */
     describe("isNumeric", () => {
 
-        const cases: [unknown, boolean][] = [
+        const cases:[unknown, boolean][] = [
             [42, true],
             ["42", true],
             ["42.5", true],
@@ -241,7 +241,7 @@ describe("Front/Library/Utility/Strings", () => {
             [NaN, false],
         ];
 
-        for (const [value, expected] of cases) {
+        for(const [value, expected] of cases){
 
             it(`isNumeric(${JSON.stringify(value)}) -> ${expected}`, () => {
 
@@ -287,13 +287,13 @@ describe("Front/Library/Utility/Strings", () => {
      */
     describe("increment", () => {
 
-        const cases: [string, string][] = [
+        const cases:[string, string][] = [
             ["A", "B"],
             ["Z", "AA"],
             ["AZ", "BA"],
         ];
 
-        for (const [value, expected] of cases) {
+        for(const [value, expected] of cases){
 
             it(`increment(${value}) -> ${expected}`, () => {
 

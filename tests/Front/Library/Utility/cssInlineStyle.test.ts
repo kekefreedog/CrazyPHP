@@ -11,15 +11,15 @@
 /**
  * Dependances
  */
+import cssInlineStyle from "../../../../src/Front/Library/Utility/cssInlineStyle";
 import { describe, it, before, after } from "node:test";
 import assert from "node:assert/strict";
 import { JSDOM } from "jsdom";
-import cssInlineStyle from "../../../../src/Front/Library/Utility/cssInlineStyle";
 
 /**
  * cssInlineStyle
  *
- * Methods for test css inline style methods
+ * Verify css inline style behavior.
  *
  * `cssInlineStyle` reads `window.getComputedStyle`/`document` and writes to
  * `navigator.clipboard`, none of which node:test provides. We install a
@@ -29,12 +29,12 @@ import cssInlineStyle from "../../../../src/Front/Library/Utility/cssInlineStyle
 describe("Front/Library/Utility/cssInlineStyle", () => {
 
     // Set originals (undefined outside a browser/jsdom)
-    let originalWindow: any;
-    let originalDocument: any;
-    let originalNavigator: any;
+    let originalWindow:any;
+    let originalDocument:any;
+    let originalNavigator:any;
 
     // Set dom instance (reused, body rebuilt per test)
-    let dom: JSDOM;
+    let dom:JSDOM;
 
     before(() => {
 
@@ -66,14 +66,16 @@ describe("Front/Library/Utility/cssInlineStyle", () => {
      * Build a parent/child DOM pair with inline styles inside the shared
      * jsdom document, and return both elements.
      */
-    const buildElements = (): { parent: Element; child: Element } => {
+    const buildElements = ():{ parent:Element; child:Element } => {
 
         // Set parent
         const parent = dom.window.document.createElement("div");
+
         parent.setAttribute("style", "color: red;");
 
         // Set child
         const child = dom.window.document.createElement("span");
+
         child.setAttribute("style", "color: green;");
         child.textContent = "hello";
 
@@ -160,7 +162,7 @@ describe("Front/Library/Utility/cssInlineStyle", () => {
     describe("copyHtmlToClipboard", () => {
 
         // Set original clipboard
-        let originalClipboard: any;
+        let originalClipboard:any;
 
         before(() => {
 
@@ -179,13 +181,15 @@ describe("Front/Library/Utility/cssInlineStyle", () => {
         it("writes the element's outerHTML to the clipboard", async () => {
 
             // Set written value holder
-            let written: string | null = null;
+            let written:string | null = null;
 
             // Stub clipboard
             (dom.window.navigator as any).clipboard = {
-                writeText: (text: string) => {
+                writeText: (text:string) => {
+
                     written = text;
                     return Promise.resolve();
+
                 },
             };
 

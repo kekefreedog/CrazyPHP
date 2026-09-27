@@ -1,0 +1,31 @@
+{{!-- Form / textarea --}}
+<div partial="form/form_textarea" class="{{#if _style.textarea.editor}}rich-textarea-field{{else}}input-field{{/if}} s12{{#if _style.customClass.input-field}} {{_style.customClass.input-field}}{{/if}}">
+
+    {{#if _style.textarea.editor}}{{#if label}}<label for="{{form.id}}_{{name}}">{{label}}{{#if required}}*{{/if}}</label>{{/if}}{{/if}}
+    <textarea
+        id="{{form.id}}_{{name}}"
+        class="no-autoinit{{#unless _style.textarea.editor}} materialize-textarea{{/unless}}{{#if _style.customClass.input}} {{_style.customClass.input}}{{/if}}"
+        {{#if _style.textarea.editor}}data-editor="{{_style.textarea.editor}}"{{/if}}
+        {{#if _style.textarea.valueFormat}}data-value-format="{{_style.textarea.valueFormat}}"{{/if}}
+        {{#if placeholder}}placeholder="{{placeholder}}"{{else}}placeholder=" "{{/if}}
+        {{#if disabled}}disabled{{else}}{{#if form.onready}}disabled="loading"{{/if}}{{/if}}
+        {{#if readonly}}readonly{{/if}}
+        {{#if required}}required{{/if}}
+        {{#if _style.text.minlength includeZero=true}}minlength="{{_style.text.minlength}}"{{/if}}
+        {{#if _style.text.maxlength includeZero=true}}maxlength="{{_style.text.maxlength}}"{{/if}}
+    >{{#unless form.onready}}{{#if default includeZero=true}}{{default}}{{/if}}{{/unless}}</textarea>
+    {{#unless _style.textarea.editor}}{{#if label}}<label for="{{form.id}}_{{name}}">{{label}}{{#if required}}*{{/if}}</label>{{/if}}{{/unless}}
+
+    {{!-- CrazyPHP currently serializes named inputs and selects. The adapter synchronizes this value with the textarea. --}}
+    <input
+        type="hidden"
+        name="{{name}}"
+        data-type="text"
+        data-textarea-target="{{form.id}}_{{name}}"
+        value="{{#unless form.onready}}{{#if default includeZero=true}}{{default}}{{/if}}{{/unless}}"
+        default="{{#if default includeZero=true}}{{default}}{{/if}}"
+        {{#if disabled}}disabled{{else}}{{#if form.onready}}disabled="loading"{{/if}}{{/if}}
+        {{#if readonly}}readonly{{/if}}
+    >
+
+</div>

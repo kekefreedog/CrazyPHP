@@ -19,6 +19,7 @@ use CrazyPHP\Library\Template\Handlebars\Helpers;
 use CrazyPHP\Library\Template\Handlebars;
 use CrazyPHP\Library\File\File;
 use PHPUnit\Framework\TestCase;
+use LightnCandy\LightnCandy;
 use CrazyPHP\Model\Env;
 
 /**
@@ -116,6 +117,12 @@ class HandlebarsTest extends TestCase{
                 # Push in result
                 $result[$name] = file_get_contents($file->getPathname());
 
+                # Include legacy aliases for underscore-prefixed partials
+                $alias = preg_replace("~(^|/)_+([^/]+)$~", "$1$2", $name);
+
+                # Set result
+                $result[$alias] = $result[$name];
+
             }
 
         }
@@ -160,6 +167,65 @@ class HandlebarsTest extends TestCase{
             File::open(self::PARTIAL_DIR."/filter/filter_color.hbs"),
             $partials["filter/filter_color"]
         );
+
+    }
+
+    /**
+     * Test Load Underscore Partials
+     * 
+     * Test underscore partial names and their legacy aliases during compilation.
+     *
+     * @return void
+     */
+    public function testLoadUnderscorePartials():void {
+
+        # Set directory
+        $directory = "@crazyphp_root/tests/.cache/crazyphp-partials-".uniqid();
+
+        # Create directory
+        File::createDirectory($directory."/filter");
+
+        # Try
+        try{
+
+            # Put content
+            File::create($directory."/filter/_operator.hbs", "Operator {{value}}");
+
+            # Get partials
+            $partials = Handlebars::loadAppPartials($directory);
+
+            # Check operator
+            $this->assertSame("Operator {{value}}", $partials["filter/_operator"]);
+            
+            # Check operator
+            $this->assertSame($partials["filter/_operator"], $partials["filter/operator"]);
+
+            # Compiled
+            $compiled = LightnCandy::compile(
+                "{{> filter/_operator}}|{{> filter/operator}}",
+                [
+                    "flags" => Handlebars::CRAZY_PRESET["flags"] | LightnCandy::FLAG_ERROR_EXCEPTION,
+                    "partials" => $partials,
+                ]
+            );
+
+            # Check is string
+            $this->assertIsString($compiled);
+            
+            # Render
+            $render = LightnCandy::prepare($compiled);
+
+            # Asset same
+            $this->assertSame("Operator equal|Operator equal", $render(["value" => "equal"]));
+
+        }
+        # Finally
+        finally{
+
+            # Remove test directory and its contents
+            File::remove($directory);
+            
+        }
 
     }
 
