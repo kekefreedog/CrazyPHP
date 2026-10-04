@@ -7,6 +7,7 @@
         type="text"
         class="validate no-autoinit{{#if _style.customClass.input}} {{_style.customClass.input}}{{/if}}"
         data-otp
+        {{#if _style.otp.align}}data-otp-align="{{_style.otp.align}}"{{/if}}
         {{#if _style.otp.length}}data-otp-length="{{_style.otp.length}}"{{/if}}
         {{#if _style.otp.pattern}}data-otp-pattern="{{_style.otp.pattern}}"{{/if}}
         {{#if _style.otp.characters}}data-otp-characters="{{_style.otp.characters}}"{{/if}}

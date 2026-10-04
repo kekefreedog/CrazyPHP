@@ -1,0 +1,10 @@
+{{!-- Unnamed native number control; empty means this endpoint is unbounded. --}}
+<div class="input-field{{#if _style.customClass.input-field}} {{_style.customClass.input-field}}{{/if}}">
+    <input type="number" class="no-autoinit" data-number-bound="{{endpoint}}"
+        id="{{form.id}}_{{name}}_{{endpoint}}" value="{{bound.value}}" placeholder=" " step="any"
+        aria-describedby="{{form.id}}_{{name}}_error"
+        {{#if select.[0].value includeZero=true}}min="{{select.[0].value}}"{{/if}}
+        {{#if select.[1].value includeZero=true}}max="{{select.[1].value}}"{{/if}}
+        {{#if disabled}}disabled{{else}}{{#if form.onready}}disabled="loading"{{/if}}{{/if}} {{#if readonly}}readonly{{/if}}>
+    <label for="{{form.id}}_{{name}}_{{endpoint}}">{{bound.label}}</label>
+</div>

@@ -110,6 +110,55 @@ TomSelect is used under the hood and loads options lazily.
 
 `app/Environment/Partials/Form.ts` wraps `UtilityForm` from CrazyPHP.
 
+### Widget adapters
+
+Forms keep their existing input handlers by default. To opt into kmaterialize,
+install the optional `kmaterialize` peer dependency (a build exposing the enhanced
+form widgets) in the consuming application, and pass the adapter option:
+
+```typescript
+import {Form} from "crazyphp";
+
+const form = new Form(formElement, {
+    adapter: "kmaterialize",
+    adapterOptions: {
+        richTextarea: {
+            fontFamily: "sans-serif",
+            // Optional stylesheet URL provided by the application.
+        },
+    },
+});
+
+await form.ready;
+// When the page or partial is destroyed:
+form.destroy();
+```
+
+Adapter styles live in `app/Front/style/scss/adapter/kmaterialize.scss`.
+`resources/Yml/Structure.yml` copies this file from
+`resources/Scss/style/adapter/kmaterialize.scss` when scaffolding an application.
+Load it after the widget base styles and kmaterialize's CSS. From the form SCSS
+partial, use `@use '../adapter/kmaterialize';`. The single stylesheet includes
+form layout, filter controls and body-appended dropdown styles.
+
+The adapter implementation lives in `Utility/Form/Adapter/Kmaterialize.ts` and
+implements `src/Interface/CrazyFormAdapter.ts`. Application `initializeInput`
+callbacks run first; returning `true` skips both the adapter and the existing
+handler. When the adapter returns `false`, the existing handler initializes the
+field. Remote and dependent selects continue to use the existing handlers.
+Serialization, submission and filter operators remain managed by `Form`.
+
+`ready` resolves after widget initialization and form event registration, or
+rejects if initialization fails. `destroy()` stops subsequent initialization
+stages, destroys adapter widgets and removes form-owned listeners. Call it before
+replacing the form element; the scaffold form partial does this in `onDestroy`.
+Existing legacy input handlers retain their own widget lifecycle behavior.
+
+The adapter module is loaded only when selected. Bundlers that resolve all dynamic
+imports or type-check library sources may still require the optional peer at build
+time, even if the application uses only the default handlers. The main CrazyPHP
+entrypoint exports adapter interfaces as types without eagerly importing widgets.
+
 ### Usage from a page
 
 ```typescript
@@ -219,3 +268,21 @@ User submits               POST to form.post URL
   ↓
 API controller             Process::getResultSummary() → Validate → logic
 ```
+
+## OTP alignment (kmaterialize)
+
+OTP fields default to centered alignment. Set `_style.otp.align` to `left`, `center`, or `right` to position the slots within the field; the label starts at the first OTP slot for every alignment.
+
+```php
+[
+    "name" => "auth_token",
+    "type" => "otp",
+    "label" => "Token",
+    "_style" => [
+        "otp" => ["length" => 6, "align" => "center"],
+        "customClass" => ["input-field" => "outlined"],
+    ],
+]
+```
+
+The partial emits `data-otp-align`. Direct kmaterialize users can pass `OtpInput.init(input, {align: "right"})`; explicit JavaScript options take precedence over the attribute. The form must use the `kmaterialize` adapter.

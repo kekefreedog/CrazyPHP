@@ -28,6 +28,7 @@ use CrazyPHP\Library\Html\Cookie;
 use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\State\Page;
 use CrazyPHP\Library\File\File;
+use CrazyPHP\Library\File\Json;
 use CrazyPHP\Model\Context;
 
 /**
@@ -158,6 +159,13 @@ class Response {
         
             # Set Stream
             $stream = $this->instance->createStream($body);
+
+        else
+        # Check array
+        if(is_array($body))
+
+            # Encode
+            $stream = $this->instance->createStream(Json::encode($body));
                 
         else
 

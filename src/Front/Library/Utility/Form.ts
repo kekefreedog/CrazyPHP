@@ -11,6 +11,7 @@
 /**
  * Dependances
  */
+import type CrazyFormAdapter from "../../../Interface/CrazyFormAdapter";
 import { FormSelect } from "@materializecss/materialize";
 import type { FormInputType } from './Form/FormType';
 import FormType from './Form/FormType';
@@ -47,6 +48,21 @@ export default class Form {
     /** Parameters
      ******************************************************
      */
+
+    /** @var ready Resolves after input widgets and form events are initialized */
+    public readonly ready:Promise<void>;
+
+    /** @var _adapter Selected widget implementation */
+    private _adapter:CrazyFormAdapter|null = null;
+
+    /** @var _destroyed Prevent initialization after the form is detached */
+    private _destroyed:boolean = false;
+
+    /** @var _events Release form event listeners on destruction */
+    private _events:AbortController;
+
+    /** @var _cleanup Release operator widgets */
+    private _cleanup:Array<() => void> = [];
 
     /** @var _formEl */
     private _formEl:HTMLFormElement;
@@ -93,32 +109,43 @@ export default class Form {
         // Ingest options
         this._options = options;
 
-        // Scan current form
-        this._ingestForm(form)
-            .then(
-                this._initOptions
-            ).then(
-                this._initRegistery
-            ).then(
-                this._initForm
-            ).then(
-                this._initOnReady
-            ).then(
-                this._initFilter
-            ).then(
-                this._initEventOnSubmit
-            ).then(
-                this._initEventOnReset
-            ).then(
-                this._initEventOnChange
-            )
-        ;
+        // Keep asynchronous initialization observable and stop between stages after destruction.
+        this.ready = this._initialize(form);
 
     }
 
     /** Public method
      ******************************************************
      */
+
+    /**
+     * Destroy
+     *
+     * Release adapter widgets and event listeners owned by this form.
+     */
+    public destroy = ():void => {
+
+        // Check if destoyed
+        if(!this._destroyed){
+
+            // Set destroyed
+            this._destroyed = true;
+
+            // Abort events
+            this._events?.abort();
+
+            // Destroy adapter
+            this._adapter?.destroy();
+
+            // Cleanup
+            this._cleanup.reverse().forEach(cleanup => cleanup());
+
+            // Clean cleanup
+            this._cleanup = [];
+
+        }
+
+    }
 
     /**
      * Scan
@@ -157,7 +184,8 @@ export default class Form {
                 // Add event on them
                 searchEls[i].addEventListener(
                     "submit",
-                    this.eventOnSubmit
+                    this.eventOnSubmit,
+                    {signal: this._events?.signal}
                 );
 
             }
@@ -622,13 +650,13 @@ export default class Form {
             let inputs = this._formEl.querySelectorAll<HTMLInputElement|HTMLSelectElement>("input[name], select[name]");
 
             // Iteration of input
-            if(inputs instanceof HTMLInputElement || inputs instanceof HTMLSelectElement) for(const input of inputs){
+            for(const input of inputs){
 
                 // Set value
                 const value = clear 
                     ? null 
                     : (
-                        input.dataset.dateRange === "true" 
+                        (input.dataset.dateRange === "true" || input.hasAttribute("data-filter-number-bounds"))
                             ? input.getAttribute("default") 
                             : this._getDefaultOfInput(input)
                     )
@@ -699,7 +727,7 @@ export default class Form {
             let operatorEls = this._formEl.querySelectorAll<HTMLSelectElement>(".filter-operator");
 
             // Iteration operators
-            if(operatorEls instanceof HTMLSelectElement) for(const operator of operatorEls){
+            for(const operator of operatorEls){
 
                 // Set inital
                 const initial = Array.from(operator.options).find(option => option.defaultSelected) ?? operator.options[0];
@@ -711,7 +739,7 @@ export default class Form {
                 if(!operator.classList.contains("browser-default"))
 
                     // Init form select
-                    FormSelect.init(operator, {});
+                    this._initializeOperatorWidget(operator);
 
             }
             
@@ -1468,6 +1496,77 @@ export default class Form {
      */
 
     /**
+     * Initialize
+     *
+     * @param form Form element or selector
+     */
+    private _initialize = async(form:string|HTMLFormElement):Promise<void> => {
+
+        // Ingest form
+        await this._ingestForm(form);
+
+        // Check destroyed
+        if(!this._destroyed){
+
+            // Use the form's DOM realm for event listener cancellation.
+            const Controller = this._formEl.ownerDocument.defaultView?.AbortController || AbortController;
+
+            // Set events
+            this._events = new Controller();
+
+            for(const initialize of [
+                this._initOptions,
+                this._initAdapter,
+                this._initRegistery,
+                this._initForm,
+                this._initOnReady,
+                this._initFilter,
+                this._initEventOnSubmit,
+                this._initEventOnReset,
+                this._initEventOnChange,
+            ]) if(!this._destroyed){
+                
+                // Await initialize
+                await initialize();
+
+            }
+
+        }
+
+    }
+
+    /**
+     * Init Adapter
+     *
+     * Load kmaterialize only when explicitly selected.
+     */
+    private _initAdapter = async():Promise<void> => {
+
+        // Check adapter
+        if(this._options.adapter === undefined){
+
+
+        }else
+        // Check adapter
+        if(this._options.adapter !== "kmaterialize"){
+
+            // Throw error
+            throw new Error(`Unknown form adapter: ${this._options.adapter}`);
+
+        }
+
+        // Set default
+        const {default:Kmaterialize} = await import("./Form/Adapter/Kmaterialize");
+
+        // Check destroyed
+        if(!this._destroyed)
+
+            // Set adapter
+            this._adapter = new Kmaterialize(this._options.adapterOptions);
+
+    }
+
+    /**
      * Ingest Form
      * 
      * Ingest form on instance
@@ -1602,10 +1701,18 @@ export default class Form {
         if(allInputEls.length)
 
             // Iteration
-            for(let inputEl of Array.from(allInputEls)){
+            for(let inputEl of Array.from(allInputEls)) if(!this._destroyed) {
 
                 // Check if item given is input or select and skip `.filter-operator`
                 if((inputEl instanceof HTMLInputElement || inputEl instanceof HTMLSelectElement) && !inputEl.classList.contains("filter-operator")){
+
+                    // Bounds own their unnamed native inputs and one serialized value.
+                    if(inputEl instanceof HTMLInputElement && inputEl.hasAttribute("data-filter-number-bounds")){
+                        this._cleanup.push(NumberType.initializeBounds(inputEl, this._formEl));
+                        continue;
+                    }
+                    if(inputEl.hasAttribute("data-number-bound"))
+                        continue;
 
                     // Check is validate is enable
                     if(inputEl.classList.contains("validate"))
@@ -1640,16 +1747,26 @@ export default class Form {
                         // Continue
                         continue;
 
+                    // Use the selected widget adapter before the existing input handler.
+                    if(!this._destroyed) if(await this._adapter?.initialize(inputEl, this._formEl))
+
+                        // Continue
+                        continue;
+
                     // Check type handler has init
-                    if(inputTypeHandler?.init){
+                    if(!this._destroyed){
+                        
+                        if(inputTypeHandler?.init){
 
-                        // Run method
-                        await inputTypeHandler.init(inputEl, this._formEl, { processQueryParams: this._processQueryParams }, this._options);
+                            // Run method
+                            await inputTypeHandler.init(inputEl, this._formEl, { processQueryParams: this._processQueryParams }, this._options);
 
-                    }else
+                        }else
 
-                        // Check init
-                        console.info(`Need to implement "${initMethodName}"`);
+                            // Check init
+                            console.info(`Need to implement "${initMethodName}"`);
+
+                        }
 
                 }
 
@@ -1766,7 +1883,8 @@ export default class Form {
         // Add event on them
         this._formEl.addEventListener(
             "submit",
-            this.eventOnSubmit
+            this.eventOnSubmit,
+            {signal: this._events.signal}
         );
 
     }
@@ -1783,7 +1901,8 @@ export default class Form {
         // Add event on reset
         this._formEl.addEventListener(
             "reset",
-            this.eventOnReset
+            this.eventOnReset,
+            {signal: this._events.signal}
         );
 
     }
@@ -1806,7 +1925,7 @@ export default class Form {
                 // Delegate to the shared handler
                 this._handleChangeEvent(eventType, event.currentTarget, event.target);
 
-            });
+            }, {signal: this._events.signal});
 
     }
 
@@ -1886,33 +2005,51 @@ export default class Form {
     private _autoSwitchWildcardOperator = (formEl:HTMLFormElement, target:Element):void => {
 
         // Operator dropdowns must never activate themselves.
-        if(target.classList.contains("filter-operator")) return;
-        const isCheckboxLike = target instanceof HTMLInputElement && target.type === "checkbox";
-        const isSelectLike = target instanceof HTMLSelectElement || (target instanceof HTMLInputElement && (target.dataset.type === "select" || target.hasAttribute("data-select-tag")));
+        if(!target.classList.contains("filter-operator")){
 
-        if(!isCheckboxLike && !isSelectLike) return;
+            // Is Check box
+            const isCheckboxLike = target instanceof HTMLInputElement && target.type === "checkbox";
 
-        // Get name (strip the "[]" multi-value suffix, if any)
-        const name = (target as HTMLInputElement|HTMLSelectElement).name?.replace("[]", "");
+            // Is Select
+            const isSelectLike = target instanceof HTMLSelectElement || (target instanceof HTMLInputElement && (target.dataset.type === "select" || target.hasAttribute("data-select-tag")));
 
-        // Check name
-        if(!name) return;
+            // Check is checkbox or select
+            if(isCheckboxLike || isSelectLike){
 
-        // Get paired operator select
-        const operatorEl = formEl.querySelector(`[data-operator-name="${name}"]`);
+                // Get name (strip the "[]" multi-value suffix, if any)
+                const name = (target as HTMLInputElement|HTMLSelectElement).name?.replace("[]", "");
 
-        // Check operator currently on wildcard : switch it to equal
-        if(operatorEl instanceof HTMLSelectElement && operatorEl.value === "*")
+                // Check name
+                if(name){
 
-            {
-                // Custom menus may omit equality; selecting a value still activates the filter.
-                if(!Array.from(operatorEl.options).some(option => option.value === "="))
-                    operatorEl.add(new Option("=", "="));
-                operatorEl.value = "=";
-                // Native operator selects reflect value directly; refresh legacy dropdowns too.
-                if(!operatorEl.classList.contains("browser-default"))
-                    FormSelect.init(operatorEl, {});
+                    // Get paired operator select
+                    const operatorEl = formEl.querySelector(`[data-operator-name="${name}"]`);
+
+                    // Check operator currently on wildcard : switch it to equal
+                    if(operatorEl instanceof HTMLSelectElement && operatorEl.value === "*"){
+
+                        // Custom menus may omit equality; selecting a value still activates the filter.
+                        if(!Array.from(operatorEl.options).some(option => option.value === "="))
+
+                            // Add
+                            operatorEl.add(new Option("=", "="));
+                        
+                        // Set value
+                        operatorEl.value = "=";
+
+                        // Native operator selects reflect value directly; refresh legacy dropdowns too.
+                        if(!operatorEl.classList.contains("browser-default"))
+
+                            // Init operator widhget
+                            this._initializeOperatorWidget(operatorEl);
+
+                    }
+
+                }
+
             }
+
+        }
 
     }
 
@@ -1979,7 +2116,7 @@ export default class Form {
 
             }
 
-        });
+        }, {signal: this._events?.signal});
 
     }
 
@@ -2006,6 +2143,17 @@ export default class Form {
 
             // Set timer
             let timeout:ReturnType<typeof setTimeout>|null = null;
+
+            // Set clean up
+            this._cleanup.push(() => {
+
+                // Check timeout
+                if(timeout !== null)
+
+                    // Clear timeout
+                    clearTimeout(timeout);
+
+            });
     
             // Set wait time
             let waitTime:number = 500;
@@ -2029,7 +2177,7 @@ export default class Form {
 
                 }, waitTime);
 
-            });
+            }, {signal: this._events?.signal});
 
         }
 
@@ -2980,7 +3128,13 @@ export default class Form {
                                 }
 
                                 // Check select remote
-                                if(inputEl.dataset.selectRemote){
+                                if(inputEl.dataset.selectRemote && !inputEl.disabled){
+
+                                    // Parent changes invalidate the previous selection and choices.
+                                    // @ts-ignore
+                                    inputEl.tomselect.clear(true);
+                                    // @ts-ignore
+                                    inputEl.tomselect.clearOptions();
 
                                     // Destory tom select
                                     // @ts-ignore
@@ -3007,7 +3161,7 @@ export default class Form {
                         // Apply
                         dependency.el.addEventListener(
                             "change",
-                            dependenciesCheckFunction
+                            dependenciesCheckFunction, {signal: this._events?.signal}
                         );
 
                     // Run first time
@@ -3094,6 +3248,37 @@ export default class Form {
      */
 
     /**
+     * Initialize Operator Widget
+     *
+     * @param input Filter comparison control
+     */
+    private _initializeOperatorWidget = (input:HTMLSelectElement):void => {
+
+        // Check is not destroyed
+        if(!this._destroyed){
+
+            // Check adapter
+            if(this._adapter?.initializeOperator)
+
+                // Call adapter
+                this._adapter.initializeOperator(input);
+
+            // Else
+            else{
+
+                // Init
+                FormSelect.init(input, {});
+
+                // Clean up
+                this._cleanup.push(() => FormSelect.getInstance(input)?.destroy());
+
+            }
+
+        }
+
+    }
+
+    /**
      * Init Operator
      * 
      * @returns {void}
@@ -3107,8 +3292,12 @@ export default class Form {
         if(operatorEls.length) for(let operatorEl of operatorEls) if(operatorEl instanceof HTMLSelectElement){
 
             // Init select
-            if(!operatorEl.classList.contains("browser-default"))
-                FormSelect.init(operatorEl, {});
+            if(!operatorEl.classList.contains("browser-default")){
+
+                // Init operator
+                this._initializeOperatorWidget(operatorEl);
+
+            }
 
             // Attach event
             operatorEl.addEventListener("change", (event) => {
@@ -3119,7 +3308,7 @@ export default class Form {
                 // Run the shared handler directly
                 this._handleChangeEvent("change", currentTarget, operatorEl);
 
-            });
+            }, {signal: this._events.signal});
 
         }
 
@@ -3312,10 +3501,20 @@ export default class Form {
 
             // Hydration must not convert restored wildcard conditions to equality.
             this._restoringFilter = true;
+
+            // Try
             try{
+
+                // Set value
                 this.setValue(querys);
-            }finally{
+
+            }
+            // Finally
+            finally{
+
+                // Set restoring filter
                 this._restoringFilter = false;
+                
             }
 
         }

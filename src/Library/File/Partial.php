@@ -287,7 +287,7 @@ class Partial {
 
             # Search all partial
             preg_match_all(
-                "/@import\s+['\"]\.\/partial\/([^'\"]+)['\"]\s*;/",
+                "/(?:@import\s+|@include\s+meta\.load-css\(\s*)['\"]\.\/partial\/([^'\"]+)['\"]\s*\)?\s*;/",
                 $contents,
                 $matches
             );

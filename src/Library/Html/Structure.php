@@ -22,6 +22,7 @@ use CrazyPHP\Exception\CrazyException;
 use Symfony\Component\Finder\Finder;
 use CrazyPHP\Library\String\Color;
 use CrazyPHP\Library\Array\Arrays;
+use CrazyPHP\Library\File\Webpack;
 use CrazyPHP\Library\Cache\Cache;
 use CrazyPHP\Library\System\Uuid;
 use Pelago\Emogrifier\CssInliner;
@@ -59,6 +60,9 @@ class Structure {
 
     /** @var bool $watch Bool for check if watch mode is enable */
     private $watch = false;
+
+    /** @var ?string $_buildHash Build selected for this HTML document */
+    private ?string $_buildHash = null;
 
     /** @var string UUID */
     private $_uuid;
@@ -726,36 +730,17 @@ class Structure {
         # Check watch
         if($this->watch){
 
-            ## Search generic js files
+            # Select one build for root scripts, page scripts and the document hash
+            $this->_buildHash = Webpack::getHash(false);
+            $configFront = Webpack::getScripts($this->_buildHash);
 
-            # New finder
-            $finder = new Finder();
-
-            # Search js generated
-            $finder
-                ->files()
-                ->name("*.js")
-                ->depth('== 0')
-                ->in(File::path("@app_root/public/dist"))
-            ;
-
-            # Check files
-            if(!$finder->hasResults())
-                            
-                # New error
+            # Require a built entrypoint before rendering the page
+            if(!$configFront)
                 throw new CrazyException(
-                    "It looks generation of js files with watch mode enable failed...", 
+                    "It looks generation of js files with watch mode enable failed...",
                     500,
-                    [
-                        "custom_code"   =>  "structure-003",
-                    ]
+                    ["custom_code" => "structure-003"]
                 );
-
-            # Iteration of finder
-            foreach($finder as $file)
-
-                # Push in scripts
-                $configFront[] = $file->getRelativePathname();
 
             ## Search current page js files
 
@@ -771,7 +756,7 @@ class Structure {
                 # Search js generated
                 $finder
                     ->files()
-                    ->name("$routesCurrentName.*.js")
+                    ->name("$routesCurrentName.{$this->_buildHash}.js")
                     ->depth('== 0')
                     ->in(File::path("@app_root/public/dist/page/app"))
                 ;
@@ -804,7 +789,7 @@ class Structure {
                     # Search js generated
                     $finder
                         ->files()
-                        ->name("$routesCurrentName.*.js")
+                        ->name("$routesCurrentName.{$this->_buildHash}.js")
                         ->depth('== 0')
                         ->in(File::path("@app_root/public/dist/page/app"))
                     ;
@@ -898,53 +883,16 @@ class Structure {
      */
     private function _setHash(string &$input):void {
 
-        # Get watch
-        if(Config::getValue("Front.lastBuild.watch")){
-
-            # New finder
-            $finder = new Finder();
-
-            # Prepare finder
-            $finder
-                ->files()
-                ->name('index.*.js')
-                ->in(File::path("@app_root/".Config::getValue("App.public")."/dist"))
-                ->depth('== 0')
-            ;
-
-            # Check finder
-            if($finder->hasResults())
-
-                # Iteration file
-                foreach ($finder as $file){
-
-                    # Prepare pattern
-                    $pattern = '/\w+\.([a-fA-F0-9]+)\.js/';
-
-                    # Search
-                    preg_match($pattern, $file->getFilename(), $matches);
-
-                    # Set hash
-                    $hash = $matches[1] ?? null;
-
-                }
-
-            else 
-
-                # Set hash
-                $hash = null;
-
-        }else
-
-
-            # Get hash
-            $hash = Config::getValue("Front.lastBuild.hash");
+        # Reuse the build selected for this document's scripts
+        $hash = Config::getValue("Front.lastBuild.watch")
+            ? ($this->_buildHash ?? Webpack::getHash(false))
+            : Config::getValue("Front.lastBuild.hash");
 
         # Prepare pattern
         $pattern = '/<meta\s+name="application-hash"\s+content="([a-fA-F0-9]+)">/';
 
         # Check hash
-        if($hash === null)
+        if($hash === null || $hash === "")
 
             # Stop function
             return;

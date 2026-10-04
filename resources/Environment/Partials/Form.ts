@@ -25,13 +25,13 @@ import { Crazypartial, Form as UtilityForm} from "crazyphp";
  * @copyright  2022-2023 Kévin Zarshenas
  */
 export default class Form extends Crazypartial {
-    
+
     /** Parameters
      ******************************************************
      */
-    
-    /** 
-     * @param html:string 
+
+    /**
+     * @param html:string
      * Duplicate of the class name because build change name of class
      */
     public static readonly html = html;
@@ -39,8 +39,8 @@ export default class Form extends Crazypartial {
     /** @var _form Form Instance */
     private _form:UtilityForm;
 
-    /** @param partialEl */
-    private _partialEl:HTMLDivElement;
+    /** @var _options Existing form callbacks */
+    private _options:Partial<FormOptions>;
 
     /**
      * Constructor
@@ -50,22 +50,37 @@ export default class Form extends Crazypartial {
         // Parent constructor
         super(input);
 
-        console.log("hello form");
-
-        // Get form
-        let form = this.input.target && this.input.target instanceof HTMLFormElement 
-            ? this.input.target 
-            : ""
-        ;
-
-        // Prepare form
-        this._form = new UtilityForm(form , options);
+        this._options = options;
+        this.onReady();
 
     }
-    
+
     /** Public methods
      ******************************************************
      */
+
+    /**
+     * On Ready
+     */
+    public onReady = ():void => {
+
+        this._form?.destroy();
+        const form = this.input.target;
+        if(form instanceof HTMLFormElement)
+            this._form = new UtilityForm(form, {
+                ...this._options,
+            });
+
+    }
+
+    /**
+     * On Destroy
+     */
+    public onDestroy = ():void => {
+
+        this._form?.destroy();
+
+    }
 
     /**
      * Get Form Data
@@ -105,7 +120,7 @@ export default class Form extends Crazypartial {
 
     /**
      * On Change
-     * 
+     *
      * @param callable
      * @param options
      * @return any

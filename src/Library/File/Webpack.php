@@ -57,8 +57,11 @@ class Webpack{
         # Prepare finder
         $finder
             ->files()
-            ->name('*.*.js')
-            ->in($path);
+            ->name("index.*.js")
+            ->depth("== 0")
+            ->sortByModifiedTime()
+            ->reverseSorting()
+            ->in($path)
         ;
 
 
@@ -83,28 +86,24 @@ class Webpack{
             }
 
         # Check setValueInFrontConfig
-        if($setValueInFrontConfig){
+        if($setValueInFrontConfig && $result !== ""){
 
             # Config scope
             $configScope = FileConfig::getValue("Front.lastBuild");
 
-            # Check files
-            if(isset($configScope["files"]))
+            # Register only assets belonging to the selected build
+            $configScope["files"] = self::getScripts($result);
 
-                # Iteration of files
-                foreach($configScope["files"] as &$v)
+            # Register page scripts from the same build
+            $configScope["pages"] = [];
+            $pagePath = $path."/page/app";
+            if(is_dir($pagePath)){
 
-                    # Replace hash in value
-                    $v = preg_replace('/\.([a-zA-Z0-9]+)\.js$/', ".$result.js", $v);
+                $pages = (new Finder())->files()->name("*.$result.js")->depth("== 0")->in($pagePath);
+                foreach($pages as $page)
+                    $configScope["pages"][] = $page->getFilename();
 
-            # Check pages
-            if(isset($configScope["pages"]))
-
-                # Iteration of pages
-                foreach($configScope["pages"] as &$v)
-
-                    # Replace hash in value
-                    $v = preg_replace('/\.([a-zA-Z0-9]+)\.js$/', ".$result.js", $v);
+            }
 
             # Check hash
             if(isset($configScope["hash"]))
@@ -122,6 +121,42 @@ class Webpack{
 
         # Return result
         return $result;
+
+    }
+
+    /**
+     * Get Scripts
+     *
+     * Return root scripts from one build, with the runtime before its consumers.
+     *
+     * @param string $hash Selected build hash
+     * @return array
+     */
+    public static function getScripts(string $hash):array {
+
+        # Ignore missing hashes instead of matching unrelated assets
+        if($hash === "")
+            return [];
+
+        # Find scripts belonging to the selected build
+        $path = File::path("@app_root/".FileConfig::getValue("App.public")."/dist");
+        $finder = (new Finder())->files()->name("*.$hash.js")->depth("== 0")->in($path);
+        $scripts = [];
+        foreach($finder as $file)
+            $scripts[] = $file->getFilename();
+
+        # Load the runtime first, shared chunks next and the entrypoint last
+        $priority = static function(string $file):int {
+
+            return str_starts_with($file, "runtime.") ? 0
+                : (str_starts_with($file, "vendors.") ? 1
+                    : (str_starts_with($file, "index.") ? 3 : 2));
+
+        };
+        usort($scripts, static fn(string $left, string $right):int => ($priority($left) <=> $priority($right)) ?: strcmp($left, $right));
+
+        # Return scripts in execution order
+        return $scripts;
 
     }
 

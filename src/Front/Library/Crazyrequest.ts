@@ -98,7 +98,7 @@ export default class Crazyrequest{
      * @param body
      * @return Promise<Response>
      */
-    public fetch = (body:Array<any>|Object|string|BodyInit|undefined|FormData = undefined):Promise<Response|any> => {
+    public fetch = (body:Array<any>|Object|string|BodyInit|undefined|FormData|string = undefined):Promise<Response|any> => {
 
         // Clean last response & last response type
         this.lastResponse = undefined;
@@ -192,6 +192,16 @@ export default class Crazyrequest{
                                 .then(value => new Uint8Array(value))
                                 .then(value => MessagePack.parse(value))
                             ;
+
+                        }else
+                        // Check content type  
+                        if(contentType){
+
+                            // This last response type
+                            this.lastResponseContentType = contentType.split(';')[0].trim();
+
+                            // Return result
+                            return result.text();
 
                         }
 
@@ -478,6 +488,22 @@ export default class Crazyrequest{
 
                     }
 
+                }else
+                // Check if text
+                if(typeof body === "string"){
+
+                    // Fill body content
+                    bodyContent = body;
+
+                    // Check header is defined
+                    if(!(this.requestOptions.headers instanceof Headers))
+
+                        // Init headers
+                        this.requestOptions.headers = new Headers();
+
+                    // Fill headers
+                    this.requestOptions.headers.set('Content-Type', 'text/html');
+
                 }
     
                 // Check body content
@@ -535,6 +561,22 @@ export default class Crazyrequest{
                         this.requestOptions.headers.set('Content-Type', 'application/json');
 
                     }
+
+                }else
+                // Check if text
+                if(typeof body === "string"){
+
+                    // Fill body content
+                    bodyContent = body;
+
+                    // Check header is defined
+                    if(!(this.requestOptions.headers instanceof Headers))
+
+                        // Init headers
+                        this.requestOptions.headers = new Headers();
+
+                    // Fill headers
+                    this.requestOptions.headers.set('Content-Type', 'text/html');
 
                 }
     

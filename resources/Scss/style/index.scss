@@ -8,6 +8,10 @@
 /// @copyright  2022-2023 Kévin Zarshenas
 /// /// /// 
 
+@use 'sass:meta';
+@use './color_collection' as *;
+@use './color_gradient_collection' as *;
+
 // Material Icons
 @import '/node_modules/@material-design-icons/font/index.css';
 // @import '/node_modules/material-symbols/index.css';
@@ -21,24 +25,24 @@
 @import '/node_modules/tippy.js/animations/shift-away.css';
 
 // Component enhance
-@import './component_enhance.scss';
+@include meta.load-css('./component_enhance.scss');
 
 // Import color
-@import './color_collection.scss', './color_gradient_collection.scss', './color_class.scss';
+@include meta.load-css('./color_class.scss');
 
 // Import dimensions
-@import './dimensions.scss';
-@import './grid.scss';
+@include meta.load-css('./dimensions.scss');
+@include meta.load-css('./grid.scss');
 
 // Import typography
-@import './typography.scss';
+@include meta.load-css('./typography.scss');
 
 // Import cursor
-@import './cursors.scss';
+@include meta.load-css('./cursors.scss');
 
 // Partials
-@import './partial/preloader_linear_indeterminate';
-@import './partial/form';
+@include meta.load-css('./partial/preloader_linear_indeterminate');
+@include meta.load-css('./partial/form');
 
 // Import global
-@import './global.scss';
+@include meta.load-css('./global.scss');

@@ -480,6 +480,8 @@ declare global {
      */
 
     interface FormOptions {
+        adapter?:"kmaterialize",
+        adapterOptions?:import("../../Interface/CrazyFormAdapter").CrazyFormAdapterOptions,
         onBeforeSubmit:(entity:string, formData:FormData)=>FormData|FormData[]|void,
         onSubmitDone:(result:object, entity:string, formData:FormData)=>void,
         onError:(result:object, entity:string, formData:FormData)=>void,
@@ -608,3 +610,5 @@ declare global {
     }
 
 }
+
+export type {default as CrazyFormAdapter, CrazyFormAdapterOptions} from "../../Interface/CrazyFormAdapter";

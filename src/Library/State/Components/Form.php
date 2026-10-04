@@ -530,6 +530,37 @@ class Form {
      */
 
     /**
+     * Push Items Select Type Select
+     * 
+     * Expand shorthand choices while preserving detailed options and remote configuration.
+     * 
+     * @param mixed $value
+     * @param array $currentItem
+     * @return mixed
+     */
+    private function _pushItemsSelectTypeSelect(mixed $value, array $currentItem):mixed {
+
+        # Check is array
+        if(!is_array($value) || !array_is_list($value))
+
+            # Return value
+            return $value;
+
+        # Iteration value
+        foreach($value as $index => $option)
+
+            # Checj is string or in or float
+            if(is_string($option) || is_int($option) || is_float($option))
+
+                # Set value
+                $value[$index] = ["value" => $option, "label" => (string)$option];
+
+        # Return value
+        return $value;
+
+    }
+
+    /**
      * Push Items Default Type Select
      * 
      * Push default on select
@@ -759,6 +790,9 @@ class Form {
                 : []
             ;
 
+            # Resolve each endpoint before validating the interval.
+            $dates = array_map([self::class, "_parseTodayYesterdayTomorrow"], $dates);
+
             # Check dates
             if(
                 count($dates) === 2 && 
@@ -913,31 +947,22 @@ class Form {
      */
     private static function _parseTodayYesterdayTomorrow(mixed $value):mixed {
 
-        # Set result
-        $result = $value;
+        # Resolve supported aliases in the configured PHP timezone.
+        if(is_string($value)){
 
-        # Check if value is today()
-        if($value == "today()")
+            $relative = match(strtolower(trim($value))){
+                "today", "today()" => "today",
+                "yesterday", "yesterday()" => "yesterday",
+                "tomorrow", "tomorrow()" => "tomorrow",
+                default => null,
+            };
 
-            # Set current date
-            $result = date('Y-m-d');
+            if($relative !== null)
+                return (new DateTime($relative))->format("Y-m-d");
 
-        else
-        # Check if value is yesterday
-        if($value == "yesterday()")
+        }
 
-            # Set previous date
-            $result = date('Y-m-d', strtotime('-1 day'));
-
-        else
-        # Check if value is tomorrow
-        if($value == "tomorrow()")
-
-            # Set previous date
-            $result = date('Y-m-d', strtotime('+1 day'));
-
-        # Return result
-        return $result;
+        return $value;
 
     }
 

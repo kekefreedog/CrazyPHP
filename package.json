@@ -5,7 +5,8 @@
     "main": "src/Front/index.ts",
     "types": "./src/Front/Types/index.d.ts",
     "files": [
-        "./src/Front/"
+        "./src/Front/",
+        "./src/Interface/CrazyFormAdapter.ts"
     ],
     "repository": {
         "type": "git",
@@ -31,7 +32,8 @@
         "object-hash": "^3.0.0",
         "tslib": "^2.4.1",
         "tsx": "^4.23.13",
-        "type-fest": "^5.3.1"
+        "type-fest": "^5.3.1",
+        "kmaterialize": "^2.3.3"
     },
     "dependencies": {
         "@easepick/bundle": "^1.2.1",
@@ -49,5 +51,13 @@
         "pako": "^3.0.1",
         "reconnecting-websocket": "^4.4.0",
         "tom-select": "^2.3.1"
+    },
+    "peerDependencies": {
+        "kmaterialize": "^2.3.3"
+    },
+    "peerDependenciesMeta": {
+        "kmaterialize": {
+            "optional": true
+        }
     }
 }

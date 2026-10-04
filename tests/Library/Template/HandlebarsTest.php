@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 /**
- * Test State
+ * Test Handlebars
  *
- * Test State Classes
+ * Verify template helpers and partial loading
  *
  * PHP version 8.1.2
  *
@@ -23,17 +23,17 @@ use LightnCandy\LightnCandy;
 use CrazyPHP\Model\Env;
 
 /**
- * Page Test
+ * Handlebars Test
  *
- * Methods for test page state
+ * Verify server-rendered templates and helper output
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2024 Kévin Zarshenas
  */
-class HandlebarsTest extends TestCase{
-    
-    /** Public constants
+class HandlebarsTest extends TestCase {
+
+    /** Public Constants
      ******************************************************
      */
 
@@ -56,12 +56,11 @@ class HandlebarsTest extends TestCase{
         # Setup env
         Env::set([
             # App root for composer class
-            "crazyphp_root"     =>  getcwd(),
-            "phpunit_test"      =>  true,
+            "crazyphp_root" => getcwd(),
+            "phpunit_test" => true,
         ]);
 
     }
-
 
     /**
      * Tear Down After Class
@@ -77,15 +76,15 @@ class HandlebarsTest extends TestCase{
 
     }
 
-    /** Public method | Tests
+    /** Public method | Tests
      ******************************************************
      */
 
     /**
      * Test Page State
-     * 
-     * Test envAndConfigValues function
-     * 
+     *
+     * Verify recursive partial loading and legacy aliases.
+     *
      * @return void
      */
     public function testPageState():void {
@@ -172,7 +171,7 @@ class HandlebarsTest extends TestCase{
 
     /**
      * Test Load Underscore Partials
-     * 
+     *
      * Test underscore partial names and their legacy aliases during compilation.
      *
      * @return void
@@ -196,26 +195,26 @@ class HandlebarsTest extends TestCase{
 
             # Check operator
             $this->assertSame("Operator {{value}}", $partials["filter/_operator"]);
-            
+
             # Check operator
             $this->assertSame($partials["filter/_operator"], $partials["filter/operator"]);
 
-            # Compiled
+            # Compile template
             $compiled = LightnCandy::compile(
                 "{{> filter/_operator}}|{{> filter/operator}}",
                 [
-                    "flags" => Handlebars::CRAZY_PRESET["flags"] | LightnCandy::FLAG_ERROR_EXCEPTION,
+                    "flags"    => Handlebars::CRAZY_PRESET["flags"] | LightnCandy::FLAG_ERROR_EXCEPTION,
                     "partials" => $partials,
                 ]
             );
 
             # Check is string
             $this->assertIsString($compiled);
-            
+
             # Render
             $render = LightnCandy::prepare($compiled);
 
-            # Asset same
+            # Assert same
             $this->assertSame("Operator equal|Operator equal", $render(["value" => "equal"]));
 
         }
@@ -224,24 +223,24 @@ class HandlebarsTest extends TestCase{
 
             # Remove test directory and its contents
             File::remove($directory);
-            
+
         }
 
     }
 
-    /** Public method | Tests Helpers
+    /** Public method | Tests Helpers
      ******************************************************
      */
 
     /**
-     * Test Json Stringofy Suffix
-     * 
+     * Test JSON Stringify
+     *
      * @return void
      */
     public function testJsonStringify():void {
 
         # Set input
-        $input = ["toto"=>"titi"];
+        $input = ["toto" => "titi"];
 
         # Assert
         $this->assertEquals(Helpers::JSONstringify($input), json_encode($input));
@@ -250,15 +249,15 @@ class HandlebarsTest extends TestCase{
 
     /**
      * Test Expand Color Fill
-     * 
+     *
      * @return void
      */
     public function testExpandColorFill():void {
 
         # Set input 1
         $input1 = [
-            "fill"  =>  "blue",
-            "text"  =>  "red",
+            "fill" => "blue",
+            "text" => "red",
         ];
 
         # Set output1
@@ -266,8 +265,8 @@ class HandlebarsTest extends TestCase{
 
         # Set input 2
         $input2 = [
-            "fill"  =>  "blue darken-1",
-            "text"  =>  "red lighten-6",
+            "fill" => "blue darken-1",
+            "text" => "red lighten-6",
         ];
 
         # Set output2
@@ -275,8 +274,8 @@ class HandlebarsTest extends TestCase{
 
         # Set input 3
         $input3 = [
-            "fill"  =>  "blue",
-            "text"  =>  "red",
+            "fill" => "blue",
+            "text" => "red",
         ];
 
         # Set output 3
@@ -284,8 +283,8 @@ class HandlebarsTest extends TestCase{
 
         # Set input 4
         $input4 = [
-            "fill"  =>  "blue darken-1",
-            "text"  =>  "red lighten-6",
+            "fill" => "blue darken-1",
+            "text" => "red lighten-6",
         ];
 
         # Set output 4
@@ -301,15 +300,15 @@ class HandlebarsTest extends TestCase{
 
     /**
      * Test Expand Color Text
-     * 
+     *
      * @return void
      */
     public function testExpandColorText():void {
 
         # Set input 1
         $input1 = [
-            "text"  =>  "blue",
-            "fill"  =>  "red",
+            "text" => "blue",
+            "fill" => "red",
         ];
 
         # Set output1
@@ -317,8 +316,8 @@ class HandlebarsTest extends TestCase{
 
         # Set input 2
         $input2 = [
-            "text"  =>  "blue darken-1",
-            "fill"  =>  "red lighten-6",
+            "text" => "blue darken-1",
+            "fill" => "red lighten-6",
         ];
 
         # Set output2
@@ -326,8 +325,8 @@ class HandlebarsTest extends TestCase{
 
         # Set input 3
         $input3 = [
-            "text"  =>  "blue",
-            "fill"  =>  "red",
+            "text" => "blue",
+            "fill" => "red",
         ];
 
         # Set output 3
@@ -335,8 +334,8 @@ class HandlebarsTest extends TestCase{
 
         # Set input 4
         $input4 = [
-            "text"  =>  "blue darken-1",
-            "fill"  =>  "red lighten-6",
+            "text" => "blue darken-1",
+            "fill" => "red lighten-6",
         ];
 
         # Set output 4
@@ -352,35 +351,35 @@ class HandlebarsTest extends TestCase{
 
     /**
      * Test Color To Css Class
-     * 
+     *
      * @return void
      */
     public function testExpandColor():void {
 
         # Set input 1
         $input1 = [
-            "fill"  =>  "blue",
-            "text"  =>  "red",
+            "fill" => "blue",
+            "text" => "red",
         ];
 
         # Set output 1 a & b
         $output1a = "light-mode-blue light-mode-red-text dark-mode-blue-text dark-mode-red ";
         $output1b = "light-mode-blue-text light-mode-red dark-mode-blue dark-mode-red-text ";
-        
+
         # Set input 2
         $input2 = [
-            "fill"  =>  "blue darken-1",
-            "text"  =>  "red lighten-6",
+            "fill" => "blue darken-1",
+            "text" => "red lighten-6",
         ];
 
         # Set output 1 a & b
         $output2a = "light-mode-blue darken-1-light-mode light-mode-red-text text-lighten-6-light-mode dark-mode-blue-text text-darken-1-dark-mode dark-mode-red lighten-6-dark-mode ";
         $output2b = "light-mode-blue-text text-darken-1-light-mode light-mode-red lighten-6-light-mode dark-mode-blue darken-1-dark-mode dark-mode-red-text text-lighten-6-dark-mode ";
-        
+
         # Set input 2
         $input3 = [
-            "fill"  =>  "",
-            "text"  =>  "",
+            "fill" => "",
+            "text" => "",
         ];
 
         # Set output 1 a & b
@@ -390,20 +389,75 @@ class HandlebarsTest extends TestCase{
         # Set input 2
         $input4 = "error";
 
-        # Asset 1
+        # Assert 1
         $this->assertEquals($output1a, Helpers::expandColor($input1, true));
         $this->assertEquals($output1b, Helpers::expandColor($input1, 0));
 
-        # Asset 2
+        # Assert 2
         $this->assertEquals($output2a, Helpers::expandColor($input2, "true"));
         $this->assertEquals($output2b, Helpers::expandColor($input2, "false"));
 
-        # Asset 3
+        # Assert 3
         $this->assertEquals($output3a, Helpers::expandColor($input3, "true"));
         $this->assertEquals($output3b, Helpers::expandColor($input3, ""));
 
-        # Asset 4
+        # Assert 4
         $this->assertEquals("", Helpers::expandColor($input4, true));
+
+    }
+
+    /**
+     * Test Number Filter Rendering
+     *
+     * Render numeric bounds and the single-value control on the server.
+     *
+     * @return void
+     */
+    public function testNumberFilterRendering():void {
+
+        # Load the number filter partials
+        $partials = Handlebars::loadAppPartials(self::PARTIAL_DIR);
+
+        # Compile the server template with its helpers
+        $compiled = LightnCandy::compile("{{> filter/filter_number}}", [
+            "flags"    => Handlebars::CRAZY_PRESET["flags"] | LightnCandy::FLAG_ERROR_EXCEPTION,
+            "partials" => $partials,
+            "helpers" => Helpers::listArray(),
+        ]);
+
+        # Prepare the renderer and field context
+        $render = LightnCandy::prepare($compiled);
+        $base = [
+            "name"  => "amount",
+            "label" => "Amount",
+            "form" => ["id" => "numbers"],
+        ];
+
+        # Render labeled min and max bounds
+        $output = $render($base + [
+            "_style" => [
+                "number" => [
+                    "min" => 0,
+                    "max" => ["label" => "At most", "value" => 50],
+                ],
+            ],
+        ]);
+
+        # Assert the paired controls share one encoded value
+        $this->assertStringContainsString('value="&#x3D;[0:50]"', $output);
+        $this->assertStringContainsString('data-number-bound="min"', $output);
+        $this->assertStringContainsString('data-number-bound="max"', $output);
+        $this->assertStringContainsString(">At most</label>", $output);
+        $this->assertStringNotContainsString('class="filter-operator ', $output);
+        $this->assertSame(1, substr_count($output, 'name="amount"'));
+
+        # Render the ordinary single-value filter
+        $output = $render($base + ["default" => 5]);
+
+        # Assert the ordinary control retains its operator
+        $this->assertStringNotContainsString("data-filter-number-bounds", $output);
+        $this->assertStringContainsString('value="5"', $output);
+        $this->assertStringContainsString('data-operator-name="amount"', $output);
 
     }
 

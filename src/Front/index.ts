@@ -11,21 +11,21 @@
 /**
  * Dependances
  */
+export type { Crazycomponent2Property, Crazycomponent2Properties, Crazycomponent2Options, Crazycomponent2Context, Crazycomponent2Template, Crazycomponent2Styles } from "./Library/Crazycomponent2";
+export type {default as CrazyFormAdapter, CrazyFormAdapterOptions} from "../Interface/CrazyFormAdapter";
 export {default as UtilityMessagePack} from "./Library/Utility/MessagePack";
 export {default as PythonCollection} from "./Library/File/PythonCollection";
 export {default as Componentregister} from "./Library/Componentregister";
 export {default as UtilityOperation} from "./Library/Utility/Operation";
 export {default as NavigatorClient} from "./Library/Navigator/Client";
 export {default as UtilityDateTime} from "./Library/Utility/DateTime";
+export {default as Crazycomponent2} from "./Library/Crazycomponent2";
 export {default as ColorSchema} from "./Library/Utility/ColorSchema";
 export {default as UtilityBoolean} from "./Library/Utility/Boolean";
 export {default as UtilityProcess} from "./Library/Utility/Process";
 export {default as UtilityObjects} from "./Library/Utility/Objects";
 export {default as UtilityStrings} from "./Library/Utility/Strings";
 export {default as Crazycomponent} from "./Library/Crazycomponent";
-export {default as Crazycomponent2} from "./Library/Crazycomponent2";
-export type { Crazycomponent2Property, Crazycomponent2Properties, Crazycomponent2Options,
-    Crazycomponent2Context, Crazycomponent2Template, Crazycomponent2Styles } from "./Library/Crazycomponent2";
 export {default as Crazynavigator} from "./Library/Crazynavigator";
 export {default as UtilityEvents} from "./Library/Utility/Events";
 export {default as UtilityFilter} from "./Library/Utility/Filter";

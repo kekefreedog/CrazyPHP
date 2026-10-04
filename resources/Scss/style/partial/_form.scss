@@ -205,7 +205,7 @@ $offset-input-switch: $offset-input + 20px;
     }
 
     /* Progress after wrapper */
-    .ts-wrapper + .progress {
+    .ts-wrapper ~ .progress[data-select-id] {
 
         /* Postion */
         position: absolute;

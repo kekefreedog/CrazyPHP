@@ -1,0 +1,11 @@
+{{!-- Form / separator: structural decoration, never a submitted control. --}}
+<div
+    partial="form/form_separator"
+    class="form-separator{{#if label}} form-separator-labeled{{/if}} {{#if _style.customClass.input-field}}{{_style.customClass.input-field}}{{else}}{{#is _style.separator.direction "vertical"}}s2{{else}}s12{{/is}}{{/if}}"
+    role="separator"
+    aria-orientation="{{#is _style.separator.direction "vertical"}}vertical{{else}}horizontal{{/is}}"
+    {{#if label}}aria-label="{{label}}"{{/if}}
+    {{#if _style.separator.align}}data-separator-align="{{_style.separator.align}}"{{/if}}
+>
+    {{#if label}}<span class="form-separator-label">{{label}}</span>{{/if}}
+</div>

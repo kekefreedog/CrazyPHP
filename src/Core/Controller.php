@@ -240,9 +240,9 @@ class Controller {
      * 
      * Getting data from an HTTP request
      * 
-     * @return array
+     * @return array|string
      */
-    public static function getHttpRequestData():array {
+    public static function getHttpRequestData():array|string {
 
         # Set result
         $result = [];
@@ -275,9 +275,19 @@ class Controller {
                         $result = MessagePack::decode((string) file_get_contents('php://input'));
     
                     }else
+                    # Check if json
+                    if(Server::hasContentType() && Server::getContentType() === "application/json"){
                 
                         # Try to get data
                         $result = json_decode(file_get_contents('php://input'), true);
+
+                    # Other type
+                    }else{
+                
+                        # Set result
+                        $result = file_get_contents('php://input');
+
+                    }
 
                 }
                 

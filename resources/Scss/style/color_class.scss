@@ -6,16 +6,24 @@
 /// @package    kzarshenas/crazyphp
 /// @author     kekefreedog <kevin.zarshenas@gmail.com>
 /// @copyright  2022-2023 Kévin Zarshenas
-/// /// /// 
+/// /// ///
+
+@use 'sass:map';
+@use 'sass:list';
+@use 'sass:math';
+@use 'sass:meta';
+
+@use './color_collection' as *;
+@use './color_gradient_collection' as *;
 
 /// Utilisites
 ///////////////////////////////////////////////////////
 ///
 
 /// Convert angle
-/// 
+///
 /// @author Chris Eppstein
-/// 
+///
 /// @param {Number} $value - Value to convert
 /// @param {String} $unit - Unit to convert to
 /// @return {Number} Converted angle
@@ -23,27 +31,27 @@
     $convertable-units: deg grad turn rad;
     $conversion-factors: 1 (10grad/9deg) (1turn/360deg) (3.1415926rad/180deg);
 
-    @if index($convertable-units, unit($value)) and index($convertable-units, $unit) {
-        @return $value / nth($conversion-factors, index($convertable-units, unit($value))) * nth($conversion-factors, index($convertable-units, $unit));
+    @if list.index($convertable-units, math.unit($value)) and list.index($convertable-units, $unit) {
+        @return $value / list.nth($conversion-factors, list.index($convertable-units, math.unit($value))) * list.nth($conversion-factors, list.index($convertable-units, $unit));
     }
 
-    @warn "Cannot convert `#{unit($value)}` to `#{$unit}`.";
+    @warn "Cannot convert `#{math.unit($value)}` to `#{$unit}`.";
 }
 
 /// Test if `$value` is an angle
-/// 
+///
 /// @param {*} $value - Value to test
 /// @return {Bool}
-/// 
+///
 @function is-direction($value) {
-    $is-direction: index((to top, to top right, to right top, to right, to bottom right, to right bottom, to bottom, to bottom left, to left bottom, to left, to left top, to top left), $value);
-    $is-angle: type-of($value)=='number' and index('deg''grad''turn''rad', unit($value));
+    $is-direction: list.index((to top, to top right, to right top, to right, to bottom right, to right bottom, to bottom, to bottom left, to left bottom, to left, to left top, to top left), $value);
+    $is-angle: meta.type-of($value)=='number' and list.index('deg''grad''turn''rad', math.unit($value));
 
     @return $is-direction or $is-angle;
 }
 
 /// Convert a direction to legacy syntax
-/// 
+///
 /// @param {Keyword | Angle} $value - Value to convert
 /// @require {function} is-direction
 /// @require {function} convert-angle
@@ -67,8 +75,8 @@
         to top left : bottom right
     );
 
-@if map-has-key($conversion-map, $value) {
-    @return map-get($conversion-map, $value);
+@if map.has-key($conversion-map, $value) {
+    @return map.get($conversion-map, $value);
 }
 
 @return 90deg - convert-angle($value, 'deg');
@@ -77,9 +85,6 @@
 /// Declare color class
 ///////////////////////////////////////////////////////
 ///
-// @migrated-to kmaterialize/sass/_colors.scss (Color Classes, Shade classes)
-// Base/shade background+text already existed in kmaterialize; this added
-// the missing -border variant plus .light-mode-*/.dark-mode-* variants.
 
 /* Generate class for colors */
 @each $color_name,
@@ -111,7 +116,7 @@ $color in $colors {
                 .light-mode-#{$color_name} {
                     background-color: $color_value  !important;
                 }
-    
+
                 /* Color text */
                 .light-mode-#{$color_name}-text {
                     color: $color_value  !important;
@@ -131,7 +136,7 @@ $color in $colors {
                 .dark-mode-#{$color_name} {
                     background-color: $color_value  !important;
                 }
-    
+
                 /* Color text */
                 .dark-mode-#{$color_name}-text {
                     color: $color_value  !important;
@@ -170,7 +175,7 @@ $color in $colors {
                 .light-mode-#{$color_name}.#{$color_type}-light-mode {
                     background-color: $color_value  !important;
                 }
-    
+
                 /* Color shade */
                 .light-mode-#{$color_name}-text.text-#{$color_type}-light-mode {
                     color: $color_value  !important;
@@ -190,7 +195,7 @@ $color in $colors {
                 .dark-mode-#{$color_name}.#{$color_type}-dark-mode {
                     background-color: $color_value  !important;
                 }
-    
+
                 /* Color shade */
                 .dark-mode-#{$color_name}-text.text-#{$color_type}-dark-mode {
                     color: $color_value  !important;
@@ -267,9 +272,8 @@ $color_value in $shades {
 
 }
 
-// @migrated-to kmaterialize/sass/_colors.scss (linear-gradient mixin + angle/direction helpers)
 /// Mixin printing a linear-gradient
-/// as well as a plain color fallback 
+/// as well as a plain color fallback
 /// and the `-webkit-` prefixed declaration
 /// @access public
 /// @param {String | List | Angle} $direction - Linear gradient direction
@@ -280,18 +284,17 @@ $color_value in $shades {
         $direction: 180deg;
     }
 
-    background: nth(nth($color-stops, 1), 1);
+    background: list.nth(list.nth($color-stops, 1), 1);
     // Remove important
     background: linear-gradient($direction, $color-stops);
 }
 
-// @migrated-to kmaterialize/sass/_colors.scss ($gradient-colors + class loop)
 // Gradient color mixin
 @each $gcolor_name,
 $gcolor in $gradient-colors {
-  $start-color: map-get($gcolor, start-color);
-  $end-color: map-get($gcolor, end-color);
-  $direction: map-get($gcolor, direction);
+  $start-color: map.get($gcolor, start-color);
+  $end-color: map.get($gcolor, end-color);
+  $direction: map.get($gcolor, direction);
 
   .#{$gcolor_name} {
     @include linear-gradient($direction, $start-color, $end-color);

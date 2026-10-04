@@ -28,6 +28,8 @@
 >
     {{!-- Items --}}
     {{#each form.items as |item|}}
+    {{#is item.type "separator"}}{{> form/form_separator item form=../form}}
+    {{else}}
     {{#if ../form.filter}}
         {{#is item.type "textarea"}}{{> filter/filter_text item form=../form type="text"}}
         {{else}}{{#is item.type "text"}}{{> filter/filter_text item form=../form}}
@@ -63,6 +65,7 @@
         {{else}}{{> form/form_default item form=../form}}
         {{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}{{/is}}
     {{/if}}
+    {{/is}}
     {{/each}}
 
     {{!-- Submit --}}

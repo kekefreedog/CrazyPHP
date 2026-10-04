@@ -121,6 +121,43 @@ class PartialTest extends TestCase {
     }
 
     /**
+     * Test Get All From Mixed Style Imports
+     *
+     * @return void
+     */
+    public function testGetAllFromMixedStyleImports():void {
+
+        # Prepare an isolated stylesheet with both supported loading styles
+        $path = tempnam(sys_get_temp_dir(), "crazyphp-partial-");
+        $this->assertNotFalse($path);
+
+        try{
+
+            file_put_contents($path, <<<'SCSS'
+@import './partial/legacy_widget';
+@include meta.load-css("./partial/modern_widget");
+@include meta.load-css( './partial/form' );
+@import './global';
+@include meta.load-css('./global');
+SCSS
+            );
+
+            # Check discovery and descending name-length order
+            $this->assertSame(
+                ["LegacyWidget", "ModernWidget", "Form"],
+                Partial::getAllFromStyle($path)
+            );
+
+        }finally{
+
+            # Remove the fixture even if an assertion fails
+            unlink($path);
+
+        }
+
+    }
+
+    /**
      * Test Get All From Script
      * 
      * @return void
@@ -132,7 +169,9 @@ class PartialTest extends TestCase {
             "PreloaderLinearIndeterminate",
             "Filter/FilterCheckbox",
             "Filter/FilterPassword",
+            "Filter/NumberEndpoint",
             "Filter/FilterDefault",
+            "Filter/NumberControl",
             "Filter/RangeInterval",
             "Filter/FilterHidden",
             "Filter/FilterNumber",
@@ -141,6 +180,7 @@ class PartialTest extends TestCase {
             "Filter/FilterColor",
             "Filter/FilterRadio",
             "Filter/FilterRange",
+            "Form/FormSeparator",
             "Filter/FilterDate",
             "Filter/FilterFile",
             "Filter/FilterText",
@@ -188,34 +228,37 @@ class PartialTest extends TestCase {
             3   =>  "Form",
             7   =>  "Filter/FilterCheckbox",
             8   =>  "Filter/FilterPassword",
-            9   =>  "Filter/FilterDefault",
-            10  =>  "Filter/RangeInterval",
-            11  =>  "Filter/FilterHidden",
-            12  =>  "Filter/FilterNumber",
-            13  =>  "Filter/FilterSelect",
-            14  =>  "Filter/FilterSwitch",
-            15  =>  "Filter/FilterColor",
-            16  =>  "Filter/FilterRadio",
-            17  =>  "Filter/FilterRange",
-            18  =>  "Filter/FilterDate",
-            19  =>  "Filter/FilterFile",
-            20  =>  "Filter/FilterText",
-            21  =>  "Form/FormCheckbox",
-            22  =>  "Form/FormPassword",
-            23  =>  "Form/FormTextarea",
-            24  =>  "Form/FormDefault",
-            25  =>  "Filter/Operator",
-            26  =>  "Form/FormHidden",
-            27  =>  "Form/FormNumber",
-            28  =>  "Form/FormSelect",
-            29  =>  "Form/FormSwitch",
-            30  =>  "Form/FormChips",
-            31  =>  "Form/FormColor",
-            32  =>  "Form/FormRadio",
-            33  =>  "Form/FormRange",
-            34  =>  "Form/FormDate",
-            35  =>  "Form/FormFile",
-            36  =>  "Form/FormOtp",
+            9   =>  "Filter/NumberEndpoint",
+            10  =>  "Filter/FilterDefault",
+            11  =>  "Filter/NumberControl",
+            12  =>  "Filter/RangeInterval",
+            13  =>  "Filter/FilterHidden",
+            14  =>  "Filter/FilterNumber",
+            15  =>  "Filter/FilterSelect",
+            16  =>  "Filter/FilterSwitch",
+            17  =>  "Filter/FilterColor",
+            18  =>  "Filter/FilterRadio",
+            19  =>  "Filter/FilterRange",
+            20  =>  "Form/FormSeparator",
+            21  =>  "Filter/FilterDate",
+            22  =>  "Filter/FilterFile",
+            23  =>  "Filter/FilterText",
+            24  =>  "Form/FormCheckbox",
+            25  =>  "Form/FormPassword",
+            26  =>  "Form/FormTextarea",
+            27  =>  "Form/FormDefault",
+            28  =>  "Filter/Operator",
+            29  =>  "Form/FormHidden",
+            30  =>  "Form/FormNumber",
+            31  =>  "Form/FormSelect",
+            32  =>  "Form/FormSwitch",
+            33  =>  "Form/FormChips",
+            34  =>  "Form/FormColor",
+            35  =>  "Form/FormRadio",
+            36  =>  "Form/FormRange",
+            37  =>  "Form/FormDate",
+            38  =>  "Form/FormFile",
+            39  =>  "Form/FormOtp",
         ];
 
         # Get all partial from ts
@@ -347,6 +390,15 @@ class PartialTest extends TestCase {
             "Form/FormChips"                  =>  [
                 "template"  => "@crazyphp_root/resources/Hbs/Partials/form/form_chips.hbs",
             ],
+            "Filter/NumberEndpoint"           => [
+                "template"  => "@crazyphp_root/resources/Hbs/Partials/filter/_number_endpoint.hbs",
+            ],
+            "Filter/NumberControl"            => [
+                "template"  => "@crazyphp_root/resources/Hbs/Partials/filter/_number_control.hbs",
+            ],
+            "Form/FormSeparator"              => [
+                "template"  => "@crazyphp_root/resources/Hbs/Partials/form/form_separator.hbs",
+            ],
             "Form/FormOtp"                    =>  [
                 "template"  => "@crazyphp_root/resources/Hbs/Partials/form/form_otp.hbs",
             ],
@@ -457,6 +509,9 @@ class PartialTest extends TestCase {
             "Form/FormTextarea"             =>  "Form/FormTextarea",
             "Form/FormChips"                =>  "Form/FormChips",
             "Form/FormOtp"                  =>  "Form/FormOtp",
+            "Filter/NumberEndpoint"           => "Filter/NumberEndpoint",
+            "Filter/NumberControl"            => "Filter/NumberControl",
+            "Form/FormSeparator"              => "Form/FormSeparator",
         ];
 
         # Get all partial from ts

@@ -85,6 +85,12 @@ export default class SelectType extends FormType implements FormInputType {
             // Check input el
             if(inputEl instanceof HTMLInputElement || inputEl instanceof HTMLSelectElement){
 
+                // Set destroyed
+                let destroyed = false;
+
+                // Set active requests
+                let activeRequests = 0;
+
                 // Pending Requests
                 const pendingRequests:Promise<void>[] = [];
 
@@ -183,111 +189,144 @@ export default class SelectType extends FormType implements FormInputType {
                         // Open progression
                         progressEl?.removeAttribute("disabled");
 
-                        // Let result
-                        let result = Crazyurl.extractQueryAndUrl(`${window.location.origin}${remoteData.url}`);
+                        // Resolve path values on every request, before URL parsing encodes braces.
+                        const remoteUrl = this._resolveRemoteUrl(remoteData.url, formEl, helpers);
 
-                        // Set queryParam
-                        let queryParam = result.query;
+                        // Check input el
+                        if(inputEl.disabled || remoteUrl === null){
 
-                        // Get parent form
-                        let queryFormEl = inputEl.closest(`form[partial="form"]`);
-
-                        // Check param
-                        if(Object.keys(queryParam).length)
-
-                            // Update query
-                            queryParam = helpers.processQueryParams(queryParam, queryFormEl instanceof HTMLFormElement ? queryFormEl : null);
-
-                        // New query
-                        let query = new Crazyrequest(
-                            result.url,
-                            {
-                                method: "get",
-                                cache: false,
-                                responseType: "json",
-                                from: "internal"
-                            }
-                        ).fetch(queryParam).then(
-                            value => {
-
-                                // Check if dataKey
-                                if(typeof remoteData.dataKey === "string" && remoteData.dataKey)
-
-                                    // Set right value
-                                    value.results = remoteData.dataKey.split('.').reduce((acc:any, key:any) => acc && acc[key], value.results);
-
-                                // Check value results
-                                if(
-                                    value &&
-                                    "results" in value &&
-                                    Array.isArray(value.results) &&
-                                    value.results.length
-                                )
-
-                                    // Iteration value
-                                    for(let key in value.results)
-
-                                        // Set key
-                                        value.results[key] = Objects.flatten(value.results[key], "", ".");
-
-                                // Callback with value retrieve
-                                let call = callback(value.results);
-
-                            }
-                        )
-                        .then(() => {
-
-                            // Open progression
+                            // Set progress el
                             progressEl?.setAttribute("disabled", "");
 
-                            // Get value to set
-                            let selectValueToSet = inputEl.dataset.selectValueToSet;
+                            // Call callback
+                            callback();
 
-                            // Check value to set
-                            if(selectValueToSet){
+                        }else{
 
-                                // Parse value
-                                let parsedValueToSet = JSON.parse(selectValueToSet);
+                            // Keep query placeholders in the existing query processing path.
+                            let result = Crazyurl.extractQueryAndUrl(`${window.location.origin}${remoteUrl}`);
 
-                                // Get value
-                                let value = parsedValueToSet.value;
+                            // Set queryParam
+                            let queryParam = result.query;
 
-                                // Get value id
-                                let valueId = parsedValueToSet.valuesID;
+                            // Get parent form
+                            let queryFormEl = inputEl.closest(`form[partial="form"]`);
 
-                                // Remove value to set
-                                delete inputEl.dataset.selectValueToSet;
+                            // Check param
+                            if(Object.keys(queryParam).length)
 
-                                // Set value
-                                this.set(inputEl, value, valueId, formEl);
+                                // Update query
+                                queryParam = helpers.processQueryParams(queryParam, queryFormEl instanceof HTMLFormElement ? queryFormEl : null);
 
-                            }
+                            // Increment requests
+                            activeRequests++;
 
-                        })
-                        .then(() => {
+                            // New query
+                            let query = new Crazyrequest(
+                                result.url,
+                                {
+                                    method: "get",
+                                    cache: false,
+                                    responseType: "json",
+                                    from: "internal"
+                                }
+                            ).fetch(queryParam).then(
+                                value => {
 
-                            // Check depends
-                            if(inputEl.dataset.depends && inputEl.dataset.dependsValue){
+                                    if(destroyed || inputEl.disabled){
 
-                                // Read inputEl.dataset.dependsValue
-                                let valueParsed = JSON.parse(inputEl.dataset.dependsValue);
 
-                                // Check parsed
-                                if(valueParsed.value && valueParsed.valuesID){
+                                    }else{
 
-                                    // Check if multiple
-                                    if(inputEl.multiple){
+                                        // Check if dataKey
+                                        if(typeof remoteData.dataKey === "string" && remoteData.dataKey)
 
+                                            // Set right value
+                                            value.results = remoteData.dataKey.split('.').reduce((acc:any, key:any) => acc && acc[key], value.results);
+
+                                        // Check value results
+                                        if(
+                                            value &&
+                                            "results" in value &&
+                                            Array.isArray(value.results) &&
+                                            value.results.length
+                                        )
+
+                                            // Iteration value
+                                            for(let key in value.results)
+
+                                                // Set key
+                                                value.results[key] = Objects.flatten(value.results[key], "", ".");
+
+                                        // Callback with value retrieve
+                                        let call = callback(value.results);
 
                                     }
-                                    // Check if single
-                                    else{
 
-                                        // Check value already set
-                                        if(!inputEl.value){
+                                }
+                            )
+                            .then(() => {
 
-                                            // Set value
-                                            this.set(inputEl, valueParsed.value, valueParsed.valuesID, formEl);
+                                if(destroyed || inputEl.disabled){
+
+
+                                }else{
+
+                                    // Get value to set
+                                    let selectValueToSet = inputEl.dataset.selectValueToSet;
+
+                                    // Check value to set
+                                    if(selectValueToSet){
+
+                                        // Parse value
+                                        let parsedValueToSet = JSON.parse(selectValueToSet);
+
+                                        // Get value
+                                        let value = parsedValueToSet.value;
+
+                                        // Get value id
+                                        let valueId = parsedValueToSet.valuesID;
+
+                                        // Remove value to set
+                                        delete inputEl.dataset.selectValueToSet;
+
+                                        // Set value
+                                        this.set(inputEl, value, valueId, formEl);
+
+                                    }
+
+                                }
+
+                            })
+                            .then(() => {
+
+                                if(destroyed || inputEl.disabled){
+                                
+                                }else
+                                // Check depends
+                                if(inputEl.dataset.depends && inputEl.dataset.dependsValue){
+
+                                    // Read inputEl.dataset.dependsValue
+                                    let valueParsed = JSON.parse(inputEl.dataset.dependsValue);
+
+                                    // Check parsed
+                                    if(valueParsed.value && valueParsed.valuesID){
+
+                                        // Check if multiple
+                                        if(inputEl.multiple){
+
+
+                                        }
+                                        // Check if single
+                                        else{
+
+                                            // Check value already set
+                                            if(!inputEl.value){
+
+                                                // Set value
+                                                this.set(inputEl, valueParsed.value, valueParsed.valuesID, formEl);
+
+                                            }
 
                                         }
 
@@ -295,19 +334,37 @@ export default class SelectType extends FormType implements FormInputType {
 
                                 }
 
-                            }
+                            })
+                            .catch(() => {
+                                if(!destroyed)
+                                    callback([]);
+                            })
+                            .finally(() => {
 
-                        })
-                        .catch(() => callback([]))
-                        .finally(() => {
+                                // Active request decrement
+                                activeRequests--;
 
-                            // Remove completed request from pendingRequests
-                            pendingRequests.splice(pendingRequests.indexOf(query), 1);
+                                // Check destroyed
+                                if(!destroyed && activeRequests === 0)
 
-                        });
+                                    // Set progress el
+                                    progressEl?.setAttribute("disabled", "");
 
-                        // Track the request
-                        pendingRequests.push(query);
+                                // Remove only requests tracked by this initializer.
+                                const index = pendingRequests.indexOf(query);
+
+                                // Check index
+                                if(index !== -1)
+
+                                    // Slice pending requests
+                                    pendingRequests.splice(index, 1);
+
+                            });
+
+                            // Track the request
+                            pendingRequests.push(query);
+
+                        }
 
                     };
 
@@ -317,132 +374,163 @@ export default class SelectType extends FormType implements FormInputType {
                         // Open progression
                         progressEl?.removeAttribute("disabled");
 
-                        // Let result
-                        let result = Crazyurl.extractQueryAndUrl(`${window.location.origin}${remoteData.url}`);
+                        // Resolve path values on every request, before URL parsing encodes braces.
+                        const remoteUrl = this._resolveRemoteUrl(remoteData.url, formEl, helpers);
 
-                        // Set queryParam
-                        let queryParam = result.query;
+                        // Check input
+                        if(inputEl.disabled || remoteUrl === null){
 
-                        // Get parent form
-                        let queryFormEl = inputEl.closest(`form[partial="form"]`);
+                            // Update progress el
+                            progressEl?.setAttribute("disabled", "");
+                            
+                        }else{
 
-                        // Check param
-                        if(Object.keys(queryParam).length)
+                            // Keep query placeholders in the existing query processing path.
+                            let result = Crazyurl.extractQueryAndUrl(`${window.location.origin}${remoteUrl}`);
 
-                            // Update query
-                            queryParam = helpers.processQueryParams(queryParam, queryFormEl instanceof HTMLFormElement ? queryFormEl : null);
+                            // Set queryParam
+                            let queryParam = result.query;
 
-                        // New query
-                        let query = new Crazyrequest(
-                            result.url,
-                            {
-                                method: "get",
-                                cache: false,
-                                responseType: "json",
-                                from: "internal"
-                            }
-                        ).fetch(queryParam)
-                        // Add options found
-                        .then(
-                            value => {
+                            // Get parent form
+                            let queryFormEl = inputEl.closest(`form[partial="form"]`);
 
-                                // Check if dataKey
-                                if(typeof remoteData.dataKey === "string" && remoteData.dataKey)
+                            // Check param
+                            if(Object.keys(queryParam).length)
 
-                                    // Set right value
-                                    value.results = remoteData.dataKey.split('.').reduce((acc:any, key:any) => acc && acc[key], value.results);
+                                // Update query
+                                queryParam = helpers.processQueryParams(queryParam, queryFormEl instanceof HTMLFormElement ? queryFormEl : null);
 
-                                // Check value results
-                                if(
-                                    value &&
-                                    "results" in value &&
-                                    Array.isArray(value.results) &&
-                                    value.results.length
-                                )
+                            activeRequests++;
 
-                                    // Iteration value
-                                    for(let key in value.results)
+                            // New query
+                            let query = new Crazyrequest(
+                                result.url,
+                                {
+                                    method: "get",
+                                    cache: false,
+                                    responseType: "json",
+                                    from: "internal"
+                                }
+                            ).fetch(queryParam)
+                            // Add options found
+                            .then(
+                                value => {
 
-                                        // Set key
-                                        value.results[key] = Objects.flatten(value.results[key], "", ".");
+                                    if(destroyed || inputEl.disabled){
 
-                                // Add options to tom
-                                selectInstance.addOptions(value.results);
 
-                            }
-                        // Check default and set it
-                        ).then(
-                            () => {
+                                    }else{
 
-                                // Check default in input el
-                                if(inputEl.hasAttribute("default")){
+                                        // Check if dataKey
+                                        if(typeof remoteData.dataKey === "string" && remoteData.dataKey)
 
-                                    // Get default
-                                    let defaultValue = inputEl.getAttribute("default");
+                                            // Set right value
+                                            value.results = remoteData.dataKey.split('.').reduce((acc:any, key:any) => acc && acc[key], value.results);
 
-                                    // Check type of default value
-                                    if(typeof defaultValue === "string")
+                                        // Check value results
+                                        if(
+                                            value &&
+                                            "results" in value &&
+                                            Array.isArray(value.results) &&
+                                            value.results.length
+                                        )
+
+                                            // Iteration value
+                                            for(let key in value.results)
+
+                                                // Set key
+                                                value.results[key] = Objects.flatten(value.results[key], "", ".");
+
+                                        // Add options to tom
+                                        selectInstance.addOptions(value.results);
+
+                                    }
+
+                                }
+                            // Check default and set it
+                            ).then(
+                                () => {
+
+                                    if(destroyed || inputEl.disabled){
+                                    
+                                    }else
+                                    // Check default in input el
+                                    if(inputEl.hasAttribute("default")){
+
+                                        // Get default
+                                        let defaultValue = inputEl.getAttribute("default");
+
+                                        // Check type of default value
+                                        if(typeof defaultValue === "string")
+
+                                            // Set value
+                                            selectInstance.setValue(defaultValue);
+
+                                    }
+
+                                }
+                            )
+                            .then(() => {
+
+                                if(destroyed || inputEl.disabled){
+                                    
+                                }else{
+
+                                    // Get value to set
+                                    let selectValueToSet = inputEl.dataset.selectValueToSet;
+
+                                    // Check value to set
+                                    if(selectValueToSet){
+
+                                        // Parse value
+                                        let parsedValueToSet = JSON.parse(selectValueToSet);
+
+                                        // Get value
+                                        let value = parsedValueToSet.value;
+
+                                        // Get value id
+                                        let valueId = parsedValueToSet.valuesID;
+
+                                        // Remove value to set
+                                        delete inputEl.dataset.selectValueToSet;
 
                                         // Set value
-                                        selectInstance.setValue(defaultValue);
+                                        this.set(inputEl, value, valueId, formEl);
+
+                                    }
 
                                 }
 
-                            }
-                        )
-                        .then(() => {
+                            })
+                            .then(() => {
 
-                            // Open progression
-                            progressEl?.setAttribute("disabled", "");
+                                if(destroyed || inputEl.disabled){
+                                    
+                                }else
+                                // Check depends
+                                if(inputEl.dataset.depends && inputEl.dataset.dependsValue){
 
-                            // Get value to set
-                            let selectValueToSet = inputEl.dataset.selectValueToSet;
+                                    // Read inputEl.dataset.dependsValue
+                                    let valueParsed = JSON.parse(inputEl.dataset.dependsValue);
 
-                            // Check value to set
-                            if(selectValueToSet){
+                                    // Check parsed
+                                    if(valueParsed.value && valueParsed.valuesID){
 
-                                // Parse value
-                                let parsedValueToSet = JSON.parse(selectValueToSet);
-
-                                // Get value
-                                let value = parsedValueToSet.value;
-
-                                // Get value id
-                                let valueId = parsedValueToSet.valuesID;
-
-                                // Remove value to set
-                                delete inputEl.dataset.selectValueToSet;
-
-                                // Set value
-                                this.set(inputEl, value, valueId, formEl);
-
-                            }
-
-                        })
-                        .then(() => {
-
-                            // Check depends
-                            if(inputEl.dataset.depends && inputEl.dataset.dependsValue){
-
-                                // Read inputEl.dataset.dependsValue
-                                let valueParsed = JSON.parse(inputEl.dataset.dependsValue);
-
-                                // Check parsed
-                                if(valueParsed.value && valueParsed.valuesID){
-
-                                    // Check if multiple
-                                    if(inputEl.multiple){
+                                        // Check if multiple
+                                        if(inputEl.multiple){
 
 
-                                    }
-                                    // Check if single
-                                    else{
+                                        }
+                                        // Check if single
+                                        else{
 
-                                        // Check value already set
-                                        if(!inputEl.value){
+                                            // Check value already set
+                                            if(!inputEl.value){
 
-                                            // Set value
-                                            this.set(inputEl, valueParsed.value, valueParsed.valuesID, formEl);
+                                                // Set value
+                                                this.set(inputEl, valueParsed.value, valueParsed.valuesID, formEl);
+
+                                            }
 
                                         }
 
@@ -450,15 +538,31 @@ export default class SelectType extends FormType implements FormInputType {
 
                                 }
 
-                            }
+                            })
+                            .catch(() => {})
+                            .finally(() => {
 
-                        })
-                        .finally(() => {
+                                // Decrement active request
+                                activeRequests--;
 
-                            // Remove completed request from pendingRequests
-                            pendingRequests.splice(pendingRequests.indexOf(query), 1);
+                                // Check destroyed
+                                if(!destroyed && activeRequests === 0)
 
-                        });
+                                    // Set disabled on progression
+                                    progressEl?.setAttribute("disabled", "");
+
+                                // Remove only requests tracked by this initializer.
+                                const index = pendingRequests.indexOf(query);
+
+                                // Check index
+                                if(index !== -1)
+
+                                    // Slice in pending requests
+                                    pendingRequests.splice(index, 1);
+
+                            });
+
+                        }
 
                     }
 
@@ -466,6 +570,14 @@ export default class SelectType extends FormType implements FormInputType {
 
                 // Init maska
                 let selectInstance = new TomSelect(inputEl, option);
+
+                // On destroy
+                selectInstance.on("destroy", () => { 
+                    
+                    // Set destroy
+                    destroyed = true;
+                
+                });
 
                 // Check addOption is callable
                 if(addOption !== null && typeof addOption === "function"){
@@ -850,6 +962,65 @@ export default class SelectType extends FormType implements FormInputType {
 
         // Delegate to the regular setter
         this.set(itemEl, value, valuesID, formEl, options);
+
+    }
+
+    /** Private Methods
+     ******************************************************
+     */
+
+    /**
+     * Resolve remote-select path placeholders without changing query interpolation.
+     *
+     * @param url
+     * @param form
+     * @param helpers
+     * @returns {string|null}
+     */
+    private _resolveRemoteUrl(url:string, form:HTMLFormElement, helpers:FormInputTypeHelpers):string|null {
+
+        // Set complete
+        let complete = true;
+
+        // Set query start
+        const queryStart = url.indexOf("?");
+
+        // Set path
+        const path = queryStart < 0 ? url : url.slice(0, queryStart);
+
+        // Set query
+        const query = queryStart < 0 ? "" : url.slice(queryStart);
+
+        // Set resolved
+        const resolved = path.replace(/\{\{(.*?)\}\}/g, placeholder => {
+
+            // Set result
+            let result = "";
+
+            // Set value
+            const value = helpers.processQueryParams({value: placeholder}, form).value;
+
+            // Set value
+            if(value === undefined || value === null || value === "" || value === placeholder)
+
+                // Set complete
+                complete = false;
+
+            else
+            
+                // Set result
+                result = encodeURIComponent(String(value));
+
+            // Return result
+            return result;
+
+        });
+
+        // Return complete
+        return complete 
+            ? resolved + query 
+            : null
+        ;
 
     }
 

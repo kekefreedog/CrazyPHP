@@ -1,0 +1,21 @@
+{{!-- Optional bounds share one serialized condition; ordinary numbers keep their operator. --}}
+<div partial="filter/filter_number" class="filter-field s12"{{#if readonly}} data-filter-readonly{{/if}}>
+    {{#if bounds.enabled}}
+    <fieldset class="filter-number-bounds" data-number-bounds>
+        <legend>{{label}}</legend>
+        <input type="hidden" data-type="number" data-filter-number-bounds
+            id="{{form.id}}_{{name}}" name="{{name}}" value="{{bounds.value}}" default="{{bounds.value}}"
+            {{#if disabled}}disabled{{else}}{{#if form.onready}}disabled="loading"{{/if}}{{/if}} {{#if readonly}}readonly{{/if}}>
+        <div class="filter-number-endpoints">
+            {{> filter/_number_endpoint bound=bounds.min endpoint="min"}}
+            {{> filter/_number_endpoint bound=bounds.max endpoint="max"}}
+        </div>
+        <span id="{{form.id}}_{{name}}_error" data-number-bounds-error role="status" hidden></span>
+    </fieldset>
+    {{else}}
+    {{> filter/_operator ordered=true}}
+    <div class="filter-value">
+        {{> form/form_number}}
+    </div>
+    {{/if}}
+</div>

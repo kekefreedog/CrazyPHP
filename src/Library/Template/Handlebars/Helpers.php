@@ -29,6 +29,62 @@ use Exception;
  */
 class Helpers {
 
+    /**
+     * Normalize optional Number filter bounds, preserving explicit empty values.
+     */
+    public static function numberFilterBounds(mixed $config = null, mixed $options = null):array {
+
+        # Set config
+        $config = is_array($config) 
+            ? $config 
+            : []
+        ;
+
+        # Set result
+        $result = ["enabled" => count(array_intersect(array_keys($config), ["min", "max", "start", "end", "minLabel", "maxLabel"])) > 0];
+
+        # Resolve bounds and their legacy aliases independently.
+        foreach([["min", "start", "Min"], ["max", "end", "Max"]] as [$bound, $alias, $fallback]){
+
+            # Set settings
+            $setting = array_key_exists($bound, $config) 
+                ? $config[$bound] 
+                : ($config[$alias] ?? null)
+            ;
+
+            # Set value
+            $value = is_array($setting) 
+                ? ($setting["value"] ?? null) 
+                : $setting
+            ;
+
+            # Set result
+            $result[$bound] = [
+                "label"     => (string)((is_array($setting)
+                    ? ($setting["label"] ?? null) 
+                    : null) ?? $config[$bound."Label"] ?? $fallback),
+                "value"     => is_numeric($value) && is_finite((float)$value) 
+                    ? (string)(0 + $value) 
+                    : ""
+                ,
+            ];
+
+        }
+
+        # Set min
+        $min = $result["min"]["value"];
+        
+        # Set max
+        $max = $result["max"]["value"];
+        
+        # Set result
+        $result["value"] = $min !== "" && $max !== "" ? "=[$min:$max]" : ($min !== "" ? ">=$min" : ($max !== "" ? "<=$max" : ""));
+
+        # Return result
+        return $result;
+
+    }
+
     /** Public methods | Get Helpers
      ******************************************************
      */

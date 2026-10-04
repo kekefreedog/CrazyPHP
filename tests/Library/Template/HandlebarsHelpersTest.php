@@ -32,9 +32,9 @@ use ReflectionClass;
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2024 Kévin Zarshenas
  */
-class HandlebarsHelpersTest extends TestCase{
+class HandlebarsHelpersTest extends TestCase {
 
-    /** Private parameters
+    /** Private Parameters
      ******************************************************
      */
 
@@ -57,9 +57,9 @@ class HandlebarsHelpersTest extends TestCase{
         # Setup env
         Env::set([
             # Set the framework root for test resources
-            "crazyphp_root"     =>  dirname(__DIR__, 3),
+            "crazyphp_root" => dirname(__DIR__, 3),
             # Enable test mode
-            "phpunit_test"      =>  true,
+            "phpunit_test" => true,
         ]);
 
         # Save the original timezone
@@ -69,7 +69,6 @@ class HandlebarsHelpersTest extends TestCase{
         date_default_timezone_set("UTC");
 
     }
-
 
     /**
      * Tear Down After Class
@@ -93,7 +92,40 @@ class HandlebarsHelpersTest extends TestCase{
      */
 
     /**
+     * Test Number Filter Bounds
+     *
+     * Accept shorthand, labels, explicit nulls and legacy aliases.
+     *
+     * @return void
+     */
+    public function testNumberFilterBounds():void {
+
+        # Assert shorthand and numeric endpoint normalization
+        $this->assertFalse(Helpers::numberFilterBounds([])["enabled"]);
+        $this->assertSame(">=0", Helpers::numberFilterBounds(["min" => 0])["value"]);
+        $this->assertSame("<=50", Helpers::numberFilterBounds(["max" => 50])["value"]);
+        $this->assertSame("=[-2.5:50]", Helpers::numberFilterBounds(["min" => -2.5, "max" => ["value" => 50]])["value"]);
+
+        # Normalize explicit nulls and labels alongside legacy aliases
+        $result = Helpers::numberFilterBounds([
+            "min"   => null,
+            "start" => 10,
+            "max" => ["label" => "At most"],
+            "end" => 50,
+        ]);
+
+        # Assert explicit bounds take precedence over legacy aliases
+        $this->assertTrue($result["enabled"]);
+        $this->assertSame("", $result["value"]);
+        $this->assertSame("At most", $result["max"]["label"]);
+        $this->assertSame("=[10:50]", Helpers::numberFilterBounds(["start" => 10, "end" => 50])["value"]);
+
+    }
+
+    /**
      * Test List Array
+     *
+     * Verify registered template helpers.
      *
      * @return void
      */
@@ -122,6 +154,7 @@ class HandlebarsHelpersTest extends TestCase{
 
                 # Assert each included helper has a dedicated test
                 $this->assertTrue(method_exists($this, "test".ucfirst($name)), "Missing helper test: ".$name);
+
         }
 
         # Get all public helper methods
@@ -1219,7 +1252,7 @@ class HandlebarsHelpersTest extends TestCase{
 
     }
 
-    /** Private methods
+    /** Private Methods
      ******************************************************
      */
 
@@ -1236,11 +1269,11 @@ class HandlebarsHelpersTest extends TestCase{
         # Return block callbacks
         return [
             # Pass named helper options to the callback
-            "hash"      =>  $hash,
+            "hash" => $hash,
             # Return the marker for the matching block
-            "fn"        =>  fn(mixed ...$inputs):string => "yes",
+            "fn" => fn(mixed ...$inputs):string => "yes",
             # Return the marker for the inverse block
-            "inverse"   =>  fn(mixed ...$inputs):string => "no",
+            "inverse" => fn(mixed ...$inputs):string => "no",
         ];
 
     }
@@ -1260,7 +1293,8 @@ class HandlebarsHelpersTest extends TestCase{
         $cacheRoot = dirname(__DIR__, 2)."/.cache";
 
         # Create the cache directory if needed
-        if(!is_dir($cacheRoot)) mkdir($cacheRoot, 0777, true);
+        if(!is_dir($cacheRoot))
+            mkdir($cacheRoot, 0777, true);
 
         # Choose a unique directory for this fixture
         $root = $cacheRoot."/handlebars-helpers-".bin2hex(random_bytes(8));
@@ -1289,10 +1323,11 @@ class HandlebarsHelpersTest extends TestCase{
         # Save the current working directory
         $cwd = getcwd();
 
-        try {
+        try{
 
             # Create each fixture directory
-            foreach($directories as $directory) mkdir($directory);
+            foreach($directories as $directory)
+                mkdir($directory);
 
             # Copy the real HTTP status definitions into the fixture
             copy(dirname(__DIR__, 3)."/resources/Json/http_status_code.json", $fixture);
@@ -1303,19 +1338,22 @@ class HandlebarsHelpersTest extends TestCase{
             # Return the selected field or complete status context
             return Helpers::httpStatusCode($error, $what, ["fn" => fn(mixed $value):mixed => $value]);
 
-        } finally {
+        }finally{
 
             # Restore the original working directory
             chdir($cwd);
 
             # Remove the copied status definitions
-            if(is_file($fixture)) unlink($fixture);
+            if(is_file($fixture))
+                unlink($fixture);
 
             # Remove fixture directories from deepest to shallowest
             foreach(array_reverse($directories) as $directory){
 
                 # Remove the empty fixture directory
-                if(is_dir($directory)) rmdir($directory);
+                if(is_dir($directory))
+                    rmdir($directory);
+
             }
 
         }
