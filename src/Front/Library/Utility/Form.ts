@@ -1545,6 +1545,8 @@ export default class Form {
         // Check adapter
         if(this._options.adapter === undefined){
 
+            // Keep the existing input handlers when no adapter is selected.
+            return;
 
         }else
         // Check adapter
