@@ -15,18 +15,13 @@ namespace CrazyPHP\Model\Partial;
 /**
  * Dependances
  */
-use CrazyPHP\Library\File\Config as FileConfig;
 use CrazyPHP\Library\Template\Handlebars;
 use CrazyPHP\Library\Model\CrazyModel;
 use CrazyPHP\Exception\CrazyException;
-use CrazyPHP\Library\String\Strings;
 use CrazyPHP\Interface\CrazyCommand;
-use CrazyPHP\Library\Router\Router;
-use CrazyPHP\Library\Array\Arrays;
+use CrazyPHP\Library\File\Partial;
 use CrazyPHP\Library\Form\Process;
 use CrazyPHP\Library\File\File;
-use CrazyPHP\Library\File\Json;
-use CrazyPHP\Library\File\Partial;
 use CrazyPHP\Model\Env;
 
 /**

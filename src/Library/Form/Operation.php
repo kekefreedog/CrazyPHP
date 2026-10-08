@@ -94,8 +94,8 @@ class Operation {
      ******************************************************
      */
 
-    /** @var string $_currentOperations */
-    private $_currentOperations = [];
+    /** @var array $_currentOperations */
+    private array $_currentOperations = [];
 
     /**
      * Constructor

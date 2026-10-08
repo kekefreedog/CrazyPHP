@@ -13,7 +13,6 @@
  */
 import {default as PageLoader} from "./../Loader/Page";
 import {default as PageError} from './../Error/Page';
-import Crazypage from '../Crazypage';
 
 /**
  * Crazy Page Current

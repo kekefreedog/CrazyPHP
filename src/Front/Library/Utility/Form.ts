@@ -14,7 +14,6 @@
 import type CrazyFormAdapter from "../../../Interface/CrazyFormAdapter";
 import { FormSelect } from "@materializecss/materialize";
 import type { FormInputType } from './Form/FormType';
-import FormType from './Form/FormType';
 import {default as PageError} from './../Error/Page';
 import {default as UtilityStrings} from './Strings';
 import UtilityBoolean from '../Utility/Boolean';
@@ -24,6 +23,7 @@ import Crazyrequest from '../Crazyrequest';
 import SelectType from './Form/Select';
 import HiddenType from './Form/Hidden';
 import NumberType from './Form/Number';
+import FormType from './Form/FormType';
 import ColorType from './Form/Color';
 import EmailType from './Form/Email';
 import RadioType from './Form/Radio';

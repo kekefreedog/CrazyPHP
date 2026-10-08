@@ -12,8 +12,8 @@
  */
 namespace CrazyPHP\Library\File;
 
-/** Dependances
- * 
+/**
+ * Dependances
  */
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\Cli\Command;

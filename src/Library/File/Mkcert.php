@@ -16,7 +16,6 @@ namespace CrazyPHP\Library\File;
  * Dependances
  */
 use CrazyPHP\Exception\CrazyException;
-use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\Cli\Command;
 use CrazyPHP\Library\File\File;
 

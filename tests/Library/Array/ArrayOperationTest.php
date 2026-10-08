@@ -16,8 +16,8 @@ namespace Tests\Library\Array;
  * Dependances
  */
 use CrazyPHP\Library\Array\ArrayOperation;
-use CrazyPHP\Model\Env;
 use PHPUnit\Framework\TestCase;
+use CrazyPHP\Model\Env;
 
 /**
  * Array Operation Test

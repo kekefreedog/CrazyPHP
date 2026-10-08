@@ -11,8 +11,8 @@
 /**
  * Dependances
  */
-import { gzip, ungzip } from 'pako';
 import { unpack, pack } from 'msgpackr';
+import { gzip, ungzip } from 'pako';
 
 /**
  * Arrays

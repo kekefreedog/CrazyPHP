@@ -12,8 +12,8 @@
  */
 namespace CrazyPHP\Library\File;
 
-/** Dependances
- * 
+/** 
+ * Dependances
  */
 use CrazyPHP\Library\Time\DateTime;
 use CrazyPHP\Library\Form\Process;

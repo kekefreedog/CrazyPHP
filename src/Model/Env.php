@@ -16,9 +16,9 @@ namespace CrazyPHP\Model;
  * 
  */
 use CrazyPHP\Exception\CrazyException;
+use CrazyPHP\Library\System\Server;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\Form\Process;
-use CrazyPHP\Library\System\Server;
 
 /**
  * Config

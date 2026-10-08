@@ -11,7 +11,6 @@
 /**
  * Dependances
  */
-import {default as PageError} from './../Error/Page';
 import Arrays from '../Utility/Arrays';
 import Crazypage from '../Crazypage';
 

@@ -29,6 +29,7 @@ export function declareAll(modules:Object):void {
         // Iteration of modules
         for(let module in modules){
             
+            // Get mdocules
             let classCallable = modules[module];
 
             // Declare current module

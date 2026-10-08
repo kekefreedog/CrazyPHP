@@ -9,7 +9,7 @@
  */
 
 /**
- * Dependances
+ * Exports
  */
 export type { Crazycomponent2Property, Crazycomponent2Properties, Crazycomponent2Options, Crazycomponent2Context, Crazycomponent2Template, Crazycomponent2Styles } from "./Library/Crazycomponent2";
 export type {default as CrazyFormAdapter, CrazyFormAdapterOptions} from "../Interface/CrazyFormAdapter";

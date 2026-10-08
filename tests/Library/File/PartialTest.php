@@ -15,8 +15,6 @@ namespace Tests\Library\File;
 /**
  * Dependances
  */
-
-use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\File\Partial;
 use PHPUnit\Framework\TestCase;
 use CrazyPHP\Model\Env;

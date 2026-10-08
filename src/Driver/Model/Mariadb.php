@@ -15,7 +15,6 @@ namespace CrazyPHP\Driver\Model;
 /**
  * Dependances
  */
-
 use CrazyPHP\Library\Database\Driver\Mariadb as MariadbModel;
 use CrazyPHP\Library\Database\Operation\SqlOperation;
 use CrazyPHP\Library\File\Config as FileConfig;

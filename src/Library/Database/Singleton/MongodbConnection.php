@@ -182,6 +182,7 @@ class MongodbConnection implements CrazySingleton {
         }
         
         # Try
+        /** @disregard P1009 */
         try{
 
             # New client
@@ -199,7 +200,6 @@ class MongodbConnection implements CrazySingleton {
             ];
 
         # Catch
-        /** @disregard P1009 */
         }catch(InvalidArgumentException|RuntimeException|Exception $e) {
 
             # New Exception

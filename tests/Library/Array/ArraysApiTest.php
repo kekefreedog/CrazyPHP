@@ -15,8 +15,8 @@ namespace Tests\Library\Array;
 /**
  * Dependances
  */
-use CrazyPHP\Library\Array\Api;
 use CrazyPHP\Library\Array\Module\Map;
+use CrazyPHP\Library\Array\Api;
 use PHPUnit\Framework\TestCase;
 
 /**

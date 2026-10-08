@@ -15,9 +15,7 @@ namespace Tests\Library\File;
 /**
  * Dependances
  */
-
 use PHPUnit\Framework\Attributes\Depends;
-use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Library\File\Json;
 use PHPUnit\Framework\TestCase;

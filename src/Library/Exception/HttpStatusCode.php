@@ -18,7 +18,6 @@ namespace CrazyPHP\Library\Exception;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\File\File;
-use CrazyPHP\Model\Env;
 
 /**
  * Header

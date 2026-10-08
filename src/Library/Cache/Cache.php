@@ -30,7 +30,6 @@ use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\File\File;
 use Phpfastcache\CacheManager;
 use CrazyPHP\Model\Env;
-use Exception;
 
 /**
  * Cache

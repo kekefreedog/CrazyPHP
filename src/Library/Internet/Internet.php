@@ -15,13 +15,6 @@ namespace CrazyPHP\Library\Internet;
 /**
  * Dependances
  */
-use CrazyPHP\Exception\CrazyException;
-use CrazyPHP\Library\Form\Validate;
-use CrazyPHP\Library\Form\Process;
-use CrazyPHP\Library\Array\Arrays;
-use CrazyPHP\Library\Cache\Cache;
-use CrazyPHP\Library\File\Config;
-use CrazyPHP\Library\File\File;
 
 /**
  * Crazy Model

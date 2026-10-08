@@ -11,7 +11,6 @@
 /**
  * Dependances
  */
-import {default as PageError} from './../Error/Page';
 
 /**
  * Crazy Script Loader

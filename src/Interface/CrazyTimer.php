@@ -12,12 +12,11 @@
  */
 namespace CrazyPHP\Interface;
 
-use Workerman\Worker;
-use Workerman\Timer;
-
 /**
  * Dependances
  */
+use Workerman\Worker;
+use Workerman\Timer;
 
 /**
  * Crazy Timer Interface

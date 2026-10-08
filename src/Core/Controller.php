@@ -18,7 +18,6 @@ namespace CrazyPHP\Core;
 use CrazyPHP\Library\State\Api as ApiState;
 use CrazyPHP\Library\State\Page as State;
 use CrazyPHP\Library\File\MessagePack;
-use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Html\Structure;
 use CrazyPHP\Library\System\Server;
 use CrazyPHP\Library\Time\DateTime;

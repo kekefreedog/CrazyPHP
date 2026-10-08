@@ -18,14 +18,13 @@ namespace CrazyPHP\Model\Docker;
 use CrazyPHP\Library\File\Config as FileConfig;
 use CrazyPHP\Model\Docker\Down as DockerDown;
 use CrazyPHP\Library\Model\CrazyModel;
-use CrazyPHP\Exception\CrazyException;
 use Symfony\Component\Finder\Finder;
 use CrazyPHP\Library\File\Structure;
 use CrazyPHP\Interface\CrazyCommand;
+use CrazyPHP\Library\File\Mkcert;
 use CrazyPHP\Library\Cli\Command;
 use CrazyPHP\Library\File\Docker;
 use CrazyPHP\Library\File\File;
-use CrazyPHP\Library\File\Mkcert;
 use CrazyPHP\Model\Config;
 
 /**

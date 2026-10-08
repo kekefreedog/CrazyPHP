@@ -12,15 +12,12 @@
  */
 namespace CrazyPHP\Model;
 
-/** Dependances
- * 
+/** 
+ * Dependances
  */
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Router\Router;
 use CrazyPHP\Library\Array\Arrays;
-use CrazyPHP\Library\Form\Process;
-use CrazyPHP\Library\Cache;
-use CrazyPHP\Model\Env;
 
 /**
  * Context
@@ -31,7 +28,7 @@ use CrazyPHP\Model\Env;
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2024 Kévin Zarshenas
  */
-class Context{
+class Context {
 
     /** Public static methods | Context
      ******************************************************

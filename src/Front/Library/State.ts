@@ -12,7 +12,6 @@
  * Dependances
  */
 import { createStore, Store } from 'killa';
-import Crazypage from './Crazypage';
 
 /**
  * State

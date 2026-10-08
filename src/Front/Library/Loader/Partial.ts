@@ -11,13 +11,7 @@
 /**
  * Dependances
  */
-import {default as LoaderScript} from './../Loader/Script';
-import {default as PageError} from './../Error/Page';
-import Crazyrequest from './../Crazyrequest';
-import Pageregister from './../Pageregister';
 import Crazypage from '../Crazypage';
-import Crazyurl from '../Crazyurl';
-import DomRoot from '../Dom/Root';
 
 /**
  * Crazy Partial Loader

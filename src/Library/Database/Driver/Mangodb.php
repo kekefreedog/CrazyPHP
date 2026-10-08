@@ -157,13 +157,14 @@ class Mangodb implements CrazyDatabaseDriver {
             $databaseInstance = $this->client->selectDatabase($database);
 
             # Try
+            /** @disregard P1009 */
             try{
 
                 # Create user
                 $result = $databaseInstance->command($command);
 
-            /** @disregard P1009 */
-            }catch(MongoDbCommandException $e){
+            }
+            catch(MongoDbCommandException $e){
 
                 # Get message
                 $result = $e->getMessage();
@@ -629,13 +630,13 @@ class Mangodb implements CrazyDatabaseDriver {
         ;
 
         # Iteration filters
+        /** @disregard P1009 */
         foreach($filters as $key => &$filter)
 
             # Check if _id
             if($key === "_id")
 
                 # Convert string
-                /** @disregard P1009 */
                 $filter = new ObjectId($filter);
 
         # Last result

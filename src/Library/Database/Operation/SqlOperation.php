@@ -15,7 +15,6 @@ namespace CrazyPHP\Library\Database\Operation;
 /**
  * Dependances
  */
-
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Form\Operation;
 

@@ -15,7 +15,6 @@ namespace Tests\Library\Database;
 /**
  * Dependances
  */
-use CrazyPHP\Library\Database\Driver\Mangodb;
 use CrazyPHP\Library\Database\Driver\Mariadb;
 use PHPUnit\Framework\TestCase;
 use CrazyPHP\Model\Env;

@@ -16,7 +16,6 @@ namespace Tests\Library\File;
  * Dependances
  */
 use CrazyPHP\Library\Form\Operation;
-use CrazyPHP\Model\Docker\Install;
 use PHPUnit\Framework\TestCase;
 use CrazyPHP\Model\Env;
 

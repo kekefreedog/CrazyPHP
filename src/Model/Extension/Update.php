@@ -16,7 +16,6 @@ namespace CrazyPHP\Model\Extension;
  * Dependances
  */
 use CrazyPHP\Library\Model\CrazyModel;
-use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Interface\CrazyCommand;
 
 /**

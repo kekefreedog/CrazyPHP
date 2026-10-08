@@ -15,10 +15,10 @@ namespace CrazyPHP\Library\String;
 /**
  * Dependances
  */
+use OzdemirBurak\Iris\Exceptions\InvalidColorException;
+use OzdemirBurak\Iris\Exceptions\AmbiguousColorString;
 use OzdemirBurak\Iris\Color\Factory;
 use OzdemirBurak\Iris\BaseColor;
-use OzdemirBurak\Iris\Exceptions\AmbiguousColorString;
-use OzdemirBurak\Iris\Exceptions\InvalidColorException;
 
 /**
  * Color

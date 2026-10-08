@@ -14,8 +14,7 @@ namespace Tests\Library\Array;
 
 /**
  * Dependances
- */;
-
+ */
 use CrazyPHP\Library\String\Jwt;
 use PHPUnit\Framework\TestCase;
 use CrazyPHP\Model\Env;

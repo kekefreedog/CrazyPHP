@@ -15,7 +15,6 @@ namespace CrazyPHP\Library\Template\Handlebars;
 /**
  * Dependances
  */
-
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Time\DateTime;
 use ReflectionMethod;

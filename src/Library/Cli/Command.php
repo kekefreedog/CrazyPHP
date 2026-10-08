@@ -12,8 +12,8 @@
  */
 namespace CrazyPHP\Library\Cli;
 
-/** Dependances
- * 
+/**
+ * Dependances
  */
 
 /**

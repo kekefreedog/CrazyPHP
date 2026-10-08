@@ -18,7 +18,6 @@ namespace CrazyPHP\Library\State\Components;
 use CrazyPHP\Library\Form\Process;
 use ReflectionClass;
 use DateTime;
-use Error;
 
 /**
  * Page

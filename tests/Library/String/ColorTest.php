@@ -15,7 +15,6 @@ namespace Tests\Library\Array;
 /**
  * Dependances
  */
-use PHPUnit\Framework\Attributes\Depends;
 use CrazyPHP\Library\String\Color;
 use PHPUnit\Framework\TestCase;
 use CrazyPHP\Model\Env;

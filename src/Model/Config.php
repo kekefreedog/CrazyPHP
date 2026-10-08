@@ -23,7 +23,6 @@ use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\File\Header;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Library\File\Yaml;
-use CrazyPHP\Model\Env;
 
 /**
  * Config
@@ -34,7 +33,7 @@ use CrazyPHP\Model\Env;
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2024 Kévin Zarshenas
  */
-class Config{
+class Config {
 
     /** Public constants
      ******************************************************

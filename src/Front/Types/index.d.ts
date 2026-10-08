@@ -8,13 +8,17 @@
  * @copyright  2022-2024 Kévin Zarshenas
  */
 
-import Crazyobject from "./../Core/Crazyobject";
-import Crazycolor from "./../Library/Crazycolor";
-import Crazypage from "./../Library/Crazypage";
-import Crazypartial from "./../Library/Crazypartial";
 
 /**
  * Dependances
+ */
+import Crazypartial from "./../Library/Crazypartial";
+import Crazycolor from "./../Library/Crazycolor";
+import Crazyobject from "./../Core/Crazyobject";
+import Crazypage from "./../Library/Crazypage";
+
+/**
+ * Export
  */
 export {default as UtilityMessagePack} from "./../Library/Utility/MessagePack";
 export {default as PythonCollection} from "./../Library/File/PythonCollection";

@@ -12,6 +12,9 @@
  */
 namespace CrazyPHP\Library\File;
 
+/**
+ * Dependances
+ */
 use CrazyPHP\Library\Array\Arrays;
 
 /**

@@ -15,7 +15,6 @@ namespace CrazyPHP\Core\Media;
 /**
  * Dependances
  */
-
 use CrazyPHP\Core\Media;
 
 /**

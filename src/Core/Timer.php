@@ -15,7 +15,6 @@ namespace CrazyPHP\Core;
 /**
  * Dependances
  */
-use Monolog\Handler\StreamHandler;
 use Workerman\Worker;
 
 /**

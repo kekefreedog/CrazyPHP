@@ -27,9 +27,9 @@ use CrazyPHP\Library\Cache\Cache;
 use CrazyPHP\Library\System\Uuid;
 use Pelago\Emogrifier\CssInliner;
 use CrazyPHP\Library\File\Config;
+use CrazyPHP\Library\State\Page;
 use CrazyPHP\Library\Html\Head;
 use CrazyPHP\Library\File\File;
-use CrazyPHP\Library\State\Page;
 use CrazyPHP\Model\Context;
 
 /**

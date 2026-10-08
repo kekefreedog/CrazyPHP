@@ -11,10 +11,6 @@
 /**
  * Dependances
  */
-import Pageregister from "./Pageregister";
-import Crazyrequest from "./Crazyrequest";
-import { Crazyobject } from "../Types";
-import State from "./State";
 
 /**
  * Crazy Partial

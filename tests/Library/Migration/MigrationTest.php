@@ -15,7 +15,6 @@ namespace Tests\Library\File;
 /**
  * Dependances
  */
-
 use CrazyPHP\Library\Migration\Migration;
 use CrazyPHP\Library\File\File;
 use PHPUnit\Framework\TestCase;

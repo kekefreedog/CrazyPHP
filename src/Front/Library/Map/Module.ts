@@ -8,9 +8,6 @@
  * @copyright  2022-2024 Kévin Zarshenas
  */
 
-import { existsSync } from "fs";
-import Map from "./Module/Map";
-
 /**
  * Dependances
  */

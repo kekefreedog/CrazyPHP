@@ -12,17 +12,15 @@
  */
 namespace CrazyPHP\Library\Router;
 
-use Psr\Http\Message\ServerRequestInterface;
-use CrazyPHP\Library\File\Config;
-use CrazyPHP\Model\Context;
-use CrazyPHP\Core\Model;
-use CrazyPHP\Library\String\Strings;
-use ReflectionMethod;
-use ReflectionClass;
-
 /**
  * Dependances
  */
+use Psr\Http\Message\ServerRequestInterface;
+use CrazyPHP\Library\String\Strings;
+use CrazyPHP\Library\File\Config;
+use CrazyPHP\Core\Model;
+use ReflectionMethod;
+use ReflectionClass;
 
 /**
  * Middleware

@@ -11,7 +11,6 @@
 /**
  * Dependances
  */
-import Map from "./Module/Map";
 import Module from "./Module";
 
 /**

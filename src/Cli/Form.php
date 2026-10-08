@@ -16,9 +16,7 @@ namespace CrazyPHP\Cli;
  * Dependances
  */
 use CrazyPHP\Exception\CrazyException;
-use PhpSchool\CliMenu\CliMenuBuilder;
 use CrazyPHP\Library\System\Os;
-use PhpSchool\CliMenu\CliMenu;
 use League\CLImate\CLImate;
 
 /**

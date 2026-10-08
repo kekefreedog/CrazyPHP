@@ -11,7 +11,6 @@
 /**
  * Dependances
  */
-import Crazylanguage from "./Crazylanguage";
 import * as localforage from "localforage";
 
 /**

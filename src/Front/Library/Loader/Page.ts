@@ -13,9 +13,7 @@
  */
 import {default as LoaderScript} from './../Loader/Script';
 import PageCacheManager from '../Utility/PageCacheManager';
-import {default as PageError} from './../Error/Page';
 import Crazyrequest from './../Crazyrequest';
-import Pageregister from './../Pageregister';
 import Crazycolor from '../Crazycolor';
 import Cookie from '../Utility/Cookie';
 import Crazyurl from '../Crazyurl';

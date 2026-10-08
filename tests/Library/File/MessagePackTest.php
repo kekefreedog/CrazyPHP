@@ -15,10 +15,8 @@ namespace Tests\Library\File;
 /**
  * Dependances
  */
-
 use PHPUnit\Framework\Attributes\Depends;
 use CrazyPHP\Library\File\MessagePack;
-use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\File\File;
 use PHPUnit\Framework\TestCase;
 use CrazyPHP\Model\Env;

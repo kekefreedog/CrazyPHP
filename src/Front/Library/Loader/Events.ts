@@ -8,11 +8,10 @@
  * @copyright  2022-2024 Kévin Zarshenas
  */
 
-import LoaderPage from "../Loader/Page";
-
 /**
  * Dependances
  */
+import LoaderPage from "../Loader/Page";
 
 /**
  * Events

@@ -15,7 +15,6 @@ namespace Tests\Library\File;
 /**
  * Dependances
  */
-
 use CrazyPHP\Library\Model\Schema;
 use PHPUnit\Framework\TestCase;
 use CrazyPHP\Model\Env;

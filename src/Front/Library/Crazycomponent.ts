@@ -8,8 +8,6 @@
  * @copyright  2022-2024 Kévin Zarshenas
  */
 
-import { strict } from "assert";
-
 /**
  * Crazycomponenet
  *

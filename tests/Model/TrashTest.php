@@ -15,7 +15,6 @@ namespace Tests\Core;
 /**
  * Dependances
  */
-
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Model\Trash\Delete;
 use CrazyPHP\Library\File\File;

@@ -15,7 +15,6 @@ namespace Tests\Library\File;
 /**
  * Dependances
  */
-use CrazyPHP\Library\File\File;
 use CrazyPHP\Library\Internet\Firewall;
 use PHPUnit\Framework\TestCase;
 use CrazyPHP\Model\Env;

@@ -11,7 +11,6 @@
 /**
  * Dependances
  */
-import {default as PageError} from './../Error/Page';
 import PageLoader from '../Loader/Page';
 import Arrays from '../Utility/Arrays';
 

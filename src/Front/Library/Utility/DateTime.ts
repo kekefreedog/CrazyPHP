@@ -12,7 +12,6 @@
  * Dependances
  */
 import { DateTime as Luxon, Duration } from 'luxon';
-import type {IntRange} from 'type-fest';
 
 /**
  * Date Time

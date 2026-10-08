@@ -15,7 +15,6 @@ namespace CrazyPHP\Library\System;
 /** 
  * Dependances
  */
-use CrazyPHP\Exception\CrazyException;
 
 /**
  * Server

@@ -17,8 +17,8 @@ namespace CrazyPHP\Library\File;
  */
 use CrazyPHP\Library\File\Config as FileConfig;
 use CrazyPHP\Exception\CrazyException;
-use CrazyPHP\Library\Cache\Cache;
 use CrazyPHP\Library\Form\Process;
+use CrazyPHP\Library\Cache\Cache;
 use CrazyPHP\Library\Cli\Command;
 use CrazyPHP\Library\File\Json;
 use CrazyPHP\Model\App\Create;

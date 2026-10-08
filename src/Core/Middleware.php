@@ -15,6 +15,7 @@ namespace CrazyPHP\Core;
 /**
  * Dependances
  */
+use Psr\Http\Message\ServerRequestInterface;
 use Nyholm\Psr7Server\ServerRequestCreator;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use CrazyPHP\Library\File\Webpack;
@@ -22,7 +23,6 @@ use CrazyPHP\Library\Cache\Cache;
 use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\File\Header;
 use CrazyPHP\Model\Context;
-use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Middleware

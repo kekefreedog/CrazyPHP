@@ -11,7 +11,6 @@
 /**
  * Dependances
  */
-import Crazyrequest from "./Crazyrequest";
 
 /**
  * Crazy Url

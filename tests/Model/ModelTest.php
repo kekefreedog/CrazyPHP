@@ -15,7 +15,6 @@ namespace Tests\Core;
 /**
  * Dependances
  */
-
 use CrazyPHP\Library\File\Config as FileConfig;
 use PHPUnit\Framework\TestCase;
 use CrazyPHP\Core\Model;

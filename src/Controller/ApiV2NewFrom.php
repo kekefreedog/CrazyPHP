@@ -15,7 +15,6 @@ namespace CrazyPHP\Controller;
 /**
  * Dependances
  */
-use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Core\Controller;
 
 /**
