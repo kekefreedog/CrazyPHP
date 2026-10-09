@@ -33,7 +33,7 @@
         "tslib": "^2.4.1",
         "tsx": "^4.23.13",
         "type-fest": "^5.3.1",
-        "kmaterialize": "^2.3.3"
+        "kmaterialize": "*"
     },
     "dependencies": {
         "@easepick/bundle": "^1.2.1",
@@ -53,7 +53,7 @@
         "tom-select": "^2.3.1"
     },
     "peerDependencies": {
-        "kmaterialize": "^2.3.3"
+        "kmaterialize": "*"
     },
     "peerDependenciesMeta": {
         "kmaterialize": {
