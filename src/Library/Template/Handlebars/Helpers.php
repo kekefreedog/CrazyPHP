@@ -1397,7 +1397,7 @@ class Helpers {
         $today = new DateTime();
 
         # Set time to 00:00:00 to only compare dates
-        $today->setTime(0, 0, 0);
+        $today = $today->setTime(0, 0, 0);
     
         # Check past
         if($givenDate < $today)
@@ -1438,19 +1438,17 @@ class Helpers {
     
         # Date instance for given date
         $givenDate = new DateTime($date);
-        $givenDate->setTime(0, 0, 0);
+        $givenDate = $givenDate->setTime(0, 0, 0);
     
         # Today instance
         $today = new DateTime();
-        $today->setTime(0, 0, 0);
+        $today = $today->setTime(0, 0, 0);
     
-        # Calculate start of the current week (Sunday)
-        $startOfWeek = clone $today;
-        $startOfWeek->modify('this week');
+        # Calculate start of the current week (Monday)
+        $startOfWeek = $today->modify('this week');
     
-        # Calculate end of the current week (Saturday)
-        $endOfWeek = clone $startOfWeek;
-        $endOfWeek->modify('+6 days');
+        # Calculate end of the current week (Sunday)
+        $endOfWeek = $startOfWeek->modify('+6 days');
     
         # Compare given date with start and end of the current week
         if($givenDate < $startOfWeek)
@@ -1871,7 +1869,7 @@ class Helpers {
         $date = new DateTime();
         
         // Set the year, month, and day
-        $date->setDate($year, $month, $day); // No need to add 1 to $month since PHP months are 1-indexed
+        $date = $date->setDate($year, $month, $day); // No need to add 1 to $month since PHP months are 1-indexed
     
         // Format the year, month, and day as strings
         $formattedYear = $date->format('Y'); // Get the full year

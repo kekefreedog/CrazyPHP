@@ -34,7 +34,9 @@
         "monolog/monolog": "^3.8",
         "illuminate/collections": "^12.4",
         "rybakit/msgpack": "^0.9.1",
-        "ramsey/uuid": "^4.9"
+        "ramsey/uuid": "^4.9",
+        "psr/clock": "^1.0",
+        "lcobucci/clock": "^3.5"
     },
     "require-dev": {
         "phpunit/phpunit": "^11"

@@ -15,19 +15,19 @@ namespace CrazyPHP\Library\Time;
 /** 
  * Dependances
  */
-use \DateTime as LegacyDateTime;
 use InvalidArgumentException;
+use DateTimeImmutable;
 
 /**
  * DateTime
  *
- * Methods for manipulate date
+ * Immutable dates with formatting and file modification helpers.
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2024 Kévin Zarshenas
  */
-class DateTime extends LegacyDateTime {
+class DateTime extends DateTimeImmutable {
 
     /** Public static methods
      ******************************************************

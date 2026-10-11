@@ -880,6 +880,10 @@ class HandlebarsHelpersTest extends TestCase {
         # Assert this week is classified as present
         $this->assertSame(0, Helpers::date_status_week(date("Y-m-d"), []));
 
+        # Assert both week boundaries remain present after immutable date changes
+        $this->assertSame(0, Helpers::date_status_week(date("Y-m-d", strtotime("monday this week")), []));
+        $this->assertSame(0, Helpers::date_status_week(date("Y-m-d", strtotime("sunday this week")), []));
+
         # Assert a later week is classified as future
         $this->assertSame(1, Helpers::date_status_week(date("Y-m-d", strtotime("+2 weeks")), []));
 
