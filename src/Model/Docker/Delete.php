@@ -1,295 +1,201 @@
 <?php declare(strict_types=1);
 /**
- * Docker Compose
+ * Delete Docker Environment
  *
- * TDB
- *
- * PHP version 8.1.2
+ * Stop Compose before removing generated files; preserve persistent data.
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2024 Kévin Zarshenas
+ * @copyright  2022-2026 Kévin Zarshenas
  */
 namespace CrazyPHP\Model\Docker;
 
-/**
- * Dependances
- */
-use CrazyPHP\Library\File\Config as FileConfig;
-use CrazyPHP\Model\Docker\Down as DockerDown;
+/** Dependencies */
 use CrazyPHP\Library\Model\CrazyModel;
-use Symfony\Component\Finder\Finder;
-use CrazyPHP\Library\File\Structure;
+use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Interface\CrazyCommand;
-use CrazyPHP\Library\File\Mkcert;
-use CrazyPHP\Library\Cli\Command;
+use CrazyPHP\Library\Cli\Runtime;
+use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\File\Docker;
 use CrazyPHP\Library\File\File;
-use CrazyPHP\Model\Config;
+use CrazyPHP\Library\File\Yaml;
 
 /**
- * Delete docker compose
+ * Delete
  *
- * Classe for run step by step docker compose
- *
- * @package    kzarshenas/crazyphp
- * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2024 Kévin Zarshenas
+ * Remove generated Docker configuration after a successful Compose shutdown.
  */
 class Delete extends CrazyModel implements CrazyCommand {
 
-    /** Private Parameters
-     ******************************************************
-     */
+    /** @var array STORYLINE Shared CLI and direct-call execution order */
+    public const STORYLINE = ["runCheck", "runDockerComposeDown", "runUpdateDatabaseConfig", "runStructureFolder"];
 
-    /**
-     * Inputs
-     */
-    private $inputs = [];
+    /** @var Runtime $_runtime Checked Docker execution */
+    private Runtime $_runtime;
+
+    /** @var string $_root Validated application directory */
+    private string $_root;
 
     /**
      * Constructor
-     * 
-     * Ingest data
-     * 
-     * @param array $inputs
-     * @return self
+     *
+     * @param array $inputs CLI inputs
+     * @param Runtime|null $runtime Injectable tool runtime
      */
-    public function __construct(array $inputs = []){
+    public function __construct(array $inputs = [], ?Runtime $runtime = null){
 
-        # Ingest data
-        $this->inputs = $inputs;
+        # Share the local-first checked tool runner
+        $this->_runtime = $runtime ?? new Runtime();
+
+        # Resolve all cleanup paths against this application's root
+        $this->_root = File::path("@app_root");
 
     }
 
-    /** Public constants
-     ******************************************************
-     */
-
-    public const REQUIRED_VALUES = [];
-
-    /** Public static methods
-     ******************************************************
-     */
-
     /**
      * Get Required Values
-     * 
-     * Return required values
-     * 
+     *
      * @return array
      */
     public static function getRequiredValues():array {
 
-        # Set result
-        $result = self::REQUIRED_VALUES;
-
-        # Return result
-        return $result;
+        # Deletion has no additional configuration questions
+        return [];
 
     }
 
-    /** Public methods
-     ******************************************************
-     */
-
     /**
      * Run
-     * 
-     * Run current command
      *
      * @return self
      */
     public function run():self {
 
-        /**
-         * Down Docker Compose 
-         * 1. Stops docker composer container
-         */
-        $this->runDockerComposeDown();
+        # Follow the same explicit order as the CLI
+        foreach(self::STORYLINE as $step)
+            $this->{$step}();
 
-        /**
-         * Remove docker-compose container
-         * 1. Remove docker compose
-         */
-        $this->runDockerComposeRemove();
+        # Return the completed command
+        return $this;
 
-        /**
-         * Run Update Database Config
-         * 1. Unset docker service name in config of databases
-         */
-        $this->runUpdateDatabaseConfig();
+    }
 
-        /**
-         * Run Remove Mkcert
-         * 1. Remove mkcert files created
-         */
-        $this->runRemoveMkcert();
+    /**
+     * Run Check
+     *
+     * @return self
+     */
+    public function runCheck():self {
 
-        /**
-         * Remove structure folder
-         * 1. Remove folder and file
-         */
-        $this->runStructureFolder();
+        # Refuse to delete framework sources or operate outside a real project directory
+        if(!is_dir($this->_root) || realpath($this->_root) === realpath(File::path("@crazyphp_root")))
+            throw new CrazyException("Run Docker deletion from an application directory.", 400);
 
-        # Return current instance
+        # Require the framework marker before stopping an existing Compose project
+        if(is_file($this->_root."/docker-compose.yml") && !is_file($this->_root."/config/Docker.yml"))
+            throw new CrazyException("No config/Docker.yml found; this Compose project is not identified as a CrazyPHP Docker environment.", 400);
+
+        # Refuse linked configuration rather than modifying files outside this project
+        foreach(["docker", "config", "docker-compose.yml", "config/Docker.yml", "config/Database.yml"] as $path)
+            if(is_link($this->_root."/".$path))
+                throw new CrazyException("Docker cleanup requires local configuration: $path is a symlink.", 400);
+
+        # Return the validated command
         return $this;
 
     }
 
     /**
      * Run Docker Compose Down
-     * 
-     * Steps:
-     * 1. Stops docker composer container
-     * 
+     *
      * @return self
      */
     public function runDockerComposeDown():self {
 
-        # New docker down instance
-        $instance = new DockerDown();
+        # Validate even when this step is called directly
+        $this->runCheck();
 
-        # Run docker down
-        $instance->run();
+        # Allow cleanup of a partial installation without requiring a Docker daemon
+        if(is_file($this->_root."/docker-compose.yml"))
+            $this->_runtime->execute("docker", ["compose", "down"]);
 
-        # Return self
+        # Preserve named volumes and stop immediately if Compose fails
         return $this;
 
     }
 
     /**
-     * Run Docker Compose Remove
-     * 
-     * Remove Dcoker Containers
-     * 
+     * Run Docker Compose Remove (Compatibility)
+     *
      * @return self
      */
     public function runDockerComposeRemove():self {
-        
-        # Command
-        $command = "docker-compose rm -f -s -v";
 
-        # Exec command
-        Command::exec($command);
-
-        # Return instance
+        # Compose down already removes containers; retain the old public method without a second command
         return $this;
 
     }
 
     /**
      * Run Update Database Config
-     * 
-     * Unset docker service name in config of databases
-     * 
+     *
      * @return self
      */
     public function runUpdateDatabaseConfig():self {
 
-        # Get database config
-        $databaseConfig = FileConfig::getValue("Database.collection");
+        # Skip projects that have no database document
+        $path = $this->_root."/config/Database.yml";
+        if(!is_file($path))
+            return $this;
 
-        # Iteration config of databse
-        foreach($databaseConfig as $name => $config)
+        # Preserve all local endpoints, credentials and unrelated engine metadata
+        $document = Yaml::open($path);
+        $changed = false;
+        foreach($document["Database"]["collection"] ?? [] as $engine => $database){
 
-            # If name is in parameters
-            if(array_key_exists($name, Docker::DATABASE_TO_SERVICE) && $databaseConfig[$name]){
+            # Remove service metadata only for engines managed by the framework
+            if(isset(Docker::DATABASE_TO_SERVICE[$engine]) && is_array($database) && isset($database["docker"])){
 
-                # Set config
-                FileConfig::removeValue("Database.collection.$name.docker");
+                # Leave the original local connection settings intact
+                unset($document["Database"]["collection"][$engine]["docker"]);
+                $changed = true;
 
             }
 
-        # Return instance
-        return $this;
-
-    }
-
-    /**
-     * Run Remove Mkcert
-     * 
-     * Remove mkcert files created
-     * 
-     * @return self
-     */
-    public function runRemoveMkcert():self {
-
-        # Check mkcert is intalled
-        if(Mkcert::isInstalled()){
-
-            # Echo alert
-            echo "ℹ️  Root or admin password will be ask for remove certificates".PHP_EOL;
-
-            # Remove mkcert
-            Mkcert::remove();
-
-            # Echo
-            echo "✅ Mkcert well removed".PHP_EOL;
-
-        }else{
-
-            # Message
-            echo "ℹ️  Step disabled".PHP_EOL;
-
         }
 
-        # Return instance
+        # Avoid rewriting an unchanged user document
+        if($changed)
+            Yaml::create($path, $document);
+
+        # Drop process-local configuration cached before cleanup
+        unset($GLOBALS[Config::PREFIX]["Database"]);
+
+        # Return the command
         return $this;
 
     }
 
     /**
      * Run Structure Folder
-     * 
-     * Steps : 
-     * 1. Delete structure folder
-     * 
+     *
      * @return self
      */
     public function runStructureFolder():self {
 
-        # Get path of structure
-        $structurePath = File::path(Docker::STRUCTURE_PATH);
+        # Read the generated file inventory, including the current server and preparation scripts
+        $structure = Yaml::open(File::path(Docker::STRUCTURE_PATH))["Structure"]["@app_root"];
 
-        # Check docker config
-        if(Config::exists("Docker")){
+        # Delete only inventoried files and empty directories, preserving custom Docker additions
+        File::removeStructure($this->_root, $structure);
 
-            # New finder
-            $finder = new Finder();
+        # Remove the framework marker after generated files have been cleaned successfully
+        File::removeWithin($this->_root, "config/Docker.yml");
 
-            # Prepare finder
-            $finder->files()->name(["Docker", "Docker.*"])->in(File::path(Config::DEFAULT_PATH));
+        # Invalidate only the process-local Docker configuration
+        unset($GLOBALS[Config::PREFIX]["Docker"]);
 
-            # Check if has result
-            if($finder->hasResults())
-
-                # Iteration of files
-                foreach ($finder as $file)
-
-                    # Unlink file
-                    unlink($file->getRealPath());
-
-
-        }
-
-        # Iteration of extra folders to remove
-        foreach([
-            "@app_root/docker/certbot",
-            "@app_root/docker/mkcert",
-        ] as $folder)
-
-            # Check Certbote
-            if(File::exists($folder))
-
-                # Remove folder
-                File::removeAll($folder);
-
-        # Run creation of docker structure
-        Structure::remove($structurePath);
-        Structure::remove($structurePath);
-
-        # Return instance
+        # Keep .env, host database files and named Docker volumes available for reuse
         return $this;
 
     }

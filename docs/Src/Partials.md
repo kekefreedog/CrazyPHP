@@ -188,7 +188,7 @@ loadPartialDetail → loadPreAction → loadScript → loadContent → pushToDom
 `handlebars-loader` resolves `{{> partialName}}` at build time by looking in `assets/Hbs/partials/`. Helpers are loaded from two directories:
 
 ```javascript
-// webpack.dev.js and webpack.prod.js
+// webpack.config.js
 options: {
     partialDirs: ["./assets/Hbs/partials/"],
     helperDirs: [

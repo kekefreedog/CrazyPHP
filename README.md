@@ -130,13 +130,13 @@ php vendor/kzarshenas/crazyphp/bin/CrazyDocker delete
 Up docker compose :
 
 ```sh
-php vendor/kzarshenas/crazyphp/bin/CrazyDocker up
+docker compose up -d
 ```
 
 Down docker compose :
 
 ```sh
-php vendor/kzarshenas/crazyphp/bin/CrazyDocker down
+docker compose down
 ```
 
 ## Dev

@@ -54,8 +54,9 @@
                 
                 let classCallable = globalComponentsCollection[module];
     
-                // Declare current module
-                window.customElements.define(module, classCallable);
+                // Declare current module unless a library already owns its name
+                if(!window.customElements.get(module))
+                    window.customElements.define(module, classCallable);
     
             }
 

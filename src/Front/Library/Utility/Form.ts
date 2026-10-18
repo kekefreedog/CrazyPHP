@@ -12,7 +12,7 @@
  * Dependances
  */
 import type CrazyFormAdapter from "../../../Interface/CrazyFormAdapter";
-import { FormSelect } from "@materializecss/materialize";
+import { FormSelect } from "kmaterialize";
 import type { FormInputType } from './Form/FormType';
 import {default as PageError} from './../Error/Page';
 import {default as UtilityStrings} from './Strings';

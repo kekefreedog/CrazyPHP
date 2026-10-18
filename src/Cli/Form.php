@@ -64,11 +64,17 @@ class Form {
             # Iteration of required values
             foreach($valueCollection as $value){
 
+                # Skip questions excluded by answers to earlier questions
+                if(!self::isVisible($value, $this->result))
+
+                    # Continue with the next relevant question
+                    continue;
+
                 # Check select is callable
                 if(isset($value['select']) && is_callable($value['select'])){
 
                     # Set select
-                    $value['select'] = $value['select']();
+                    $value['select'] = self::getChoices($value, $this->result);
 
                     # Check if empty
                     if(empty($value['select']))
@@ -84,11 +90,14 @@ class Form {
 
                 }
 
-                # Check select is callable
+                # Check default is callable
                 if(isset($value['default']) && is_callable($value['default']))
 
-                    # Set select
-                    $value['default'] = $value['default']();
+                    # Set default, passing previous answers only to providers that request them
+                    $value['default'] = ($value['defaultWithAnswers'] ?? false)
+                        ? $value['default']($this->result)
+                        : $value['default']()
+                    ;
 
                 # Check description
                 if($value['description'] ?? false)
@@ -366,6 +375,65 @@ class Form {
 
         # Return result
         return $result;
+
+    }
+
+    /**
+     * Is Visible
+     *
+     * Match every condition against answers already collected by the form.
+     *
+     * @param array $field Question definition
+     * @param array $answers Previous answers, keyed by name
+     * @return bool
+     */
+    public static function isVisible(array $field, array $answers):bool {
+
+        # Check all conditions before displaying the question
+        foreach($field["when"] ?? [] as $name => $accepted){
+
+            # Read the previous answer or its plain value
+            $answer = $answers[$name]["value"] ?? $answers[$name] ?? null;
+
+            # Exclude questions outside the selected branch, a multiple answer matches when any value is accepted
+            if(
+                is_array($answer)
+                    ? !array_intersect($answer, $accepted)
+                    : !in_array($answer, $accepted, true)
+            )
+
+                # Report that this question is hidden
+                return false;
+
+        }
+
+        # Display unconditional questions and matching branches
+        return true;
+
+    }
+
+    /**
+     * Get Choices
+     *
+     * Preserve existing callback signatures unless answer context is requested.
+     *
+     * @param array $field Question definition
+     * @param array $answers Previous form answers
+     * @return array
+     */
+    public static function getChoices(array $field, array $answers = []):array {
+
+        # Read static choices or the configured choice provider
+        $choices = $field["select"] ?? [];
+
+        # Keep ordinary dropdown definitions unchanged
+        if(!is_callable($choices))
+
+            # Return the existing static choices
+            return $choices;
+
+        # Pass previous answers only to providers that explicitly request them
+        return ($field["selectWithAnswers"] ?? false) ? $choices($answers) : $choices();
 
     }
 

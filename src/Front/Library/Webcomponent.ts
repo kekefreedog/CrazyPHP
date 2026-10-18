@@ -32,8 +32,9 @@ export function declareAll(modules:Object):void {
             // Get mdocules
             let classCallable = modules[module];
 
-            // Declare current module
-            window.customElements.define(module, classCallable);
+            // Declare current module unless a library already owns its name
+            if(!window.customElements.get(module))
+                window.customElements.define(module, classCallable);
 
         }
 

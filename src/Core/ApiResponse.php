@@ -272,7 +272,7 @@ class ApiResponse extends Response {
         parent::setContentType($name, $charset);
 
         # Get and set engine to use
-        $engine = File::MIMTYPE_TO_CLASS[File::EXTENSION_TO_MIMETYPE[$name] ?? null] ?? null;
+        $engine = File::MIMTYPE_TO_CLASS[File::EXTENSION_TO_MIMETYPE[$name] ?? ""] ?? null;
 
         # Check engine
         if($engine === null){

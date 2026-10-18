@@ -11,7 +11,8 @@
 /** JS Libraires
  ******************************************************
 */
-require("@materializecss/materialize/dist/js/materialize.js");
+// Register the UI framework and its shared component behavior.
+require("kmaterialize");
 
 /** TS Libraires
  ******************************************************

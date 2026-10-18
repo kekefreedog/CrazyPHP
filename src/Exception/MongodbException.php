@@ -89,7 +89,7 @@ class MongodbException extends Exception {
     /** @var array CODE_TO_MESSAGE */
     public const CODE_TO_MESSAGE = [
         255 =>  [
-            "message"   =>  "It's fine. First time you are trying to up docker you have to execute the current command again and everything should work well :".PHP_EOL."<white>`php vendor/kzarshenas/crazyphp/bin/CrazyDocker up`</white>",
+            "message"   =>  "It's fine. First time you are trying to up docker you have to execute the current command again and everything should work well :".PHP_EOL."<white>`docker compose up -d`</white>",
             "exit"      =>  true
         ]
     ];

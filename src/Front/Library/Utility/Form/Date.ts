@@ -12,12 +12,7 @@
  * Dependances
  */
 import type { FormInputTypeHelpers, FormInputType } from './FormType';
-import AirDatepicker, { AirDatepickerOptions } from 'air-datepicker';
-import airDatePickerLocaleFr from 'air-datepicker/locale/fr'
-import { IPickerConfig } from '@easepick/core/dist/types';
-import { AmpPlugin } from '@easepick/amp-plugin';
-import { RangePlugin } from '@easepick/bundle';
-import { easepick } from '@easepick/bundle';
+import type { AirDatepickerOptions } from 'air-datepicker';
 import UtilityDateTime from '../DateTime';
 import {default as Form} from '../Form';
 import FormType from './FormType';
@@ -72,97 +67,12 @@ export default class DateType extends FormType implements FormInputType {
         // Resync options
         this._options = {...this._options, ...options};
 
-        // Check input is easepick
-        if(inputEl instanceof HTMLInputElement && "datePicker" in inputEl.dataset && inputEl.dataset.datePicker == "easepick"){
-
-            // Prepare options
-            let options:IPickerConfig = {
-                element: inputEl,
-                css: [
-                  'https://cdn.jsdelivr.net/npm/@easepick/bundle@1.2.1/dist/index.css',
-                ],
-                zIndex: 1,
-                plugins: [AmpPlugin],
-                AmpPlugin: {
-                    dropdown: {
-                        months: true,
-                        years: true,
-                    },
-                },
-                setup: (picker) => {
-
-                    // Init event input
-                    picker.on("preselect", () => {
-
-                        // Dispatch
-                        inputEl.dispatchEvent(new Event("input", {bubbles: true}));
-
-                    })
-
-                    // Init event change
-                    picker.on("select", () => {
-
-                        // Dispatch
-                        inputEl.dispatchEvent(new Event("change", {bubbles: true}));
-
-                    })
-
-                }
-            }
-
-            // Check format
-            if("dateFormat" in inputEl.dataset && inputEl.dataset.dateFormat)
-
-                // Push in options format
-                options.format = inputEl.dataset.dateFormat;
-
-            // Check lang
-            if("dateLang" in inputEl.dataset && inputEl.dataset.dateLang)
-
-                // Push in options format
-                options.lang = inputEl.dataset.dateLang;
-
-            // Check if required
-            if(!inputEl.required && options.AmpPlugin){
-
-                // Enable reset btn
-                options.AmpPlugin.resetButton = () => {
-
-                    // Clear value
-                    inputEl.value = "";
-
-                    // Dispatch input event
-                    inputEl.dispatchEvent(new Event("input", {bubbles: true}));
-
-                    // Dispatch change event
-                    inputEl.dispatchEvent(new Event("change", {bubbles: true}));
-
-                    // Return true
-                    return true;
-
-                };
-
-            }
-
-            // Check if input multiple
-            if(inputEl.multiple){
-
-                // Enable Range Plugin
-                options.plugins?.push(RangePlugin);
-
-                // Push config
-                options.RangePlugin = {
-                    repick: true
-                }
-
-            }
-
-            // New picker instance
-            const picker = new easepick.create(options);
-
-        }else
         // Check input is airdatepicker
-        if(inputEl instanceof HTMLInputElement && "datePicker" in inputEl.dataset && inputEl.dataset.datePicker == "airdatepicker"){
+        if(inputEl instanceof HTMLInputElement && "datePicker" in inputEl.dataset && inputEl.dataset.datePicker && ["airdatepicker", "air-datepicker"].includes(inputEl.dataset.datePicker)){
+
+            // Load the picker only when a legacy date field needs it
+            const {default:AirDatepicker} = await import("air-datepicker");
+            const {default:airDatePickerLocaleFr} = await import("air-datepicker/locale/fr");
 
             // Set options
             let options:AirDatepickerOptions = {
@@ -336,7 +246,7 @@ export default class DateType extends FormType implements FormInputType {
             // Check filter
             if(!this._options.filter || (this._options.filter && value)){
 
-                if(itemEl instanceof HTMLInputElement && "datePicker" in itemEl.dataset && itemEl.dataset.datePicker && ["easepick", "airdatepicker"].includes(itemEl.dataset.datePicker)){
+                if(itemEl instanceof HTMLInputElement && "datePicker" in itemEl.dataset && itemEl.dataset.datePicker && ["airdatepicker", "air-datepicker"].includes(itemEl.dataset.datePicker)){
 
                     // Split by separator
                     let splitedValue = value.split(" - ");

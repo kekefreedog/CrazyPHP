@@ -14,8 +14,8 @@ namespace Tests\Library\File;
  * Dependencies
  */
 use CrazyPHP\Library\Html\Structure;
-use CrazyPHP\Library\File\Webpack;
 use CrazyPHP\Library\File\Config;
+use CrazyPHP\Library\File\Front;
 use CrazyPHP\Library\File\File;
 use PHPUnit\Framework\TestCase;
 use CrazyPHP\Model\Env;
@@ -118,7 +118,7 @@ class WebpackTest extends TestCase {
     public function testLatestBuildRegistration():void {
 
         # Discover the newest entrypoint rather than an old or lazy chunk
-        $this->assertSame("bbbbbbbb", Webpack::getHash());
+        $this->assertSame("bbbbbbbb", Front::getHash());
 
         # Assert registration includes only existing assets from that build
         $this->assertSame(["runtime.bbbbbbbb.js", "vendors.bbbbbbbb.js", "index.bbbbbbbb.js"], Config::getValue("Front.lastBuild.files"));

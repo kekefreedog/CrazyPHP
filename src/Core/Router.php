@@ -16,19 +16,24 @@ namespace CrazyPHP\Core;
  * Dependances
  */
 use CrazyPHP\Library\Router\Router as LibraryRouter;
-use Mezon\Router\Types\BaseType as VendorBaseType;
+use CrazyPHP\Library\Router\Adapter\LeagueRoute;
 use CrazyPHP\Driver\Model\Config as ModelConfig;
+use CrazyPHP\Model\Config as ApplicationConfig;
+use CrazyPHP\Library\Router\Adapter\FastRoute;
+use CrazyPHP\Library\Router\Adapter\Symfony;
 use Psr\Http\Message\ServerRequestInterface;
-use Mezon\Router\Router as VendorRouter;
+use CrazyPHP\Library\Router\Adapter\Mezon;
 use CrazyPHP\Interface\CrazyRouterType;
 use CrazyPHP\Library\Router\Middleware;
 use CrazyPHP\Exception\CrazyException;
+use CrazyPHP\Interface\CrazyRouter;
 use CrazyPHP\Library\Time\DateTime;
 use CrazyPHP\Library\Cache\Cache;
 use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\File\Header;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Model\Context;
+use CrazyPHP\Model\Env;
 
 /**
  * Router
@@ -39,7 +44,7 @@ use CrazyPHP\Model\Context;
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2024 Kévin Zarshenas
  */
-class Router extends VendorRouter {
+class Router implements CrazyRouter {
 
     /** Parameters
      ******************************************************
@@ -48,8 +53,8 @@ class Router extends VendorRouter {
     /** @var ?Cache $cache Cache instance */
     public ?Cache $cache = null;
 
-    /** Various parameters */
-    public $staticRoutes, $paramRoutes, $routeNames, $cachedRegExps, $cachedParameters, $regExpsWereCompiled;
+    /** @var CrazyRouter $_adapter Routing engine used by the framework */
+    private CrazyRouter $_adapter;
 
     /** @var DateTime lastModifiedDateRouter */
     private DateTime $_lastModifiedDateRouter;
@@ -63,12 +68,35 @@ class Router extends VendorRouter {
     /**
      * Constructor
      * 
-     * @return self
+     * @param CrazyRouter|null $adapter Routing engine; defaults to Mezon
      */
-    public function __construct(){
+    public function __construct(?CrazyRouter $adapter = null){
 
-        # Parent constructor
-        parent::__construct();
+        # Honor an explicitly injected adapter before reading application defaults
+        if($adapter === null){
+
+            # Locate optional application settings using the configured directory
+            $location = Env::has("config_location") ? Env::get("config_location") : Config::FOLDER_PATH;
+
+            # Support minimal projects and tests without a Router configuration file
+            $hasRouter = isset($GLOBALS[Config::PREFIX]["Router"]) || ApplicationConfig::exists("Router", $location);
+
+            # Read the selected vendor alongside the route collections
+            $vendor = $hasRouter && Config::has("Router.vendor") ? Config::getValue("Router.vendor") : "mezon";
+
+            # Select the configured implementation while preserving the legacy default
+            $adapter = match($vendor){
+                "mezon", "none", null => new Mezon(),
+                "fast-route" => new FastRoute(),
+                "league" => new LeagueRoute(),
+                "symfony" => new Symfony(),
+                default => throw new CrazyException("Unknown router vendor: $vendor", 500),
+            };
+
+        }
+
+        # Store the adapter shared by dispatch, reverse routing and caching
+        $this->_adapter = $adapter;
 
         # Set last modified date
         $this->_setLastModifiedDates();
@@ -132,7 +160,7 @@ class Router extends VendorRouter {
                 "ConfigRouter";
 
         # Get key
-        $key = Cache::getKeyWithCacheName(__CLASS__, ".RouterCollectionCached.$collectionName");
+        $key = Cache::getKeyWithCacheName(__CLASS__, ".RouterCollectionCached.$collectionName.".$this->_adapter::class);
 
         # Check cache
         if($this->cache === null)
@@ -162,7 +190,10 @@ class Router extends VendorRouter {
         if($lastModifiedDateMiddleware > $lastModifiedDate)
 
             # Update last modified date
-            $lastModifiedDate = $lastModifiedDateApi;
+            $lastModifiedDate = $lastModifiedDateMiddleware;
+
+        # Register custom types for both freshly compiled and cached routes
+        $this->addRouterType();
 
         # Check cache is valid
         if($this->cache->hasUpToDate($key, $lastModifiedDate)){
@@ -186,9 +217,6 @@ class Router extends VendorRouter {
 
             # Set collection
             $collection = Config::get("Router");
-
-        /* Add custom type */
-        $this->addRouterType();
 
         /* Add Pages */
 
@@ -269,7 +297,7 @@ class Router extends VendorRouter {
                 "ConfigMiddlewares";
 
         # Get key
-        $key = Cache::getKeyWithCacheName(__CLASS__, ".RouterCollectionCached.$collectionName");
+        $key = Cache::getKeyWithCacheName(__CLASS__, ".RouterCollectionCached.$collectionName.".$this->_adapter::class);
 
         # Check cache
         if($this->cache === null)
@@ -299,7 +327,7 @@ class Router extends VendorRouter {
         if($lastModifiedDateMiddleware > $lastModifiedDate)
 
             # Update last modified date
-            $lastModifiedDate = $lastModifiedDateApi;
+            $lastModifiedDate = $lastModifiedDateMiddleware;
 
         # Check cache is valid
         if($this->cache->hasUpToDate($key, $lastModifiedDate) && false){
@@ -391,14 +419,20 @@ class Router extends VendorRouter {
         # Tmp file Path
         $tmpFilePath = tempnam(sys_get_temp_dir(), 'routerDump');
 
-        # Create file cache
-        $this->dumpOnDisk($tmpFilePath);
+        try{
 
-        # Get content of cache
-        $data = file_get_contents($tmpFilePath);
+            # Create file cache through the selected adapter
+            $this->dumpOnDisk($tmpFilePath);
 
-        # Put on Cache
-        $this->cache->set($key, $data);
+            # Put the compiled routes on cache
+            $this->cache->set($key, file_get_contents($tmpFilePath));
+
+        }finally{
+
+            # Release the temporary adapter cache file
+            unlink($tmpFilePath);
+
+        }
 
     }
 
@@ -442,11 +476,274 @@ class Router extends VendorRouter {
         # Tmp file Path
         $tmpFilePath = tempnam(sys_get_temp_dir(), 'routerDump');
 
-        # Get content of cache
-        $data = file_put_contents($tmpFilePath, $data);
+        try{
 
-        # Load cache
-        $this->loadFromDisk($tmpFilePath);
+            # Restore the compiled routes through the selected adapter
+            file_put_contents($tmpFilePath, $data);
+            $this->loadFromDisk($tmpFilePath);
+
+        }finally{
+
+            # Release the temporary adapter cache file
+            unlink($tmpFilePath);
+
+        }
+
+    }
+
+    /** Public Methods | Adapter
+     ******************************************************
+     */
+
+    /**
+     * Add Route
+     *
+     * {@inheritdoc}
+     */
+    public function addRoute(string $route, $callback, $requestMethod = "GET", string $routeName = ""):void {
+
+        # Delegate to the selected router adapter
+        $this->_adapter->addRoute($route, $callback, $requestMethod, $routeName);
+
+    }
+
+    /**
+     * Get Callback
+     *
+     * {@inheritdoc}
+     */
+    public function getCallback($route):mixed {
+
+        # Delegate to the selected router adapter
+        return $this->_adapter->getCallback($route);
+
+    }
+
+    /**
+     * Call Route
+     *
+     * {@inheritdoc}
+     */
+    public function callRoute($route):mixed {
+
+        # Delegate to the selected router adapter
+        return $this->_adapter->callRoute($route);
+
+    }
+
+    /**
+     * Reverse
+     *
+     * {@inheritdoc}
+     */
+    public function reverse(string $routeName, array $parameters = []):string {
+
+        # Delegate to the selected router adapter
+        return $this->_adapter->reverse($routeName, $parameters);
+
+    }
+
+    /**
+     * Register Middleware
+     *
+     * {@inheritdoc}
+     */
+    public function registerMiddleware(string $router, callable $middleware):void {
+
+        # Delegate to the selected router adapter
+        $this->_adapter->registerMiddleware($router, $middleware);
+
+    }
+
+    /**
+     * Add Type
+     *
+     * {@inheritdoc}
+     */
+    public function addType(string $typeName, string $className):void {
+
+        # Delegate to the selected router adapter
+        $this->_adapter->addType($typeName, $className);
+
+    }
+
+    /**
+     * Route Exists
+     *
+     * {@inheritdoc}
+     */
+    public function routeExists(string $route):bool {
+
+        # Delegate to the selected router adapter
+        return $this->_adapter->routeExists($route);
+
+    }
+
+    /**
+     * Get Route By Name
+     *
+     * {@inheritdoc}
+     */
+    public function getRouteByName(string $routeName):string {
+
+        # Delegate to the selected router adapter
+        return $this->_adapter->getRouteByName($routeName);
+
+    }
+
+    /**
+     * Get Param
+     *
+     * {@inheritdoc}
+     */
+    public function getParam(string $name):mixed {
+
+        # Delegate to the selected router adapter
+        return $this->_adapter->getParam($name);
+
+    }
+
+    /**
+     * Has Param
+     *
+     * {@inheritdoc}
+     */
+    public function hasParam(string $name):bool {
+
+        # Delegate to the selected router adapter
+        return $this->_adapter->hasParam($name);
+
+    }
+
+    /**
+     * Get Called Route
+     *
+     * {@inheritdoc}
+     */
+    public function getCalledRoute():string {
+
+        # Delegate to the selected router adapter
+        return $this->_adapter->getCalledRoute();
+
+    }
+
+    /**
+     * Clear
+     *
+     * {@inheritdoc}
+     */
+    public function clear():void {
+
+        # Delegate to the selected router adapter
+        $this->_adapter->clear();
+
+    }
+
+    /**
+     * Dump On Disk
+     *
+     * {@inheritdoc}
+     */
+    public function dumpOnDisk(string $filePath = "./cache/cache.php"):void {
+
+        # Delegate to the selected router adapter
+        $this->_adapter->dumpOnDisk($filePath);
+
+    }
+
+    /**
+     * Load From Disk
+     *
+     * {@inheritdoc}
+     */
+    public function loadFromDisk(string $filePath = "./cache/cache.php"):void {
+
+        # Delegate to the selected router adapter
+        $this->_adapter->loadFromDisk($filePath);
+
+    }
+
+    /**
+     * Warm Cache
+     *
+     * {@inheritdoc}
+     */
+    public function warmCache():void {
+
+        # Delegate to the selected router adapter
+        $this->_adapter->warmCache();
+
+    }
+
+    /**
+     * Set No Processor Found Error Handler
+     *
+     * {@inheritdoc}
+     */
+    public function setNoProcessorFoundErrorHandler(callable $function):?callable {
+
+        # Delegate to the selected router adapter
+        return $this->_adapter->setNoProcessorFoundErrorHandler($function);
+
+    }
+
+    /**
+     * Get No Processor Error Handler
+     *
+     * {@inheritdoc}
+     */
+    public function getNoProcessorErrorHandler():callable {
+
+        # Delegate to the selected router adapter
+        return $this->_adapter->getNoProcessorErrorHandler();
+
+    }
+
+    /**
+     * No Processor Found Error Handler
+     *
+     * {@inheritdoc}
+     */
+    public function noProcessorFoundErrorHandler(string $route):void {
+
+        # Delegate to the selected router adapter
+        $this->_adapter->noProcessorFoundErrorHandler($route);
+
+    }
+
+    /**
+     * Add Get Route
+     *
+     * {@inheritdoc}
+     */
+    public function addGetRoute(string $route, object $object, string $method):void {
+
+        # Delegate to the selected router adapter
+        $this->_adapter->addGetRoute($route, $object, $method);
+
+    }
+
+    /**
+     * Add Post Route
+     *
+     * {@inheritdoc}
+     */
+    public function addPostRoute(string $route, object $object, string $method):void {
+
+        # Delegate to the selected router adapter
+        $this->_adapter->addPostRoute($route, $object, $method);
+
+    }
+
+    /**
+     * Fetch Actions
+     *
+     * {@inheritdoc}
+     */
+    public function fetchActions(object $object, array $map = []):void {
+
+        # Delegate to the selected router adapter
+        $this->_adapter->fetchActions($object, $map);
 
     }
 
@@ -539,7 +836,7 @@ class Router extends VendorRouter {
                     ($router["name"] ?? false) &&
                     ($router["class"] ?? false) &&
                     class_exists($router["class"]) &&
-                    new $router["class"] instanceof CrazyRouterType
+                    is_a($router["class"], CrazyRouterType::class, true)
                 ){
 
                     # Push in router
@@ -574,7 +871,7 @@ class Router extends VendorRouter {
      */
 
     /** @var string PARAMETER_NAME_REGEX */
-    public const PARAMETER_NAME_REGEX = VendorBaseType::PARAMETER_NAME_REGEXP;
+    public const PARAMETER_NAME_REGEX = CrazyRouterType::PARAMETER_NAME_REGEX;
 
     /** @var string */
     public const CACHE_PATH = "@app_root/.cache/app/router/";

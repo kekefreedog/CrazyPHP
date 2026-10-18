@@ -1,14 +1,9 @@
-# #
-# Structure
-#
-# Define docker folder structure of the Crazy App
-#
-# YAML version 1.2
+# Docker Structure
+# Generated files tracked for removal; Install renders server-specific files.
 #
 # @package    kzarshenas/crazyphp
 # @author     kekefreedog <kevin.zarshenas@gmail.com>
-# @copyright  2022-2024 Kévin Zarshenas
-# #
+# @copyright  2022-2026 Kévin Zarshenas
 Structure:
   "@app_root":
     folders:
@@ -16,27 +11,33 @@ Structure:
         folders:
           bin:
             files:
-              SetupDatabase:
-                source: "@crazyphp_root/resources/Docker/docker/bin/SetupDatabase"
+              SetupDatabase: null
+              Prepare: null
+          config:
+            files:
+              Database.yml: null
+          php:
+            files:
+              Dockerfile: null
+              php.ini: null
           nginx:
             files:
-              nginx.conf:
-                source: "@crazyphp_root/resources/Docker/docker/nginx/nginx.conf.hbs"
-                engine: "CrazyPHP\\Library\\Template\\Handlebars"
-          php-fpm: 
+              nginx.conf: null
+          apache:
             files:
-              Dockerfile:
-                source: "@crazyphp_root/resources/Docker/docker/php-fpm/Dockerfile.hbs"
-                engine: "CrazyPHP\\Library\\Template\\Handlebars"
-              php-ini-overrides.ini:
-                source: "@crazyphp_root/resources/Docker/docker/php-fpm/php-ini-overrides.ini.hbs"
-                engine: "CrazyPHP\\Library\\Template\\Handlebars"
+              apache.conf: null
+          frankenphp:
+            files:
+              Caddyfile: null
+          caddy:
+            files:
+              Caddyfile: null
+          php-fpm:
+            files:
+              Dockerfile: null
+              php-ini-overrides.ini: null
         files:
-          variables.env:
-            source: "@crazyphp_root/resources/Docker/docker/variables.env.hbs"
-            engine: "CrazyPHP\\Library\\Template\\Handlebars"
+          variables.env: null
+          README.md: null
     files:
-      docker-compose.yml: 
-        source: "@crazyphp_root/resources/Docker/docker-compose.yml.hbs"
-        engine: "CrazyPHP\\Library\\Template\\Handlebars"
-
+      docker-compose.yml: null

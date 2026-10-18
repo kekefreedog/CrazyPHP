@@ -99,8 +99,8 @@ class MongodbConnection implements CrazySingleton {
             : 0
         ;
 
-        # Get key
-        $key = Cache::getKeyWithCacheName(__CLASS__, "connectionString.$user");
+        # Separate host and container connection caches for their different endpoints
+        $key = Cache::getKeyWithCacheName(__CLASS__, "connectionString.$user.".(getenv("CRAZYPHP_DOCKER") === "1" ? "docker" : "local"));
 
         $lastModifiedDate = File::getLastModifiedDate(File::path(static::CONFIG_PATH));
 

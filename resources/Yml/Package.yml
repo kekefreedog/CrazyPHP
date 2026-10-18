@@ -1,0 +1,62 @@
+# #
+# Package
+#
+# Default npm dependencies for new frontend projects.
+# kmaterialize loads its optional peers with dynamic imports, so bundlers need them all installed.
+#
+# @package    kzarshenas/crazyphp
+# @author     kekefreedog <kevin.zarshenas@gmail.com>
+# @copyright  2026 Kévin Zarshenas
+# #
+Package:
+  devDependencies:
+    "@fortawesome/fontawesome-free": "^6.5.1"
+    "kmaterialize": "^2.3.3-1.0.38"
+    "@material/material-color-utilities": "^0.3.0"
+    "handlebars": "^4.7.10"
+    "handlebars-helpers": "^0.9.8"
+    "sweetalert2": "*"
+    "tippy.js": "*"
+    "@material-design-icons/font": "^0.14.15"
+    "tom-select": "*"
+    "@simonwep/pickr": "^1.10.2"
+    "filepond": "^4.32.12"
+    "filepond-plugin-image-exif-orientation": "^1.0.11"
+    "filepond-plugin-image-preview": "^4.6.12"
+    "filepond-plugin-file-validate-type": "^1.2.9"
+    "air-datepicker": "^3.6.0"
+    "imask": "^7.6.1"
+    "@maskito/core": "^5.6.0"
+    "@maskito/kit": "^5.6.0"
+    "quill": "^2.0.3"
+    "prismjs": "^1.30.0"
+    "kspreadsheet": "^2.8.0"
+    "localforage": "^1.10.0"
+    "object-hash": "^3.0.0"
+    "js-yaml": "^4.1"
+    "sass": "*"
+    "typescript": "^5.9"
+    "tslib": "*"
+  bundlers:
+    webpack:
+      "webpack": "^5.112"
+      "webpack-cli": "^6.0"
+      "webpack-dev-server": "*"
+      "url-loader": "*"
+      "file-loader": "*"
+      "html-loader": "*"
+      "style-loader": "*"
+      "css-loader": "*"
+      "sass-loader": "*"
+      "ts-loader": "*"
+      "yaml-loader": "*"
+      "handlebars-loader": "*"
+      "svg-inline-loader": "*"
+      "svg-loader": "*"
+      "css-minimizer-webpack-plugin": "^8.0.0"
+      "terser-webpack-plugin": "^5.6.1"
+      "mini-css-extract-plugin": "^2.9.2"
+      "fork-ts-checker-webpack-plugin": "*"
+      "fork-ts-checker-notifier-webpack-plugin": "*"
+    vite:
+      vite: "^6.4"

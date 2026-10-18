@@ -1,0 +1,9 @@
+# Use classic PHP requests; worker mode requires application lifecycle support.
+{
+    frankenphp
+}
+
+{{site}} {
+    root * {{public}}
+    php_server
+}

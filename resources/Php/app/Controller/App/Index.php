@@ -16,9 +16,6 @@ namespace App\Controller\App;
  * Dependances
  */
 use CrazyPHP\Core\Controller;
-use CrazyPHP\Core\Response;
-
-use CrazyPHP\Library\Html\Structure;
 
  /**
  * App
@@ -43,7 +40,7 @@ class Index extends Controller {
     public static function get($request){
 
         # Set structure
-        $structure = (new Structure())
+        $structure = static::Structure()
             ->setDoctype()
             ->setLanguage()
             ->setHead()
@@ -54,7 +51,7 @@ class Index extends Controller {
         ;
 
         # Set response
-        (new Response())
+        static::Response()
             ->setContent($structure)
             ->send();
 

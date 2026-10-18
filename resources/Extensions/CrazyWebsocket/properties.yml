@@ -23,3 +23,4 @@ CrazyWebsocket:
   dependencies:
     composer:
       guzzlehttp/guzzle: ^7.8
+      workerman/workerman: ^5.0

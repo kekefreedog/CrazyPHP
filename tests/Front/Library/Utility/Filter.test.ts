@@ -59,6 +59,13 @@ before(async () => {
     (globalThis as any).document = window.document;
     (globalThis as any).navigator = window.navigator;
 
+    // jsdom has no layout engine; kmaterialize observes outlined fields on import.
+    (globalThis as any).ResizeObserver = class {
+        observe():void {}
+        unobserve():void {}
+        disconnect():void {}
+    };
+
     // Stub the app-wide state Form's constructor reads synchronously
     window.Crazyobject = { currentPage: { get: () => undefined, set: () => {} } };
 

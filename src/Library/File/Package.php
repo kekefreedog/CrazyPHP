@@ -113,68 +113,13 @@ class Package{
             "name"          =>  "devDependencies",
             "description"   =>  "Dev Dependencies of your app",
             "type"          =>  "ARRAY",
-            "default"       =>  self::DEFAULT_DEV_DEPENDENCIES,
+            "default"       =>  [self::class, "getDefaultDevDependencies"],
             "required"      =>  true,
         ]
     ];
 
-    /** @var array DEFAULT_DEPENDENCIES */
-    public const DEFAULT_DEV_DEPENDENCIES = [
-        # Front
-        "@fortawesome/fontawesome-free"             =>  "^6.5.1",
-        "@materializecss/materialize"               =>  "2.1.0",
-        "material-dynamic-colors"                   =>  "*",
-        "@material/material-color-utilities"        =>  "^0.3.0",
-        "clipboard"                                 =>  "*",
-        "handlebars"                                =>  "*",
-        "handlebars-helpers"                        =>  "^0.9.8",
-        "handlebars-utils"                          =>  "^1.0.6",
-        "sweetalert2"                               =>  "*",
-        "@sweetalert2/theme-dark"                   =>  "*",
-        "@types/quill"                              =>  "*",
-        "tippy.js"                                  =>  "*",
-        "material-symbols"                          =>  "*",
-        "material-icons"                            =>  "*",
-        "@material-design-icons/font"               =>  "^0.14.2",
-        "i18next"                                   =>  "^22.0.8",
-        "tom-select"                                =>  "*",
-        "@simonwep/pickr"                           =>  "^1.9.1",
-        "maska"                                     =>  "^3.0.2",
-        "filepond"                                  =>  "^4.32.6",
-        "filepond-plugin-image-exif-orientation"    =>  "^1.0.11",
-        "filepond-plugin-image-preview"             =>  "^4.6.12",
-        # Cache
-        "localforage"                               =>  "^1.10.0",
-        "object-hash"                               =>  "^3.0.0",
-        # Back | Webpack            
-        "webpack"                                   =>  "*",
-        "webpack-cli"                               =>  "*",
-        "webpack-dev-server"                        =>  "*",
-        "url-loader"                                =>  "*",
-        "file-loader"                               =>  "*",
-        "html-loader"                               =>  "*",
-        "style-loader"                              =>  "*",
-        "css-loader"                                =>  "*",
-        "sass-loader"                               =>  "*",
-        "ts-loader"                                 =>  "*",
-        "yaml-loader"                               =>  "*",
-        "handlebars-loader"                         =>  "*",
-        "svg-inline-loader"                         =>  "*",
-        "svg-loader"                                =>  "*",
-        "css-minimizer-webpack-plugin"              =>  "^7.0.0",
-        "terser-webpack-plugin"                     =>  "^5.3.11",
-        "mini-css-extract-plugin"                   =>  "^2.9.2",
-        # Custom file
-        "js-yaml"                                   =>  "*",
-        "repair"                                    =>  "*",
-        # Back | Sass           
-        "sass"                                      =>  "*",
-        # Back | Ts         
-        "typescript"                                =>  "*",
-        "tslib"                                     =>  "*",
-        "fork-ts-checker-webpack-plugin"            =>  "*",
-        "fork-ts-checker-notifier-webpack-plugin"   =>  "*",
-    ];
+    /** @var string DEFAULT_DEPENDENCIES_FILE Shared and bundler-specific npm defaults */
+    public const DEFAULT_DEPENDENCIES_FILE = "@crazyphp_root/resources/Yml/Package.yml";
 
     # Default value
     const DEFAULT_VALUE = [
@@ -182,9 +127,9 @@ class Package{
 
     /** @var array DEFAULT_SCRIPTS */
     public const DEFAULT_SCRIPTS = [
-        "build" =>  "webpack --mode production --config webpack.prod.js",
-        "dev"   =>  "webpack --mode development --config webpack.dev.js",
-        "watch" =>  "webpack --watch --mode development --config webpack.dev.js"
+        "build" =>  "webpack --mode production",
+        "dev"   =>  "webpack --mode development",
+        "watch" =>  "webpack --watch --mode development"
     ];
 
     /** @var array COMMAND_SUPPORTED supported command */
@@ -212,6 +157,42 @@ class Package{
     /** Public Static Methods
      ******************************************************
      */
+
+    /**
+     * Get Default Dev Dependencies
+     *
+     * Resolve the selected toolchain from the shared package YAML.
+     *
+     * @param string $bundler Frontend compiler
+     * @return array
+     */
+    public static function getDefaultDevDependencies(string $bundler = "webpack"):array {
+
+        # Read maintained defaults without application configuration caching
+        $configuration = Yaml::open(self::DEFAULT_DEPENDENCIES_FILE)["Package"] ?? [];
+
+        # Require a shared dependency map and a supported compiler
+        if(!is_array($configuration["devDependencies"] ?? null) || !is_array($configuration["bundlers"][$bundler] ?? null))
+
+            # Fail before generating an incomplete package manifest
+            throw new CrazyException("Invalid npm defaults or unsupported bundler: ".$bundler, 500);
+
+        # Combine the shared packages with the selected compiler's packages
+        $dependencies = array_replace($configuration["devDependencies"], $configuration["bundlers"][$bundler]);
+
+        # Reject malformed YAML entries before passing requirements to npm
+        foreach($dependencies as $package => $version)
+
+            # Package names and version constraints must be nonempty strings
+            if(!is_string($package) || $package === "" || !is_string($version) || $version === "")
+
+                # Identify the invalid configuration source
+                throw new CrazyException("Invalid npm dependency in ".self::DEFAULT_DEPENDENCIES_FILE, 500);
+
+        # Return fresh defaults for the caller's manifest
+        return $dependencies;
+
+    }
 
     /**
      * Read value in package.json
@@ -515,12 +496,13 @@ class Package{
         if(
             !FileConfig::getValue("App.local.npm") &&
             Config::exists("Docker") &&
-            FileConfig::has("Docker.services.node.Service") &&
-            $dockerNodeService = FileConfig::getValue("Docker.services.node.Service")
+            getenv("CRAZYPHP_DOCKER") !== "1" &&
+            FileConfig::has("Docker.frontend.service") &&
+            $dockerNodeService = FileConfig::getValue("Docker.frontend.service")
         )
 
                 # Prepare docker
-                $dockerCommand = "docker run $dockerNodeService ";
+                $dockerCommand = "docker compose run --rm --no-deps ".escapeshellarg($dockerNodeService)." ";
 
         # Else
         else
@@ -538,7 +520,7 @@ class Package{
         $result = Command::exec($dockerCommand."npm --prefix $rootPath", $argument, $liveResult);
 
         # Check result
-        if($checkError && ($result["result_code"] !== null || $result["result_code"] > 0))
+        if($checkError && ($result["result_code"] ?? 1) !== 0)
             
             # New error
             throw new CrazyException(

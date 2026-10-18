@@ -2,6 +2,49 @@
 
 The Router maps incoming HTTP requests to PHP controller methods. Routes are declared in a YAML config file, parsed and cached by the framework, and managed via the `CrazyCommand` CLI.
 
+## Vendor adapters
+
+`CrazyPHP\Core\Router` delegates routing to `CrazyPHP\Interface\CrazyRouter`.
+The default implementation is `CrazyPHP\Library\Router\Adapter\Mezon`; existing route definitions and the default bootstrap stay unchanged.
+The core keeps collection loading, request context and middleware preparation. The available adapters are:
+
+| Adapter in `CrazyPHP\Library\Router\Adapter` | Composer package | Matching engine |
+|---|---|---|
+| `Mezon` (default) | `mezon/router` | Mezon compiled route batches |
+| `FastRoute` | `nikic/fast-route` | FastRoute compiled dispatcher |
+| `LeagueRoute` | `league/route` | League route registration and dispatcher (built on FastRoute) |
+| `Symfony` | `symfony/routing` | Symfony compiled URL matcher |
+
+These packages are included in the framework dependencies. League Route 6 preserves compatibility with the existing PSR-7 v1 dependency.
+
+```php
+use CrazyPHP\Library\Router\Adapter\FastRoute;
+use CrazyPHP\Core\Router;
+
+$router = new Router(); // Uses Mezon by default.
+$router = new Router(new FastRoute()); // Or Mezon, LeagueRoute, Symfony.
+$router->pushCollection();
+$router->pushMiddlewares();
+$router->callRouteExtended();
+```
+
+A future vendor adapter implements `CrazyRouter` and can be passed to the constructor. The abstract `CrazyPHP\Library\Router\Adapter` class in `src/Library/Router/Adapter.php` provides shared translation, dispatch and caching for the new engines.
+The contract preserves existing registration, dispatch, middleware, URL generation, parameter access and cache methods.
+Adapters read the current HTTP method from the server environment and must understand the existing `[type:name]` route syntax.
+Set `Router.vendor` in `config/Router.yml` to `mezon`, `fast-route`, `league` or `symfony` to select the application-wide adapter, including for the static URL helper. Omitting this setting preserves Mezon. Constructor injection overrides the configured vendor for that instance.
+
+Custom types continue to implement `CrazyRouterType::searchRegExp()` and `parserRegExp()`.
+`Router.type` retains its existing `name` and `class` entries. Types are registered through their static methods without instantiating the class, including before cached routes are loaded.
+`CrazyRouterType::PARAMETER_NAME_REGEX` defines placeholder names; `Core\Router::PARAMETER_NAME_REGEX` remains available to existing generated type classes.
+
+Compiled collection cache keys include the adapter class to prevent reuse between vendors.
+Each adapter stores its compiled matching tables, callbacks, names and parameter maps through the existing `dumpOnDisk()` / `loadFromDisk()` and CrazyPHP cache flow. Loading a cache does not reparse route patterns or recompile vendor tables; runtime matcher objects are reconstructed from the stored tables.
+`Router.yml`, `Api.yml` and `Middleware.yml` modification dates still determine whether a collection must be refreshed. Adding routes after loading invalidates the adapter's compiled tables. No additional application configuration or cache files are required.
+Middleware stays outside the compiled cache and is registered separately by `pushMiddlewares()`, as before. Cacheable controllers must use class/method strings or static method arrays; runtime closures and object callbacks can be dispatched but cannot be written by the new adapters' disk cache. Disk cache files are trusted executable PHP, like Mezon's cache.
+All adapters preserve CrazyPHP's `[type:name]` syntax, method handling (including the existing `OPTION` spelling), static-route priority, wildcard fallback, middleware argument transformations and URL substitution. League's response strategy is not used: CrazyPHP continues to invoke its own controllers.
+The static URL helper contains no vendor-specific replacement logic.
+Direct access to Mezon's internal route/cache arrays is no longer exposed by `Core\Router`; use the routing methods instead.
+
 ---
 
 ## Config file — `config/Router.yml`
@@ -41,7 +84,7 @@ Router:
         - get
 ```
 
-### URL parameter syntax (Mezon Router)
+### URL parameter syntax
 
 | Syntax | Matches |
 |---|---|
@@ -105,7 +148,7 @@ Implemented in `CrazyPHP\Model\Router\Delete`. The interactive list is populated
 
 ## Library layer — `Library\Router\Router.php`
 
-`CrazyPHP\Library\Router\Router` parses the YAML config into the format expected by the Mezon router.
+`CrazyPHP\Library\Router\Router` parses the YAML config into the shared format accepted by `CrazyRouter` adapters.
 
 Key static methods:
 
@@ -124,19 +167,19 @@ The parsed cache is invalidated automatically when `Router.yml`, `Api.yml`, or `
 
 ## Core layer — `Core\Router.php`
 
-`CrazyPHP\Core\Router extends Mezon\Router\Router` is the live dispatcher.
+`CrazyPHP\Core\Router implements CrazyRouter` is the live dispatcher and delegates matching to its selected adapter.
 
 Lifecycle called by `Core\Core` on every request:
 
 ```
-pushCollection()       parse Router.yml → register routes with Mezon
+pushCollection()       restore compiled routes, or parse Router.yml → register and cache routes
   ↓
 pushMiddlewares()      register middleware callbacks per route pattern
   ↓
 callRouteExtended()    match URL → get callback → set Context → dispatch
 ```
 
-`callRouteExtended()` extracts the controller class name from the matched callback, stores it in `Context::setCurrentRoute()`, then lets Mezon call the controller method.
+`callRouteExtended()` extracts the controller class name from the matched callback, stores it in `Context::setCurrentRoute()`, then lets the adapter call the controller method.
 
 ---
 
@@ -190,7 +233,7 @@ HTTP request
        └─ runRoutersPreparation()   → Router::pushCollection()
        └─ runMiddlewaresPreparation() → Router::pushMiddlewares()
        └─ runRouterRedirection()    → Router::callRouteExtended()
-            └─ Mezon matches URL pattern
+            └─ CrazyRouter adapter matches URL pattern (Mezon by default)
             └─ Middleware executes in order
             └─ App\Controller\App\Home::get()
                  └─ State::render() → JSON or HTML response

@@ -11,12 +11,10 @@
         class="no-autoinit{{#if _style.customClass.input}} {{_style.customClass.input}}{{/if}}"
         {{#if disabled}}disabled=""{{else}}{{#if form.onready}}disabled="loading"{{/if}}{{/if}}
         {{#if filterDate}}
-        type="text" data-type="date" data-date-picker="airdatepicker"
+        type="text" data-type="date" data-date-picker="air-datepicker"
         data-date-range="{{#if multiple}}true{{else}}{{#if _style.date.range}}true{{else}}false{{/if}}{{/if}}"
         {{else}}
-        type="{{#is _style.date.picker "easepick"}}text{{else}}{{#is _style.date.picker "airdatepicker"}}text{{else}}date{{/is}}{{/is}}"
-        {{#is _style.date.picker "easepick"}}data-type="date"{{/is}}
-        {{#is _style.date.picker "airdatepicker"}}data-type="date"{{/is}}
+        {{#is _style.date.picker "airdatepicker"}}type="text" data-type="date" data-date-picker="air-datepicker"{{else}}{{#is _style.date.picker "air-datepicker"}}type="text" data-type="date" data-date-picker="air-datepicker"{{else}}type="date"{{/is}}{{/is}}
         {{/if}}
         {{#if placeholder}}placeholder="{{placeholder}}"{{else}}placeholder=" "{{/if}}
         {{#if readonly}}readonly=""{{/if}}
@@ -24,8 +22,6 @@
         {{#if select.[0].value}}min="{{select.[0].value}}"{{/if}}
         {{#if select.[1].value}}max="{{select.[1].value}}"{{/if}}
         {{#if required}}required=""{{/if}}
-        {{#unless filterDate}}{{#if _style.date.picker}}data-date-picker="{{_style.date.picker}}"{{/if}}{{/unless}}
-        {{!-- Easepick --}}
         {{#if _style.date.format}}data-date-format="{{_style.date.format}}"{{/if}}
         {{#if _style.date.lang}}data-date-lang="{{_style.date.lang}}"{{/if}}
         autocomplete="off"

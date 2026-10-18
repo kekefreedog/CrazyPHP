@@ -290,8 +290,13 @@ class Response {
             # Return self
             return $this;
 
-        # Set value on header
-        $this->addHeader("Last-Modified", $datetime->format(Datetime::RFC7231));
+        # Set value on header as an HTTP date, converted to GMT as RFC 7231 requires
+        $this->addHeader(
+            "Last-Modified",
+            \DateTimeImmutable::createFromInterface($datetime)
+                ->setTimezone(new \DateTimeZone("UTC"))
+                ->format("D, d M Y H:i:s \\G\\M\\T")
+        );
 
         # Return self
         return $this;

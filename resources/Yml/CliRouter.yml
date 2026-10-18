@@ -75,12 +75,6 @@ CrazyDocker:
   # Command delete
   delete:
     class: \CrazyPHP\Model\Docker\Delete
-  # Command run
-  up:
-    class: \CrazyPHP\Model\Docker\Up
-  # Command down
-  down:
-    class: \CrazyPHP\Model\Docker\Down
 CrazyAsset:
   # Command register
   register:
@@ -88,4 +82,4 @@ CrazyAsset:
 CrazyFront:
   # Command run
   run:
-    class: \CrazyPHP\Model\Webpack\Run
+    class: \CrazyPHP\Model\Front\Run

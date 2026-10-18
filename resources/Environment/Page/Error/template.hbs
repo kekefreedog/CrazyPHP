@@ -21,7 +21,6 @@
         type="extended" 
         icon-text="home" 
         label="Home" 
-        size="small" 
         depth="outlined"
         color-primary="{{errors.[0]._status_code.style.color.text}}"
         color-secondary="{{errors.[0]._status_code.style.color.fill}}"
@@ -30,8 +29,8 @@
 
     {{!-- Iteration of errors --}}
     {{#each errors as |error|}}
-    <div class="carousel-item {{expandColorFill error._status_code.style.color ""}} white-text row screen-flex screen-center" href="{{@key}}" data-color-fill="{{error._status_code.style.color.fill}}" data-color-text="{{error._status_code.style.color.text}}">
-      <div class="col l3 offset-l5">
+    <div class="carousel-item {{expandColorFill error._status_code.style.color ""}} white-text screen-flex screen-center" href="{{@key}}" data-color-fill="{{error._status_code.style.color.fill}}" data-color-text="{{error._status_code.style.color.text}}">
+      <div>
         {{!-- Icon --}}
         <h1 class="{{expandColorText error._status_code.style.color "text"}}"><regular-btn
           size="small"
@@ -39,7 +38,6 @@
           color-secondary="{{error._status_code.style.color.fill}}"
           {{#if error._status_code.style.icon.text}}icon-text="{{error._status_code.style.icon.text}}"{{/if}}
           {{#if error._status_code.style.icon.class}}icon-class="{{error._status_code.style.icon.class}}"{{/if}}
-          size="large"
           depth="flat"
         ></regular-btn>
         {{error.code}}</h1>

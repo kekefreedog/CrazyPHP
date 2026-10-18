@@ -17,9 +17,12 @@ import {default as UtilityStrings} from '../Strings';
 import Crazyrequest from '../../Crazyrequest';
 import {default as Form} from '../Form';
 import Crazyurl from '../../Crazyurl';
-import TomSelect from 'tom-select';
+import type TomSelect from 'tom-select';
 import FormType from './FormType';
 import Objects from '../Objects';
+
+/** @var TomSelectClass Tom Select loaded by the first legacy select */
+let TomSelectClass:typeof TomSelect|null = null;
 
 /**
  * Radio Type
@@ -272,6 +275,9 @@ export default class RadioType extends FormType implements FormInputType {
      * @returns {void}
      */
     private _initFilter = async (inputEl:HTMLInputElement|HTMLSelectElement, formEl:HTMLFormElement, helpers:FormInputTypeHelpers):Promise<void> => {
+
+        // Load Tom Select only when a legacy select needs it, then reuse it synchronously
+        const TomSelect = TomSelectClass ?? (TomSelectClass = (await import("tom-select")).default);
 
         // Promise wrap
         return new Promise<void>((resolve) => {
@@ -700,7 +706,7 @@ export default class RadioType extends FormType implements FormInputType {
         if(["INPUT", "SELECT"].includes(itemEl.tagName) && value !== null){
 
             // Check if tomselect in item
-            if("tomselect" in itemEl && itemEl.tomselect instanceof TomSelect){
+            if("tomselect" in itemEl && RadioType._isTomSelect(itemEl.tomselect)){
 
                 // Let disabled
                 let disabled = false;
@@ -758,7 +764,7 @@ export default class RadioType extends FormType implements FormInputType {
                         if(!itemEl.hasAttribute('disabled')){
 
                             // Set value
-                            itemEl.tomselect instanceof TomSelect && itemEl.tomselect.setValue(value);
+                            RadioType._isTomSelect(itemEl.tomselect) && itemEl.tomselect.setValue(value);
 
                             // Set id
                             Form.setId(formEl, valuesID, itemEl);
@@ -859,7 +865,7 @@ export default class RadioType extends FormType implements FormInputType {
                 
             }else
             // Check if tomselect
-            if("tomselect" in itemEl && itemEl.tomselect instanceof TomSelect){
+            if("tomselect" in itemEl && RadioType._isTomSelect(itemEl.tomselect)){
 
                 // Get values
                 let valueRaw = itemEl.tomselect.getValue();
@@ -928,6 +934,21 @@ export default class RadioType extends FormType implements FormInputType {
 
         // Return result
         return result;
+
+    }
+
+    /**
+     * Is Tom Select
+     *
+     * Check a value is a Tom Select instance without loading the library
+     *
+     * @param value
+     * @returns {boolean}
+     */
+    private static _isTomSelect = (value:unknown):value is TomSelect => {
+
+        // Return result
+        return typeof value === "object" && value !== null && typeof (value as TomSelect).getValue === "function" && typeof (value as TomSelect).setValue === "function";
 
     }
 

@@ -210,11 +210,15 @@ describe("Front/Library/Utility/cssInlineStyle", () => {
 
         });
 
-        it("does not throw synchronously when the clipboard write is rejected", async () => {
+        it("handles and logs rejected clipboard writes", async (context) => {
+
+            // Capture the expected error log; the test context restores console.error
+            const deniedError = new Error("denied");
+            const errorLog = context.mock.method(console, "error", () => {});
 
             // Stub clipboard that rejects
             (dom.window.navigator as any).clipboard = {
-                writeText: () => Promise.reject(new Error("denied")),
+                writeText: () => Promise.reject(deniedError),
             };
 
             // Set elements
@@ -228,6 +232,13 @@ describe("Front/Library/Utility/cssInlineStyle", () => {
 
             // Wait a tick so the rejection is handled by the internal .catch()
             await new Promise(resolve => setTimeout(resolve, 0));
+
+            // Verify the rejection was handled and reported exactly once
+            assert.equal(errorLog.mock.callCount(), 1);
+            assert.deepEqual(errorLog.mock.calls[0].arguments, [
+                "Failed to copy HTML content to clipboard: ",
+                deniedError,
+            ]);
 
         });
 

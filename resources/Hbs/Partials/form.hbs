@@ -73,11 +73,11 @@
     <div class="s12 screen-flex screen-wrap g-2 screen-{{#if form.confirm.align}}{{form.confirm.align}}{{else}}left{{/if}}{{#if form.confirm.invert}} screen-direction-x-desc{{/if}}">
         {{!-- Reset Button --}}
         {{#if form.reset}}<button class="btn outlined waves-effect waves-light" type="reset" {{#if form.onready}}disabled="loading"{{/if}}>Reset
-            <i class="material-icons right">delete_forever</i>
+            <i class="ml-2 material-icons">delete_forever</i>
         </button>{{/if}}
         {{!-- Submit button --}}
         {{#if form.confirm}}<button class="btn filled waves-effect waves-light" type="submit" {{#if form.onready}}disabled="loading"{{/if}}>{{#isString form.confirm}}{{form.confirm}}{{else}}{{#isObject form.confirm}}{{#if form.confirm.title}}{{form.confirm.title}}{{/if}}{{else}}Save{{/isObject}}{{/isString}}
-            {{#isObject form.confirm}}{{#if form.confirm.icon}}<i class="ml-2 {{form.confirm.icon.class}} right">{{form.confirm.icon.text}}</i>{{/if}}{{else}}<i class="ml-2 material-icons right">save</i>{{/isObject}}
+            {{#isObject form.confirm}}{{#if form.confirm.icon}}<i class="ml-2 {{form.confirm.icon.class}}">{{form.confirm.icon.text}}</i>{{/if}}{{else}}<i class="ml-2 material-icons">save</i>{{/isObject}}
         </button>{{/if}}
     </div>
     {{/or}}

@@ -16,7 +16,7 @@
         "paths": {
             "tslib": ["./node_modules/tslib/tslib"],
             "killa": ["./app/Front/types/killa"],
-            "@materializecss/materialize": ["./app/Front/types/materialize"]
+            "@materializecss/materialize": ["./node_modules/kmaterialize/dist/js/materialize.d.ts"]
         }
     },
     "exclude": ["./vendor/kzarshenas/crazyphp/resources/"]

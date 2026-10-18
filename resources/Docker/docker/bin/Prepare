@@ -1,0 +1,9 @@
+#!/bin/sh
+# Prepare application dependencies before the HTTP runtime is allowed to start.
+set -eu
+
+# Install the locked versions without updating the dependency constraints.
+composer install --no-interaction --prefer-dist
+
+# Provision configured databases and refresh container-only connection settings.
+php docker/bin/SetupDatabase

@@ -68,6 +68,8 @@ export default class Form extends Crazypartial {
         const form = this.input.target;
         if(form instanceof HTMLFormElement)
             this._form = new UtilityForm(form, {
+                // Use the scaffold's UI framework while allowing explicit overrides.
+                adapter: "kmaterialize",
                 ...this._options,
             });
 

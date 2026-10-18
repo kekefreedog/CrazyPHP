@@ -11,13 +11,10 @@
 # #
 Style:
   framework:
-    - name:  materializecss/materialize
-      source: github
-      author: Alvin Wang, Alan Chang
-      package: materialize
-      branch: main
-  components:
-    - LoadingScreenBtn: loading-screen-btn
-    - RegularBtn: regular-btn
+    - name:  kmaterialize
+      source: npm
+      author: The Materialize Team, kekefreedog
+      package: kmaterialize
+  components: []
   materialDynamicColors:
     source: '#4caf50'

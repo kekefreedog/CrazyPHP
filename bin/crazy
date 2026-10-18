@@ -1,0 +1,156 @@
+#!/bin/sh
+# CrazyPHP launcher: prefer local PHP, otherwise run the same CLI in Docker.
+set -eu
+
+# Keep old shell invocations usable while delegating lifecycle control directly to Compose.
+if [ "${1:-}" = docker ] && { [ "${2:-}" = up ] || [ "${2:-}" = down ]; }; then
+    shift
+    exec docker compose "$@"
+fi
+
+# Resolve the checkout without depending on the application's vendor layout.
+crazy_root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd -P)
+
+# Route tool-specific actions through their dedicated PHP entrypoints.
+crazy_entry=CrazyCommand
+if [ "${1:-}" = docker ]; then
+    crazy_entry=CrazyDocker
+    shift
+elif [ "${1:-}" = front ]; then
+    crazy_entry=CrazyFront
+    shift
+fi
+
+# Use the project's PHP version from composer.json (config.platform.php), never below 8.3.
+crazy_php=8.3
+if [ -f composer.json ]; then
+    crazy_platform=$(sed -n 's/.*"php"[[:space:]]*:[[:space:]]*"\([0-9][0-9]*\.[0-9][0-9]*\)\.[0-9][0-9]*".*/\1/p' composer.json | head -n 1)
+    case "$crazy_platform" in
+        8.3|"") ;;
+        *) [ "$(printf '%s\n%s\n' "$crazy_platform" 8.3 | sort -t. -k1,1n -k2,2n | tail -n 1)" = "$crazy_platform" ] && crazy_php=$crazy_platform ;;
+    esac
+fi
+crazy_php_id=$(( ${crazy_php%%.*} * 10000 + ${crazy_php#*.} * 100 ))
+crazy_image="crazyphp-cli:php$crazy_php-node22"
+
+# Preserve existing PHP entrypoints when local PHP satisfies the project's version.
+if command -v php >/dev/null 2>&1 && php -r "exit(PHP_VERSION_ID >= $crazy_php_id ? 0 : 1);" >/dev/null 2>&1; then
+    exec php "$crazy_root/bin/$crazy_entry" "$@"
+fi
+
+# Require a running daemon before attempting the fallback.
+if ! command -v docker >/dev/null 2>&1 || ! docker info >/dev/null 2>&1; then
+    echo "Install PHP $crazy_php or newer locally, or start Docker to run CrazyPHP." >&2
+    exit 1
+fi
+
+# Reuse Docker's build cache for the PHP and frontend toolchain of the project's PHP version.
+docker build --build-arg "PHP_VERSION=$crazy_php" --tag "$crazy_image" "$crazy_root/resources/Docker/cli"
+
+# Keep application and linked library paths identical inside Docker.
+crazy_app=$(pwd -P)
+
+# Docker management needs access to the host daemon selected by its context.
+crazy_socket=
+if [ "$crazy_entry" = CrazyDocker ] || { [ "$crazy_entry" = CrazyCommand ] && [ "${1:-}" = delete ] && [ "${2:-}" = project ] && [ -f "$crazy_app/docker-compose.yml" ]; }; then
+    crazy_endpoint=${DOCKER_HOST:-$(docker context inspect --format '{{.Endpoints.docker.Host}}')}
+    case "$crazy_endpoint" in
+        unix://*) crazy_socket=${crazy_endpoint#unix://} ;;
+        *) echo "The PHP fallback for Docker commands requires a local Unix Docker socket. Use local PHP for remote Docker contexts." >&2; exit 1 ;;
+    esac
+    if [ ! -S "$crazy_socket" ]; then
+        echo "Docker socket not found: $crazy_socket" >&2
+        exit 1
+    fi
+    # Bind sources are resolved by the daemon; macOS runs it inside a Linux VM.
+    if [ "$(uname -s)" = Darwin ]; then
+        crazy_socket=/var/run/docker.sock
+    fi
+    # Read the socket group inside Docker, preserving access for the host UID.
+    crazy_socket_group=$(docker run --rm --entrypoint stat \
+        --volume "$crazy_socket:/var/run/docker.sock" "$crazy_image" -c %g /var/run/docker.sock)
+fi
+
+# Run the PHP entrypoint in the CLI image, keeping the caller's arguments.
+crazy_run_docker() {
+
+    # Preserve user arguments while preparing the container invocation; pass the front phase when splitting a run.
+    set -- docker run --rm -i --env HOME=/tmp ${crazy_phase:+--env CRAZY_FRONT_PHASE=$crazy_phase} --user "$(id -u):$(id -g)" \
+        --volume "$crazy_app:$crazy_app" --volume "$crazy_root:$crazy_root" \
+        --workdir "$crazy_app" "$crazy_image" php "$crazy_root/bin/$crazy_entry" "$@"
+
+    # Share the daemon only for explicit Docker commands; do not start Docker inside Docker.
+    if [ -n "$crazy_socket" ]; then
+        shift 3
+        set -- docker run --rm --volume "$crazy_socket:/var/run/docker.sock" \
+            --env DOCKER_HOST=unix:///var/run/docker.sock --group-add "$crazy_socket_group" "$@"
+    fi
+
+    # Allocate a terminal only for interactive invocations.
+    if [ -t 0 ] && [ -t 1 ]; then
+        shift 3
+        set -- docker run --rm -t "$@"
+    fi
+
+    # Run the container and return its exit status.
+    "$@"
+
+}
+
+# Run a package script on the host from `run [script] [-- flags]`, as CrazyFront does.
+crazy_run_npm_script() {
+
+    # Read the script, defaulting to build, and an optional separator
+    shift
+    crazy_script=build
+    if [ $# -gt 0 ] && [ "$1" != "--" ]; then
+        crazy_script=$1
+        shift
+    fi
+    if [ "${1:-}" = "--" ]; then
+        shift
+    fi
+
+    # Forward bundler flags without losing their boundaries
+    if [ $# -gt 0 ]; then
+        npm run "$crazy_script" -- "$@"
+    else
+        npm run "$crazy_script"
+    fi
+
+}
+
+# Build frontend assets with the host's Node when available: Docker runs PHP, the host runs npm without the VM's memory limit.
+if [ "$crazy_entry" = CrazyFront ] && [ "${1:-}" = run ] && command -v node >/dev/null 2>&1 && command -v npm >/dev/null 2>&1; then
+
+    # Check the script and prepare the watch metadata in Docker
+    crazy_phase=prepare
+    crazy_run_docker "$@"
+
+    # Keep the launcher alive on Ctrl+C so a stopped watcher is recorded
+    trap : INT
+
+    # Install dependencies and run the script on the host
+    echo "Running npm on the host ($(node -v))"
+    if npm install && crazy_run_npm_script "$@"; then
+        crazy_status=0
+    else
+        crazy_status=$?
+    fi
+    trap - INT
+
+    # Register the new build, or restore the previous one when the script failed or was stopped
+    if [ "$crazy_status" -eq 0 ]; then
+        crazy_phase=finish
+        crazy_run_docker "$@"
+    else
+        crazy_phase=failed
+        crazy_run_docker "$@" || true
+    fi
+    exit "$crazy_status"
+
+fi
+
+# Propagate the command's exit status to the host.
+crazy_phase=
+crazy_run_docker "$@"

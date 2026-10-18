@@ -1,277 +1,367 @@
 <?php declare(strict_types=1);
 /**
- * New application
+ * Delete Application
  *
- * TDB
+ * Remove the application scaffold after stopping its Docker environment.
  *
- * PHP version 8.1.2
+ * PHP version 8.3
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2024 Kévin Zarshenas
+ * @copyright  2022-2026 Kévin Zarshenas
  */
 namespace CrazyPHP\Model\App;
 
 /**
- * Dependances
+ * Dependencies
  */
-use Phpfastcache\Exceptions\PhpfastcacheDriverCheckException;
 use CrazyPHP\Model\Docker\Delete as DockerDelete;
 use CrazyPHP\Library\Model\CrazyModel;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\File\Structure;
-use Symfony\Component\Finder\Finder;
 use CrazyPHP\Interface\CrazyCommand;
-use CrazyPHP\Library\Cache\Cache;
+use CrazyPHP\Library\Cli\Runtime;
+use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\File\File;
+use CrazyPHP\Library\File\Yaml;
 
 /**
- * Delete Application
+ * Delete
  *
- * Classe for deletion application
+ * Preserve dependency access and database data while removing the application.
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2024 Kévin Zarshenas
+ * @copyright  2022-2026 Kévin Zarshenas
  */
 class Delete extends CrazyModel implements CrazyCommand {
 
+    /** Public Constants
+     ******************************************************
+     */
+
+    /** @var array STORYLINE Stop Docker while its configuration still exists */
+    public const STORYLINE = [
+        "runCheck",
+        "runDockerCompose",
+        "runRetrieveOriginalComposer",
+        "runCacheCleaner",
+        "runStructureFolder",
+        "runCleanFrontFiles",
+        "runCleanRoot",
+    ];
+
+    /** @var array KEEP Root entries kept so Composer and the crazy command still work */
+    public const KEEP = ["composer.json", "vendor", ".git"];
+
+    /** Private Parameters
+     ******************************************************
+     */
+
+    /** @var Runtime $_runtime Checked Docker execution */
+    private Runtime $_runtime;
+
+    /** @var string $_root Application root */
+    private string $_root;
+
+    /** @var string $_public Captured document root before config removal */
+    private string $_public = "public";
+
     /**
      * Constructor
-     * 
-     * Construct current class
-     * 
-     * @return Create
+     *
+     * @param array $inputs CLI inputs
+     * @param Runtime|null $runtime Injectable tool runtime
      */
-    public function __construct(){
+    public function __construct(array $inputs = [], ?Runtime $runtime = null){
+
+        # Resolve deletion against the same project as creation
+        $this->_root = File::path("@app_root");
+
+        # Use the same runtime as creation
+        $this->_runtime = $runtime ?? new Runtime();
 
     }
 
-    /** Public static methods
+    /** Public Static Methods
      ******************************************************
      */
 
     /**
      * Get Required Values
-     * 
-     * Return required values
-     * 
+     *
      * @return array
      */
     public static function getRequiredValues():array {
 
-        # Declare result
-        $result = [];
-
-        # Return result
-        return $result;
+        # The CLI already confirms application deletion
+        return [];
 
     }
 
-    /** Public method
+    /** Public Methods
      ******************************************************
-     */    
-    
-     /**
-     * Run delete of project
+     */
+
+    /**
+     * Run
      *
-     * @return Delete
+     * @return self
      */
     public function run():self {
 
-        /**
-         * Run Cache Cleaner
-         * - Clear Cache Files
-         */
-        $this->runCacheCleaner();
+        # Use the same ordered steps for direct calls and the CLI
+        foreach(self::STORYLINE as $step)
 
-        /**
-         * Run Retrieve Original Composer
-         * 1. Get the last new composer backup and copy it on the root od the app
-         */
-        $this->runRetrieveOriginalComposer();
+            # Run step
+            $this->{$step}();
 
-        /**
-         * Run Structure Folder
-         * 1. Delete structure folder
-         */
-        $this->runStructureFolder();
-
-        /**
-         * Run Docker Compose
-         * 1. Remove docker composer
-         */
-        $this->runDockerCompose();
-
-        /**
-         * Run Clean Front Files
-         * 1. Clean public and package / vendor files
-         */
-        $this->runCleanFrontFiles();
-
-        # Return this
+        # Return result
         return $this;
 
     }
 
     /**
-     * Run Cache Cleaner
-     * 
-     * Steps :
-     * - Clear Cache Files
-     * 
-     * @return Delete
+     * Run Check
+     *
+     * @return self
      */
-    public function runCacheCleaner():Delete {
+    public function runCheck():self {
 
-        # Try catch Check Driver Exception
-        try{
+        # Require an initialized application and protect the framework checkout
+        if(
+            !is_file($this->_root."/config/App.yml") ||
+            realpath($this->_root) === realpath(File::path("@crazyphp_root"))
+        )
 
-            # New cache instance
-            $cache = new Cache();
+            # New Exception
+            throw new CrazyException("Run project deletion from an initialized application directory.", 400);
 
-            # Clear cache
-            $cache->clear();
+        # Refuse linked configuration before reading deletion targets
+        if(is_link($this->_root."/config") || is_link($this->_root."/config/App.yml"))
 
-        }catch(PhpfastcacheDriverCheckException $e){
+            # New Exception
+            throw new CrazyException("Application deletion requires local configuration files.", 400);
 
-            # Echo message
-            echo "〜 No Mongodb driver for cache... continue".PHP_EOL;
+        # Capture the public directory before removing App.yml
+        $this->_public = Yaml::open($this->_root."/config/App.yml")["App"]["public"] ?? "public";
 
-        }
+        # Require a relative public directory outside preserved project data and dependencies
+        if(
+            !preg_match('/^[a-zA-Z0-9_-]+(?:\/[a-zA-Z0-9_-]+)*$/D', $this->_public) ||
+            in_array(explode("/", $this->_public)[0], ["vendor", "config", "docker", "node_modules", "assets", "app"], true)
+        )
 
-        # Clear cache path
-        File::removeAll(Cache::PATH);
+            # New Exception
+            throw new CrazyException("App.public is not a safe application document root.", 400);
 
-        # Return instance
+        # Return result
+        return $this;
+
+    }
+
+    /**
+     * Run Docker Compose
+     *
+     * Stop Docker before deleting any of the files required by Compose.
+     * Shutdown failures propagate so all application files remain available.
+     *
+     * @return self
+     */
+    public function runDockerCompose():self {
+
+        # Check Docker files
+        if(is_file($this->_root."/docker-compose.yml") || is_file($this->_root."/config/Docker.yml"))
+
+            # Stop Docker
+            (new DockerDelete([], $this->_runtime))->run();
+
+        # Return result
         return $this;
 
     }
 
     /**
      * Run Retrieve Original Composer
-     * 
-     * Steps
-     * 1. Get the last new composer backup and copy it on the root od the app
-     * 
+     *
+     * Restore the newest composer.json backup and keep vendor installed,
+     * so the command and subsequent project creation can run.
+     *
      * @return self
      */
     public function runRetrieveOriginalComposer():self {
 
-        # New finder
-        $finder = New Finder();
+        # Set backup directory
+        $directory = $this->_root."/assets/Json/backup/composer";
 
-        # Prepare finder
-        $finder
-            ->files()
-            ->name('/^\d+-new-composer\.json$/')
-            ->in(File::path("@app_root/assets/Json/backup/composer/"))
-        ;
+        # Set backups
+        $backups = [];
 
-        # Check finder has result
-        if(!$finder->hasResults()){
+        # Ignore absent backups and never follow an externally linked backup directory
+        if(
+            is_dir($directory) &&
+            !is_link($this->_root."/assets") &&
+            !is_link($this->_root."/assets/Json") &&
+            !is_link($this->_root."/assets/Json/backup") &&
+            !is_link($directory)
+        ){
 
-            # Echo that not backup has been found
-            echo "Not composer backup has been found ⚠️";
+            # Iteration of backup files
+            foreach(scandir($directory) as $name){
 
-            # Return instance
-            return $this;
+                # Support both legacy timestamp backups and current uniqid-based backups
+                if(
+                    preg_match('/^(?:[0-9]+-new|[0-9a-f]{13})-composer\.json$/D', $name) &&
+                    is_file("$directory/$name") &&
+                    !is_link("$directory/$name")
+                )
+
+                    # Push backup
+                    $backups[] = "$directory/$name";
+
+            }
 
         }
 
-        # Prepare sorted files
-        $sortedFiles = iterator_to_array($finder);
+        # Keep the current manifest when no original manifest is available
+        if(!$backups)
 
-        # Sort the matching files by timestamp (DESC)
-        usort($sortedFiles, function ($a, $b) {
-            preg_match('/^(\d+)-/', $a->getFilename(), $aMatches);
-            preg_match('/^(\d+)-/', $b->getFilename(), $bMatches);
-            $aTimestamp = intval($aMatches[1]);
-            $bTimestamp = intval($bMatches[1]);
-            # return $aTimestamp - $bTimestamp; # ASC
-            return $bTimestamp - $aTimestamp; # DESC
-        });
+            # Return result
+            return $this;
 
-        # Get filepath of the file to copy
-        $composerFilepath = $sortedFiles[0];
+        # Prefer the newest backup, resolving equal timestamps by filename
+        usort(
+            $backups,
+            static fn(string $left, string $right):int =>
+                (filemtime($right) <=> filemtime($left)) ?: strcmp(basename($right), basename($left))
+        );
 
-        # Replace composer at the root of the app
-        File::copy($composerFilepath->getRealPath(), "@app_root/composer.json");
+        # Get recovered content
+        $content = file_get_contents($backups[0]);
 
-        # Return instance
+        # Validate the recovered document before replacing the active manifest
+        json_decode($content, true, 512, JSON_THROW_ON_ERROR);
+
+        # Unlink a manifest symlink rather than writing through it
+        File::removeWithin($this->_root, "composer.json");
+
+        # Check manifest restored
+        if(file_put_contents($this->_root."/composer.json", $content) === false)
+
+            # New Exception
+            throw new CrazyException("Could not restore composer.json.", 500);
+
+        # The current lock belongs to the generated manifest, not the recovered bootstrap
+        File::removeWithin($this->_root, "composer.lock");
+
+        # Return result
+        return $this;
+
+    }
+
+    /**
+     * Run Cache Cleaner
+     *
+     * @return self
+     */
+    public function runCacheCleaner():self {
+
+        # Remove only this application's file cache without clearing shared database caches
+        File::removeWithin($this->_root, ".cache/app");
+
+        # Return result
         return $this;
 
     }
 
     /**
      * Run Structure Folder
-     * 
-     * Steps : 
-     * 1. Delete structure folder
-     * 
+     *
      * @return self
      */
     public function runStructureFolder():self {
 
-        # Get path of structure
-        $structurePath = File::path(Structure::DEFAULT_TEMPLATE);
+        # Start with the scaffold inventory to retain custom configuration and editor files
+        $structure = Yaml::open(File::path(Structure::DEFAULT_TEMPLATE))["Structure"]["@app_root"];
 
-        # Run creation of docker structure
-        Structure::remove($structurePath);
-        Structure::remove($structurePath);
+        # Keep repository and editor configuration
+        unset(
+            $structure["folders"][".vscode"],
+            $structure["files"][".gitignore"]
+        );
 
-        # Remove app folder
-        File::removeAll("@app_root/app");
+        # Handle the captured document root separately instead of assuming public/
+        unset($structure["folders"]["public"]);
 
-        # Remove .database folder
-        File::removeAll("@app_root/.database");
+        # Remove generated files, including database settings, without traversing linked directories
+        File::removeStructure($this->_root, $structure);
 
-        # Remove asset folder
-        File::removeAll("@app_root/assets");
+        # Remove application-owned source, assets, database data and environment while preserving linked targets
+        foreach(["app", "assets", ".database", ".env"] as $path)
 
-        # Return instance
-        return $this;
+            # Remove path
+            File::removeWithin($this->_root, $path);
 
-    }
+        # Release cached config documents referring to the deleted application
+        unset($GLOBALS[Config::PREFIX]);
 
-    /**
-     * Run Remove of Docker if exists
-     * 
-     * Steps:
-     * 1. Remove docker composer
-     * 
-     * @return self
-     */
-    public function runDockerCompose():self {
-
-        # New docker compose delete instance
-        $instance = new DockerDelete();
-
-        # Catch error
-        try {
-
-            # Run instance
-            $instance->run();
-
-        } catch (CrazyException $e) { }
-
-        # Return this
+        # Return result
         return $this;
 
     }
 
     /**
      * Run Clean Front Files
-     * 
-     * Steps :
-     * 1. Clean Front Files
+     *
+     * @return self
      */
     public function runCleanFrontFiles():self {
 
-        # Remove all inside file
-        File::removeAll("@app_root/public");
+        # Cover both current bundlers and their installed frontend dependencies
+        foreach([
+            $this->_public,
+            "vite.build.mjs",
+            "webpack.config.js",
+            "webpack.dev.js",
+            "webpack.prod.js",
+            "tsconfig.json",
+            "package.json",
+            "package-lock.json",
+            "node_modules",
+        ] as $path)
 
-        # Return this
+            # Remove path
+            File::removeWithin($this->_root, $path);
+
+        # Return result
+        return $this;
+
+    }
+
+    /**
+     * Run Clean Root
+     *
+     * Remove every remaining root entry except Composer's manifest, vendor and the repository.
+     *
+     * @return self
+     */
+    public function runCleanRoot():self {
+
+        # Iteration of root entries
+        foreach(scandir($this->_root) as $entry){
+
+            # Check entry is not kept
+            if(in_array($entry, [".", "..", ...self::KEEP], true))
+
+                # Continue
+                continue;
+
+            # Remove entry without following linked directories
+            File::removeWithin($this->_root, $entry);
+
+        }
+
+        # Return result
         return $this;
 
     }

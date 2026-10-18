@@ -1,0 +1,50 @@
+/// /// ///
+/// Regular Card
+///
+/// Helpers used by the regular card template and absent from kmaterialize.
+///
+/// @package    kzarshenas/crazyphp
+/// @author     kekefreedog <kevin.zarshenas@gmail.com>
+/// @copyright  2026 Kévin Zarshenas
+/// /// ///
+
+/**
+ * Keep the preloader inside the card corners
+ */
+.overflow-auto {
+
+    // Display
+    overflow: auto;
+
+}
+
+/**
+ * Outline card border
+ */
+.border-width-1 {
+
+    // Border
+    border-style: solid;
+    border-width: 1px;
+
+}
+
+/**
+ * Round card shape
+ */
+.border-radius-10 {
+
+    // Border
+    border-radius: 10px;
+
+}
+
+/**
+ * Space reserved when the preloader is hidden
+ */
+.height-4 {
+
+    // Dimension
+    height: 4px;
+
+}

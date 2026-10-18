@@ -254,11 +254,11 @@ class File {
         $dir = self::path($dir);
 
         # Check input
-        if(!$dir || !file_exists($dir))
+        if(!$dir || (!file_exists($dir) && !is_link($dir)))
             return true;
-    
-        # Check if file
-        if(!is_dir($dir)) 
+
+        # Check if file or symlink (never follow a linked directory)
+        if(is_link($dir) || !is_dir($dir))
             return unlink($dir);
     
         # Iteration of scan dir
@@ -1002,6 +1002,125 @@ class File {
     }
 
     /**
+     * Remove Within
+     *
+     * Remove a path inside root without following linked directories
+     *
+     * @param string $root Root directory
+     * @param string $relative Path relative to root
+     * @return void
+     */
+    public static function removeWithin(string $root = "", string $relative = ""):void {
+
+        # Get path within root
+        $path = self::_pathWithin($root, $relative);
+
+        # Check path is missing or behind a linked directory
+        if($path === null || (!file_exists($path) && !is_link($path)))
+
+            # Stop script
+            return;
+
+        # Check is link or file
+        if(is_link($path) || is_file($path)){
+
+            # Check unlink
+            if(!unlink($path))
+
+                # New Exception
+                throw new CrazyException(
+                    "Could not remove \"$relative\".",
+                    500,
+                    [
+                        "custom_code"   =>  "file-006",
+                    ]
+                );
+
+        }elseif(is_dir($path)){
+
+            # Iteration of entries
+            foreach(scandir($path) as $entry){
+
+                # Check not . or double ..
+                if($entry === "." || $entry === "..")
+
+                    # Continue
+                    continue;
+
+                # Recursive remove
+                self::removeWithin($root, "$relative/$entry");
+
+            }
+
+            # Check remove directory
+            if(!rmdir($path))
+
+                # New Exception
+                throw new CrazyException(
+                    "Could not remove \"$relative\".",
+                    500,
+                    [
+                        "custom_code"   =>  "file-006",
+                    ]
+                );
+
+        }
+
+    }
+
+    /**
+     * Remove Structure
+     *
+     * Remove files listed by a structure node and prune its empty folders
+     *
+     * @param string $root Root directory
+     * @param array $node Structure node with files and folders
+     * @param string $relative Current directory relative to root
+     * @return void
+     */
+    public static function removeStructure(string $root = "", array $node = [], string $relative = ""):void {
+
+        # Iteration of files
+        foreach(array_keys($node["files"] ?? []) as $name)
+
+            # Remove file
+            self::removeWithin($root, ltrim("$relative/$name", "/"));
+
+        # Iteration of folders
+        foreach($node["folders"] ?? [] as $name => $definition){
+
+            # Set child
+            $child = ltrim("$relative/$name", "/");
+
+            # Get path within root
+            $path = self::_pathWithin($root, $child);
+
+            # Check path is a real directory
+            if($path === null || is_link($path) || !is_dir($path))
+
+                # Continue
+                continue;
+
+            # Remove children of folder
+            self::removeStructure($root, $definition ?? [], $child);
+
+            # Check folder is empty and can't be removed
+            if(scandir($path) === [".", ".."] && !rmdir($path))
+
+                # New Exception
+                throw new CrazyException(
+                    "Could not remove \"$child\".",
+                    500,
+                    [
+                        "custom_code"   =>  "file-006",
+                    ]
+                );
+
+        }
+
+    }
+
+    /**
      * Resolve
      * 
      * Resolve real path / absolute path of the given path
@@ -1090,6 +1209,63 @@ class File {
 
     }
 
+    /** Private static method
+     ******************************************************
+     */
+
+    /**
+     * Path Within
+     *
+     * Get path inside root, or null when one of its parents is a symlink
+     *
+     * @param string $root Root directory
+     * @param string $relative Path relative to root
+     * @return string|null
+     */
+    private static function _pathWithin(string $root = "", string $relative = ""):string|null {
+
+        # Check relative path
+        if(
+            $relative === "" ||
+            str_starts_with($relative, "/") ||
+            str_contains($relative, "\\") ||
+            str_contains($relative, "\0") ||
+            preg_match('/(^|\/)\.{1,2}(\/|$)|:/', $relative)
+        )
+
+            # New Exception
+            throw new CrazyException(
+                "Path \"$relative\" must be relative to root.",
+                400,
+                [
+                    "custom_code"   =>  "file-007",
+                ]
+            );
+
+        # Set parts
+        $parts = explode("/", $relative);
+
+        # Set result
+        $result = rtrim($root, "/");
+
+        # Iteration of parts
+        foreach($parts as $index => $part){
+
+            # Append part without resolving symlink
+            $result .= "/$part";
+
+            # Check parent is link
+            if($index < count($parts) - 1 && is_link($result))
+
+                # Return null
+                return null;
+
+        }
+
+        # Return result
+        return $result;
+
+    }
 
     /** Public constant
      ******************************************************

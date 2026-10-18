@@ -10,10 +10,14 @@
 # @copyright  2022-2024 Kévin Zarshenas
 # #
 Front:
+  bundler: webpack
   lastBuild:
     files: null
     hash: null
     watch: false
     date: null
     mode: null
-  scripts: null
+  scripts:
+    - build
+    - dev
+    - watch

@@ -22,11 +22,11 @@ use CrazyPHP\Exception\CrazyException;
 use Symfony\Component\Finder\Finder;
 use CrazyPHP\Library\String\Color;
 use CrazyPHP\Library\Array\Arrays;
-use CrazyPHP\Library\File\Webpack;
 use CrazyPHP\Library\Cache\Cache;
 use CrazyPHP\Library\System\Uuid;
 use Pelago\Emogrifier\CssInliner;
 use CrazyPHP\Library\File\Config;
+use CrazyPHP\Library\File\Front;
 use CrazyPHP\Library\State\Page;
 use CrazyPHP\Library\Html\Head;
 use CrazyPHP\Library\File\File;
@@ -727,12 +727,12 @@ class Structure {
         # Get watch value
         $this->watch = Config::getValue("Front.lastBuild.watch");
 
-        # Check watch
-        if($this->watch){
+        # Check watch, or a recorded build replaced by a plain npm build or watcher
+        if($this->watch || $this->_isRecordedBuildMissing()){
 
             # Select one build for root scripts, page scripts and the document hash
-            $this->_buildHash = Webpack::getHash(false);
-            $configFront = Webpack::getScripts($this->_buildHash);
+            $this->_buildHash = Front::getHash(false);
+            $configFront = Front::getScripts($this->_buildHash);
 
             # Require a built entrypoint before rendering the page
             if(!$configFront)
@@ -876,6 +876,30 @@ class Structure {
      */
 
     /**
+     * Is Recorded Build Missing
+     *
+     * Check the build recorded in Front.yml was replaced, for example by `npm run watch`
+     * run without the CrazyFront command
+     *
+     * @return bool
+     */
+    private function _isRecordedBuildMissing():bool {
+
+        # Get recorded files
+        $files = Config::getValue("Front.lastBuild.files");
+
+        # Keep the existing error when nothing was recorded
+        if(!is_array($files) || empty($files))
+
+            # Return result
+            return false;
+
+        # Check the first recorded script still exists
+        return !file_exists(File::path("@app_root/public/dist/".reset($files)));
+
+    }
+
+    /**
      * Set Hash
      * 
      * @param string $input
@@ -884,9 +908,11 @@ class Structure {
     private function _setHash(string &$input):void {
 
         # Reuse the build selected for this document's scripts
-        $hash = Config::getValue("Front.lastBuild.watch")
-            ? ($this->_buildHash ?? Webpack::getHash(false))
-            : Config::getValue("Front.lastBuild.hash");
+        $hash = $this->_buildHash ?? (
+            Config::getValue("Front.lastBuild.watch")
+                ? Front::getHash(false)
+                : Config::getValue("Front.lastBuild.hash")
+        );
 
         # Prepare pattern
         $pattern = '/<meta\s+name="application-hash"\s+content="([a-fA-F0-9]+)">/';

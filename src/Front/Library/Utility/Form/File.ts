@@ -13,14 +13,13 @@
 /**
  * Dependances
  */
-import FilePondPluginImageExifOrientation from 'filepond-plugin-image-exif-orientation';
-import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type';
-import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
 import type { FormInputTypeHelpers, FormInputType } from './FormType';
 import type { formFilePondValue } from '../Form';
-import fr_FR from 'filepond/locale/fr-fr';
-import * as FilePond from 'filepond';
+import type * as FilePondType from 'filepond';
 import FormType from './FormType';
+
+/** @var FilePond Module loaded by the first legacy file field */
+let FilePond:typeof FilePondType|null = null;
 
 /**
  * File Type
@@ -78,17 +77,21 @@ export default class FileType extends FormType implements FormInputType {
             // Check if input has filepond
             if(inputEl.classList.contains("filepond")){
 
+                // Load the uploader only when a legacy file field needs it
+                FilePond ??= await import("filepond");
+                const {default:FilePondPluginImageExifOrientation} = await import("filepond-plugin-image-exif-orientation");
+
                 // Check if preview
                 if(typeof inputEl.dataset.filePreview === "string")
 
                     // Register plugin
-                    FilePond.registerPlugin(FilePondPluginImagePreview);
+                    FilePond.registerPlugin((await import("filepond-plugin-image-preview")).default);
 
                 // Register exif plugin
                 FilePond.registerPlugin(FilePondPluginImageExifOrientation);
 
                 // Prepare options
-                let options:FilePond.FilePondOptions = {
+                let options:FilePondType.FilePondOptions = {
 
                     // Set on init
                     oninit: () => {
@@ -151,7 +154,7 @@ export default class FileType extends FormType implements FormInputType {
                 if(inputEl.accept){
 
                     // Register validate type
-                    FilePond.registerPlugin(FilePondPluginFileValidateType);
+                    FilePond.registerPlugin((await import("filepond-plugin-file-validate-type")).default);
 
                 }
 
@@ -162,7 +165,7 @@ export default class FileType extends FormType implements FormInputType {
                     if(["fr-fr", "fr_FR"].includes(inputEl.dataset.fileLocale)){
 
                         // Register lang
-                        options = {...options, ...fr_FR};
+                        options = {...options, ...(await import("filepond/locale/fr-fr")).default};
 
                     }
 
@@ -240,10 +243,10 @@ export default class FileType extends FormType implements FormInputType {
                 let key:string = itemEl.name as string;
 
                 // Get pond instance
-                let pondInstance = FilePond.find(pondEl);
+                let pondInstance = FilePond?.find(pondEl);
 
                 // Get files
-                let files = pondInstance.getFiles();
+                let files = pondInstance?.getFiles() ?? [];
 
                 // Set result
                 result = [key, files.length ? files[0].file as File : ""];
@@ -303,10 +306,10 @@ export default class FileType extends FormType implements FormInputType {
                 let key:string = itemEl.name as string;
 
                 // Get pond instance
-                let pondInstance = FilePond.find(pondEl);
+                let pondInstance = FilePond?.find(pondEl);
 
                 // Get files
-                let files = pondInstance.getFiles();
+                let files = pondInstance?.getFiles() ?? [];
 
                 // Check files
                 if(files.length) for(let currentFile of files) if(currentFile instanceof File){
@@ -381,7 +384,7 @@ export default class FileType extends FormType implements FormInputType {
             if(itemEl.classList.contains("filepond--browser") && itemEl.parentElement instanceof HTMLElement){
 
                 // Get pond instance
-                let pondInstance = FilePond.find(itemEl.parentElement);
+                let pondInstance = FilePond?.find(itemEl.parentElement);
 
                 // Check pondInstance
                 if(pondInstance){

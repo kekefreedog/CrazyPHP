@@ -1,0 +1,4 @@
+# Caddy manages certificates and redirects HTTP when this stack is started.
+{{site}} {
+    reverse_proxy webserver:80
+}

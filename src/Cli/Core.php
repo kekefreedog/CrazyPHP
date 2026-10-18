@@ -17,13 +17,11 @@ namespace CrazyPHP\Cli;
  */
 use CrazyPHP\Library\Extension\Extension;
 use CrazyPHP\Library\Migration\Migration;
-use CrazyPHP\Exception\MongodbException;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Form\Validate;
 use CrazyPHP\Library\File\Composer;
 use CrazyPHP\Library\File\Package;
 use CrazyPHP\Library\Form\Process;
-use CrazyPHP\Library\File\Docker;
 use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\File\File;
 use splitbrain\phpcli\Options;
@@ -167,6 +165,9 @@ class Core extends CLI {
 
                     # Return error message
                     $climate->red("🔴 $message");
+
+                    # Propagate command failures to the launcher and automation
+                    exit(1);
 
                 }
 
@@ -558,6 +559,10 @@ class Core extends CLI {
 
         }
 
+        # Explain the application cleanup scope before its existing confirmation
+        if($inputs["args"][0] === "project")
+            $climate->out("Everything in the project folder will be removed, including configuration, local database data (.database) and .env. Only composer.json, vendor, .git and Docker volumes will be kept.");
+
         # Message
         $input = $climate
             ->br()
@@ -656,6 +661,9 @@ class Core extends CLI {
         # Get class
         $class = $router["class"];
 
+        # Check Docker before asking the server and security questions
+        (new $class())->runCheck();
+
         # Get required values
         $requiredValues = $class::getRequiredValues();
 
@@ -701,6 +709,15 @@ class Core extends CLI {
 
         }
             
+        # Validate the chosen branch and preview proxy instructions before confirmation
+        $instance = new $class($result);
+
+        # Read the database services and check the target files
+        $instance->runCheck();
+
+        # Show the concrete server and TLS strategy without database passwords
+        $climate->out($instance->describe());
+
         # Message
         $input = $climate
             ->br()
@@ -724,9 +741,6 @@ class Core extends CLI {
             return;
 
         }
-
-        # New instance of class
-        $instance = new $class($result);
 
         # Get story line
         $storyline = $instance->getStoryline();
@@ -761,276 +775,6 @@ class Core extends CLI {
 
     }
 
-    /**
-     * Action Crazy Docker Up
-     * 
-     * Action for up docker compose for the current app
-     * 
-     * @param array $inputs Collection of inputs with opts, args & cmd
-     * @param bool $relaunch Check if the current method is the relaunch of itself...
-     * @return void
-     */
-    protected function actionCrazyDockerUp(array $inputs = [], bool $relaunch = false):void {
-
-        # Declare result
-        $result = [];
-
-        # New climate
-        $climate = new CLImate();
-
-        # Check if relaunch
-        if(!$relaunch){
-
-            # Add asci folder
-            $climate->addArt(self::ASCII_ART["crazyphp"]);
-            
-            # Draw crazy php logo
-            $climate->draw('crazyphp');
-
-            # Title of current action
-            $climate->backgroundBlue()->out("🚀 Run up Docker Compose")->br();
-
-        }else{
-
-            # Title of current action
-            $climate->backgroundBlue()->out("Relaunch up Docker Compose")->br();
-
-        }
-          
-        # Check command is in router
-        $this->_checkInRouter($inputs);
-
-        # Get router
-        $router = self::getRouters()[$this->scriptName][$inputs['cmd']];
-
-        # Get class
-        $class = $router["class"];
-
-        # Check if relaunch
-        if(!$relaunch){
-
-            # Message
-            $input = $climate
-                ->br()
-                ->lightBlue()
-                ->bold()
-                ->confirm('✅ Do you want run up docker compose ? ✅')
-            ;
-
-            # Check action confirmed
-            if (!$input->confirmed()){
-
-                # Stop message
-                $climate
-                    ->br()
-                    ->bold()
-                    ->red("✋ Action canceled ✋")
-                    ->br()
-                ;
-
-                # Stop action
-                return;
-
-            }
-
-        }
-
-        # New instance of class
-        $instance = new $class();
-
-        # Get story line
-        $storyline = $instance->getStoryline();
-
-        # Iteration storyline
-        foreach($storyline as $action){
-
-            # Check if runIsPortTaken and restart
-            if($relaunch && $action == "runIsPortTaken") continue;
-
-            # Message start
-            $climate
-                ->br()
-                ->yellow("🟠 Run ".strtolower(Process::spaceBeforeCapital(str_replace("run", "", $action))))
-            ;
-
-            # Try catch error
-            try{
-
-                # Execute
-                $instance->{$action}();
-
-            }catch(MongodbException $e){
-
-                # Check code
-                if($e->getCode() == 255){
-
-                    # Get Message
-                    $message = $e->getMessage();
-
-                    # check message
-                    if($message)
-
-                        # Echo message
-                        $climate->out($message);
-
-                    # Message end
-                    $climate
-                        ->green("🟡 Relaunch ".strtolower(Process::spaceBeforeCapital(str_replace("run", "", $action)))."...")
-                        ->br()
-                    ;
-
-                    # Relaunch current method
-                    $this->actionCrazyDockerUp($inputs, true);
-
-                    # Stop current function
-                    return;
-
-
-                }else{
-
-                    # Display message
-                    $e->getMessageForTerminal();
-
-                }
-
-            }
-
-            # Message end
-            $climate
-                ->green("🟢 ".ucfirst(strtolower(Process::spaceBeforeCapital(str_replace("run", "", $action))))." ran with success")
-                ->br()
-            ;
-
-        }
-
-        # Get port
-        $port = Docker::getHttpPort();
-
-        # Get server name
-        $servername = Config::getValue("App.server.name");
-
-        # Check server name
-        if($servername !== null && $servername)
-
-            # Message about port
-            $climate
-                ->br()
-                ->out("ℹ️  Open your browser and navigate to \"<bold><underline>http://$servername/</underline></black>\". If everything is working, you'll see a welcome page.")
-            ;
-
-        else
-        # Check port
-        if($port)
-
-            # Message about port
-            $climate
-                ->br()
-                ->out("ℹ️  Open your browser and navigate to \"<bold><underline>http://localhost:$port/</underline></black>\". If everything is working, you'll see a welcome page.")
-            ;
-
-        # Success message
-        $climate
-            ->br()
-            ->lightBlue()
-            ->bold()
-            ->out("🎉 Docker compose run up with success 🎉")
-            ->br()
-        ;
-
-    }
-
-    /**
-     * Action Crazy Docker New
-     * 
-     * ction for create new docker compose for the current app
-     * 
-     * @param array $inputs Collection of inputs with opts, args & cmd
-     * @return void
-     */
-    protected function actionCrazyDockerDown(array $inputs = []):void {
-
-        # New climate
-        $climate = new CLImate();
-
-        # Add asci folder
-        $climate->addArt(self::ASCII_ART["crazyphp"]);
-        
-        # Draw crazy php logo
-        $climate->draw('crazyphp');
-
-        # Title of current action
-        $climate->backgroundOrange()->out("🚀 Down Docker Compose")->br();
-          
-        # Check command is in router
-        $this->_checkInRouter($inputs);
-
-        # Get router
-        $router = self::getRouters()[$this->scriptName][$inputs['cmd']];
-
-        # Get class
-        $class = $router["class"];
-
-        # Message
-        $input = $climate
-            ->br()
-            ->lightMagenta()
-            ->bold()
-            ->confirm('✴️ Do you want down docker compose ? ✴️')
-        ;
-
-        # Check action confirmed
-        if (!$input->confirmed()){
-
-            # Stop message
-            $climate
-                ->br()
-                ->bold()
-                ->red("✋ Action canceled ✋")
-                ->br()
-            ;
-
-            # Stop action
-            return;
-
-        }
-
-        # New instance of class
-        $instance = new $class();
-
-        # Get story line
-        $storyline = $instance->getStoryline();
-
-        # Iteration storyline
-        foreach($storyline as $action){
-
-            # Message start
-            $climate
-                ->br()
-                ->yellow("🟠 Run ".strtolower(Process::spaceBeforeCapital(str_replace("run", "", $action))))
-            ;
-
-            # Execute
-            $instance->{$action}();
-
-            # Message end
-            $climate
-                ->green("🟢 ".ucfirst(strtolower(Process::spaceBeforeCapital(str_replace("run", "", $action))))." ran with success")
-            ;
-
-        }
-
-        # Success message
-        $climate
-            ->br()
-            ->lightMagenta()
-            ->bold()
-            ->out("🎉 Docker compose down with success 🎉")
-            ->br()
-        ;
-
-
-    }
-
     /** 
      * Delete action
      * 
@@ -1057,7 +801,7 @@ class Core extends CLI {
         $this->_checkInRouter($inputs);
 
         # Get router
-        $router = $router = self::getRouters()[$this->scriptName][$inputs['cmd']];
+        $router = self::getRouters()[$this->scriptName][$inputs['cmd']];
 
         # Get class
         $class = $router["class"];
@@ -1067,7 +811,7 @@ class Core extends CLI {
             ->br()
             ->lightRed()
             ->bold()
-            ->confirm('❎ Do you confirm the deletion of Docker ? ❎')
+            ->confirm('❎ Remove generated Docker files and stop containers? Database/certificate volumes and .env will be kept. ❎')
         ;
 
         # Check action confirmed
@@ -1232,7 +976,7 @@ class Core extends CLI {
         $climate->draw('crazyphp');
 
         # Title of current action
-        $climate->backgroundBlue()->out("🚀 Run Register Config Asset")->br();
+        $climate->backgroundBlue()->out("🚀 Run Frontend Build")->br();
           
         # Check command is in router
         $this->_checkInRouter($inputs);
@@ -1240,58 +984,8 @@ class Core extends CLI {
         # Get router
         $router = self::getRouters()[$this->scriptName][$inputs['cmd']];
 
-        # Check script name
-        if(!isset($inputs["args"][0]) || empty($inputs["args"][0]))
-            
-            # New error
-            throw new CrazyException(
-                "Command empty, please run the script with the npm script name after \"run\" option", 
-                500,
-                [
-                    "custom_code"   =>  "core-001",
-                ]
-            );
-
-        # Get script name
-        $scriptName = $inputs["args"][0];
-
-        if(!Package::hasScript($inputs["args"][0]))
-
-            # New error
-            throw new CrazyException(
-                "Script given \"$scriptName\" doesn't exists in your package.json File", 
-                500,
-                [
-                    "custom_code"   =>  "core-002",
-                ]
-            );
-
-        # Get function
+        # Resolve the shared Webpack/Vite runner; it validates the script before installing anything
         $class = $router["class"];
-
-        # Message
-        $input = $climate
-            ->br()
-            ->lightMagenta()
-            ->bold()
-            ->confirm("✅ Do you want run NPM \"$scriptName\" script ? ✅")
-        ;
-
-        # Check action confirmed
-        if (!$input->confirmed()){
-
-            # Stop message
-            $climate
-                ->br()
-                ->bold()
-                ->red("✋ Action canceled ✋")
-                ->br()
-            ;
-
-            # Stop action
-            return;
-
-        }
 
         # New instance of class
         $instance = new $class($inputs);

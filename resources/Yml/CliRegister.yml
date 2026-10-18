@@ -32,14 +32,6 @@ CliRegister:
       type: command
       long: delete
       help: Delete docker compose from your crazy project
-    - # Up
-      type: command
-      long: up
-      help: Up docker composer
-    - # Down
-      type: command
-      long: down
-      help: Shut down compose instance
   # Asset
   CrazyAsset:
     # Register Config
@@ -50,7 +42,7 @@ CliRegister:
   CrazyFront:
     - type: command
       long: run
-      help: Register config asset in your crazy application
+      help: Run a frontend package script using the configured Webpack or Vite bundler
   CrazyMigration:
     - # Check migration
       type: command

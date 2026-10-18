@@ -10,6 +10,7 @@
 # @copyright  2022-2024 Kévin Zarshenas
 # # 
 Router:
+  vendor: mezon
   app:
     - name: Index
       controller: App\Controller\App\Index

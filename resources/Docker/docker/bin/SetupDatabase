@@ -16,7 +16,7 @@ require __DIR__."/../../vendor/autoload.php";
 /**
  * Dependances
  */
-use CrazyPHP\Model\Docker\Up;
+use CrazyPHP\Library\File\Docker\Bootstrap;
 use CrazyPHP\Model\Env;
 
 # Define env constants
@@ -26,4 +26,4 @@ Env::set([
 ]);
 
 # Execute setup database
-Up::prepareDatabase(); 
+Bootstrap::run();

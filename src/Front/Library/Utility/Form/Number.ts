@@ -14,7 +14,7 @@
  * Dependances
  */
 import type { FormInputTypeHelpers, FormInputType } from "./FormType";
-import IMask, { MaskedNumberOptions } from "imask";
+import type { MaskedNumberOptions } from "imask";
 import {default as Form} from "../Form";
 import FormType from "./FormType";
 
@@ -324,6 +324,9 @@ export default class NumberType extends FormType implements FormInputType {
 
         // Check if decimal
         inputEl.hasAttribute("step") && inputEl.getAttribute("step")?.includes(".") && (maskOptions.scale = inputEl.getAttribute("step")?.split(".").at(-1)?.length);
+
+        // Load the mask only when a legacy number field needs it
+        const {default:IMask} = await import("imask");
 
         // Set instance
         IMask(inputEl, maskOptions);

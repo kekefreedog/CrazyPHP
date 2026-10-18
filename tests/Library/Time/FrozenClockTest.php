@@ -52,7 +52,8 @@ class FrozenClockTest extends TestCase {
         $this->assertEquals($original, $clock->now());
 
         # Assert modifying a returned date does not change the frozen clock
-        $original->modify("+1 year");
+        $modified = $original->modify("+1 year");
+        $this->assertNotEquals($modified, $clock->now());
         $this->assertEquals($instant, $clock->now());
 
         # Move time forward and backward through the source clock

@@ -40,6 +40,12 @@ abstract class CrazyModel {
      */
     final public function getStoryline():array {
 
+        # Use an explicit sequence when the model defines one
+        if(defined(static::class."::STORYLINE"))
+
+            # Keep CLI execution and direct execution in the same order
+            return static::STORYLINE;
+
         # Declare result
         $result = [];
 

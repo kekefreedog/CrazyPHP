@@ -17,7 +17,6 @@ namespace Tests\Library\File;
  */
 use PHPUnit\Framework\Attributes\Depends;
 use CrazyPHP\Library\File\Structure;
-use CrazyPHP\Library\File\Yaml;
 use CrazyPHP\Library\File\File;
 use PHPUnit\Framework\TestCase;
 use CrazyPHP\Model\Env;
@@ -46,6 +45,19 @@ class StructureTest extends TestCase{
      * Path of the template
      */
     public const RELATIVE_TEMPLATE_PATH = __DIR__."/../../../resources/Yml/Structure.yml";
+
+    /** @var array TEST_SCHEMA File-copy fixture independent of generated Docker variants */
+    public const TEST_SCHEMA = [
+        "Structure" => [
+            "@app_root" => [
+                "folders" => [
+                    "nested" => [
+                        "files" => ["Dockerfile" => ["source" => "@crazyphp_root/resources/Docker/server/php/Dockerfile"]],
+                    ],
+                ],
+            ],
+        ],
+    ];
 
     /** Public method | Preparation
      ******************************************************
@@ -183,11 +195,8 @@ class StructureTest extends TestCase{
      */
     public function testStructureCreate():void {
 
-        # File path of structure yaml
-        $filePath = File::path("@crazyphp_root/resources/Docker/Structure.yml");
-
-        # Get structure
-        $structure = Yaml::open($filePath);
+        # Use a complete copy schema; Docker's manifest now tracks removal only
+        $structure = self::TEST_SCHEMA;
 
         # Create structure
         Structure::create($structure);
@@ -208,7 +217,7 @@ class StructureTest extends TestCase{
         # We supposed env are already set
 
         # File path of structure yaml
-        $schema = File::path("@crazyphp_root/resources/Docker/Structure.yml");
+        $schema = self::TEST_SCHEMA;
 
         # Create structure
         $result = Structure::check($schema);
@@ -229,7 +238,7 @@ class StructureTest extends TestCase{
         # We supposed env are already set
 
         # File path of structure yaml
-        $schema = File::path("@crazyphp_root/resources/Docker/Structure.yml");
+        $schema = self::TEST_SCHEMA;
 
         # Create structure
         Structure::remove($schema);

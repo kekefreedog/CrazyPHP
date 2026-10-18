@@ -15,11 +15,11 @@ namespace CrazyPHP\Library\File;
 /**
  * Dependances
  */
-use CrazyPHP\Library\Array\Arrays;
 use CrazyPHP\Library\Cli\Command;
 use CrazyPHP\Library\File\Yaml;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Library\System\Os;
+use Dotenv\Dotenv;
 
 /**
  * Docker
@@ -59,7 +59,7 @@ class Docker{
             $preCommand .= "set PWD=%CD% & ";
 
             # Set env
-            $envFileContent = parse_ini_file(File::path($loadEnvFile));
+            $envFileContent = $loadEnvFile ? parse_ini_file(File::path($loadEnvFile)) : [];
 
             # Check env file
             if(!empty($envFileContent)) 
@@ -111,7 +111,7 @@ class Docker{
             $preCommand .= "set PWD=%CD% & ";
 
             # Set env
-            $envFileContent = parse_ini_file(File::path($loadEnvFile));
+            $envFileContent = $loadEnvFile ? parse_ini_file(File::path($loadEnvFile)) : [];
 
             # Check env file
             if(!empty($envFileContent)) 
@@ -180,41 +180,8 @@ class Docker{
      */
     public static function getLocalHostPort($source = 80):int|null {
 
-        # Declare result
-        $result = $source;
-
-        # Open docker compose
-        $dockerCompose = Yaml::open(File::path(self::DOCKER_COMPOSE_PATH));
-
-        # Read services.webserver.ports
-        $collection = Arrays::parseKey("services.webserver.ports", $dockerCompose);
-
-        # Check collection
-        if(empty($collection))
-
-            # Set result
-            $result = null;
-
-        # Iteration of collection
-        else foreach($collection as $port){
-
-            # Split port
-            $currentSource = explode(":", $port);
-
-            # Check last value is equal to source you are looking for
-            if(intval($currentSource[1]) !== $source)
-
-                # Continue
-                continue;
-
-            # Update result
-            # $result = intval($currentSource[0]);
-            $result = intval($currentSource[1]);
-
-        }
-
-        # Return result
-        return $result;
+        # Resolve the host port on the configured HTTP edge
+        return self::_getPublishedPort((int)$source);
 
     }
 
@@ -228,50 +195,69 @@ class Docker{
      */
     public static function getHttpPort(int $lookingPort=80):int|null {
 
-        # Declare result
-        $result = null;
-
-        # Open docker compose
-        $dockerCompose = Yaml::open(File::path(self::DOCKER_COMPOSE_PATH));
-
-        # Read services.webserver.ports
-        $collection = Arrays::parseKey("services.webserver.ports", $dockerCompose);
-        # Check collection
-        if(!empty($collection))
-
-            # Iteration collection
-            foreach($collection as $item)
-        
-                # Check
-                if($item && strpos($item, ":") !== false){
-
-                    # Splitted
-                    $splitted = explode(":", $item);
-
-                    # check if last is the target
-                    if(array_pop($splitted) == $lookingPort){
-
-                        # Check if CRAZY_HTTP_PORT:-80
-                        if(strpos($splitted[0], "CRAZY_HTTP_PORT") !== false){
-
-                            # Get CRAZY_HTTP_PORT
-                            $result = intval(getenv("CRAZY_HTTP_PORT"));
-
-                        }else
-
-                            # Set result
-                            $result = intval($splitted[0]);
-
-                    }
-
-
-                }
-
-        # Return result
-        return $result;
+        # Share port parsing with the Docker preflight helper
+        return self::_getPublishedPort($lookingPort);
 
     }
 
+
+    /**
+     * Get Published Port
+     *
+     * @param int $target Container TCP port
+     * @return int|null
+     */
+    private static function _getPublishedPort(int $target):?int {
+
+        # Read the generated edge selection while retaining legacy webserver support
+        $settings = File::exists("@app_root/config/Docker.yml") ? Yaml::open("@app_root/config/Docker.yml") : [];
+
+        # Caddy exposes host ports when it is a separate TLS service
+        $edge = $settings["Docker"]["edge"]["service"] ?? "webserver";
+
+        # Load the configured port mappings
+        $compose = Yaml::open(File::path(self::DOCKER_COMPOSE_PATH));
+
+        # Read saved port overrides even before the up command loads its environment
+        $environment = File::exists("@app_root/.env") ? Dotenv::parse(file_get_contents(File::path("@app_root/.env"))) : (File::exists("@app_root/docker/variables.env") ? Dotenv::parse(file_get_contents(File::path("@app_root/docker/variables.env"))) : []);
+
+        # Inspect the selected service's TCP port mappings
+        foreach($compose["services"][$edge]["ports"] ?? [] as $mapping){
+
+            # Support Compose's long syntax for manually edited configurations
+            if(is_array($mapping)){
+
+                # Return the published TCP port matching the requested target
+                if((int)($mapping["target"] ?? 0) === $target && ($mapping["protocol"] ?? "tcp") === "tcp")
+
+                    # An unpublished port has no host endpoint
+                    return isset($mapping["published"]) ? (int)$mapping["published"] : null;
+
+                # Continue past unrelated mappings
+                continue;
+
+            }
+
+            # Resolve the generated environment expressions before splitting host addresses
+            $mapping = preg_replace_callback('/\$\{([A-Z_][A-Z0-9_]*)(?::-([^}]*))?\}/', static function(array $matches) use ($environment):string {
+
+                # Match Compose's preference for the process environment over its env file
+                return (string)(getenv($matches[1]) ?: ($environment[$matches[1]] ?? $matches[2] ?? ""));
+
+            }, (string)$mapping);
+
+            # Extract published and target ports while allowing a loopback host prefix
+            if(preg_match('/(?:^|:)([0-9]+):([0-9]+)(?:\/tcp)?$/', $mapping, $ports) && (int)$ports[2] === $target)
+
+                # Return the host port rather than the container port
+                return (int)$ports[1];
+
+        }
+
+        # No TCP mapping exposes the requested container port
+        return null;
+
+    }
 
     /** Public constants
      ******************************************************
@@ -286,7 +272,7 @@ class Docker{
     public const DOCKER_COMPOSE_PATH = "@app_root/docker-compose.yml";
 
     /** @var string DOCKER_COMPOSE_COMMAND */
-    public const DOCKER_COMPOSE_COMMAND = "docker-compose";
+    public const DOCKER_COMPOSE_COMMAND = "docker compose";
 
     /** @var string DOCKER_COMPOSE_ENV_VARIABLES_PATH */
     public const DOCKER_COMPOSE_ENV_VARIABLES_PATH = "@app_root/docker/variables.env";
@@ -314,6 +300,6 @@ class Docker{
     ];
 
     /** @var string ENV_FILE */
-    public const ENV_FILE = "./docker/variables.env";
+    public const ENV_FILE = "";
 
 }

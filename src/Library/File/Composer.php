@@ -599,17 +599,14 @@ class Composer {
                 ]
             );
 
-        # Check docker config
-        if(Config::exists("Docker") && FileConfig::has("Docker.services.php.Name") && $dockerServiceName = FileConfig::getValue("Docker.services.php.Name"))
+        # Resolve the stable service name instead of depending on a cached container ID
+        $dockerCommand = "";
 
-                # Prepare docker
-                $dockerCommand = "docker exec -it $dockerServiceName ";
+        # Commands already running inside the runtime must not invoke Docker recursively
+        if(getenv("CRAZYPHP_DOCKER") !== "1" && Config::exists("Docker") && FileConfig::has("Docker.runtime.service"))
 
-        # Else
-        else
-
-            # Empty docker command
-            $dockerCommand = "";
+            # Execute Composer in the configured PHP service without allocating a terminal
+            $dockerCommand = "docker compose exec -T ".escapeshellarg(FileConfig::getValue("Docker.runtime.service"))." ";
 
         # Peepare command
         $argument = self::COMMAND_SUPPORTED[$commandName]["command"].($argument ? " $argument" : "");
@@ -618,7 +615,7 @@ class Composer {
         $result = Command::exec($dockerCommand."composer", $argument);
 
         # Check result
-        if($checkError && ($result["result_code"] !== null || $result["result_code"] > 0))
+        if($checkError && ($result["result_code"] ?? 1) !== 0)
             
             # New error
             throw new CrazyException(
@@ -832,6 +829,39 @@ class Composer {
 
     }
 
+    /**
+     * Get Php Version
+     *
+     * Read the project's PHP version from Composer's platform setting, then its PHP requirement
+     *
+     * @param string $path Composer manifest
+     * @return string Major and minor version, such as 8.5
+     */
+    public static function getPhpVersion(string $path = "@app_root/composer.json"):string {
+
+        # Get manifest path
+        $path = File::path($path);
+
+        # Read the manifest without failing on missing or invalid files
+        $manifest = is_file($path) ? (json_decode((string) file_get_contents($path), true) ?: []) : [];
+
+        # Iteration of the platform setting then the requirement
+        foreach([$manifest["config"]["platform"]["php"] ?? null, $manifest["require"]["php"] ?? null] as $value)
+
+            # Check the value contains a major and minor version
+            if(is_string($value) && preg_match('/(\d+)\.(\d+)/', $value, $matches))
+
+                # Return the version, never below the framework minimum
+                return version_compare($matches[1].".".$matches[2], self::DEFAULT_PHP_VERSION, "<")
+                    ? self::DEFAULT_PHP_VERSION
+                    : $matches[1].".".$matches[2]
+                ;
+
+        # Return default version
+        return self::DEFAULT_PHP_VERSION;
+
+    }
+
     /** Private Static Methods
      ******************************************************
      */
@@ -992,6 +1022,9 @@ class Composer {
 
     /** @var array */
     public const SEPARATOR = [".", "___"];
+
+    /** @var string DEFAULT_PHP_VERSION Minimum PHP version supported by CrazyPHP */
+    public const DEFAULT_PHP_VERSION = "8.3";
 
     /**
      * NON_COMMERCIAL_LICENSE

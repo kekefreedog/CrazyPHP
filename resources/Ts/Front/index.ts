@@ -32,12 +32,9 @@ require("./library");
  * Declare only compenent to load on all page of your app
  */
 //import FullScreenContainer from "./../Environment/Component/FullScreenContainer";
-import LoadingScreenBtn from "./../Environment/Component/LoadingScreenBtn";
-import RegularBtn from "./../Environment/Component/RegularBtn";
 let globalComponentsCollection = {
     //"full-screen-container": FullScreenContainer,
-    "loading-screen-btn": LoadingScreenBtn,
-    "regular-btn": RegularBtn
+    // "regular-btn" and "loading-screen-btn" are provided by kmaterialize
 };
 
 /** Crazy Global Partials

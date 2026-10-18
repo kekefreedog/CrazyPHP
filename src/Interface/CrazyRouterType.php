@@ -19,13 +19,19 @@ namespace CrazyPHP\Interface;
 /**
  * Crazy Router Type Interface
  * 
- * Interface for define compatible your controller with the api2
+ * Define a custom [type:name] placeholder shared by router adapters.
+ * Expressions are regex fragments without delimiters.
+ * The parser expression must not add capturing groups.
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2024 Kévin Zarshenas
  */
 interface CrazyRouterType {
+
+    /** @var string PARAMETER_NAME_REGEX Supported placeholder names in application routes */
+    public const PARAMETER_NAME_REGEX = '[a-zA-Z0-9_\-]*';
+
     /**
      * Search Reg Exp
      * 

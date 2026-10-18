@@ -18,10 +18,10 @@ namespace CrazyPHP\Core;
 use Psr\Http\Message\ServerRequestInterface;
 use Nyholm\Psr7Server\ServerRequestCreator;
 use Nyholm\Psr7\Factory\Psr17Factory;
-use CrazyPHP\Library\File\Webpack;
 use CrazyPHP\Library\Cache\Cache;
 use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\File\Header;
+use CrazyPHP\Library\File\Front;
 use CrazyPHP\Model\Context;
 
 /**
@@ -102,7 +102,7 @@ class Middleware {
         if(Config::getValue("Front.lastBuild.watch"))
 
             # Get hash
-            Webpack::getHash();
+            Front::getHash();
 
     }
 

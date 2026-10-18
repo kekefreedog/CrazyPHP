@@ -12,7 +12,7 @@
  * Dependances
  */
 const css = require("!!css-loader!sass-loader!./style.scss");
-import {Carousel, M} from "@materializecss/materialize";
+import {Carousel} from "kmaterialize";
 import {Crazypage, LoaderPage} from "crazyphp";
 const html = require("./template.hbs");
 require("./style.scss");
@@ -99,7 +99,7 @@ export default class Home extends Crazypage {
         if(errorCarouselEl !== null)
 
             // New carousel instance
-            this.carouselInstance = new Carousel(
+            this.carouselInstance = Carousel.init(
                 errorCarouselEl,
                 {
                     fullWidth: true,

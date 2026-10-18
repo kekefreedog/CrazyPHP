@@ -12,9 +12,6 @@
  ******************************************************
 */
 
-/* Materialize */
-require("@materializecss/materialize/sass/materialize.scss");
-
 /* Colors */
 require("./scss/index.scss");
 

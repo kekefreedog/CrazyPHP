@@ -203,7 +203,6 @@ properties or append/remove supplied nodes instead.
 6. Query through `renderRoot` and pair widget/listener setup with `onCleanup()`.
 7. Await `updateComplete` where code previously expected synchronous rendering.
 
-RegularBtn is a useful first migration for attributes and tooltip cleanup.
 RegularCard exercises named/default content slots. Existing components and the
 Rodeo application's source files are not changed by adding the new base class.
 

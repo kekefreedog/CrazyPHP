@@ -52,6 +52,8 @@ Structure:
                         source: "@crazyphp_root/resources/Hbs/Partials/form/form_otp.hbs"
                       form_textarea.hbs:
                         source: "@crazyphp_root/resources/Hbs/Partials/form/form_textarea.hbs"
+                      form_separator.hbs:
+                        source: "@crazyphp_root/resources/Hbs/Partials/form/form_separator.hbs"
                       form_file.hbs:
                         source: "@crazyphp_root/resources/Hbs/Partials/form/form_file.hbs"
                       form_color.hbs:
@@ -83,6 +85,10 @@ Structure:
                         source: "@crazyphp_root/resources/Hbs/Partials/filter/_operator.hbs"
                       _range_interval.hbs:
                         source: "@crazyphp_root/resources/Hbs/Partials/filter/_range_interval.hbs"
+                      _number_control.hbs:
+                        source: "@crazyphp_root/resources/Hbs/Partials/filter/_number_control.hbs"
+                      _number_endpoint.hbs:
+                        source: "@crazyphp_root/resources/Hbs/Partials/filter/_number_endpoint.hbs"
                       filter_text.hbs:
                         source: "@crazyphp_root/resources/Hbs/Partials/filter/filter_text.hbs"
                       filter_file.hbs:
@@ -231,24 +237,6 @@ Structure:
                             source: "@crazyphp_root/resources/Scss/style/component/_crazy_content.scss"
                           _navigation_rail.scss:
                             source: "@crazyphp_root/resources/Scss/style/component/_navigation_rail.scss"
-                      enhancement:
-                        files:
-                          easepick_materializecss.scss:
-                            source: "@crazyphp_root/resources/Scss/style/enhancement/easepick_materializecss.scss"
-                          filepond_materializecss.scss:
-                            source: "@crazyphp_root/resources/Scss/style/enhancement/filepond_materializecss.scss"
-                          form_materializecss.scss:
-                            source: "@crazyphp_root/resources/Scss/style/enhancement/form_materializecss.scss"
-                          jspreadsheet_materializecss.scss:
-                            source: "@crazyphp_root/resources/Scss/style/enhancement/jspreadsheet_materializecss.scss"
-                          pickr_materializecss.scss:
-                            source: "@crazyphp_root/resources/Scss/style/enhancement/pickr_materializecss.scss"
-                          sweetalert_materializecss.scss:
-                            source: "@crazyphp_root/resources/Scss/style/enhancement/sweetalert_materializecss.scss"
-                          tomselect_materializecss.scss:
-                            source: "@crazyphp_root/resources/Scss/style/enhancement/tomselect_materializecss.scss"
-                          airdatepicker_materializecss.scss:
-                            source: "@crazyphp_root/resources/Scss/style/enhancement/airdatepicker_materializecss.scss"
                       adapter:
                         files:
                           kmaterialize.scss:
@@ -257,23 +245,11 @@ Structure:
                         files:
                           _preloader_linear_indeterminate.scss:
                             source: "@crazyphp_root/resources/Scss/style/partial/_preloader_linear_indeterminate.scss"
-                          _form.scss:
-                            source: "@crazyphp_root/resources/Scss/style/partial/_form.scss"
                     files:
-                      color_class.scss:
-                        source: "@crazyphp_root/resources/Scss/style/color_class.scss"
                       color_collection.scss:
                         source: "@crazyphp_root/resources/Scss/style/color_collection.scss"
                       color_gradient_collection.scss:
                         source: "@crazyphp_root/resources/Scss/style/color_gradient_collection.scss"
-                      dimensions.scss:
-                        source: "@crazyphp_root/resources/Scss/style/dimensions.scss"
-                      component_enhance.scss:
-                        source: "@crazyphp_root/resources/Scss/style/component_enhance.scss"
-                      cursors.scss:
-                        source: "@crazyphp_root/resources/Scss/style/cursors.scss"
-                      typography.scss:
-                        source: "@crazyphp_root/resources/Scss/style/typography.scss"
                       grid.scss:
                         source: "@crazyphp_root/resources/Scss/style/grid.scss"
                       index.scss:
@@ -292,8 +268,6 @@ Structure:
                     source: "@crazyphp_root/resources/Ts/Front/types/global.d.ts"
                   killa.d.ts: 
                     source: "@crazyphp_root/resources/Ts/Front/types/killa.d.ts"
-                  materialize.d.ts: 
-                    source: "@crazyphp_root/resources/Ts/Front/types/materialize.d.ts"
             files:
               index.ts:
                 source: "@crazyphp_root/resources/Ts/Front/index.ts"
@@ -301,30 +275,12 @@ Structure:
             folders:
               Component:
                 folders:
-                  # Loading Screen
-                  LoadingScreenBtn:
-                    files:
-                      index.ts:
-                        source: "@crazyphp_root/resources/Environment/Component/LoadingScreenBtn/index.ts"
-                      style.scss:
-                        source: "@crazyphp_root/resources/Environment/Component/LoadingScreenBtn/style.scss"
-                      template.hbs:
-                        source: "@crazyphp_root/resources/Environment/Component/LoadingScreenBtn/template.hbs"
                   # Full Screen Container (deprecated)
                   FullScreenContainer:
                     files:  
                       index.ts:
                         source: "@crazyphp_root/resources/Environment/Component/FullScreenContainer/index.ts"
-                  # Regulat Button
-                  RegularBtn:
-                    files:
-                      index.ts:
-                        source: "@crazyphp_root/resources/Environment/Component/RegularBtn/index.ts"
-                      style.scss:
-                        source: "@crazyphp_root/resources/Environment/Component/RegularBtn/style.scss"
-                      template.hbs:
-                        source: "@crazyphp_root/resources/Environment/Component/RegularBtn/template.hbs"
-                  # Regulat Button
+                  # Regular Card
                   RegularCard:
                     files:
                       index.ts:
@@ -382,7 +338,5 @@ Structure:
       tsconfig.json:
         source: "@crazyphp_root/resources/Ts/tsconfig.json"
       package.json: null
-      webpack.dev.js: 
-        source: "@crazyphp_root/resources/Webpack/webpack.dev.js"
-      webpack.prod.js: 
-        source: "@crazyphp_root/resources/Webpack/webpack.prod.js"
+      webpack.config.js:
+        source: "@crazyphp_root/resources/Webpack/webpack.config.js"

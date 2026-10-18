@@ -15,10 +15,7 @@ namespace App\Controller\App;
 /**
  * Dependances
  */
-use CrazyPHP\Library\Html\Structure;
 use CrazyPHP\Core\Controller;
-use CrazyPHP\Core\Response;
-
 
  /**
  * App
@@ -45,10 +42,11 @@ class Home extends Controller {
         # Render state
         $state = static::State()
             ->pushColorSchema()
+            ->render()
         ;
 
         # Set structure
-        $structure = (new Structure())
+        $structure = static::Structure()
             ->setDoctype()
             ->setLanguage()
             ->setHead()
@@ -59,7 +57,7 @@ class Home extends Controller {
         ;
 
         # Set response
-        (new Response())
+        static::Response()
             ->setContent($structure)
             ->send();
 

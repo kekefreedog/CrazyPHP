@@ -115,9 +115,6 @@ class Url {
         # should be 0
         if(@curl_errno($ch)){
 
-            # Close
-            @curl_close($ch);
-
             # Return false
             return false;
 
@@ -125,9 +122,6 @@ class Url {
 
         # note: php.net documentation shows this returns a string, but really it returns an int
         $code = @curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-        # Close
-        @curl_close($ch);
 
         # Return code
         return $code;

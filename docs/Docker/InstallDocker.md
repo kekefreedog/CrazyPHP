@@ -1,45 +1,115 @@
-# Install Docker
+# Create a Docker environment
 
-## 1. Create docker compose
+Run this command from an initialized application's root:
 
-- [ ] Use the bellow command to create a docker compose file :
-    ```sh
-    php vendor/kzarshenas/crazyphp/bin/CrazyDocker new
-    ```
-
-## 2. Launch docker compose
-
-- [ ] Use the bellow command to start the docker compose file :
-    ```sh
-    php vendor/kzarshenas/crazyphp/bin/CrazyDocker up
-    ```
-
-> Use the argument `down` to turn off the docker
-
-## Common issues
-
-### Port issue
-
-If you have this error when you up your docker (b2052220039f2cdd5bb40973b4c1b10ba37be6d4a63f3732afcea2f04ea53f9a): `Bind for 0.0.0.0:48000 failed: port is already allocated`, just change the port 48000 (at left) by what you want in the `docker-compose.yml` file :
-```yml
-[...]
-ports:
-    - '48000:80'
-[...]
-```
-
-### Local CrazyPHP issue
-
-On up, if you got this error :
 ```sh
-🟠 Run prepare database
-PHP Fatal error:  Uncaught Error: Class "CrazyPHP\Model\Env" not found in /Users/kzarshenas/Sites/RodeoFx/rodeo_toolkit/docker/bin/SetupDatabase:23
-🟡 Relaunch prepare database...
+./vendor/kzarshenas/crazyphp/bin/crazy docker new
 ```
-That maybe because you are requiering CrazyPhp on a local way, so you need to declare is path on the docker compose.
 
-On `docker-compose.yml` you just need to add a line that give access to you crazy php root folder into your docker instance 
-```yml
-volumes:
-- './../../CrazyProject/CrazyPHP:/Users/kzarshenas/Sites/CrazyProject/CrazyPHP'
+The existing PHP entrypoint remains available:
+
+```sh
+php vendor/kzarshenas/crazyphp/bin/CrazyDocker new
 ```
+
+The shell launcher prefers local PHP when it is at least the project's version (`config.platform.php` in `composer.json`, 8.3 when unset). The generated PHP, Apache and FrankenPHP images use that same version. Without PHP, it runs the wizard in the shared CLI image, using the current local Docker context's Unix socket. Docker management requires access to the host daemon. Remote contexts require local PHP; native Windows users can use the PHP entrypoint or run the shell launcher inside WSL with a local Docker socket.
+
+## Wizard storyline
+
+1. Check Docker, the Compose plugin and the initialized project.
+2. Select **Nginx**, **Apache 2** or **FrankenPHP**.
+3. Select **HTTP** or **HTTPS**.
+4. For HTTPS, indicate whether an existing reverse proxy already handles certificates and enter the hostname. The default comes from `App.server.name`, or `localhost`.
+5. Choose the host ports. The HTTP port is always asked; the HTTPS port only when Caddy or FrankenPHP manages HTTPS. Each question proposes the port saved in `.env`, or the standard port (80, 8080 behind an existing proxy, 443). When that port is already used by a local service or a running container, the next free port from 8080 (HTTP) or 8443 (HTTPS) is proposed instead. Press Enter to accept or type another port.
+6. For an existing proxy, display Caddy and Nginx configuration instructions using the chosen port. Otherwise, prepare a separate Caddy 2 service for Nginx/Apache, or use FrankenPHP's integrated Caddy.
+7. Display the summary, including the ports and a warning for any port still in use, and ask for confirmation before creating files.
+8. Create the Docker directories and server configuration.
+9. Save the selected options in `config/Docker.yml` and generate every enabled database service from `Database.collection`.
+10. Run `docker compose config --quiet`, then `docker compose build`. A failed command stops the flow with a nonzero exit status.
+
+`new` finishes after building; it does not start services or provision a live database. Existing Docker directories or Compose configuration are preserved: move or back them up before creating a replacement. The command does not rewrite `Front.yml`, `Router.yml` or application metadata.
+
+## Generated files
+
+- `docker-compose.yml`: selected PHP/HTTP services, optional Caddy, database services and persistent volumes.
+- `config/Docker.yml`: server type, security, existing-proxy choice, hostname, and logical runtime/edge service names. Container IDs are not cached; helpers use the stable Compose service names.
+- `docker/php/`: PHP image and configuration, with the selected database extensions.
+- `docker/nginx/`, `docker/apache/` or `docker/frankenphp/`: the selected server's configuration.
+- `docker/caddy/`: created only for managed HTTPS with Nginx or Apache.
+- `.env`: the chosen `CRAZY_HTTP_PORT`/`CRAZY_HTTPS_PORT` host ports and the host UID/GID used by preparation. The port values are replaced by the wizard's answers; other existing variables are preserved.
+- `docker/config/Database.yml`: generated connection settings mounted over `config/Database.yml` only inside PHP.
+- `docker/README.md`: startup, TLS and existing-proxy instructions specific to the generated stack.
+- `docker/bin/Prepare`: installs Composer dependencies, then invokes database setup.
+- `docker/bin/SetupDatabase`: invokes `CrazyPHP\Library\File\Docker\Bootstrap`.
+
+Nginx uses a separate PHP-FPM container. Apache and FrankenPHP serve PHP within the `webserver` service. FrankenPHP uses classic request mode; this command does not enable worker mode.
+
+The real application path and any external framework checkout are mounted at matching container paths, preserving Composer path-repository symlinks. No machine-specific checkout path is hardcoded in the templates.
+
+## HTTPS
+
+With no existing proxy, Caddy owns ports 80 and 443 and persists its state in `caddy_data` and `caddy_config`. Public certificates require a hostname resolving to the server and reachable challenge ports. Certificate issuance happens when the containers start, not during `new`.
+
+For localhost and internal hostnames, Caddy uses a local certificate authority. Trust its root certificate on each client that should trust the site. The generator does not install a certificate authority or modify the hosts file. See [Caddy automatic HTTPS](https://caddyserver.com/docs/automatic-https) and [FrankenPHP Docker configuration](https://frankenphp.dev/docs/docker/).
+
+After starting a local HTTPS stack, export its root certificate:
+
+```sh
+# Use webserver instead of caddy when FrankenPHP was selected.
+docker compose cp caddy:/data/caddy/pki/authorities/local/root.crt ./caddy-root.crt
+```
+
+Import that certificate into the relevant operating system/browser trust store. Use `localhost`, or configure your hostname's DNS/hosts entry yourself.
+
+With an existing HTTPS proxy, the generated backend defaults to `127.0.0.1:8080`. Keep certificates and HTTP-to-HTTPS redirection on that proxy. The generated README includes Caddy and Nginx examples forwarding the host and protocol. For a proxy in another container, attach it to the application's network and use `webserver:80`; its own `127.0.0.1` does not address this backend.
+
+Mkcert and the previous Certbot branch have been removed. Existing installations of those tools and host trust stores are not modified.
+
+## Databases
+
+All enabled MongoDB, MariaDB, MySQL and PostgreSQL definitions produce services; missing `Database.yml` or disabled definitions produce none. Existing local hosts, ports, users and passwords remain intact. Service names are added under `Database.collection.<engine>.docker.service.name`.
+
+Each engine gets a separate named volume and stays private to the Compose network. The generated runtime overlay uses service names and internal ports. Your original local connection settings remain unchanged.
+
+Database credentials are copied from `Database.yml` into the generated Compose environment, with dollar signs escaped for Compose interpolation. The Compose file is written with owner-only permissions. Review and save passwords in `Database.yml` before generating Docker files; later edits require synchronizing the generated environment too.
+
+The official MySQL image interpolates its administrator password into SQL and a client option file. The wizard rejects quotes, backslashes and line breaks in `mysql.root.password` before generating files. MySQL application accounts are created by preparation, which supports quoted passwords. See the [MySQL image entrypoint](https://github.com/docker-library/mysql/blob/master/8.4/docker-entrypoint.sh).
+
+Compose waits for healthy databases, then runs the one-shot `prepare` service. It runs `composer install` and creates every configured database and missing user, granting access to the configured databases. Existing accounts keep their passwords and existing data is preserved. Changing YAML or image environment variables does not reset credentials in existing volumes.
+
+`docker/config` is private to the host user; its generated YAML is readable through the runtime bind mount. The local and container database connection caches use separate keys.
+
+## Start and stop
+
+Review `docker/README.md`, then start the generated services:
+
+```sh
+docker compose up -d
+```
+
+Stop containers while retaining database and certificate volumes:
+
+```sh
+docker compose down
+```
+
+PHP starts only after preparation succeeds. Diagnose failures with `docker compose logs prepare`. Preparation runs in the PHP image, so startup and shutdown need Docker and Compose but no host PHP. `docker compose restart` does not rerun preparation; use `down` followed by `up` when setup must run again.
+
+The shell aliases `crazy docker up` and `crazy docker down` forward arguments directly to Compose. The PHP `CrazyDocker up/down` actions and their model classes have been removed.
+
+This lifecycle applies to newly generated stacks. Existing Compose files must be regenerated or migrated while preserving their database/certificate volumes and credentials. Keep existing volume names when migrating so the new services attach to the original data.
+
+Frontend builds remain separate: the preparation service installs PHP dependencies and configures databases. Use the project’s frontend build command when assets change.
+
+Ordering uses Compose’s [health and completion conditions](https://docs.docker.com/compose/how-tos/startup-order/).
+
+
+## Remove the generated Docker environment
+
+```sh
+sh vendor/kzarshenas/crazyphp/bin/crazy docker delete
+```
+
+After confirmation, the command runs `docker compose down` and stops immediately if shutdown fails. It then removes Docker service metadata from `Database.yml`, generated files listed in the Docker inventory, and `config/Docker.yml`. Local database hosts, ports and credentials remain unchanged. A partial installation without a Compose file can be cleaned without contacting Docker.
+
+Named database/certificate volumes, host database data, `.env` and custom files inside `docker/` are retained. Directory symlinks are not followed during cleanup. A Compose file without the CrazyPHP Docker marker is rejected instead of treating an unrelated stack as generated configuration.

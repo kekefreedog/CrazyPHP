@@ -14,8 +14,8 @@
  * Dependances
  */
 import type { FormInputTypeHelpers, FormInputType } from './FormType';
+import type Pickr from '@simonwep/pickr';
 import {default as Form} from '../Form';
-import Pickr from '@simonwep/pickr';
 import FormType from './FormType';
 
 /**
@@ -70,6 +70,9 @@ export default class ColorType extends FormType implements FormInputType {
 
         // Check pickr
         if(inputEl instanceof HTMLInputElement && "colorPicker" in inputEl.dataset && inputEl.dataset.colorPicker == "pickr"){
+
+            // Load the picker only when a legacy color field needs it
+            const {default:PickrModule} = await import("@simonwep/pickr");
 
             // Create divEl
             let divEl = document.createElement("div");
@@ -198,7 +201,7 @@ export default class ColorType extends FormType implements FormInputType {
             }
 
             // Simple example, see optional options for more configuration.
-            const pickr = Pickr.create(options as Pickr.Options);
+            const pickr = PickrModule.create(options as Pickr.Options);
 
             // Add event on save
             pickr.on("save", (color:any, instance:any) => {
