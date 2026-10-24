@@ -2,7 +2,7 @@
 /**
  * Runtime Tests
  *
- * Verify local execution and Docker fallback without starting containers.
+ * Verify local execution and explicit confirmation without starting containers.
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
@@ -56,6 +56,9 @@ class RuntimeTest extends TestCase {
 
         # Remove this test's fixture only
         File::removeAll($this->_root);
+
+        # Reset explicit unattended mode
+        Runtime::$assumeYes = false;
 
         # Reset application environment state
         Env::reset();
@@ -116,111 +119,41 @@ class RuntimeTest extends TestCase {
 
     }
 
+
+
+
     /**
-     * Test Compose Aliases Without PHP
+     * Test Missing Tools Do Not Fall Back To Docker
      *
      * @return void
      */
-    public function testComposeAliasesWithoutPhp():void {
+    public function testMissingToolsDoNotFallBackToDocker():void {
 
-        # Expose only a fake Docker executable so the launcher cannot find PHP
-        file_put_contents($this->_root."/docker", '#!/bin/sh'."\n".'printf "%s\n" "$@"'."\nexit 7\n");
-
-        # Permit the shell to execute the argument recorder
-        chmod($this->_root."/docker", 0755);
-
-        # Verify both lifecycle aliases and propagation of Docker's exit status
-        foreach(["up", "down"] as $action){
-
-            # Keep arguments containing spaces intact without shell interpolation
-            $process = proc_open(["/bin/sh", dirname(__DIR__, 3)."/bin/crazy", "docker", $action, "argument with spaces"], [1 => ["pipe", "w"], 2 => ["pipe", "w"]], $pipes, $this->_root, ["PATH" => $this->_root]);
-
-            # Capture the exact forwarded arguments
-            $output = stream_get_contents($pipes[1]);
-
-            # Capture unexpected launcher errors
-            $error = stream_get_contents($pipes[2]);
-
-            # Release descriptors before collecting the child status
-            fclose($pipes[1]);
-            fclose($pipes[2]);
-
-            # Preserve Docker's result and every positional argument
-            $this->assertSame(7, proc_close($process));
-            $this->assertSame("compose\n$action\nargument with spaces\n", $output);
-            $this->assertSame("", $error);
-
+        # A local command must not start Docker even when its client is installed
+        $runtime = new ProbedRuntime();
+        $runtime->available = ["docker"];
+        foreach(["composer", "npm"] as $tool){
+            try{
+                $runtime->command($tool);
+                $this->fail("Missing tool should require explicit --docker.");
+            }catch(CrazyException $exception){
+                $this->assertStringContainsString("--docker", $exception->getMessage());
+            }
         }
+        $this->assertSame([], $runtime->probes);
 
     }
 
     /**
-     * Test Docker Fallback
+     * Test Explicit Yes Skips Input
      *
      * @return void
      */
-    public function testDockerFallback():void {
+    public function testExplicitYesSkipsInput():void {
 
-        # Simulate a machine with Docker and no Composer executable
-        $runtime = new ProbedRuntime();
-
-        # Expose only the Docker executable
-        $runtime->available = ["docker"];
-
-        # Prepare the fallback command without running Docker
-        $command = $runtime->command("composer", ["update", "--no-interaction"]);
-
-        # Probe the daemon before building its runtime image
-        $this->assertSame(["docker", "info"], $runtime->probes[0]);
-
-        # Build the maintained runtime Dockerfile
-        $this->assertSame("build", $runtime->probes[1][1]);
-
-        # Preserve application paths with spaces as single arguments
-        $this->assertContains(realpath($this->_root).":".realpath($this->_root), $command);
-
-        # Mount an external linked library at its real host path
-        $library = realpath(dirname(__DIR__, 3));
-
-        # Keep Composer symlink targets accessible inside the container
-        $this->assertContains("$library:$library", $command);
-
-        # Keep the image, tool and user arguments in the correct order
-        $this->assertSame([Runtime::image(), "composer", "update", "--no-interaction"], array_slice($command, -4));
-
-    }
-
-    /**
-     * Test Unavailable Daemon Stops Before Build
-     *
-     * @return void
-     */
-    public function testUnavailableDaemonStopsBeforeBuild():void {
-
-        # Simulate a Docker client whose daemon is stopped
-        $runtime = new ProbedRuntime();
-
-        # Make the client discoverable
-        $runtime->available = ["docker"];
-
-        # Fail its availability probe
-        $runtime->status = 1;
-
-        # Require a useful runtime error
-        $this->expectException(CrazyException::class);
-
-        # Do not attempt installation with an unavailable daemon
-        try{
-
-            # Resolve the missing npm runtime
-            $runtime->command("npm", ["install"]);
-
-        }finally{
-
-            # Never start an image build after a failed probe
-            $this->assertCount(1, $runtime->probes);
-
-        }
+        # Share the CLI bypass with model-level confirmation prompts
+        Runtime::$assumeYes = true;
+        $this->assertTrue((new Runtime())->confirm("Continue?"));
 
     }
 
@@ -268,7 +201,7 @@ class RuntimeTest extends TestCase {
     public function testConfirmationRequiresAnExplicitAnswer():void {
 
         # Exercise the real terminal input path without blocking the test runner
-        foreach([["yes\n", "YES", 0], ["no\n", "NO", 0], ["\n", "NO", 0], ["", "CLOSED", 2]] as [$input, $expected, $status]){
+        foreach([["yes\n", "YES", 0], ["no\n", "NO", 0], ["\n", "NO", 0], ["maybe\nyes\n", "YES", 0], ["", "CLOSED", 2]] as [$input, $expected, $status]){
 
             # Supply a controlled stream, including the closed-input case
             file_put_contents($this->_root."/input", $input);
@@ -303,170 +236,7 @@ class RuntimeTest extends TestCase {
 
     }
 
-    /**
-     * Test Launcher Without PHP
-     *
-     * @return void
-     */
-    public function testLauncherWithoutPhp():void {
 
-        # Exercise the portable shell launcher on Unix hosts
-        if(PHP_OS_FAMILY === "Windows")
-
-            # Windows environments need a compatible shell for this entrypoint
-            $this->markTestSkipped("The launcher test requires a POSIX shell.");
-
-        # Use a PATH containing only tools controlled by this fixture
-        $directory = $this->_root."/bin";
-
-        # Create the isolated executable directory
-        mkdir($directory);
-
-        # Provide the launcher's path and user utilities
-        foreach(["dirname", "id"] as $name)
-
-            # Expose only the required system executable
-            symlink("/usr/bin/".$name, $directory."/".$name);
-
-        # Record Docker invocations without building or running containers
-        file_put_contents($directory."/docker", '#!/bin/sh'."\n".'printf "%s\\n" "$@" >> "$CALL_LOG"'."\n");
-
-        # Allow the fake Docker client to run
-        chmod($directory."/docker", 0755);
-
-        # Hide PHP and pass a log destination with spaces
-        $environment = ["PATH" => $directory, "CALL_LOG" => $this->_root."/calls"];
-
-        # Start the actual launcher with arguments that must remain separate
-        $process = proc_open([
-            "/bin/sh", dirname(__DIR__, 3)."/bin/crazy", "new", "project", "with spaces",
-        ], [["file", "/dev/null", "r"], ["file", "/dev/null", "w"], ["file", "/dev/null", "w"]], $pipes, $this->_root, $environment);
-
-        # Verify that PHP absence activates a successful Docker fallback
-        $this->assertSame(0, proc_close($process));
-
-        # Read every argument received by the Docker client
-        $arguments = file($this->_root."/calls", FILE_IGNORE_NEW_LINES);
-
-        # Check daemon availability before performing a build
-        $this->assertSame("info", $arguments[0]);
-
-        # Preserve the user's command arguments
-        $this->assertSame(["new", "project", "with spaces"], array_slice($arguments, -3));
-
-        # Keep the application mount as one argument
-        $root = realpath($this->_root);
-
-        # Preserve paths with spaces through the shell wrapper
-        $this->assertContains("$root:$root", $arguments);
-
-        # Route frontend scripts through the same PHP-free launcher without daemon socket access
-        file_put_contents($this->_root."/calls", "");
-        $process = proc_open(["/bin/sh", dirname(__DIR__, 3)."/bin/crazy", "front", "run", "build", "--", "--mode=development"], [["file", "/dev/null", "r"], ["file", "/dev/null", "w"], ["file", "/dev/null", "w"]], $pipes, $this->_root, $environment);
-        $this->assertSame(0, proc_close($process));
-
-        # Keep the dedicated frontend entrypoint and arguments intact inside the image
-        $arguments = file($this->_root."/calls", FILE_IGNORE_NEW_LINES);
-        $this->assertSame([dirname(__DIR__, 3)."/bin/CrazyFront", "run", "build", "--", "--mode=development"], array_slice($arguments, -5));
-        $this->assertNotContains("DOCKER_HOST=unix:///var/run/docker.sock", $arguments);
-
-    }
-
-    /**
-     * Test Docker Launcher Without PHP
-     *
-     * @return void
-     */
-    public function testDockerLauncherWithoutPhp():void {
-
-        # The portable launcher uses POSIX paths and Unix daemon sockets
-        if(PHP_OS_FAMILY === "Windows")
-
-            # Native Windows can continue to use the PHP entrypoint
-            $this->markTestSkipped("This launcher test requires a POSIX shell.");
-
-        # Create a harmless local socket so the real launcher can validate its mount
-        $socketPath = $this->_root."/daemon.sock";
-
-        # Listen without accepting requests; the fake client records commands only
-        $socket = @stream_socket_server("unix://".$socketPath, $error, $message);
-
-        # Some sandbox policies prohibit even isolated local socket fixtures
-        if($socket === false)
-
-            # Keep the test executable on hosts that permit Unix sockets
-            $this->markTestSkipped("The environment does not permit creating a Unix socket fixture.");
-
-        try{
-
-            # Hide PHP from the launcher's executable search path
-            $directory = $this->_root."/docker-bin";
-
-            # Create an isolated tool directory
-            mkdir($directory);
-
-            # Expose only the shell utilities needed by the wrapper
-            foreach(["dirname", "id", "uname"] as $name)
-
-                # Use the actual host utility without exposing PHP
-                symlink("/usr/bin/".$name, $directory."/".$name);
-
-            # Record invocation boundaries and answer the context probe
-            file_put_contents($directory."/docker", '#!/bin/sh'."\n".'printf "%s\\n" "$@" >> "$CALL_LOG"'."\n".'if [ "$1" = context ]; then printf "unix://%s\\n" "$SOCKET_PATH"; fi'."\n".'for arg in "$@"; do if [ "$arg" = stat ]; then printf "0\\n"; fi; done'."\n");
-
-            # Allow the fake client to execute
-            chmod($directory."/docker", 0755);
-
-            # Keep environment values separate from shell code
-            $environment = ["PATH" => $directory, "CALL_LOG" => $this->_root."/docker-calls", "SOCKET_PATH" => $socketPath];
-
-            # Dispatch the user-facing Docker command through the fallback image
-            $process = proc_open(["/bin/sh", dirname(__DIR__, 3)."/bin/crazy", "docker", "new"], [["file", "/dev/null", "r"], ["file", "/dev/null", "w"], ["pipe", "w"]], $pipes, $this->_root, $environment);
-
-            # Capture errors for a useful failure message
-            $errors = stream_get_contents($pipes[2]);
-
-            # Close the output stream before collecting the process status
-            fclose($pipes[2]);
-
-            # Require a successful fallback without a local PHP executable
-            $this->assertSame(0, proc_close($process), $errors);
-
-            # Inspect every argument passed through the shell wrapper
-            $arguments = file($this->_root."/docker-calls", FILE_IGNORE_NEW_LINES);
-
-            # The command must run the dedicated Docker entrypoint
-            $this->assertSame([dirname(__DIR__, 3)."/bin/CrazyDocker", "new"], array_slice($arguments, -2));
-
-            # Resolve the bind source inside the Linux VM on macOS, or on the native daemon
-            $this->assertContains((PHP_OS_FAMILY === "Darwin" ? "/var/run/docker.sock" : $socketPath).":/var/run/docker.sock", $arguments);
-
-            # Direct the image's client at the mounted host daemon
-            $this->assertContains("DOCKER_HOST=unix:///var/run/docker.sock", $arguments);
-
-            # Project deletion also needs the host daemon when its Compose environment exists
-            file_put_contents($this->_root."/docker-compose.yml", "services: {}\n");
-            file_put_contents($this->_root."/docker-calls", "");
-            $process = proc_open(["/bin/sh", dirname(__DIR__, 3)."/bin/crazy", "delete", "project"], [["file", "/dev/null", "r"], ["file", "/dev/null", "w"], ["pipe", "w"]], $pipes, $this->_root, $environment);
-
-            # Capture launcher failures without invoking a real Docker daemon
-            $errors = stream_get_contents($pipes[2]);
-            fclose($pipes[2]);
-            $this->assertSame(0, proc_close($process), $errors);
-            $arguments = file($this->_root."/docker-calls", FILE_IGNORE_NEW_LINES);
-
-            # Mount the socket for application deletion while retaining the normal command entrypoint
-            $this->assertSame([dirname(__DIR__, 3)."/bin/CrazyCommand", "delete", "project"], array_slice($arguments, -3));
-            $this->assertContains("DOCKER_HOST=unix:///var/run/docker.sock", $arguments);
-
-        }finally{
-
-            # Release the fixture socket before deleting the temporary directory
-            fclose($socket);
-
-        }
-
-    }
 
 }
 

@@ -2,12 +2,15 @@
 
 ## Register Config File "Asset"
 
-Without Docker
+Using installed PHP:
+
 ```sh
 php vendor/kzarshenas/crazyphp/bin/CrazyAsset register
 ```
 
-With Docker :
+Using the CLI Docker image:
+
 ```sh
-docker exec -it crazytest-php-fpm-1 php vendor/kzarshenas/crazyphp/bin/CrazyAsset register
+php vendor/kzarshenas/crazyphp/bin/CrazyAsset register --docker
 ```
+Add `--yes` (or `-y`) to skip the startup and registration confirmations in automated runs.

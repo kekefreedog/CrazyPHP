@@ -36,16 +36,22 @@ Changes in a local checkout are available only through that checkout or a Compos
 ## 2. Start the creation wizard
 
 ```sh
-sh vendor/kzarshenas/crazyphp/bin/crazy new project
-```
-
-The launcher uses local PHP 8.3 or newer first. If a compatible PHP interpreter is unavailable, it builds the CLI image using Docker's cache and runs the same wizard inside Docker. Docker must be running for this fallback. The application directory and the resolved library checkout are mounted at their host paths, including when Composer uses a symlink. Those directories must be shared with Docker Desktop or Colima.
-
-The existing PHP entrypoint remains available:
-
-```sh
 php vendor/kzarshenas/crazyphp/bin/CrazyCommand new project
 ```
+
+Commands use the installed PHP, Composer and Node/npm by default. Missing local tools produce an error; they do not automatically switch to Docker. Add `--docker` to any `Crazy*` entrypoint to run PHP and its Composer/Node subprocesses in the CLI image:
+
+```sh
+php vendor/kzarshenas/crazyphp/bin/CrazyCommand new project --docker
+php vendor/kzarshenas/crazyphp/bin/CrazyFront run build --docker --yes
+php vendor/kzarshenas/crazyphp/bin/CrazyAsset register -y
+```
+
+`--docker` reads `config.platform.php` from `composer.json` (8.3 when unset, minimum 8.3), builds the matching CLI image using Docker's cache, and runs the same entrypoint there. The application and resolved library checkout are mounted at their host paths, including Composer symlinks. Both directories must be shared with Docker Desktop or Colima. The small bootstrap needs local PHP 8.0+ to dispatch into Docker before Composer checks the project's PHP requirements. Without local PHP, invoke the entrypoint through `docker run` using the image from step 1.
+
+A yes/no prompt appears after the script logo and title, before the command starts. Answering No or pressing Enter cancels. `--yes` (short form `-y`) skips all yes/no confirmations, including summaries and the database-password reminder, for automation such as E2E tests. It does not fill in creation forms; those still need project values. Closed input without `--yes` fails with a clear message. `--help` does not prompt.
+
+Global switches can appear before or after the command, but must come before `--`; everything after that separator is forwarded to the frontend script.
 
 The generator asks these questions in order:
 
@@ -59,7 +65,7 @@ The generator asks these questions in order:
 8. Frontend, for Application and Website: Vite (default) or Webpack.
 9. Summary and confirmation.
 
-The PHP version is written to `composer.json` as `require.php` (`^8.5`) and `config.platform.php` (`8.5.0`). Composer resolves dependencies for that version even when your local PHP is older, `crazy docker new` builds its PHP image from it, and the `crazy` launcher runs in the CLI Docker image of that version when your local PHP is older than the project's.
+The PHP version is written to `composer.json` as `require.php` (`^8.5`) and `config.platform.php` (`8.5.0`). Composer resolves dependencies for that version even when your local PHP is older, `CrazyDocker new` builds its PHP image from it, and `--docker` selects the CLI image for that version. Without `--docker`, the installed PHP must satisfy the project's requirements.
 
 REST API, PHP Library and Undefined projects skip frontend questions, npm installation and compilation. They do not receive `package.json`, TypeScript sources, page templates or frontend build configurations. PHP Library and Undefined also skip database, authentication and router selection.
 
@@ -75,7 +81,7 @@ After confirmation, the generator:
 6. Waits for confirmation that the database passwords have been updated and saved in `config/Database.yml`, when databases are configured.
 7. Registers the chosen frontend scripts, compiles once and records the generated assets in `config/Front.yml`.
 
-Composer and npm prefer locally installed tools and use the CLI Docker image when those tools are missing. A failed installation or build stops creation and returns a nonzero exit status. The generator rejects an already initialized application directory; it is a creation command, not an application upgrade command.
+Composer and npm run locally by default, or inside the selected CLI image when the command uses `--docker`. A failed installation or build stops creation and returns a nonzero exit status. The generator rejects an already initialized application directory; it is a creation command, not an application upgrade command.
 
 ### Database configuration
 
@@ -132,17 +138,17 @@ Webpack generates `webpack.config.js`; the `--mode` passed by each script select
 For dependency installation and application-managed asset registration, use the shared frontend command:
 
 ```sh
-sh vendor/kzarshenas/crazyphp/bin/crazy front run build
-sh vendor/kzarshenas/crazyphp/bin/crazy front run watch
+php vendor/kzarshenas/crazyphp/bin/CrazyFront run build
+php vendor/kzarshenas/crazyphp/bin/CrazyFront run watch
 # Put compiler options after the CLI separator.
-sh vendor/kzarshenas/crazyphp/bin/crazy front run build -- --mode development
+php vendor/kzarshenas/crazyphp/bin/CrazyFront run build -- --mode development
 ```
 
-When your local PHP is older than the project's PHP version, `crazy` runs PHP in the CLI Docker image. If Node and npm are installed on your machine, `crazy front run …` still runs `npm install` and the script on the host, without the Docker VM's memory limit: Docker only checks the script and records the build in `config/Front.yml` before and after. Stopping `watch` with Ctrl+C keeps the last build the watcher published.
+With `--docker`, both PHP and npm run inside the CLI container, even when Node is installed locally. Without it, both use the installed tools. Stopping `watch` with Ctrl+C keeps the last build the watcher published.
 
-`run` defaults to the `build` script. The PHP entrypoint also remains available: `php vendor/kzarshenas/crazyphp/bin/CrazyFront run build`. Scripts come from the application's `package.json`; `Front.bundler` selects `webpack` or `vite`. Older frontend configurations without this field retain Webpack behavior. `none` and missing scripts are rejected before npm installation.
+`run` defaults to the `build` script. Scripts come from the application's `package.json`; `Front.bundler` selects `webpack` or `vite`. Older frontend configurations without this field retain Webpack behavior. `none` and missing scripts are rejected before npm installation.
 
-The runner uses local npm first and Docker as fallback, propagates failures, and records assets, hash, mode and watch state in `Front.lastBuild`. Watch state is available to request middleware while compilation runs; a failed compiler restores the previous metadata unless a watcher has already published newer assets, whose references are retained when it stops. Root bundles retain runtime/shared-chunk/entrypoint ordering, and page bundles come from the same build. Projects without page bundles are supported.
+The runner uses local npm by default, or container npm with `--docker`, propagates failures, and records assets, hash, mode and watch state in `Front.lastBuild`. Watch state is available to request middleware while compilation runs; a failed compiler restores the previous metadata unless a watcher has already published newer assets, whose references are retained when it stops. Root bundles retain runtime/shared-chunk/entrypoint ordering, and page bundles come from the same build. Projects without page bundles are supported.
 
 The implementation is now `CrazyPHP\Model\Front\Run`, with shared discovery in `CrazyPHP\Library\File\Front`. The old Webpack classes remain compatibility wrappers. Vite `dev`/`watch` continue to build classic scripts for PHP rather than starting a Vite development server.
 
@@ -154,11 +160,11 @@ Project creation does not start a web server or database. For the existing appli
 ## 5. Remove a project
 
 ```sh
-sh vendor/kzarshenas/crazyphp/bin/crazy delete project
+php vendor/kzarshenas/crazyphp/bin/CrazyCommand delete project
 ```
 
 After the existing confirmation, deletion stops the managed Compose stack before removing any application files. If shutdown fails, application cleanup stops. It then restores the newest recognized Composer backup (current or legacy naming), clears the application file cache, and removes application sources, assets, the configured public directory, frontend configuration and `node_modules` for either bundler.
 
-Everything else in the project folder is then removed, including `config/` (with `Database.yml` and custom files), local database data in `.database`, `.env`, `.gitignore`, editor settings and custom root files. Only `composer.json` (the restored bootstrap manifest), `vendor` and `.git` are kept, so `crazy new project` can run again. Named Docker volumes are not removed. Linked source/public directories are unlinked without deleting their targets. No shared database cache is flushed.
+Everything else in the project folder is then removed, including `config/` (with `Database.yml` and custom files), local database data in `.database`, `.env`, `.gitignore`, editor settings and custom root files. Only `composer.json` (the restored bootstrap manifest), `vendor` and `.git` are kept, so `CrazyCommand new project` can run again. Named Docker volumes are not removed. Linked source/public directories are unlinked without deleting their targets. No shared database cache is flushed.
 
 If a Composer backup is restored, the generated `composer.lock` is removed because it belongs to the replaced manifest. Without a backup, the current Composer manifest and lock remain. Back up application code and assets you want to retain before confirming deletion.

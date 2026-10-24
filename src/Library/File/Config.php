@@ -672,7 +672,6 @@ class Config{
         # Set file instance class
         $fileInstance = File::MIMTYPE_TO_CLASS[$fileMime ?? null];
 
-
         # Get mime type
         $fileData = $fileInstance::open($filePath ?? null);
 
@@ -720,8 +719,8 @@ class Config{
         # Set last resultCursor
         $result = $fileData;
 
-        # Set result
-        $fileInstance::set($filePath, $result);
+        # Write the updated document without merging it again, so shorter lists replace old ones
+        $fileInstance::set($filePath, $result, false, false);
 
         # Set cache
         # $GLOBALS[self::PREFIX][$keys[0]] = $result;

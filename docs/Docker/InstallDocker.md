@@ -3,16 +3,18 @@
 Run this command from an initialized application's root:
 
 ```sh
-./vendor/kzarshenas/crazyphp/bin/crazy docker new
-```
-
-The existing PHP entrypoint remains available:
-
-```sh
 php vendor/kzarshenas/crazyphp/bin/CrazyDocker new
 ```
 
-The shell launcher prefers local PHP when it is at least the project's version (`config.platform.php` in `composer.json`, 8.3 when unset). The generated PHP, Apache and FrankenPHP images use that same version. Without PHP, it runs the wizard in the shared CLI image, using the current local Docker context's Unix socket. Docker management requires access to the host daemon. Remote contexts require local PHP; native Windows users can use the PHP entrypoint or run the shell launcher inside WSL with a local Docker socket.
+Use `--docker` to run the wizard's PHP in the CLI image instead of the installed PHP:
+
+```sh
+php vendor/kzarshenas/crazyphp/bin/CrazyDocker new --docker
+```
+
+The CLI image uses the project's PHP version (`config.platform.php` in `composer.json`, 8.3 when unset). The generated PHP, Apache and FrankenPHP images use that same version. `--docker` uses the current local Docker context's Unix socket to manage the host daemon. Remote contexts require local PHP; Windows users can run this mode inside WSL with a local Docker socket.
+
+Every command asks for confirmation at startup. `--yes` / `-y` skips yes/no prompts for automation; creation forms still require answers. Start and stop generated services directly with `docker compose up -d` and `docker compose down`.
 
 ## Wizard storyline
 
@@ -43,6 +45,19 @@ The shell launcher prefers local PHP when it is at least the project's version (
 - `docker/bin/SetupDatabase`: invokes `CrazyPHP\Library\File\Docker\Bootstrap`.
 
 Nginx uses a separate PHP-FPM container. Apache and FrankenPHP serve PHP within the `webserver` service. FrankenPHP uses classic request mode; this command does not enable worker mode.
+
+New projects default to PHP 8.5. For that version, FrankenPHP uses `dunglas/frankenphp:1-php8.5-bookworm`; projects selecting PHP 8.3 or 8.4 keep their selected version. Changing `composer.json` alone does not upgrade an existing image or container.
+
+Both generated Caddy configurations remove the `Server` and `X-Powered-By` response headers regardless of their values. Both Caddy configurations and Nginx limit request bodies to 512 MiB, matching PHP’s generated `post_max_size=512M`. Individual uploads are limited to `500M`, leaving room for multipart form data. These template defaults apply to newly generated stacks; existing Caddyfiles must be updated separately.
+
+After editing an existing FrankenPHP Caddyfile, validate and reload it without restarting Docker or rebuilding the image:
+
+```sh
+docker compose exec webserver frankenphp validate --config /etc/caddy/Caddyfile --adapter caddyfile
+docker compose exec webserver frankenphp reload --config /etc/caddy/Caddyfile --adapter caddyfile
+```
+
+Run these commands from the target application directory. Verify its PHP runtime with `docker compose exec webserver php -v`, which selects that project’s service.
 
 The real application path and any external framework checkout are mounted at matching container paths, preserving Composer path-repository symlinks. No machine-specific checkout path is hardcoded in the templates.
 
@@ -95,7 +110,7 @@ docker compose down
 
 PHP starts only after preparation succeeds. Diagnose failures with `docker compose logs prepare`. Preparation runs in the PHP image, so startup and shutdown need Docker and Compose but no host PHP. `docker compose restart` does not rerun preparation; use `down` followed by `up` when setup must run again.
 
-The shell aliases `crazy docker up` and `crazy docker down` forward arguments directly to Compose. The PHP `CrazyDocker up/down` actions and their model classes have been removed.
+Use Compose directly for startup and shutdown; `CrazyDocker` provides the `new` and `delete` generation commands.
 
 This lifecycle applies to newly generated stacks. Existing Compose files must be regenerated or migrated while preserving their database/certificate volumes and credentials. Keep existing volume names when migrating so the new services attach to the original data.
 
@@ -107,7 +122,7 @@ Ordering uses Compose’s [health and completion conditions](https://docs.docker
 ## Remove the generated Docker environment
 
 ```sh
-sh vendor/kzarshenas/crazyphp/bin/crazy docker delete
+php vendor/kzarshenas/crazyphp/bin/CrazyDocker delete
 ```
 
 After confirmation, the command runs `docker compose down` and stops immediately if shutdown fails. It then removes Docker service metadata from `Database.yml`, generated files listed in the Docker inventory, and `config/Docker.yml`. Local database hosts, ports and credentials remain unchanged. A partial installation without a Compose file can be cleaned without contacting Docker.

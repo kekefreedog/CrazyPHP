@@ -12,6 +12,11 @@
   <testsuites>
     <testsuite name="Crazy PHP | Library tests">
       <directory>tests</directory>
+      <exclude>tests/E2E</exclude>
+      <exclude>tests/.cache</exclude>
+    </testsuite>
+    <testsuite name="Crazy PHP | Project Creation (E2E)">
+      <directory>tests/E2E</directory>
     </testsuite>
   </testsuites>
 </phpunit>

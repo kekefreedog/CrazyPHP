@@ -1,6 +1,6 @@
 # CrazyPHP CLI runtime: PHP, Composer and Node for hosts without local tools.
 
-# PHP version of the project, passed by the launcher and Runtime; declared before the first FROM
+# PHP version of the project, passed by the CLI bootstrap; declared before the first FROM
 ARG PHP_VERSION=8.3
 
 FROM node:22-bookworm-slim AS node

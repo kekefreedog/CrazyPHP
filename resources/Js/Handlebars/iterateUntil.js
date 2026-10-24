@@ -19,7 +19,7 @@
 module.exports = function(max, options) {
     
     // Set start at one
-    const startAtOne = true;
+    let startAtOne = true;
 
     // Check hasj
     if("startAtOne" in options.hash){

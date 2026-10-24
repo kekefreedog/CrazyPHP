@@ -1,0 +1,33 @@
+name: E2E
+on:
+  release:
+    types: [published]
+jobs:
+  project-creation:
+    name: Crazy PHP | Project Creation (E2E)
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v5
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.5"
+          extensions: mbstring, curl, pdo_mysql, pdo_pgsql
+          tools: composer
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Install dependencies
+        run: composer install --no-interaction
+      - name: Project Creation Tests
+        run: composer test:e2e
+        env:
+          CRAZY_E2E_STRATEGY: each
+      - name: Upload logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-logs
+          path: tests/.cache/e2e/**/e2e.log

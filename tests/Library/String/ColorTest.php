@@ -15,6 +15,7 @@ namespace Tests\Library\Array;
 /**
  * Dependances
  */
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use CrazyPHP\Library\String\Color;
 use PHPUnit\Framework\TestCase;
 use CrazyPHP\Model\Env;
@@ -28,6 +29,8 @@ use CrazyPHP\Model\Env;
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
  * @copyright  2022-2024 Kévin Zarshenas
  */
+# Ignore PHP 8.5 "(double) cast" deprecations raised by ozdemirburak/iris until it is fixed upstream
+#[IgnoreDeprecations]
 class ColorTest extends TestCase{
 
     /** Public method | Preparation

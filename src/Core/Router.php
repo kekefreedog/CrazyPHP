@@ -774,8 +774,9 @@ class Router implements CrazyRouter {
                     : ""
                 ;
 
-                # New response
+                # New response with an explicit redirect status for every SAPI
                 (new Response())
+                    ->setStatusCode(302)
                     ->addHeader("Location", ModelConfig::getRouterPath([
                         "name"      =>  $routerName,
                         "arguments" =>  $arguments

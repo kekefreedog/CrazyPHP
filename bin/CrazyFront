@@ -14,6 +14,10 @@
 # Hide deprecation notices from dependencies in the terminal (splitbrain/php-cli on PHP 8.4+)
 error_reporting(E_ALL & ~E_DEPRECATED);
 
+# Select the requested runtime before Composer checks the local PHP version
+require_once dirname(__DIR__)."/src/Cli/Bootstrap.php";
+\CrazyPHP\Cli\Bootstrap::run(__FILE__);
+
 require getcwd().'/vendor/autoload.php' ;
 
 /**

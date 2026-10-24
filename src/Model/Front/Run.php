@@ -2,7 +2,7 @@
 /**
  * Frontend Runner
  *
- * Run the configured Webpack or Vite scripts with local tools or Docker fallback.
+ * Run the configured Webpack or Vite scripts with the tools in the selected local or Docker runtime.
  *
  * PHP version 8.3
  *
@@ -48,7 +48,7 @@ class Run extends CrazyModel implements CrazyCommand {
         "runGeneratedFilesOnConfig",
     ];
 
-    /** @var string PHASE_ENV Environment variable splitting the run when the launcher runs npm on the host */
+    /** @var string PHASE_ENV Legacy environment variable for callers splitting PHP and npm execution */
     public const PHASE_ENV = "CRAZY_FRONT_PHASE";
 
     /** @var string PREVIOUS_BUILD_FILE Previous build kept between the split phases */
@@ -65,7 +65,7 @@ class Run extends CrazyModel implements CrazyCommand {
      ******************************************************
      */
 
-    /** @var Runtime $_runtime Checked local-first tool runner */
+    /** @var Runtime $_runtime Checked tool runner */
     private Runtime $_runtime;
 
     /** @var string $_script Requested package script */
@@ -216,13 +216,13 @@ class Run extends CrazyModel implements CrazyCommand {
         # Validate direct step calls as well as the complete storyline
         $this->runCheck();
 
-        # Check the launcher installs dependencies on the host
+        # Check whether a legacy caller handles npm in a separate phase
         if($this->_phase() !== "")
 
             # Return result
             return $this;
 
-        # Stop on installation errors and let Runtime choose local npm or Docker
+        # Stop on installation errors in the selected runtime
         $this->_runtime->execute("npm", ["install"]);
 
         # Return result

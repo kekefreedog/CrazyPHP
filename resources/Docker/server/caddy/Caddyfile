@@ -1,4 +1,15 @@
 # Caddy manages certificates and redirects HTTP when this stack is started.
 {{site}} {
+    # Hide server and PHP identification headers
+    header {
+        -X-Powered-By
+        -Server
+    }
+
+    # Match the generated PHP post_max_size limit
+    request_body {
+        max_size 512MiB
+    }
+
     reverse_proxy webserver:80
 }

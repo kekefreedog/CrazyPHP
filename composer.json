@@ -46,9 +46,22 @@
     "require-dev": {
         "phpunit/phpunit": "^11"
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
     "scripts": {
         "test": [
             "php -f ./vendor/phpunit/phpunit/phpunit"
+        ],
+        "test:e2e": [
+            "Composer\\Config::disableProcessTimeout",
+            "CRAZY_E2E=1 php -f ./vendor/phpunit/phpunit/phpunit -- --testsuite \"Crazy PHP | Project Creation (E2E)\""
+        ],
+        "test:all": [
+            "@test",
+            "@test:e2e"
         ]
     }
 }

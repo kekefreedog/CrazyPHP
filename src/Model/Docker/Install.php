@@ -355,7 +355,7 @@ class Install extends CrazyModel implements CrazyCommand {
         if(!is_file($this->_root."/config/App.yml"))
 
             # Avoid creating Docker files in an unrelated working directory
-            throw new CrazyException("Create the project before running crazy docker new.", 400);
+            throw new CrazyException("Create the project before running CrazyDocker new.", 400);
 
         # Preserve existing custom Docker setups rather than overwriting them
         foreach(["docker", "docker-compose.yml", "docker-compose.yaml", "compose.yml", "compose.yaml", "config/Docker.yml"] as $path)
@@ -893,7 +893,7 @@ class Install extends CrazyModel implements CrazyCommand {
         $this->_template("php/Dockerfile", "docker/php/Dockerfile", ["{{base}}" => $base, "{{extensions}}" => $extensions, "{{apache}}" => $this->_options["type"] === "apache" ? "RUN a2enmod rewrite\n" : ""]);
 
         # Provide the PHP overrides shared by all official image variants
-        $this->_write("docker/php/php.ini", "date.timezone=UTC\nupload_max_filesize=100M\npost_max_size=108M\n");
+        $this->_write("docker/php/php.ini", "date.timezone=UTC\nupload_max_filesize=500M\npost_max_size=512M\n");
 
         # Render Nginx's front-controller configuration
         if($this->_options["type"] === "nginx")

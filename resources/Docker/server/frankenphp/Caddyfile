@@ -5,5 +5,17 @@
 
 {{site}} {
     root * {{public}}
+
+    # Hide server and PHP identification headers
+    header {
+        -X-Powered-By
+        -Server
+    }
+
+    # Match the generated PHP post_max_size limit
+    request_body {
+        max_size 512MiB
+    }
+
     php_server
 }

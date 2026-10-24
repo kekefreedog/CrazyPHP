@@ -2,7 +2,7 @@
 /**
  * Command Runtime
  *
- * Run project tools locally, with a Docker fallback.
+ * Run project tools in the runtime selected by the PHP entrypoint.
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
@@ -29,8 +29,34 @@ class Runtime {
      ******************************************************
      */
 
-    /** @var string IMAGE Shared image used by the launcher and subprocesses for the minimum PHP version */
+    /** @var string IMAGE Shared image used by CLI commands for the minimum PHP version */
     public const IMAGE = "crazyphp-cli:php8.3-node22";
+
+    /** Public Static Parameters
+     ******************************************************
+     */
+
+    /** @var bool $assumeYes Skip yes/no prompts for explicitly unattended commands */
+    public static bool $assumeYes = false;
+
+    /** Private Parameters
+     ******************************************************
+     */
+
+    /** @var CLImate|null $_climate Styled terminal for confirmation prompts */
+    private ?CLImate $_climate = null;
+
+    /**
+     * Constructor
+     *
+     * @param CLImate|null $climate Styled terminal for confirmation prompts
+     */
+    public function __construct(?CLImate $climate = null){
+
+        # Preserve the command's existing colors and formatting
+        $this->_climate = $climate;
+
+    }
 
     /** Public Static Methods
      ******************************************************
@@ -39,7 +65,7 @@ class Runtime {
     /**
      * Image
      *
-     * Name the CLI image for the project's PHP version, matching the launcher's tag
+     * Name the CLI image for the project's PHP version, matching the bootstrap's tag
      *
      * @param string|null $version PHP major and minor version, the project's version when null
      * @return string
@@ -63,20 +89,14 @@ class Runtime {
      */
     public function confirm(string $question):bool {
 
-        # Display the question without exposing credentials, defaulting to No
-        (new CLImate())->out($question." [y/N]");
+        # Honor the command's explicit unattended option
+        if(self::$assumeYes)
 
-        # Read from the same stream used to detect closed or redirected input
-        $answer = fgets(STDIN);
+            # Skip reading input when the caller supplied --yes
+            return true;
 
-        # Stop rather than repeatedly prompting when standard input has closed
-        if($answer === false)
-
-            # Explain why the command cannot continue unattended
-            throw new CrazyException("Confirmation requires an interactive answer; input was closed.", 400);
-
-        # Return the user's answer without interpreting silence as approval
-        return in_array(strtolower(trim($answer)), ["y", "yes"], true);
+        # Use the shared command helper with the existing terminal styling
+        return Command::confirm($question, $this->_climate);
 
     }
 
@@ -124,19 +144,19 @@ class Runtime {
             # Reuse its extensions and configuration
             return [PHP_BINARY, ...$arguments];
 
-        # Find the local tool before considering Docker
+        # Find the local tool in the selected runtime
         $executable = $this->find($tool);
 
         # Docker commands must use the available client, never recursively start a fallback
         if($tool === "docker")
 
             # Report a missing client before trying any project mutation
-            return $executable !== null ? [$executable, ...$arguments] : throw new CrazyException("Install Docker and its Compose plugin before running crazy docker new.", 500);
+            return $executable !== null ? [$executable, ...$arguments] : throw new CrazyException("Install Docker and its Compose plugin before running CrazyDocker new.", 500);
 
         # Use local Composer through the current PHP interpreter
         if($executable !== null && $tool === "composer")
 
-            # Preserve the PHP runtime selected by the launcher
+            # Preserve the PHP runtime selected by the entrypoint
             return [PHP_BINARY, $executable, ...$arguments];
 
         # Use local npm only when Node is also installed
@@ -145,50 +165,8 @@ class Runtime {
             # Run npm with separate arguments
             return [$executable, ...$arguments];
 
-        # Require a reachable Docker daemon for the fallback
-        if($this->find("docker") === null || $this->invoke(["docker", "info"], null, true) !== 0)
-
-            # Explain which runtime is missing
-            throw new CrazyException("Install $tool locally or start Docker to create this project.", 500);
-
-        # Get the project's PHP version
-        $version = Composer::getPhpVersion();
-
-        # Build the shared runtime for that version using Docker's layer cache
-        $status = $this->invoke([
-            "docker", "build", "--build-arg", "PHP_VERSION=$version", "--tag", self::image($version),
-            File::path("@crazyphp_root/resources/Docker/cli"),
-        ]);
-
-        # Reject a failed image build
-        if($status !== 0)
-
-            # Report the failed prerequisite
-            throw new CrazyException("Could not build the CrazyPHP CLI Docker image.", 500);
-
-        # Resolve host paths before mounting them into the container
-        $root = realpath(File::path("@app_root"));
-
-        # Resolve linked development checkouts as well as installed packages
-        $library = realpath(File::path("@crazyphp_root"));
-
-        # Keep paths identical so Composer path repositories remain valid
-        $command = ["docker", "run", "--rm", "--env", "HOME=/tmp", "--volume", "$root:$root", "--workdir", $root];
-
-        # Preserve host ownership on Unix systems
-        if(function_exists("posix_getuid"))
-
-            # Pass the host user and group to Docker
-            array_push($command, "--user", posix_getuid().":".posix_getgid());
-
-        # Mount a library checkout located outside the application
-        if(!str_starts_with($library, $root.DIRECTORY_SEPARATOR))
-
-            # Allow the installed symlink to resolve inside Docker
-            array_push($command, "--volume", "$library:$library");
-
-        # Run the selected tool in the prepared image
-        return [...$command, self::image($version), $tool, ...$arguments];
+        # Keep Docker opt-in instead of silently switching runtimes
+        throw new CrazyException("Install $tool locally (npm also requires Node), or rerun the Crazy command with --docker.", 500);
 
     }
 

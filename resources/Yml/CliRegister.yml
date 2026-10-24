@@ -62,11 +62,6 @@ CliRegister:
       type: command
       long: stop
       help: Stop the websocket server of your crazy application.
-    - # Yes
-      type: option
-      long: yes
-      short: y
-      help: Assume yes on all prompt
   # CrazyWorkers
   CrazyWorkers:
     - # Run
@@ -77,8 +72,3 @@ CliRegister:
       type: command
       long: stop
       help: Stop workers server of your crazy application.
-    - # Yes
-      type: option
-      long: yes
-      short: y
-      help: Assume yes on all prompt

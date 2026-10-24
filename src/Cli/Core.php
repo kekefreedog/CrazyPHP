@@ -2,7 +2,7 @@
 /**
  * Cli
  *
- * Core of the cli
+ * Register and dispatch the application CLI commands.
  *
  * PHP version 8.1.2
  *
@@ -22,6 +22,7 @@ use CrazyPHP\Library\Form\Validate;
 use CrazyPHP\Library\File\Composer;
 use CrazyPHP\Library\File\Package;
 use CrazyPHP\Library\Form\Process;
+use CrazyPHP\Library\Cli\Runtime;
 use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\File\File;
 use splitbrain\phpcli\Options;
@@ -33,7 +34,7 @@ use CrazyPHP\Cli\Form;
 /**
  * Core
  *
- * Methods for controle the app
+ * Coordinate command headers, confirmations, forms and execution.
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
@@ -41,11 +42,11 @@ use CrazyPHP\Cli\Form;
  */
 class Core extends CLI {
 
-    /** Arguments
+    /** Private Parameters
      ******************************************************
      */
 
-    /** @var string @scriptName Name of the current script executed */
+    /** @var string $scriptName Name of the currently executed script */
     private $scriptName = "";
 
     /** Protected Methods
@@ -54,9 +55,9 @@ class Core extends CLI {
 
     /**
      * Setup CLI
-     * 
+     *
      * Register options and arguments
-     * 
+     *
      * @param Options $options CLI Option
      */
     protected function setup(Options $options){
@@ -75,6 +76,10 @@ class Core extends CLI {
 
         # Set help
         $options->setHelp(Composer::read("description"));
+
+        # Share runtime and confirmation options across all Crazy entrypoints
+        $options->registerOption("docker", "Run PHP, Composer and Node in Docker");
+        $options->registerOption("yes", "Skip yes/no confirmations (forms still require answers)", "y");
 
         # Iteration REGISTER_OPTIONS
         foreach($registeredOptions[$this->scriptName] as $option)
@@ -117,9 +122,9 @@ class Core extends CLI {
 
     /**
      * Implement CLI
-     * 
-     * Implement your code
-     * 
+     *
+     * Display the command header, request confirmation and execute the action.
+     *
      * @param Options $options CLI Option
      */
     protected function main(Options $options){
@@ -144,13 +149,40 @@ class Core extends CLI {
 
                 # Set input
                 $input = [
-                    "args"  =>  $options->getArgs(),
-                    "cmd"   =>  $options->getCmd(),
-                    "opt"  =>  $options->getOpt()
+                    "args" => $options->getArgs(),
+                    "cmd"  => $options->getCmd(),
+                    "opt"  => $options->getOpt()
                 ];
 
                 # Try
                 try{
+
+                    # Display the script's logo and title before asking for confirmation
+                    $climate = new CLImate();
+                    $this->_displayHeader($input, $climate);
+
+                    # Confirm before starting the command, including frontend builds
+                    Runtime::$assumeYes = (bool) $options->getOpt("yes");
+
+                    # Stop before entering the action when confirmation is declined
+                    if(!(new Runtime(
+                        $climate->lightBlue()->bold()
+                    ))->confirm(
+                        "✅ Run ".$this->scriptName." ".$options->getCmd()."? ✅"
+                    )){
+
+                        # Display the cancellation message with the command's styling
+                        $climate
+                            ->br()
+                            ->bold()
+                            ->red("✋ Action canceled ✋")
+                            ->br()
+                        ;
+
+                        # Return without running the action
+                        return;
+
+                    }
 
                     # Execute action and pass input data
                     $this->{$methodName}($input);
@@ -166,7 +198,7 @@ class Core extends CLI {
                     # Return error message
                     $climate->red("🔴 $message");
 
-                    # Propagate command failures to the launcher and automation
+                    # Propagate command failures to the caller and automation
                     exit(1);
 
                 }
@@ -187,10 +219,12 @@ class Core extends CLI {
      ******************************************************
      */
 
-    /** Action Version
-     * 
-     * Print the version of the app
-     * 
+    /**
+     * Action Version
+     *
+     * Print the application version.
+     *
+     * @return void
      */
     protected function actionCrazyCommandVersion(){
 
@@ -208,10 +242,11 @@ class Core extends CLI {
 
     }
 
-    /** New action
-     * 
+    /**
+     * New Action
+     *
      * New entity action
-     * 
+     *
      * @param array $inputs Collection of inputs with opts, args & cmd
      * @return void
      */
@@ -223,15 +258,6 @@ class Core extends CLI {
         # New climate
         $climate = new CLImate();
 
-        # Add asci folder
-        $climate->addArt(self::ASCII_ART["crazyphp"]);
-        
-        # Draw crazy php logo
-        $climate->draw('crazyphp');
-
-        # Title of current action
-        $climate->backgroundBlue()->out("🚀 Run ".$inputs['cmd']." ".$inputs['args'][0])->br();
-          
         # Check command is in router
         $this->_checkInRouter($inputs);
 
@@ -246,14 +272,14 @@ class Core extends CLI {
 
         # Check required values
         if(!empty($requiredValues)){
-            
+
             # Message
             $climate
                 ->lightBlue()
                 ->bold()
                 ->out("👋 First we need informations about your new ".$inputs['args'][0]." 👋");
             ;
-        
+
             # Display form
             $form = new Form($requiredValues);
 
@@ -266,12 +292,12 @@ class Core extends CLI {
             # Validate value
             $formResult = (new Validate($formResult))->getResult();
 
-            # fill result
+            # Fill result
             $result[$router['parameter']] = $formResult;
 
             # Prepare display value
             $summary[$router['parameter']] = Validate::getResultSummary($formResult);
-            
+
             # Message
             $climate
                 ->br()
@@ -285,17 +311,16 @@ class Core extends CLI {
             @$climate->table($summary);
 
         }
-            
+
         # Message
-        $input = $climate
-            ->br()
-            ->lightBlue()
-            ->bold()
-            ->confirm('✅ Do you confirm your new '.$inputs['args'][0].' ? ✅')
-        ;
+        $confirmed = (new Runtime(
+            $climate->br()->lightBlue()->bold()
+        ))->confirm(
+            '✅ Do you confirm your new '.$inputs['args'][0].' ? ✅'
+        );
 
         # Check action confirmed
-        if (!$input->confirmed()){
+        if(!$confirmed){
 
             # Stop message
             $climate
@@ -346,8 +371,13 @@ class Core extends CLI {
 
     }
 
-    /** Update project
-     * 
+    /**
+     * Update Project
+     *
+     * Collect and confirm the values required by the selected update command.
+     *
+     * @param array $inputs Command arguments and options
+     * @return void
      */
     protected function actionCrazyCommandUpdate(array $inputs = []):void {
 
@@ -357,15 +387,6 @@ class Core extends CLI {
         # New climate
         $climate = new CLImate();
 
-        # Add asci folder
-        $climate->addArt(self::ASCII_ART["crazyphp"]);
-        
-        # Draw crazy php logo
-        $climate->draw('crazyphp');
-
-        # Title of current action
-        $climate->backgroundGreen()->out("🍿 Run ".$inputs['cmd']." ".$inputs['args'][0])->br();
-          
         # Check command is in router
         $this->_checkInRouter($inputs);
 
@@ -380,14 +401,14 @@ class Core extends CLI {
 
         # Check required values
         if(!empty($requiredValues)){
-            
+
             # Message
             $climate
                 ->lightBlue()
                 ->bold()
                 ->out("👋 First we need informations about your new ".$inputs['args'][0]." 👋");
             ;
-        
+
             # Display form
             $form = new Form($requiredValues);
 
@@ -400,12 +421,12 @@ class Core extends CLI {
             # Validate value
             $formResult = (new Validate($formResult))->getResult();
 
-            # fill result
+            # Fill result
             $result[$router['parameter']] = $formResult;
 
             # Prepare display value
             $summary[$router['parameter']] = Validate::getResultSummary($formResult);
-            
+
             # Message
             $climate
                 ->br()
@@ -419,17 +440,16 @@ class Core extends CLI {
             @$climate->table($summary);
 
         }
-            
+
         # Message
-        $input = $climate
-            ->br()
-            ->lightBlue()
-            ->bold()
-            ->confirm('✅ Do you confirm your new '.$inputs['args'][0].' ? ✅')
-        ;
+        $confirmed = (new Runtime(
+            $climate->br()->lightBlue()->bold()
+        ))->confirm(
+            '✅ Do you confirm your new '.$inputs['args'][0].' ? ✅'
+        );
 
         # Check action confirmed
-        if (!$input->confirmed()){
+        if(!$confirmed){
 
             # Stop message
             $climate
@@ -480,11 +500,11 @@ class Core extends CLI {
 
     }
 
-    /** 
+    /**
      * Delete action
-     * 
+     *
      * Delete entity action
-     * 
+     *
      * @param array $inputs Collection of inputs with opts, args & cmd
      * @return void
      */
@@ -496,15 +516,6 @@ class Core extends CLI {
         # New climate
         $climate = new CLImate();
 
-        # Add asci folder
-        $climate->addArt(self::ASCII_ART["crazyphp"]);
-        
-        # Draw crazy php logo
-        $climate->draw('crazyphp');
-
-        # Title of current action
-        $climate->backgroundRed()->out("🚀 Run ".$inputs['cmd']." ".$inputs['args'][0])->br();
-          
         # Check command is in router
         $this->_checkInRouter($inputs);
 
@@ -519,14 +530,14 @@ class Core extends CLI {
 
         # Check required values
         if(!empty($requiredValues)){
-            
+
             # Message
             $climate
                 ->lightBlue()
                 ->bold()
                 ->out("👋 First we need informations about deletion of your ".$inputs['args'][0]." 👋");
             ;
-        
+
             # Display form
             $form = new Form($requiredValues);
 
@@ -539,12 +550,12 @@ class Core extends CLI {
             # Validate value
             $formResult = (new Validate($formResult))->getResult();
 
-            # fill result
+            # Fill result
             $result[$router['parameter']] = $formResult;
 
             # Prepare display value
             $summary[$router['parameter']] = Validate::getResultSummary($formResult);
-            
+
             # Message
             $climate
                 ->br()
@@ -561,18 +572,21 @@ class Core extends CLI {
 
         # Explain the application cleanup scope before its existing confirmation
         if($inputs["args"][0] === "project")
-            $climate->out("Everything in the project folder will be removed, including configuration, local database data (.database) and .env. Only composer.json, vendor, .git and Docker volumes will be kept.");
+
+            # Describe the files affected by project deletion
+            $climate->out(
+                "Everything in the project folder will be removed, including configuration, local database data (.database) and .env. Only composer.json, vendor, .git and Docker volumes will be kept."
+            );
 
         # Message
-        $input = $climate
-            ->br()
-            ->lightRed()
-            ->bold()
-            ->confirm('❎ Do you confirm the deletion of your '.$inputs['args'][0].' ? ❎')
-        ;
+        $confirmed = (new Runtime(
+            $climate->br()->lightRed()->bold()
+        ))->confirm(
+            '❎ Do you confirm the deletion of your '.$inputs['args'][0].' ? ❎'
+        );
 
         # Check action confirmed
-        if (!$input->confirmed()){
+        if(!$confirmed){
 
             # Stop message
             $climate
@@ -629,9 +643,9 @@ class Core extends CLI {
 
     /**
      * Action Crazy Docker New
-     * 
+     *
      * ction for create new docker compose for the current app
-     * 
+     *
      * @param array $inputs Collection of inputs with opts, args & cmd
      * @return void
      */
@@ -643,15 +657,6 @@ class Core extends CLI {
         # New climate
         $climate = new CLImate();
 
-        # Add asci folder
-        $climate->addArt(self::ASCII_ART["crazyphp"]);
-        
-        # Draw crazy php logo
-        $climate->draw('crazyphp');
-
-        # Title of current action
-        $climate->backgroundBlue()->out("🚀 Run ".$inputs['cmd']." Docker")->br();
-          
         # Check command is in router
         $this->_checkInRouter($inputs);
 
@@ -669,14 +674,14 @@ class Core extends CLI {
 
         # Check required values
         if(!empty($requiredValues)){
-            
+
             # Message
             $climate
                 ->lightBlue()
                 ->bold()
                 ->out("👋 First we need informations about your new Docker Compose 👋");
             ;
-        
+
             # Display form
             $form = new Form($requiredValues);
 
@@ -689,12 +694,12 @@ class Core extends CLI {
             # Validate value
             $formResult = (new Validate($formResult))->getResult();
 
-            # fill result
+            # Fill result
             $result[$router['parameter'] ?? "input"] = $formResult;
 
             # Prepare display value
             $summary[$router['parameter'] ?? "input"] = Validate::getResultSummary($formResult);
-            
+
             # Message
             $climate
                 ->br()
@@ -708,7 +713,7 @@ class Core extends CLI {
             @$climate->table($summary);
 
         }
-            
+
         # Validate the chosen branch and preview proxy instructions before confirmation
         $instance = new $class($result);
 
@@ -719,15 +724,14 @@ class Core extends CLI {
         $climate->out($instance->describe());
 
         # Message
-        $input = $climate
-            ->br()
-            ->lightBlue()
-            ->bold()
-            ->confirm('✅ Do you really want to create Docker Composer ? ✅')
-        ;
+        $confirmed = (new Runtime(
+            $climate->br()->lightBlue()->bold()
+        ))->confirm(
+            '✅ Do you really want to create Docker Composer ? ✅'
+        );
 
         # Check action confirmed
-        if (!$input->confirmed()){
+        if(!$confirmed){
 
             # Stop message
             $climate
@@ -775,11 +779,11 @@ class Core extends CLI {
 
     }
 
-    /** 
+    /**
      * Delete action
-     * 
+     *
      * Delete Docker
-     * 
+     *
      * @param array $inputs Collection of inputs with opts, args & cmd
      * @return void
      */
@@ -788,15 +792,6 @@ class Core extends CLI {
         # New climate
         $climate = new CLImate();
 
-        # Add asci folder
-        $climate->addArt(self::ASCII_ART["crazyphp"]);
-        
-        # Draw crazy php logo
-        $climate->draw('crazyphp');
-
-        # Title of current action
-        $climate->backgroundRed()->out("🚀 Run ".$inputs['cmd']." Docker")->br();
-          
         # Check command is in router
         $this->_checkInRouter($inputs);
 
@@ -807,15 +802,14 @@ class Core extends CLI {
         $class = $router["class"];
 
         # Message
-        $input = $climate
-            ->br()
-            ->lightRed()
-            ->bold()
-            ->confirm('❎ Remove generated Docker files and stop containers? Database/certificate volumes and .env will be kept. ❎')
-        ;
+        $confirmed = (new Runtime(
+            $climate->br()->lightRed()->bold()
+        ))->confirm(
+            '❎ Remove generated Docker files and stop containers? Database/certificate volumes and .env will be kept. ❎'
+        );
 
         # Check action confirmed
-        if (!$input->confirmed()){
+        if(!$confirmed){
 
             # Stop message
             $climate
@@ -875,9 +869,9 @@ class Core extends CLI {
 
     /**
      * Action Crazy Asset Register
-     * 
+     *
      * Action for register current asset config
-     * 
+     *
      * @param array $inputs Collection of inputs with opts, args & cmd
      * @return void
      */
@@ -886,15 +880,6 @@ class Core extends CLI {
         # New climate
         $climate = new CLImate();
 
-        # Add asci folder
-        $climate->addArt(self::ASCII_ART["crazyphp"]);
-        
-        # Draw crazy php logo
-        $climate->draw('crazyphp');
-
-        # Title of current action
-        $climate->backgroundBlue()->out("🚀 Run Register Config Asset")->br();
-          
         # Check command is in router
         $this->_checkInRouter($inputs);
 
@@ -905,15 +890,14 @@ class Core extends CLI {
         $function = $router["function"];
 
         # Message
-        $input = $climate
-            ->br()
-            ->lightMagenta()
-            ->bold()
-            ->confirm('✅ Do you want register asset config ? ✅')
-        ;
+        $confirmed = (new Runtime(
+            $climate->br()->lightMagenta()->bold()
+        ))->confirm(
+            '✅ Do you want register asset config ? ✅'
+        );
 
         # Check action confirmed
-        if (!$input->confirmed()){
+        if(!$confirmed){
 
             # Stop message
             $climate
@@ -957,11 +941,11 @@ class Core extends CLI {
      ******************************************************
      */
 
-    /** 
+    /**
      * Action Run
-     * 
+     *
      * Run script of NPM package file
-     * 
+     *
      * @param array $inputs Collection of inputs with opts, args & cmd
      */
     protected function actionCrazyFrontRun(array $inputs = []){
@@ -969,15 +953,6 @@ class Core extends CLI {
         # New climate
         $climate = new CLImate();
 
-        # Add asci folder
-        $climate->addArt(self::ASCII_ART["crazyphp"]);
-        
-        # Draw crazy php logo
-        $climate->draw('crazyphp');
-
-        # Title of current action
-        $climate->backgroundBlue()->out("🚀 Run Frontend Build")->br();
-          
         # Check command is in router
         $this->_checkInRouter($inputs);
 
@@ -1023,32 +998,24 @@ class Core extends CLI {
 
     }
 
-    /** Protected Methods Action | For CrazyFront
+    /** Protected Methods Action | For CrazyMigration
      ******************************************************
      */
 
-    /** 
+    /**
      * Action Check
-     * 
+     *
      * Check if migration of your crazy application is required
-     * 
+     *
      * @param array $inputs Collection of inputs with opts, args & cmd
-     * @return Migration for run / upgrade command
+     * @param bool $endMessage Display the final success message
+     * @return Migration Migration instance for the run command
      */
-    protected function actionCrazyMigrationCheck(array $inputs = [], bool $endMessage = true):Migration{
+    protected function actionCrazyMigrationCheck(array $inputs = [], bool $endMessage = true):Migration {
 
         # New climate
         $climate = new CLImate();
 
-        # Add asci folder
-        $climate->addArt(self::ASCII_ART["crazyphp"]);
-        
-        # Draw crazy php logo
-        $climate->draw('crazyphp');
-
-        # Title of current action
-        $climate->backgroundBlue()->out("🚀 Run check migration")->br();
-          
         # Check command is in router
         $this->_checkInRouter($inputs);
 
@@ -1058,29 +1025,35 @@ class Core extends CLI {
         # Enable cli on migration instance
         $migration->enableCliMessage(
             true,
-            function (array $action, bool $preview = true) use ($climate) {
+            function(array $action, bool $preview = true) use ($climate){
+
                 # Message start
                 $climate
                     ->br()
                     ->yellow("🟠 Run ".strtolower(Process::spaceBeforeCapital((($preview == true) ? "Preview " : "").($action["name"] ?? ""))))
                 ;
+
                 # Check if description
                 if($action["description"] ?? false)
-                    # Message
+
+                    # Display the preview description
                     $climate
                         ->out('>>> ℹ️  '.$action["description"])
                     ;
+
             },
-            function (array $action, bool $preview = true) use ($climate) {
+            function(array $action, bool $preview = true) use ($climate){
+
                 # Message end
                 $climate
                     ->green("🟢 ".ucfirst(strtolower(Process::spaceBeforeCapital((($preview == true) ? "Preview " : "").($action["name"] ?? ""))))." ran with success")
                     ->br()
                 ;
+
             }
         );
 
-        # Run preview 
+        # Run preview
         $migration->runPreviews();
 
         # Message for summary
@@ -1143,11 +1116,11 @@ class Core extends CLI {
 
     }
 
-    /** 
+    /**
      * Action Run
-     * 
+     *
      * Run migration of your crazy application
-     * 
+     *
      * @param array $inputs Collection of inputs with opts, args & cmd
      */
     protected function actionCrazyMigrationRun(array $inputs = []){
@@ -1159,14 +1132,14 @@ class Core extends CLI {
         $climate = new CLImate();
 
         # Message
-        $input = $climate
-            ->lightBlue()
-            ->bold()
-            ->confirm('✅ Do you want run migration ? ✅')
-        ;
-        
+        $confirmed = (new Runtime(
+            $climate->lightBlue()->bold()
+        ))->confirm(
+            '✅ Do you want run migration ? ✅'
+        );
+
         # Check action confirmed
-        if (!$input->confirmed()){
+        if(!$confirmed){
 
             # Stop message
             $climate
@@ -1205,11 +1178,11 @@ class Core extends CLI {
      ******************************************************
      */
 
-    /** 
+    /**
      * Action Websocket Run
-     * 
+     *
      * Run websocket server
-     * 
+     *
      * @param array $inputs Collection of inputs with opts, args & cmd
      */
     protected function actionCrazyWebsocketRun(array $inputs = []){
@@ -1220,15 +1193,6 @@ class Core extends CLI {
         # New climate
         $climate = new CLImate();
 
-        # Add asci folder
-        $climate->addArt(self::ASCII_ART["crazyphp"]);
-        
-        # Draw crazy php logo
-        $climate->draw('crazyphp');
-
-        # Title of current action
-        $climate->backgroundBlue()->out("🚀 Run Websocket Server")->br();
-          
         # Check command is in router
         $this->_checkInRouter($inputs);
 
@@ -1236,14 +1200,14 @@ class Core extends CLI {
         if(!$isYes){
 
             # Message
-            $input = $climate
-                ->lightBlue()
-                ->bold()
-                ->confirm('✅ Do you want run websocket server ? ✅')
-            ;
-            
+            $confirmed = (new Runtime(
+                $climate->lightBlue()->bold()
+            ))->confirm(
+                '✅ Do you want run websocket server ? ✅'
+            );
+
             # Check action confirmed
-            if (!$input->confirmed()){
+            if(!$confirmed){
 
                 # Stop message
                 $climate
@@ -1264,7 +1228,7 @@ class Core extends CLI {
                 ->backgroundBlue()
                 ->out("🚀 Run websocket")->br()
             ;
-        
+
         }
 
         # Run websocket
@@ -1282,10 +1246,10 @@ class Core extends CLI {
     }
 
     /**
-     * Action Crazy Weboscket Stop
-     * 
+     * Action Crazy Websocket Stop
+     *
      * Action for stop websocket server
-     * 
+     *
      * @param array $inputs Collection of inputs with opts, args & cmd
      * @return void
      */
@@ -1294,27 +1258,18 @@ class Core extends CLI {
         # New climate
         $climate = new CLImate();
 
-        # Add asci folder
-        $climate->addArt(self::ASCII_ART["crazyphp"]);
-        
-        # Draw crazy php logo
-        $climate->draw('crazyphp');
-
-        # Title of current action
-        $climate->backgroundOrange()->out("🚀 Stop Websocket Server")->br();
-          
         # Check command is in router
         $this->_checkInRouter($inputs);
 
         # Message
-        $input = $climate
-            ->lightBlue()
-            ->bold()
-            ->confirm('✅ Do you want stop websocket server ? ✅')
-        ;
-        
+        $confirmed = (new Runtime(
+            $climate->lightBlue()->bold()
+        ))->confirm(
+            '✅ Do you want stop websocket server ? ✅'
+        );
+
         # Check action confirmed
-        if (!$input->confirmed()){
+        if(!$confirmed){
 
             # Stop message
             $climate
@@ -1354,11 +1309,11 @@ class Core extends CLI {
      ******************************************************
      */
 
-    /** 
+    /**
      * Action Workers Run
-     * 
+     *
      * Run workers server
-     * 
+     *
      * @param array $inputs Collection of inputs with opts, args & cmd
      */
     protected function actionCrazyWorkersRun(array $inputs = []){
@@ -1368,12 +1323,6 @@ class Core extends CLI {
 
         # New climate
         $climate = new CLImate();
-
-        # Add asci folder
-        $climate->addArt(self::ASCII_ART["crazyphp"]);
-        
-        # Draw crazy php logo
-        $climate->draw('crazyphp');
 
         # Check CrazyWorkers extensions is installed
         if(Extension::getInstalledByName('CrazyWorkers') === null){
@@ -1386,12 +1335,8 @@ class Core extends CLI {
                 ->br()
             ;
 
-
         }else{
 
-            # Title of current action
-            $climate->backgroundBlue()->out("🚀 Run Workers Server")->br();
-          
             # Check command is in router
             $this->_checkInRouter($inputs);
 
@@ -1399,14 +1344,14 @@ class Core extends CLI {
             if(!$isYes){
 
                 # Message
-                $input = $climate
-                    ->lightBlue()
-                    ->bold()
-                    ->confirm('✅ Do you want run workers server ? ✅')
-                ;
-                
+                $confirmed = (new Runtime(
+                    $climate->lightBlue()->bold()
+                ))->confirm(
+                    '✅ Do you want run workers server ? ✅'
+                );
+
                 # Check action confirmed
-                if (!$input->confirmed()){
+                if(!$confirmed){
 
                     # Stop message
                     $climate
@@ -1427,7 +1372,7 @@ class Core extends CLI {
                     ->backgroundBlue()
                     ->out("🚀 Run workers")->br()
                 ;
-            
+
             }
 
             # Run workers
@@ -1447,10 +1392,10 @@ class Core extends CLI {
     }
 
     /**
-     * Action Crazy Weboscket Stop
-     * 
+     * Action Crazy Workers Stop
+     *
      * Action for stop workers server
-     * 
+     *
      * @param array $inputs Collection of inputs with opts, args & cmd
      * @return void
      */
@@ -1461,12 +1406,6 @@ class Core extends CLI {
 
         # New climate
         $climate = new CLImate();
-
-        # Add asci folder
-        $climate->addArt(self::ASCII_ART["crazyphp"]);
-        
-        # Draw crazy php logo
-        $climate->draw('crazyphp');
 
         # Check CrazyWorkers extensions is installed
         if(Extension::getInstalledByName('CrazyWorkers') === null){
@@ -1479,12 +1418,8 @@ class Core extends CLI {
                 ->br()
             ;
 
-
         }else{
 
-            # Title of current action
-            $climate->backgroundOrange()->out("🚀 Stop Workers Server")->br();
-          
             # Check command is in router
             $this->_checkInRouter($inputs);
 
@@ -1492,14 +1427,14 @@ class Core extends CLI {
             if(!$isYes){
 
                 # Message
-                $input = $climate
-                    ->lightBlue()
-                    ->bold()
-                    ->confirm('✅ Do you want stop workers server ? ✅')
-                ;
-                
+                $confirmed = (new Runtime(
+                    $climate->lightBlue()->bold()
+                ))->confirm(
+                    '✅ Do you want stop workers server ? ✅'
+                );
+
                 # Check action confirmed
-                if (!$input->confirmed()){
+                if(!$confirmed){
 
                     # Stop message
                     $climate
@@ -1520,7 +1455,7 @@ class Core extends CLI {
                     ->backgroundBlue()
                     ->out("🚀 Run stop workers")->br()
                 ;
-            
+
             }
 
             # Run workers
@@ -1539,15 +1474,58 @@ class Core extends CLI {
 
     }
 
-    /** Private methods
+    /** Private Methods
      ******************************************************
      */
 
-    /** 
+    /**
+     * Display Header
+     *
+     * @param array $inputs Command arguments and options
+     * @param CLImate $climate Terminal used by the startup confirmation
+     * @return void
+     */
+    private function _displayHeader(array $inputs, CLImate $climate):void {
+
+        # Read the optional entity displayed by application commands
+        $entity = $inputs["args"][0] ?? "";
+
+        # Preserve each script's existing title and background color
+        [$color, $title] = match($this->scriptName." ".$inputs["cmd"]){
+            "CrazyCommand new"     => ["backgroundBlue", "🚀 Run new ".$entity],
+            "CrazyCommand update"  => ["backgroundGreen", "🍿 Run update ".$entity],
+            "CrazyCommand delete"  => ["backgroundRed", "🚀 Run delete ".$entity],
+            "CrazyDocker new"      => ["backgroundBlue", "🚀 Run new Docker"],
+            "CrazyDocker delete"   => ["backgroundRed", "🚀 Run delete Docker"],
+            "CrazyAsset register"  => ["backgroundBlue", "🚀 Run Register Config Asset"],
+            "CrazyFront run"       => ["backgroundBlue", "🚀 Run Frontend Build"],
+            "CrazyMigration check" => ["backgroundBlue", "🚀 Run check migration"],
+            "CrazyMigration run"   => ["backgroundBlue", "🚀 Run migration"],
+            "CrazyWebsocket run"   => ["backgroundBlue", "🚀 Run Websocket Server"],
+            "CrazyWebsocket stop"  => ["backgroundOrange", "🚀 Stop Websocket Server"],
+            "CrazyWorkers run"     => ["backgroundBlue", "🚀 Run Workers Server"],
+            "CrazyWorkers stop"    => ["backgroundOrange", "🚀 Stop Workers Server"],
+            default                => ["backgroundBlue", "🚀 Run ".$inputs["cmd"]],
+        };
+
+        # Print the header once, before any prompt or action
+        $climate->addArt(self::ASCII_ART["crazyphp"]);
+        $climate->draw("crazyphp");
+
+        # Display the title before the startup confirmation
+        $climate
+            ->{$color}()
+            ->out($title)
+            ->br()
+        ;
+
+    }
+
+    /**
      * Check in router
-     * 
-     * Check inputs data is in router
-     * 
+     *
+     * Check that the command and its arguments are registered.
+     *
      * @param array $inputs Collection of data from cli
      * @return void
      */
@@ -1555,18 +1533,18 @@ class Core extends CLI {
 
         # Check inputs
         if(
-            isset(self::getRouters()[$this->scriptName][$inputs['cmd']]["command"]) && 
+            isset(self::getRouters()[$this->scriptName][$inputs['cmd']]["command"]) &&
             (
-                !isset($inputs['cmd']) || 
+                !isset($inputs['cmd']) ||
                 !isset($inputs['args'][0]) ||
                 !$inputs['cmd'] ||
                 !$inputs['args'][0]
             )
         )
-            
+
             # New error
             throw new CrazyException(
-                "Please fill a valid command and valid arguments", 
+                "Please fill a valid command and valid arguments",
                 500,
                 [
                     "custom_code"   =>  "core-004",
@@ -1577,32 +1555,35 @@ class Core extends CLI {
         $routers = self::getRouters();
 
         # Check command given is in router
-        if(isset($routers[$this->scriptName][$inputs['cmd']]["command"]) && !isset($routers[$this->scriptName][$inputs['cmd']]["command"][$inputs['args'][0]]))
-            
+        if(
+            isset($routers[$this->scriptName][$inputs['cmd']]["command"]) &&
+            !isset($routers[$this->scriptName][$inputs['cmd']]["command"][$inputs['args'][0]])
+        )
+
             # New error
             throw new CrazyException(
-                "Please write a valid command and valid arguments", 
+                "Please write a valid command and valid arguments",
                 500,
                 [
                     "custom_code"   =>  "core-005",
                 ]
-            );  
+            );
 
     }
 
     /**
      * Check Opt
-     * 
-     * Check if option given is in inputs
-     * 
-     * @param array $inputs
-     * @param string $name
-     * @param bool $expected
+     *
+     * Check whether an input option matches the expected value.
+     *
+     * @param array $inputs Command arguments and options
+     * @param string $name Option name
+     * @param bool $expected Expected option value
      * @return bool
      */
     private function _checkOpt(array $inputs, string $name, bool $expected = true):bool {
 
-        # Set reslut
+        # Set result
         $result = false;
 
         # Check
@@ -1621,10 +1602,18 @@ class Core extends CLI {
 
     }
 
-    /** Public static methods
+    /** Public Static Methods
      ******************************************************
      */
 
+    /**
+     * Get Routers
+     *
+     * Read the command routing configuration.
+     *
+     * @return array
+     * @throws CrazyException When the routing configuration cannot be read
+     */
     public static function getRouters():array {
 
         # Set result
@@ -1638,10 +1627,10 @@ class Core extends CLI {
 
         # Check result
         if(!is_array($result))
-            
+
             # New error
             throw new CrazyException(
-                "Can't open routers config for CLI commands, please check the file \"".str_replace("@crazyphp_root", "", static::ROUTERS_PATH)."\"", 
+                "Can't open routers config for CLI commands, please check the file \"".str_replace("@crazyphp_root", "", static::ROUTERS_PATH)."\"",
                 500,
                 [
                     "custom_code"   =>  "core-006",
@@ -1653,7 +1642,7 @@ class Core extends CLI {
 
     }
 
-    /** Public constants
+    /** Public Constants
      ******************************************************
      */
 
@@ -1670,7 +1659,7 @@ class Core extends CLI {
     public const ROUTERS_PATH = "@crazyphp_root/resources/Yml/CliRouter.yml";
 
     /**
-     * Cli Registerd path
+     * CLI Registered Path
      */
     public const CLI_REGISTERED_PATH = "@crazyphp_root/resources/Yml/CliRegister.yml";
 

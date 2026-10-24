@@ -367,7 +367,17 @@ class Cache extends Psr16Adapter {
         if(!$driver){
 
             # Get mongodb config
-            $mongodbConfig = Config::getValue("Database.collection.mongodb");
+            try{
+
+                # Read the configured mongodb engine
+                $mongodbConfig = Config::getValue("Database.collection.mongodb");
+
+            }catch(CrazyException $e){
+
+                # Projects without database configuration (library, other) use files
+                $mongodbConfig = null;
+
+            }
 
             # Check mongodb config
             if($mongodbConfig && !empty($mongodbConfig))
