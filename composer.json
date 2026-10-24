@@ -1,6 +1,6 @@
 {
     "name": "kzarshenas/crazyphp",
-    "version": "1.0.1",
+    "version": "1.0.0",
     "description": "My crazy framework for creating ultra-fast webapps.",
     "type": "library",
     "license": "MPL-2.0",
