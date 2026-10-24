@@ -29,5 +29,9 @@ jobs:
     - name: Commit and push changes
       run: |
         git add composer.json package.json
+        if git diff --cached --quiet; then
+          echo "Version numbers already match the release."
+          exit 0
+        fi
         git commit -m "Update version numbers to ${{ github.event.release.tag_name }}"
         git push
