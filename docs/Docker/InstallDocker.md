@@ -38,7 +38,7 @@ Every command asks for confirmation at startup. `--yes` / `-y` skips yes/no prom
 - `docker/php/`: PHP image and configuration, with the selected database extensions.
 - `docker/nginx/`, `docker/apache/` or `docker/frankenphp/`: the selected server's configuration.
 - `docker/caddy/`: created only for managed HTTPS with Nginx or Apache.
-- `.env`: the chosen `CRAZY_HTTP_PORT`/`CRAZY_HTTPS_PORT` host ports and the host UID/GID used by preparation. The port values are replaced by the wizard's answers; other existing variables are preserved.
+- `.env`: the chosen `CRAZY_HTTP_PORT`/`CRAZY_HTTPS_PORT` host ports and the host UID/GID used by preparation and HTTP workers. The port values are replaced by the wizard's answers; other existing variables are preserved.
 - `docker/config/Database.yml`: generated connection settings mounted over `config/Database.yml` only inside PHP.
 - `docker/README.md`: startup, TLS and existing-proxy instructions specific to the generated stack.
 - `docker/bin/Prepare`: installs Composer dependencies, then invokes database setup.
@@ -60,6 +60,8 @@ docker compose exec webserver frankenphp reload --config /etc/caddy/Caddyfile --
 Run these commands from the target application directory. Verify its PHP runtime with `docker compose exec webserver php -v`, which selects that project’s service.
 
 The real application path and any external framework checkout are mounted at matching container paths, preserving Composer path-repository symlinks. No machine-specific checkout path is hardcoded in the templates.
+
+The PHP image maps `www-data` to `CRAZY_UID` and `CRAZY_GID` at build time so HTTP workers can write caches created by local commands. FrankenPHP also runs its main process as that user, with writable certificate storage. After changing either ID in `.env`, rebuild with `docker compose build` and recreate the services with `docker compose up -d`. Existing generated Dockerfiles and Compose files need the corresponding template changes before rebuilding.
 
 ## HTTPS
 

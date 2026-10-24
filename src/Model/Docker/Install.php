@@ -528,6 +528,9 @@ class Install extends CrazyModel implements CrazyCommand {
         # Define the selected PHP runtime without publishing its internal port
         $php = ["build" => ["context" => "./docker/php"], "working_dir" => $this->_root, "volumes" => $mounts, "restart" => "unless-stopped", "environment" => ["CRAZYPHP_DOCKER" => "1"]];
 
+        # Give HTTP workers the same filesystem identity as local commands and preparation
+        $php["build"]["args"] = ["CRAZY_UID" => '${CRAZY_UID:-1000}', "CRAZY_GID" => '${CRAZY_GID:-1000}'];
+
         # Mount the generated PHP overrides at the official images' common path
         $php["volumes"][] = "./docker/php/php.ini:/usr/local/etc/php/conf.d/99-crazyphp.ini:ro";
 
@@ -890,7 +893,16 @@ class Install extends CrazyModel implements CrazyCommand {
             $extensions .= " mongodb-1.21.12";
 
         # Render the common PHP image, enabling Apache rewrite only for Apache
-        $this->_template("php/Dockerfile", "docker/php/Dockerfile", ["{{base}}" => $base, "{{extensions}}" => $extensions, "{{apache}}" => $this->_options["type"] === "apache" ? "RUN a2enmod rewrite\n" : ""]);
+        $this->_template("php/Dockerfile", "docker/php/Dockerfile", [
+            "{{base}}" => $base,
+            "{{extensions}}" => $extensions,
+            "{{apache}}" => $this->_options["type"] === "apache" ? "RUN a2enmod rewrite\n" : "",
+
+            # FrankenPHP serves requests in its main process; keep caches owned by the host user
+            "{{frankenphp}}" => $this->_options["type"] === "frankenphp"
+                ? "RUN chown -R www-data:www-data /data /config\nUSER www-data\n"
+                : "",
+        ]);
 
         # Provide the PHP overrides shared by all official image variants
         $this->_write("docker/php/php.ini", "date.timezone=UTC\nupload_max_filesize=500M\npost_max_size=512M\n");

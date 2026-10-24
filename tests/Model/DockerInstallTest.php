@@ -210,6 +210,19 @@ class DockerInstallTest extends TestCase {
         # Gate the application on successful preparation rather than starting it during setup
         $runtime = $type === "nginx" ? "php-fpm" : "webserver";
 
+        # Keep HTTP cache writes compatible with files created by local commands
+        $this->assertSame([
+            "CRAZY_UID" => '${CRAZY_UID:-1000}',
+            "CRAZY_GID" => '${CRAZY_GID:-1000}',
+        ], $compose["services"][$runtime]["build"]["args"]);
+
+        # Preparation and HTTP must build the same worker identity
+        $this->assertSame($compose["services"][$runtime]["build"], $compose["services"]["prepare"]["build"]);
+
+        # Keep FrankenPHP's single HTTP process unprivileged, including its certificate storage
+        $dockerfile = file_get_contents($this->_root."/docker/php/Dockerfile");
+        $this->assertSame($type === "frankenphp", str_contains($dockerfile, "USER www-data"));
+
         # Preparation errors must prevent the PHP runtime from starting
         $this->assertSame("service_completed_successfully", $compose["services"][$runtime]["depends_on"]["prepare"]["condition"]);
 
