@@ -21,6 +21,8 @@ jobs:
           node-version: 22
       - name: Install dependencies
         run: composer install --no-interaction
+      - name: Install framework frontend dependencies
+        run: npm install --no-audit --no-fund
       - name: Project Creation Tests
         run: composer test:e2e
         env:
