@@ -125,7 +125,7 @@ class ApiResponse extends Response {
             $cursor = &$this->apiContent;
 
             # Check config file
-            if(!empty($keys))
+            if(!empty($keys)){
 
                 # Iteration filedata
                 $i=0;while(isset($keys[$i])){
@@ -137,6 +137,8 @@ class ApiResponse extends Response {
                     $cursor = &$cursor[$keys[$i]];
 
                 $i++;}
+
+            }
 
             # Push body in cursor
             $cursor = $content;
@@ -271,16 +273,11 @@ class ApiResponse extends Response {
         # Call parent
         parent::setContentType($name, $charset);
 
-        # Get and set engine to use
-        $engine = File::MIMTYPE_TO_CLASS[File::EXTENSION_TO_MIMETYPE[$name] ?? ""] ?? null;
+        # Resolve extensions while keeping explicit MIME types as string keys
+        $mimeType = File::EXTENSION_TO_MIMETYPE[$name] ?? $name;
 
-        # Check engine
-        if($engine === null){
-
-            # Assume name is maybe correct mimetype
-            $engine = File::MIMTYPE_TO_CLASS[$name ?? null] ?? null;
-
-        }
+        # Select the encoder without using a null array offset
+        $engine = File::MIMTYPE_TO_CLASS[$mimeType] ?? null;
 
         # Check engine
         if(!$engine || $engine === null)
