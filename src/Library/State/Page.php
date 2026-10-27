@@ -871,37 +871,42 @@ class Page {
      */
     private function checkIfCatchStateWithUuid():void {
 
-        # Check env
-        if(
-            ($_COOKIE[Page::COOKIE_UUID_STATE] ?? null) &&
-            Process::bool($_GET[static::ENV_CATCH_STATE] ?? false)
-        ){
+        # Check for an initial page state request
+        if(($_COOKIE[Page::COOKIE_UUID_STATE] ?? null) && Process::bool($_GET[static::ENV_CATCH_STATE] ?? false)){
 
-            # New cache instance
+            # Open the state cache
             $cacheInstance = new Cache();
 
-            # Set uuid
+            # Read the browser state identifier
             $uuid = $_COOKIE[Page::COOKIE_UUID_STATE];
 
-            # Set result
-            $result = $cacheInstance->get($uuid, null);
+            # Restrict the lookup to the requested route
+            $cacheKey = static::getCacheKey($uuid);
 
-            # Check result
-            if($result === null) return;
+            # Read the matching page state
+            $result = $cacheInstance->get($cacheKey, null);
 
-            # Set uuid into result
-            $result["_uuid"] = $uuid;
+            # Ignore missing or differently scoped state
+            if(is_array($result)){
 
-            # Set response
-            /** @disregard P1119 */
-            (new ApiResponse())
-                ->setStatusCode(200)
-                ->pushContent("", $result)
-                ->addCookie(Page::COOKIE_UUID_STATE, "")
-                ->send();
+                # Consume the state once even if another response restores the cookie
+                $cacheInstance->delete($cacheKey);
 
-            # Stop script
-            exit;
+                # Identify the consumed state
+                $result["_uuid"] = $uuid;
+
+                # Send the matching page state and clear its cookie
+                /** @disregard P1119 */
+                (new ApiResponse())
+                    ->setStatusCode(200)
+                    ->pushContent("", $result)
+                    ->addCookie(Page::COOKIE_UUID_STATE, "")
+                    ->send();
+
+                # Finish the state response
+                exit;
+
+            }
 
         }
 
@@ -910,6 +915,28 @@ class Page {
     /** Public static methods
      ******************************************************
      */
+
+    /**
+     * Get Cache Key
+     *
+     * Bind an initial HTML state to its route and resolved path.
+     *
+     * @param string $uuid Browser state identifier
+     * @return string Route-specific state cache key
+     */
+    public static function getCacheKey(string $uuid):string {
+
+        # Prepare a key shared by HTML rendering and state retrieval
+        $result = $uuid."_".hash("sha256", serialize([
+            Context::getCurrentRoute("name"),
+            Context::getCurrentRoute("route"),
+            Context::getCurrentRoute("parameters"),
+        ]));
+
+        # Return result
+        return $result;
+
+    }
 
     /**
      * Get State

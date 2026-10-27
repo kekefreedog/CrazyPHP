@@ -598,20 +598,25 @@ class Structure {
                 'partials'  =>  Handlebars::loadAppPartials()
             ];
 
-        # Prepare template
-        $templateInstance = new $instance($option);
+        # Check instance
+        if(isset($instance)){
 
-        # Load template
-        $templateInstance->load($template, $customNameForTemplateCache ? $customNameForTemplateCache : Context::get("routes.current.name"));
+            # Prepare template
+            $templateInstance = new $instance($option);
 
-        # Rendered template
-        $renderedTemplate = $templateInstance->render($data);
+            # Load template
+            $templateInstance->load($template, $customNameForTemplateCache ? $customNameForTemplateCache : Context::get("routes.current.name"));
 
-        # Store uuid
-        $this->_uuid && $this->_cacheData($data);
+            # Rendered template
+            $renderedTemplate = $templateInstance->render($data);
 
-        # Set body with template render
-        $this->setBodyContent($renderedTemplate);
+            # Store uuid
+            $this->_uuid && $this->_cacheData($data);
+
+            # Set body with template render
+            $this->setBodyContent($renderedTemplate);
+
+        }
 
         # Return current instance
         return $this;
@@ -978,14 +983,17 @@ class Structure {
      */
     private function _cacheData(array $data):void {
 
-        # Check uuid
+        # Check the HTML state identifier
         if($this->_uuid){
 
-            # Delete potential conflic
-            $this->_cache->delete($this->_uuid);
+            # Scope the cached state to the rendered route
+            $cacheKey = Page::getCacheKey($this->_uuid);
 
-            # Push data into cache
-            $this->_is_cached = $this->_cache->set($this->_uuid, $data);
+            # Remove a previous entry for this state
+            $this->_cache->delete($cacheKey);
+
+            # Store the rendered page state
+            $this->_is_cached = $this->_cache->set($cacheKey, $data);
 
         }
 

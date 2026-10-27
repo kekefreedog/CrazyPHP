@@ -145,78 +145,54 @@ export default class Events {
      * @param event:LoaderEventRedirection
      * @returns {Promise<void>}
      */
-    private _runRedirection = async (event:LoaderEventRedirection):Promise<void> => {
+    private _runRedirection = async(event:LoaderEventRedirection):Promise<void> => {
 
-        // Prepare options
-        let options:LoaderPageOptions = {};
-
-        // Check name
+        // Check for a named application route
         if(event.name){
 
-            // Set name
-            options.name = event.name;
+            // Collect global arguments independently of nullable loader options
+            const globalArguments:Record<string, unknown> = {};
 
-            // Check target
-            if(event.target == "_blank")
-    
-                // Add openInNewTab in options
-                options["openInNewTab"] = true;
+            // Prepare the redirect independently of persistent storage contents
+            const options:LoaderPageOptions = {
+                name: event.name,
+                arguments: {},
+                openInNewTab: event.target === "_blank",
+            };
 
-            // Check event arguments
-            if(event.arguments)
+            // Read every stored route argument without ending iteration early
+            await window.Crazyobject.state.globalStore?.iterate((value, key) => {
 
-                // Push to options
-                options.arguments = event.arguments;
+                // Copy the global argument
+                globalArguments[key] = value;
 
-            // Get global attributes
-            window.Crazyobject.state.globalStore?.iterate((value, key)=>{
+            });
 
-                // Check arguments
-                if(typeof options.arguments !== "object" || !options.arguments)
+            // Let explicit redirect arguments override global defaults
+            options.arguments = {...globalArguments, ...event.arguments};
 
-                    // Create object
-                    options.arguments = {};
+            // Start the redirect even when persistent storage is empty
+            new LoaderPage(options);
 
-                // Set as object
-                options.arguments[key] = value;
+        }else if(event.url){
 
-                // Return options
-                return options;
+            // Resolve explicit redirects against the current document
+            const url = new URL(event.url, window.location.href);
 
-            }).then((options) => {
-                    
-                // Load page (redirection)
-                new LoaderPage(options);
+            // Check for a new-tab redirect
+            if(event.target === "_blank"){
 
-            })
+                // Open the target URL
+                window.open(url.href, "_blank");
 
-        }else
-        // Check url
-        if(event.url){
+            }else{
 
-            // Set url
-            let url = event.url.startsWith("/")
-                ? new URL(event.url, window.location.href)
-                : new URL(event.url)
-            ;
-
-            // Check target
-            if(event.target == "_blank"){
-
-                // Open url in new tab
-                window.open(url); 
-
-            }
-            // Change current page
-            else{
-
-                // Change location
+                // Navigate the current document
                 window.location.href = url.href;
 
             }
 
         }
-            
 
     }
 

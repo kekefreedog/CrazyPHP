@@ -51,7 +51,8 @@
         "tom-select": "^2.3.1"
     },
     "peerDependencies": {
-        "kmaterialize": "*"
+        "kmaterialize": "*",
+        "@materializecss/materialize": "^2.1.0"
     },
     "peerDependenciesMeta": {
         "kmaterialize": {

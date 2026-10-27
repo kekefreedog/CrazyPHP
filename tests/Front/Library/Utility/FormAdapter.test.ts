@@ -730,3 +730,301 @@ describe("Dependent remote select URLs", () => {
     });
 
 });
+
+/** Tests | Locked remote choices
+ ******************************************************
+ */
+
+// Exercise backend labels for locked and temporarily loading controls
+describe("Locked remote choices", () => {
+
+    // Verify a locked default still loads its backend label
+    it("loads disabled person and project defaults without unlocking them", async() => {
+
+        // Save the backend transport
+        const originalFetch = globalThis.fetch;
+
+        // Track lookup requests
+        const requests:string[] = [];
+
+        // Supply synthetic backend choices
+        globalThis.fetch = async(request:any) => {
+
+            // Prepare the lookup result
+            let results = [{id: "1", name: "Test Person"}];
+
+            // Record the lookup URL
+            requests.push(request.url);
+
+            // Select project choices
+            if(request.url.includes("/Project/"))
+
+                // Set project results
+                results = [{id: "7", name: "Test Project"}];
+
+            // Return the backend response
+            return new Response(JSON.stringify({results}), {headers: {"Content-Type": "application/json"}});
+
+        };
+
+        // Restore transport after checking the form
+        try{
+
+            // Render the same locked defaults used by timelog creation
+            const {element, instance} = create(`<select name="user_id" data-type="select" disabled default="1" data-select-remote='{"url":"/api/v2/User/all","value":"id","label":"name"}'></select><select name="project_id" data-type="select" disabled default="7" data-depends="user_id" data-select-remote='{"url":"/api/v2/Project/filter?filters[user_id]={{user_id}}","value":"id","label":"name"}'></select>`);
+
+            // Match the application form marker used by query interpolation
+            element.setAttribute("partial", "form");
+
+            // Wait for widget initialization
+            await instance.ready;
+
+            // Settle remote loading callbacks
+            await new Promise(resolve => setTimeout(resolve, 50));
+
+            // Read the person field
+            const person = element.querySelector<HTMLSelectElement>("[name=user_id]")!;
+
+            // Read the project field
+            const project = element.querySelector<HTMLSelectElement>("[name=project_id]")!;
+
+            // Verify the locked person has a selected backend value
+            assert.equal((person as any).tomselect.getValue(), "1");
+
+            // Verify the person label is visible
+            assert.match((person as any).tomselect.control.textContent, /Test Person/);
+
+            // Verify the selected project is populated
+            assert.equal((project as any).tomselect.getValue(), "7");
+
+            // Verify the project label is visible
+            assert.match((project as any).tomselect.control.textContent, /Test Project/);
+
+            // Verify the person remains locked
+            assert.equal(person.disabled, true);
+
+            // Verify the project remains locked
+            assert.equal(project.disabled, true);
+
+            // Verify dependent lookups use the populated parent value
+            assert.ok(requests.some(url => new URL(url).searchParams.get("filters[user_id]") === "1"), JSON.stringify(requests));
+
+        }finally{
+
+            // Restore the backend transport
+            globalThis.fetch = originalFetch;
+
+        }
+
+    });
+
+    // Verify loading locks do not prevent edit-record hydration
+    it("hydrates edit fields from the backend while initially disabled", async() => {
+
+        // Save the backend transport
+        const originalFetch = globalThis.fetch;
+
+        // Preserve the Node request constructor
+        const OriginalRequest = globalThis.Request;
+
+        // Resolve relative requests as a browser does
+        globalThis.Request = class extends OriginalRequest {
+
+            /** Resolve app-relative API URLs. */
+            constructor(input:RequestInfo|URL, options?:RequestInit){
+
+                // Construct an absolute request
+                super(typeof input === "string" ? new URL(input, window.location.href).href : input, options);
+
+            }
+
+        };
+
+        // Supply choices and an existing timelog
+        globalThis.fetch = async(request:any) => {
+
+            // Prepare person choices
+            let results:Record<string,unknown>[] = [{id: "1", name: "Test Person"}];
+
+            // Select project choices
+            if(request.url.includes("/Project/"))
+
+                // Set project results
+                results = [{id: "7", name: "Test Project"}];
+
+            // Select the saved timelog
+            if(request.url.includes("/Timelog/"))
+
+                // Set saved form values
+                results = [{id: 42, user_id: "1", project_id: "7"}];
+
+            // Return the backend response
+            return new Response(JSON.stringify({results}), {headers: {"Content-Type": "application/json"}});
+
+        };
+
+        // Restore transport after checking the form
+        try{
+
+            // Create the edit form
+            const element = document.createElement("form");
+
+            // Match the application form marker used by query interpolation
+            element.setAttribute("partial", "form");
+
+            // Select the model
+            element.setAttribute("entity", "Timelog");
+
+            // Select the saved record
+            element.setAttribute("onready", "id/42");
+
+            // Render locked and loading fields as the edit template does
+            element.innerHTML = `<select name="user_id" data-type="select" disabled data-select-remote='{"url":"/api/v2/User/all","value":"id","label":"name"}'></select><select name="project_id" data-type="select" disabled="loading" data-depends="user_id" data-select-remote='{"url":"/api/v2/Project/filter?filters[user_id]={{user_id}}","value":"id","label":"name"}'></select>`;
+
+            // Attach the form before initialization
+            document.body.append(element);
+
+            // Initialize the real form utility
+            const instance = new Form(element);
+
+            // Track lifecycle cleanup
+            forms.push(instance);
+
+            // Wait for initialization
+            await instance.ready;
+
+            // Settle record hydration and dependent lookups
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            // Read the person field
+            const person = element.querySelector<HTMLSelectElement>("[name=user_id]")!;
+
+            // Read the project field
+            const project = element.querySelector<HTMLSelectElement>("[name=project_id]")!;
+
+            // Verify the person value and label
+            assert.equal((person as any).tomselect.getValue(), "1");
+
+            // Verify the person label is visible
+            assert.match((person as any).tomselect.control.textContent, /Test Person/);
+
+            // Verify the project value and label
+            assert.equal((project as any).tomselect.getValue(), "7");
+
+            // Verify the project label is visible
+            assert.match((project as any).tomselect.control.textContent, /Test Project/);
+
+            // Verify the authored person lock survives hydration
+            assert.equal(person.disabled, true);
+
+        }finally{
+
+            // Restore the backend transport
+            globalThis.fetch = originalFetch;
+
+            // Restore the Node request constructor
+            globalThis.Request = OriginalRequest;
+
+        }
+
+    });
+
+});
+
+/** Tests | Timelog default response ordering
+ ******************************************************
+ */
+
+// Keep task defaults when the three backend lookups finish in any order
+describe("Timelog default response ordering", () => {
+
+    // Exercise all response orders without relying on random network timing
+    for(const order of [["User", "Project", "Task"], ["User", "Task", "Project"], ["Project", "User", "Task"], ["Project", "Task", "User"], ["Task", "User", "Project"], ["Task", "Project", "User"]]){
+
+        // Verify one controlled response order
+        it(`preserves locked defaults for ${order.join(" then ")}`, async() => {
+
+            // Preserve the backend transport
+            const originalFetch = globalThis.fetch;
+
+            // Hold the three responses until the requested order is released
+            const pending = new Map<string, (response:Response) => void>();
+
+            // Intercept only synthetic lookup requests
+            globalThis.fetch = (request:any) => new Promise<Response>(resolve => {
+
+                // Identify the lookup entity
+                const entity = new URL(request.url).pathname.split("/")[3];
+
+                // Save its response callback
+                pending.set(entity, resolve);
+
+            });
+
+            // Track the fixture for cleanup on assertion failures
+            let form:FormType|undefined;
+
+            // Restore transport and remove the form after every response order
+            try{
+
+                // Reproduce the locked values supplied by a task's add-timelog button
+                const {element, instance} = create(`<select name="user_id" data-type="select" disabled default="1" data-select-remote='{"url":"/api/v2/User/all","value":"id","label":"name"}'></select><select name="project_id" data-type="select" disabled default="7" data-depends="user_id" data-select-remote='{"url":"/api/v2/Project/filter?user={{user_id}}","value":"id","label":"name"}'></select><select name="task_id" data-type="select" disabled default="9" data-depends="project_id,user_id" data-select-remote='{"url":"/api/v2/Task/filter?user={{user_id}}&project={{project_id}}","value":"id","label":"name"}'></select>`);
+
+                // Match the application's query interpolation marker
+                element.setAttribute("partial", "form");
+
+                // Keep the initialized form available for cleanup
+                form = instance;
+
+                // Wait until widgets have started their lookups
+                await instance.ready;
+
+                // Define synthetic backend records
+                const records:Record<string, {id:string, name:string}> = {User: {id: "1", name: "Test Person"}, Project: {id: "7", name: "Test Project"}, Task: {id: "9", name: "Test Task"}};
+
+                // Resolve each response in the chosen order
+                for(const entity of order){
+
+                    // Verify the initial lookup was issued
+                    assert.ok(pending.has(entity), `Missing ${entity} request`);
+
+                    // Deliver its backend record
+                    pending.get(entity)!(new Response(JSON.stringify({results: [records[entity]]}), {headers: {"Content-Type": "application/json"}}));
+
+                    // Let the dependent change handlers finish
+                    await new Promise(resolve => setTimeout(resolve, 10));
+
+                }
+
+                // Check every locked value survived the dependency notifications
+                for(const [name, value] of [["user_id", "1"], ["project_id", "7"], ["task_id", "9"]]){
+
+                    // Find the current select widget
+                    const field = element.querySelector<HTMLSelectElement>(`[name=${name}]`)!;
+
+                    // Verify the selected backend value
+                    assert.equal((field as any).tomselect.getValue(), value, name);
+
+                    // Verify the button-supplied value remains locked
+                    assert.equal(field.disabled, true, name);
+
+                }
+
+                // Verify the task label is visible rather than only its identifier
+                assert.match((element.querySelector("[name=task_id]") as any).tomselect.control.textContent, /Test Task/);
+
+            }finally{
+
+                // Destroy listeners and widgets before the next case
+                form?.destroy();
+
+                // Restore the backend transport
+                globalThis.fetch = originalFetch;
+
+            }
+
+        });
+
+    }
+
+});

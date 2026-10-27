@@ -12,7 +12,7 @@
  * Dependances
  */
 import type CrazyFormAdapter from "../../../Interface/CrazyFormAdapter";
-import { FormSelect } from "kmaterialize";
+import { FormSelect } from "@materializecss/materialize";
 import type { FormInputType } from './Form/FormType';
 import {default as PageError} from './../Error/Page';
 import {default as UtilityStrings} from './Strings';
@@ -3031,6 +3031,25 @@ export default class Form {
                             // Retrieve value
                             let result = dependency.method(dependency.el, this._options);
 
+                            // Read the dependency value used to enable this field
+                            let dependencyValue = dependency.type === "select"
+                                ? (result[0][1][0] ?? "")
+                                : result[0][1]
+                            ;
+
+                            // Treat a fixed parent ID as resolved while its backend label loads
+                            if(
+                                dependency.type === "select" &&
+                                dependencyValue === "" &&
+                                dependency.el.disabled &&
+                                dependency.el.getAttribute("disabled") === "" &&
+                                dependency.el.dataset.dependsDisabled !== "true" &&
+                                dependency.el.hasAttribute("default")
+                            )
+
+                                // Preserve context supplied by the button that opened the form
+                                dependencyValue = dependency.el.getAttribute("default") ?? "";
+
                             /**
                              * Multiple case
                              */
@@ -3040,12 +3059,12 @@ export default class Form {
                                 // Case checkbox
                                 (
                                     dependency.type === "checkbox" &&
-                                    UtilityBoolean.check(result[0][1]) == false
+                                    UtilityBoolean.check(dependencyValue) == false
                                 ) ||
                                 // Case select
                                 (
                                     dependency.type === "select" &&
-                                    (result[0][1][0] ?? "") === ""
+                                    dependencyValue === ""
                                 )
                             ){
 
@@ -3817,6 +3836,22 @@ export default class Form {
                     }
 
                 }
+
+                // Use an authored locked value while its remote label is still loading
+                if(
+                    result === "" &&
+                    (
+                        itemEl instanceof HTMLSelectElement ||
+                        itemEl instanceof HTMLInputElement
+                    ) &&
+                    itemEl.disabled &&
+                    itemEl.getAttribute("disabled") === "" &&
+                    itemEl.dataset.dependsDisabled !== "true"
+                    && itemEl.hasAttribute("default")
+                )
+
+                    // Resolve dependent lookups from the known default value
+                    result = itemEl.getAttribute("default") ?? "";
 
                 // Set result
                 query[key] = query[key].replace(valueToReplace, result);

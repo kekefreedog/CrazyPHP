@@ -38,6 +38,9 @@ export default class Page {
     /** @param cache */
     private static cache:PageCacheManager;
 
+    /** @var _redirected Expected cancellation after a response redirects the page */
+    private static readonly _redirected = Symbol("Page redirected");
+
     /**
      * Constructor
      * 
@@ -68,12 +71,12 @@ export default class Page {
                 Page.loadScript
             )
             .then(
-                // Load Script
-                Page.updateUrl
-            )
-            .then(
                 // Load page State
                 Page.loadPageState
+            )
+            .then(
+                // Update the URL only after accepting the page state
+                Page.updateUrl
             )
             .then(
                 // Update Title
@@ -372,104 +375,95 @@ export default class Page {
      * @param options:LoaderPageOptions Options with all page details
      * @return Promise<LoaderPageOptions>
      */
-    public static loadUrl = async(options:LoaderPageOptions):Promise<LoaderPageOptions> =>  {
+    public static loadUrl = async(options:LoaderPageOptions):Promise<LoaderPageOptions> => {
 
-        // Check status
-        if(options.status?.urlLoaded === true){
+        // Prepare result
+        let result = options;
 
-            // Check url
-            if(!options.url){
+        // Resolve the initial server-rendered page URL
+        if(result.status?.urlLoaded === true){
 
-                // Get current url
-                options.url = new URL(Crazyurl.get(true));
+            // Preserve an explicitly supplied URL
+            if(!result.url)
 
-            }
+                // Read the current page URL
+                result.url = new URL(Crazyurl.get(true));
 
-            // Stop function
-            return options;
+        }else 
+        // If not url    
+        if(!result.url){
 
-        }
+            // Prepare the internal route query
+            const query = {
+                filters: { name: result.name },
+                options: { arguments: result.arguments ?? {} }
+            };
 
-        // Check url is empty
-        if("url" in options && options.url !== null)
-
-            // Return options
-            return options;
-
-        // Prepare query
-        let query:Object = {
-            filters: {
-                name: options.name
-            },
-            options: {}
-        };
-
-        // Check options arguments
-        if("arguments" in options && options.arguments !== null){
-
-            // Add options
-            query["options"].arguments = options.arguments;
-
-        }
-
-        // New request
-        let request = new Crazyrequest(
-            "/api/v2/Router/filter",
-            {
+            // Prepare the route request
+            const request = new Crazyrequest("/api/v2/Router/filter", {
                 method: "GET",
                 from: "internal",
                 ignoreHash: true,
                 cache: false,
-            }
-        );
+            });
 
-        // Fetch request
-        await request
-            .fetch(query)
-            .then(result => {            
-            
-                // Check result
-                if(
-                    result &&
-                    "results" in result && 
-                    Array.isArray(result.results) &&
-                    result.results.length === 1 &&
-                    "name" in result.results[0] &&
-                    "path" in result.results[0]
-                ){
+            // Fetch the named route
+            const response = await request.fetch(query);
 
-                    // Load new page
-                    options.url = result.results[0].path;
+            // Validate the resolved route
+            if(
+                response &&
+                Array.isArray(response.results) &&
+                response.results.length === 1 &&
+                typeof response.results[0].path === "string"
+            ){
 
-                    // Check state
-                    if("state" in result.results[0] && Object.keys(result.results[0].state).length){
+                // Parse the backend route without trusting its proxy hostname
+                const routeUrl = new URL(response.results[0].path, window.location.href);
 
-                        // Set state in options
-                        options.state = result.results[0].state;
+                // Keep named application routes on the browser origin
+                const pageUrl = new URL(window.location.origin);
 
-                        // Switch status
-                        Page.setStatus(options, "hasState", true);
+                // Preserve the route pathname
+                pageUrl.pathname = routeUrl.pathname;
 
-                    }
-                    
-                }else{
-                    
-                    // Error
-                    throw new Error(`No page corresponding to "${options.name}" in the router collection`);
+                // Preserve the route query
+                pageUrl.search = routeUrl.search;
+
+                // Preserve the route fragment
+                pageUrl.hash = routeUrl.hash;
+
+                // Set the resolved application URL
+                result.url = pageUrl;
+
+                // Check the optional route state
+                if(response.results[0].state && Object.keys(response.results[0].state).length){
+
+                    // Preserve the returned state
+                    result.state = response.results[0].state;
+
+                    // Mark the state as available
+                    result = Page.setStatus(result, "hasState", true);
 
                 }
 
-            })
-        ;
-        
-        // Set status
-        options = Page.setStatus(options, "urlLoaded", true);
+            }else{
 
-        // Return options
-        return options;
+                // Reject an unknown route
+                throw new Error(`No page corresponding to "${result.name}" in the router collection`);
+
+            }
+
+            // Mark the URL as resolved
+            result = Page.setStatus(result, "urlLoaded", true);
+
+        }
+
+        // Return result
+        return result;
 
     }
-    
+
     /**
      * Open New Tab
      * 
@@ -478,21 +472,24 @@ export default class Page {
      * @param options:LoaderPageOptions Options with all page details
      * @return Promise<LoaderPageOptions>
      */
-    public static openNewTab = async(options:LoaderPageOptions):Promise<LoaderPageOptions> =>  {
+    public static openNewTab = async(options:LoaderPageOptions):Promise<LoaderPageOptions> => {
 
-        // Check openInNewTab
-        if("openInNewTab" in options && options.openInNewTab && options.status?.urlLoaded && "url" in options && typeof options.url === "string" && options.url){
+        // Prepare result
+        const result = options;
 
-            // Open 
-            window.open(options.url, "_blank");
+        // Check for a resolved new-tab navigation
+        if(result.openInNewTab && result.status?.urlLoaded && result.url){
 
-            // Stop promise chain
-            throw 'Page open in new tab.';
+            // Open the resolved application URL
+            window.open(String(result.url), "_blank");
+
+            // Stop the current page loader without reporting an error
+            throw Page._redirected;
 
         }
 
-        // Return options
-        return options; 
+        // Return result
+        return result;
 
     }
 
@@ -504,54 +501,65 @@ export default class Page {
      * @param options:LoaderPageOptions Options with all page details
      * @return Promise<LoaderPageOptions>
      */
-    public static loadPageState = async(options:LoaderPageOptions):Promise<LoaderPageOptions> =>  {
+    public static loadPageState = async(options:LoaderPageOptions):Promise<LoaderPageOptions> => {
 
-        // Check name and url
-        if(options.url && options.name){
+        // Prepare result
+        let result = options;
 
-            // New query
-            let query = new Crazyrequest(
-                `${options.url}`,
-                {
-                    method: "get",
-                    cache: false,
-                    from: "internal",
-                }
-            );
+        // Check the resolved page
+        if(result.url && result.name){
 
-            // Get params allowed by the page
-            let queryParams = options.url.href == Crazyurl.get(true)
-                ? Crazyurl.getQueryParameters(options.scriptLoaded?.queryParameters)
+            // Normalize caller-supplied relative URLs
+            const pageUrl = new URL(String(result.url), window.location.href);
+
+            // Prepare the page state request
+            const query = new Crazyrequest(pageUrl.href, {
+                method: "get",
+                cache: false,
+                from: "internal",
+            });
+
+            // Preserve allowed query parameters when loading the current page
+            const queryParams = pageUrl.href === Crazyurl.get(true)
+                ? Crazyurl.getQueryParameters(result.scriptLoaded?.queryParameters)
                 : {}
             ;
 
-            // Get state page
-            let pageState = await query.fetch({
+            // Fetch the page state and dispatch its response events
+            const pageState = await query.fetch({
                 catch_state: true,
                 ...queryParams
             });
 
-            // Clear cookie (if not secure)
+            // Clear the consumed state cookie
             Cookie.clear(Page.COOKIE_UUID_STATE, "/");
 
-            // Push into state
-            State.set().page(options.name, pageState);
+            // Stop rendering a page whose response navigates elsewhere
+            if(
+                Array.isArray(pageState?._events) &&
+                pageState._events.some(
+                    (event:LoaderEventRedirection) => event.type === "redirect" &&
+                    event.target !== "_blank" &&
+                    (
+                        event.name || 
+                        event.url
+                    )
+                )
+            )
 
-            // check options status
-            if(options.status && options.status === null){
+                // Leave the redirect event in charge of the next page
+                throw Page._redirected;
 
-                // Set options status
-                options.status = {};
+            // Store only accepted page state
+            State.set().page(result.name, pageState);
 
-                // Set status
-                options.status.hasState = true;
-
-            }
+            // Mark the state as loaded
+            result = Page.setStatus(result, "hasState", true);
 
         }
 
-        // Return options
-        return options; 
+        // Return result
+        return result;
 
     }
 
@@ -960,16 +968,24 @@ export default class Page {
         
     }
 
-    /** Private methods
+    /** Private methods | Error
      ******************************************************
      */
 
-     private static catchError(error:any):void {
+    /**
+     * Catch Error
+     *
+     * @param error Loading failure or expected redirect cancellation
+     */
+    private static catchError(error:any):void {
 
-        // Display error
-        console.error(error);
+        // Report failures while ignoring an expected navigation cancellation
+        if(error !== Page._redirected)
 
-     }
+            // Display the loading error
+            console.error(error);
+
+    }
 
     /** Private methods
      ******************************************************

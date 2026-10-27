@@ -199,7 +199,7 @@ export default class SelectType extends FormType implements FormInputType {
                         const remoteUrl = this._resolveRemoteUrl(remoteData.url, formEl, helpers);
 
                         // Check input el
-                        if(inputEl.disabled || remoteUrl === null){
+                        if(this._isDependencyBlocked(inputEl) || remoteUrl === null){
 
                             // Set progress el
                             progressEl?.setAttribute("disabled", "");
@@ -239,7 +239,8 @@ export default class SelectType extends FormType implements FormInputType {
                             ).fetch(queryParam).then(
                                 value => {
 
-                                    if(destroyed || inputEl.disabled){
+                                    // Ignore responses for removed widgets or unresolved dependencies
+                                    if(destroyed || this._isDependencyBlocked(inputEl)){
 
 
                                     }else{
@@ -273,7 +274,8 @@ export default class SelectType extends FormType implements FormInputType {
                             )
                             .then(() => {
 
-                                if(destroyed || inputEl.disabled){
+                                // Ignore responses for removed widgets or unresolved dependencies
+                                if(destroyed || this._isDependencyBlocked(inputEl)){
 
 
                                 }else{
@@ -306,7 +308,8 @@ export default class SelectType extends FormType implements FormInputType {
                             })
                             .then(() => {
 
-                                if(destroyed || inputEl.disabled){
+                                // Ignore responses for removed widgets or unresolved dependencies
+                                if(destroyed || this._isDependencyBlocked(inputEl)){
                                 
                                 }else
                                 // Check depends
@@ -384,7 +387,7 @@ export default class SelectType extends FormType implements FormInputType {
                         const remoteUrl = this._resolveRemoteUrl(remoteData.url, formEl, helpers);
 
                         // Check input
-                        if(inputEl.disabled || remoteUrl === null){
+                        if(this._isDependencyBlocked(inputEl) || remoteUrl === null){
 
                             // Update progress el
                             progressEl?.setAttribute("disabled", "");
@@ -422,7 +425,8 @@ export default class SelectType extends FormType implements FormInputType {
                             .then(
                                 value => {
 
-                                    if(destroyed || inputEl.disabled){
+                                    // Ignore responses for removed widgets or unresolved dependencies
+                                    if(destroyed || this._isDependencyBlocked(inputEl)){
 
 
                                     }else{
@@ -457,7 +461,8 @@ export default class SelectType extends FormType implements FormInputType {
                             ).then(
                                 () => {
 
-                                    if(destroyed || inputEl.disabled){
+                                    // Ignore responses for removed widgets or unresolved dependencies
+                                    if(destroyed || this._isDependencyBlocked(inputEl)){
                                     
                                     }else
                                     // Check default in input el
@@ -478,7 +483,8 @@ export default class SelectType extends FormType implements FormInputType {
                             )
                             .then(() => {
 
-                                if(destroyed || inputEl.disabled){
+                                // Ignore responses for removed widgets or unresolved dependencies
+                                if(destroyed || this._isDependencyBlocked(inputEl)){
                                     
                                 }else{
 
@@ -510,7 +516,8 @@ export default class SelectType extends FormType implements FormInputType {
                             })
                             .then(() => {
 
-                                if(destroyed || inputEl.disabled){
+                                // Ignore responses for removed widgets or unresolved dependencies
+                                if(destroyed || this._isDependencyBlocked(inputEl)){
                                     
                                 }else
                                 // Check depends
@@ -974,6 +981,27 @@ export default class SelectType extends FormType implements FormInputType {
     /** Private Methods
      ******************************************************
      */
+
+    /**
+     * Check whether missing parent values prevent loading choices.
+     *
+     * Authored and loading locks still need backend labels.
+     *
+     * @param input
+     * @returns {boolean}
+     */
+    private _isDependencyBlocked(input:HTMLSelectElement|HTMLInputElement):boolean {
+
+        // Prepare the dependency lock state
+        const result = 
+            input.getAttribute("disabled") === "depends" ||
+            input.dataset.dependsDisabled === "true"
+        ;
+
+        // Return the dependency lock state
+        return result;
+
+    }
 
     /**
      * Resolve remote-select path placeholders without changing query interpolation.
