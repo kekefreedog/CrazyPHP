@@ -163,6 +163,17 @@ export default class DateType extends FormType implements FormInputType {
             // New picker instance
             const picker = new AirDatepicker(inputEl, options);
 
+            // Read an existing ISO date or date range from the rendered field
+            const initialDates = inputEl.value.split(" - ");
+
+            // Restore the selection without firing a filter change during initialization
+            if(initialDates.length <= (multiple ? 2 : 1) && initialDates.every(date => /^\d{4}-\d{2}-\d{2}$/.test(date))){
+
+                // Select dates at local midnight to preserve calendar days in every timezone
+                await picker.selectDate(initialDates.map(date => new Date(`${date}T00:00:00`)), {silent: true});
+
+            }
+
             // Add event
             document.addEventListener('click', (e) => {
 
@@ -405,7 +416,10 @@ export default class DateType extends FormType implements FormInputType {
             // Check date
             if(dateClean){
 
-                // Set value
+                // Update the live value even when a date picker has already changed the input
+                (itemEl as HTMLInputElement|HTMLSelectElement).value = dateClean;
+
+                // Keep the default value synchronized for form resets
                 itemEl.setAttribute("value", dateClean);
 
                 // Dispatch event change

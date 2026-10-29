@@ -1028,3 +1028,49 @@ describe("Timelog default response ordering", () => {
     }
 
 });
+
+
+// Preserve the saved date when an edit form changes only the duration
+describe("Timelog date restoration", () => {
+
+    // Exercise both native inputs and initialized legacy date pickers
+    for(const attributes of ['type="date"', 'type="text" data-type="date" data-date-picker="airdatepicker"']){
+
+        // Verify serialization uses the loaded record after a widget changes the live value
+        it(`keeps the saved date during a duration-only edit (${attributes})`, async() => {
+
+            // Start with the date default rendered by the timelog form
+            const {element, instance} = create(`<input name="date_target" ${attributes} value="2026-10-28"><input name="duration" type="number" value="8">`);
+
+            // Initialize the real form handlers and date picker
+            await instance.ready;
+
+            // Find the date input populated by the edit request
+            const date = element.querySelector<HTMLInputElement>("[name=date_target]")!;
+
+            // Reproduce a live value already written by a widget or user
+            date.value = "2026-10-28";
+
+            // Load a timelog belonging to a different day
+            instance.setValue({date_target: "2026-10-15T00:00:00", duration: 8});
+
+            // Change only the logged time
+            element.querySelector<HTMLInputElement>("[name=duration]")!.value = "3";
+
+            // Serialize through the same form path used for saving
+            const data = instance.getFormData(element);
+
+            // Keep the entry on its original day
+            assert.equal(data.get("date_target"), "2026-10-15");
+
+            // Apply the requested duration change
+            assert.equal(data.get("duration"), "3");
+
+            // Keep the reset value aligned with the loaded record
+            assert.equal(date.defaultValue, "2026-10-15");
+
+        });
+
+    }
+
+});
