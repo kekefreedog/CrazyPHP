@@ -1074,3 +1074,48 @@ describe("Timelog date restoration", () => {
     }
 
 });
+
+/** Tests | Number increments
+ ******************************************************
+ */
+
+// Verify authored steps without changing existing integer and decimal defaults
+describe("Form adapter number increments", () => {
+
+    // Cover explicit steps, missing attributes and invalid authored values
+    for(const [attributes, initial, expected] of [
+        ['step="50" min="50"', "600", "650"],
+        ['', "600", "601"],
+        ['data-number-scale="2"', "0.2", "0.21"],
+        ['step="-50"', "600", "601"],
+    ]){
+
+        // Exercise the initialized number widget instead of comparing its configuration
+        it(`increments ${initial} to ${expected} with ${attributes || "default settings"}`, async() => {
+
+            // Mount the native field through the public form adapter
+            const {element, instance} = create(`<input name="size" type="text" data-type="number" data-number-controls ${attributes} value="${initial}">`, {adapter: "kmaterialize"});
+
+            // Wait for the mask and number controls to initialize
+            await instance.ready;
+
+            // Locate the enhanced field
+            const input = element.querySelector<HTMLInputElement>("input")!;
+
+            // Increase the value through the actual widget
+            (input as any).M_NumberInput.increment();
+
+            // Require the intended increment to reach the field's value
+            assert.equal(input.value, expected);
+
+            // Restore the original value through the matching decrement
+            (input as any).M_NumberInput.decrement();
+
+            // Require symmetric steps without floating-point display errors
+            assert.equal(input.value, initial);
+
+        });
+
+    }
+
+});

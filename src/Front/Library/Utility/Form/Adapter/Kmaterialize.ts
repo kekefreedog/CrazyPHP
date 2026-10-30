@@ -500,8 +500,14 @@ export default class Kmaterialize implements CrazyFormAdapter {
                 // Read the numeric precision
                 const scale = Number(input.dataset.numberScale || 0);
 
-                // Initialize the widget
-                const widget = NumberInput.init(input, { scale, step: 10 ** -scale });
+                // Read an authored increment from the number field
+                const configuredStep = Number(input.getAttribute("step"));
+
+                // Preserve the precision-based default when no positive increment is supplied
+                const step = Number.isFinite(configuredStep) && configuredStep > 0 ? configuredStep : 10 ** -scale;
+
+                // Initialize the widget with the resolved increment
+                const widget = NumberInput.init(input, { scale, step });
 
                 // Wait for initialization and register widget cleanup
                 await this._track(widget);

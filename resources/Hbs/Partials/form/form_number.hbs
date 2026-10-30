@@ -21,7 +21,8 @@
         {{#if select.[0].value includeZero=true}}min="{{select.[0].value}}"{{/if}}
         {{#if select.[1].value includeZero=true}}max="{{select.[1].value}}"{{/if}}
         {{#if required}}required=""{{/if}}
-        {{#if _style.number.decimal}}step=".01"{{/if}}
+        {{!-- Use an authored increment while preserving the existing decimal default. --}}
+        {{#if _style.number.step}}step="{{_style.number.step}}"{{else}}{{#if _style.number.decimal}}step=".01"{{/if}}{{/if}}
     >
 
 </div>
