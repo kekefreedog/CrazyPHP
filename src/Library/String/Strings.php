@@ -186,7 +186,16 @@ class Strings {
     public static function hash(mixed ...$inputs):string {
     
         # Return result
-        return hash('sha256',json_encode($inputs, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES));
+        return hash(
+            'sha256',
+            json_encode(
+                $inputs,
+                JSON_THROW_ON_ERROR | 
+                JSON_UNESCAPED_UNICODE | 
+                JSON_UNESCAPED_SLASHES | 
+                JSON_PRESERVE_ZERO_FRACTION
+            )
+        );
 
     }
 

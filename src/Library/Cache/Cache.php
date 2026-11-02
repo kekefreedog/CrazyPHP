@@ -21,6 +21,7 @@ use Phpfastcache\Exceptions\PhpfastcacheDriverConnectException;
 use Phpfastcache\Drivers\Mongodb\Config as MemcachedConfig;
 use Phpfastcache\Core\Pool\ExtendedCacheItemPoolInterface;
 use Phpfastcache\Config\ConfigurationOptionInterface;
+use Phpfastcache\Drivers\Redis\Config as RedisConfig;
 use Phpfastcache\Config\ConfigurationOption;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\File\Composer;
@@ -135,6 +136,22 @@ class Cache extends Psr16Adapter {
                 $exception->render();
 
             }
+
+        }
+
+        # Initialize the explicitly selected Redis driver
+        if($configuration["driver"] === "Redis"){
+
+            # Require the native extension used by Phpfastcache's Redis driver
+            if(!extension_loaded("redis")){
+
+                # Explain the missing runtime dependency before attempting a connection
+                throw new CrazyException("The Redis cache driver requires the PHP redis extension.", 500, ["custom_code" => "cache-003"]);
+
+            }
+
+            # Pass the Redis-specific options without modifying other cache pools
+            $driverInstance = CacheManager::getInstance("Redis", $configuration["options"]);
 
         }
 
@@ -358,10 +375,20 @@ class Cache extends Psr16Adapter {
         if(
             (Env::has("phpunit_test") && Env::get("phpunit_test")) ||
             (Env::has("cache_driver") && Env::get("cache_driver") == "Files")
-        )
+        ){
+
+            # Discard Redis connection options when tests or the environment force file caching
+            if($driver === "Redis"){
+
+                # Keep the file-cache override independent of Redis configuration
+                $config = null;
+
+            }
 
             # Set driver
             $driver = "Files";
+
+        }
 
         # Get driver if empty
         if(!$driver){
@@ -388,6 +415,7 @@ class Cache extends Psr16Adapter {
             # Else default driver
             else
 
+                # Retain file caching as the default without MongoDB configuration
                 $driver = "Files";
 
         }
@@ -395,6 +423,7 @@ class Cache extends Psr16Adapter {
         # Check driver
         if(!$driver || !in_array($driver, self::DRIVERS_ALLOWED)){
 
+            # Report the unsupported driver
             echo $driver;
 
             # New Exception
@@ -411,6 +440,67 @@ class Cache extends Psr16Adapter {
         # Push driver in result
         $result["driver"] = $driver;
 
+        # Resolve Redis configuration only when explicitly selected
+        if($driver === "Redis"){
+
+            # Require options compatible with Phpfastcache's Redis driver
+            if($config !== null && !$config instanceof RedisConfig){
+
+                # Reject incompatible configuration before establishing a connection
+                throw new CrazyException("The Redis cache driver requires Phpfastcache\\Drivers\\Redis\\Config.", 500, ["custom_code" => "cache-004"]);
+
+            }
+
+            # Read environment options when no explicit configuration was supplied
+            if($config === null){
+
+                # Resolve the Redis host from the process environment
+                $host = getenv("REDIS_HOST") ?: "127.0.0.1";
+
+                # Read the optional Redis port without accepting malformed numeric values
+                $port = getenv("REDIS_PORT");
+
+                # Default an unset port and validate the TCP port range
+                $port = filter_var(
+                    $port === false || 
+                    $port === "" 
+                        ? 6379 
+                        : $port
+                    ,
+                    FILTER_VALIDATE_INT,
+                    [
+                        "options" => [
+                            "min_range" => 1,
+                            "max_range" => 65535
+                        ]
+                    ]
+                );
+
+                # Reject invalid ports before opening a connection
+                if($port === false)
+
+                    # Identify the environment variable that needs correcting
+                    throw new CrazyException(
+                        "REDIS_PORT must be an integer between 1 and 65535.",
+                        500,
+                        [
+                            "custom_code" => "cache-005"
+                        ]
+                    );
+
+                # Build native Redis options with detailed cache dates
+                $config = new RedisConfig([
+                    "host" => $host, 
+                    "port" => $port, 
+                    "itemDetailedDate" => true
+                ]);
+
+            }
+
+            # Retain the Redis configuration object for CacheManager
+            $result["options"] = $config;
+
+        }else
         # Check config
         if(!empty($config)){
 
@@ -486,7 +576,7 @@ class Cache extends Psr16Adapter {
 
     /** @var array DRIVERS_ALLOWED */
     public const DRIVERS_ALLOWED = [
-        "Files", "Mongodb"
+        "Files", "Mongodb", "Redis"
     ];
 
 }
