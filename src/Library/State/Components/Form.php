@@ -78,6 +78,7 @@ class Form {
         "default"       =>  null,
         "multiple"      =>  false,
         "depends"       =>  null,
+        "persist"       =>  false,
         "valuePrefix"   =>  "",
         "valueSuffix"   =>  "",
         "extra"         =>  [],

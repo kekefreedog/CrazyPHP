@@ -17,6 +17,7 @@ import type { FormInputType } from './Form/FormType';
 import {default as PageError} from './../Error/Page';
 import {default as UtilityStrings} from './Strings';
 import UtilityBoolean from '../Utility/Boolean';
+import formPersistence from "./Form/Persistance";
 import CheckboxType from './Form/Checkbox';
 import PasswordType from './Form/Password';
 import Crazyrequest from '../Crazyrequest';
@@ -72,6 +73,9 @@ export default class Form {
 
     /** Suppress filter changes while restoring values and operators. */
     private _restoringFilter:boolean = false;
+
+    /** Opt-in remembered values for this form lifecycle. */
+    private _persistence:formPersistence|null = null;
 
     /** @var _typeRegistry */
     private _typeRegistry:Record<string, FormInputType>;
@@ -1514,8 +1518,10 @@ export default class Form {
             // Set events
             this._events = new Controller();
 
+            // Initialize values before widgets and attach persistence only after setup
             for(const initialize of [
                 this._initOptions,
+                this._initPersistence,
                 this._initAdapter,
                 this._initRegistery,
                 this._initForm,
@@ -1524,6 +1530,7 @@ export default class Form {
                 this._initEventOnSubmit,
                 this._initEventOnReset,
                 this._initEventOnChange,
+                this._watchPersistence,
             ]) if(!this._destroyed){
                 
                 // Await initialize
@@ -1532,6 +1539,74 @@ export default class Form {
             }
 
         }
+
+    }
+
+    /**
+     * Init Persistence
+     *
+     * Restore configured native values before input widgets are initialized.
+     * @return Promise resolving after optional restoration
+     */
+    private _initPersistence = async():Promise<void> => {
+
+        // Keep malformed or unavailable browser preferences from blocking form setup
+        try{
+
+            // Read only item names explicitly marked for persistence
+            const names = Array.from(this._formEl.querySelectorAll<HTMLElement>("template[data-form-persist-name]")).map(item => item.dataset.formPersistName);
+
+            // Mark opted-in native controls before restoring their values
+            for(const input of this._formEl.querySelectorAll<HTMLInputElement>("[name]")){
+
+                // Require an explicit item opt-in for every remembered control
+                input.dataset.persist = String(names.includes(input.name));
+
+            }
+
+            // Preserve caller scoping while enabling only forms with opted-in items
+            const options = this._options.persistence === false
+                ? {enabled: false}
+                : {...this._options.persistence, enabled: names.some(name => typeof name === "string")};
+
+            // Initialize only explicitly enabled forms with a stable identity
+            if(options.enabled === true && (options.key || this._formEl.id)){
+
+                // Create the shared cache-backed persistence helper
+                this._persistence = new formPersistence(this._formEl, options);
+
+                // Restore parent selections before their dependent widgets load
+                await this._persistence.restore(this._events.signal);
+
+                // Reconcile application visibility only while this form remains active
+                if(!this._destroyed){
+
+                    // Notify the owning popup that remembered values are available
+                    this._formEl.dispatchEvent(new this._formEl.ownerDocument.defaultView!.CustomEvent("crazyform:restored", {bubbles: true}));
+
+                }
+
+            }
+
+        }catch{
+
+            // Leave ordinary form behavior available without persistence
+            this._persistence = null;
+
+        }
+
+    }
+
+    /**
+     * Watch Persistence
+     *
+     * Attach remembered-value listeners after all native controls have initialized.
+     * @return Promise resolving after listeners are attached
+     */
+    private _watchPersistence = async():Promise<void> => {
+
+        // Keep writes scoped to the current form lifecycle
+        this._persistence?.watch(this._events.signal);
 
     }
 

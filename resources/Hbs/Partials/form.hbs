@@ -28,6 +28,8 @@
 >
     {{!-- Items --}}
     {{#each form.items as |item|}}
+    {{!-- Mark only items explicitly opted into remembered values --}}
+    {{#is item.persist true exact=true}}<template data-form-persist-name="{{item.name}}"></template>{{/is}}
     {{#is item.type "separator"}}{{> form/form_separator item form=../form}}
     {{else}}
     {{#if ../form.filter}}

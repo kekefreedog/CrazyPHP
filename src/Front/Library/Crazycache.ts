@@ -39,7 +39,7 @@ export default class Crazycache {
     /**
      * Constructor
      */
-    public constructor(name:string = "crazy-cache"){
+    public constructor(name:string = "crazy-cache", options:{driver?:"localStorage"} = {}){
 
         /* Check name */
         if(!name)
@@ -49,7 +49,8 @@ export default class Crazycache {
 
         /* Create instance */
         this.instance = localforage.createInstance({
-            name: "crazy-"+name
+            name: "crazy-"+name,
+            ...(options.driver === "localStorage" ? {driver: localforage.LOCALSTORAGE} : {})
         });
 
         /* Get ready moment of localforage */
@@ -137,13 +138,13 @@ export default class Crazycache {
             for(let item of ["dateCreated", "dateUpdated", "dateLoaded"])
 
                 // Set created date and update time
-                this.instance.getItem(item).then((value) => {
+                this.instance.getItem(item).then(async (value) => {
 
                     // Check if null
                     if(value === null || item == "dateLoaded")
 
                         // Set current date
-                        this.instance?.setItem(item, date);
+                        await this.instance?.setItem(item, date);
 
 
                 // Catch error

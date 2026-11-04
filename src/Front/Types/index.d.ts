@@ -483,7 +483,16 @@ declare global {
      ******************************************************
      */
 
+    /** Opt-in remembered values scoped by the owning application. */
+    interface FormPersistenceOptions {
+        enabled?:boolean;
+        key?:string;
+        scope?:string;
+        exclude?:string[];
+    }
+
     interface FormOptions {
+        persistence?:FormPersistenceOptions|false,
         adapter?:"kmaterialize",
         adapterOptions?:import("../../Interface/CrazyFormAdapter").CrazyFormAdapterOptions,
         onBeforeSubmit:(entity:string, formData:FormData)=>FormData|FormData[]|void,
