@@ -180,13 +180,13 @@ class MariadbTest extends TestCase {
         $resultA = Mariadb::appendSort($input);
 
         # Expected A
-        $expectedA = " ORDER BY field1 ASC, field2 DESC, toto ASC";
+        $expectedA = " ORDER BY `field1` ASC, `field2` DESC, `toto` ASC";
 
         # Get result B
         $resultB = Mariadb::appendSort($input, "a");
 
         # Expected B
-        $expectedB = " ORDER BY a.field1 ASC, a.field2 DESC, a.toto ASC";
+        $expectedB = " ORDER BY `a`.`field1` ASC, `a`.`field2` DESC, `a`.`toto` ASC";
 
         # Assert
         $this->assertEquals($expectedB, $resultB);
@@ -204,19 +204,19 @@ class MariadbTest extends TestCase {
         $input1 = ["test1"];
 
         # Set expected
-        $expected1 = "test1";
+        $expected1 = "`test1` ASC";
 
         # Set input 1
         $input2 = ["-test2"];
 
         # Set expected
-        $expected2 = "test2 DESC";
+        $expected2 = "`test2` DESC";
 
         # Set input 1
         $input3 = ["test3", "test4", "-test5"];
 
         # Set expected
-        $expected3 = "test3, test4, test5 DESC";
+        $expected3 = "`test3` ASC, `test4` ASC, `test5` DESC";
 
         # Set input 4
         $input4 = [];

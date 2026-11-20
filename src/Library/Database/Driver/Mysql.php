@@ -17,6 +17,8 @@ namespace CrazyPHP\Library\Database\Driver;
  */
 
 use CrazyPHP\Library\Database\Singleton\MariadbConnection;
+use CrazyPHP\Library\Database\Operation\SqlOperation;
+use CrazyPHP\Library\Database\Operation\SqlFilter;
 use CrazyPHP\Library\File\Config as FileConfig;
 use CrazyPHP\Interface\CrazyDatabaseDriver;
 use CrazyPHP\Exception\CrazyException;
@@ -979,336 +981,104 @@ class Mysql implements CrazyDatabaseDriver {
      * @param string $database
      * @param array $options = [
      *      "query":string
-     *      "filters":array,
+     *      "filters":array, // Original model DSL values, never SQL fragments.
      *      "sort":array
      *      "limit":array
      * ]
      */
     public function find(string $table, string $database = "", array $options = []):array|null {
 
-        # Set result
+        # Prepare result
         $result = null;
 
-        # Check input
-        if(!$table)
+        # Query only a named table
+        if($table !== ""){
 
-            # Return result
-            return $result;
+            # Resolve the configured database
+            $database = $database ?: $this->_getDefaultDatabase();
 
-        # Check database
-        if(!$database)
+            # Quote the source table
+            $quotedTable = SqlOperation::identifier($table);
 
-            # Get main database
-            $database = $this->_getDefaultDatabase();
+            # Select the configured database
+            $this->client->exec("USE ".SqlOperation::identifier($database));
 
-        # Use database
-        /** @disregard P1006 */
-        $this->client->exec("USE " . $database);
+            # Execute the prepared read
+            try {
 
-        # Check query
-        $isQuery = isset($options["query"]) && !empty($options["query"]);
+                # Preserve the explicitly trusted server-side raw-query API
+                if(isset($options["query"]) && $options["query"] !== ""){
 
-        # Check query
-        if(!$isQuery)
+                    # Execute a query supplied by server-side parseSql callers
+                    $statement = $this->client->query($options["query"]);
 
-            # Set filters
-            $filters = isset($options["filters"]) && is_array($options["filters"])
-                ? $options["filters"]
-                : []
-            ;
-    
-        try {
+                }else{
 
-            # Check query
-            if($isQuery){
+                    # Require a map of model filters
+                    if(isset($options["filters"]) && !is_array($options["filters"])){
 
-                # Update table
-                /** @disregard P1006 */
-                $statment = $this->client->query($options["query"]);
-
-                # Set result
-                $result = $statment->fetchAll(PDO::FETCH_ASSOC);
-
-            }else
-            # Check filters
-            if(!empty($filters)){
-
-                # Set alias
-                $alias = "a";
-
-                # Set extra alias
-                $extraAlias = "a";
-
-                # Prepare query
-                $query = "SELECT * FROM $table AS $alias";
-
-                # Set filterStacked
-                $filterStacked = [];
-
-                # Iteration filters
-                foreach($filters as $key => $value){
-
-                    /**
-                     * AND Operation
-                     */
-
-                    # Set operation
-                    $operation = "AND";
-
-                    /**
-                     * OR Operation
-                     * 
-                     * Catcj || or !!
-                     */
-
-                    # check if key started with ||
-                    if(substr($key, 0, 2) == "||" || substr($key, 0, 2) == "!!"){
-
-                        # Update $key
-                        $key = substr($key, 2);
-
-                        # Set operation
-                        $operation = "OR";
+                        # Reject malformed filter input
+                        throw new CrazyException("SQL filters must be an array.", 400);
 
                     }
 
-                    /**
-                     * Include
-                     * 
-                     * Catch <> 
-                     */
+                    # Compile predicates and their separate positional values
+                    $where = SqlFilter::where($options["filters"] ?? [], $table);
 
-                    # Check if contains []
-                    if(substr($key, 0, 2) == "<>" || substr($key, 0, 2) == "@@"){
+                    # Build a query from validated identifiers and fixed SQL fragments
+                    $query = "SELECT * FROM ".$quotedTable." AS `a`".$where["sql"]
+                        .static::appendSort($options["sort"] ?? null, "a");
 
-                        # Update $key
-                        $key = substr($key, 2);
+                    # Normalize the existing pagination options
+                    $limit = is_numeric($options["limit"] ?? null) ? max(0, (int)$options["limit"]) : 0;
 
-                        # Clean "
-                        $value = trim($value, '"');
+                    # Append bounded integer pagination
+                    if($limit > 0){
 
-                        # Clean '= '
-                        $value = ltrim($value, '= "');
-
-                        # Check if ? in value
-                        if(strpos($value, "@") !== false){
-
-                            # Explode current value
-                            $currentValue = explode("@", $value, 2);
-
-                            # Set table name
-                            $includeTableName = $currentValue[0];
-                            
-                            # Set extra arguments
-                            $includeExtraArguments = $currentValue[1] ?? null;
-
-                        }else{
-
-                            # Set table name
-                            $includeTableName = $value;
-                            
-                            # Set extra arguments
-                            $includeExtraArguments = null;
-
-
-                        }
-
-                        # Check if table exists
-                        if(!Model::exists($includeTableName))
-
-                            # Continue
-                            continue;
-                    
-                        # Increment extra alias
-                        $extraAlias++;
-
-                        # Prepare includeQuery
-                        $includeQuery = "EXISTS (";
-
-                        # Check if key is id
-                        if(strpos($key, "_") !== false){
-
-                            # Set includeKey
-                            $includeKey = $key;
-
-                            # Check includeTableName in $key
-                            if(substr($includeKey, 0, strlen($includeTableName)+1) == strtolower($includeTableName)."_")
-
-                                $includeKey = str_replace(strtolower($includeTableName)."_", "", $includeKey);
-
-                            else
-
-                                # Set key target
-                                $includeKey = $key;
-
-                            # Set key target
-                            $includeKeyTarget = $key;
-
-                        }else{
-
-                            # Set include key
-                            $includeKey = strtolower($table)."_$key";
-
-                            # Set key target
-                            $includeKeyTarget = $key;
-
-                        }
-
-                        # Push sub query
-                        $includeQuery .= "SELECT 1 FROM $includeTableName $extraAlias WHERE $extraAlias.$includeKey = $alias.$includeKeyTarget";
-
-                        # Check include extra arguments
-                        if($includeExtraArguments){
-
-                            # Explode extra aruments
-                            $includeExtraArguments = array_merge(...array_map(fn($pair) => [$k = explode(':', $pair, 2)[0] => is_numeric($v = explode(':', $pair, 2)[1]) ? (int)$v : $v], explode('@', $includeExtraArguments)));
-
-                            # Iteration of extra argument
-                            if(is_array($includeExtraArguments) && !empty($includeExtraArguments)) foreach($includeExtraArguments as $includeExtraArgumentKey => $includeExtraArgumentValue){
-
-                                # Push it into includeQuery
-                                $includeQuery .=  " AND $extraAlias.$includeExtraArgumentKey = ".(is_string($includeExtraArgumentValue) ? "'$includeExtraArgumentValue'" : $includeExtraArgumentValue);
-
-                            }
-
-                        }
-
-                        # Close includeQuery
-                        $includeQuery .= ")";
-
-                        # Fill filter stacked
-                        $filterStacked[] = [
-                            "operation" =>  $includeQuery,
-                            "condition" =>  $operation
-                        ];
-
-
-                    }else
-
-                        # Fill filter stacked
-                        $filterStacked[] = [
-                            "operation" =>  "$alias.$key $value",
-                            "condition" =>  $operation
-                        ];
-
-                }
-
-                # Display filter stacked
-                /* print_r($filterStacked);
-                exit; */
-
-                # Check filterStacked
-                if(!empty($filterStacked)){
-
-                    # Push where
-                    $query .= " WHERE";
-
-                    # Iteration of filterStacked
-                    for($i = 1; $i <= count($filterStacked); $i++){
-
-                        # Check if first
-                        if($i === 1)
-
-                            # Push in query
-                            $query .= " ".$filterStacked[$i-1]["operation"];
-
-                        else
-
-                            # Push in query
-                            $query .= " ".$filterStacked[$i-1]["condition"]." ".$filterStacked[$i-1]["operation"];
+                        # Add the limit and offset
+                        $query .= static::appendLimit($limit).static::appendOffsetPage(
+                            is_numeric($options["offset"] ?? null) ? (int)$options["offset"] : 0,
+                            is_numeric($options["page"] ?? null) ? (int)$options["page"] : 0,
+                            $limit
+                        );
 
                     }
 
-                }
+                    # Prepare the query before supplying any literal values
+                    $statement = $this->client->prepare($query);
 
-                # Check options sort
-                if(is_array($options["sort"] ?? false) && !empty($options["sort"])){
+                    # Bind scalar values with their appropriate PDO type
+                    foreach($where["parameters"] as $index => $value){
 
-                    # Append sort
-                    $query .= static::appendSort($options["sort"] ?? null, $alias);
+                        # Preserve booleans, integers and nulls
+                        $type = match(true){
+                            $value === null => PDO::PARAM_NULL,
+                            is_bool($value) => PDO::PARAM_BOOL,
+                            is_int($value) => PDO::PARAM_INT,
+                            default => PDO::PARAM_STR,
+                        };
 
-                } 
-
-                # Check options limit
-                if(is_numeric($options["limit"] ?? false) && intval($options["limit"]) > 0){
-
-                    # Append limit
-                    $query .= static::appendLimit($options["limit"] ?? 0);
-
-                    # Check options limit
-                    if(
-                        # Check offset
-                        (is_numeric($options["offset"] ?? false) && intval($options["offset"]) > 0) || 
-                        # Check page
-                        (is_numeric($options["page"] ?? false) && intval($options["page"]) > 0)
-                    ){
-
-                            # Append offset / page
-                            $query .= static::appendOffsetPage($options["offset"] ?? 0, $options["page"] ?? 0, $options["limit"] ?? 0);
-
-                    }
-                }
-
-                # Update table
-                /** @disregard P1006 */
-                $statment = $this->client->query($query);
-
-                # Set result
-                $result = $statment->fetchAll(PDO::FETCH_ASSOC);
-
-            }else{
-
-                # Instance
-                /** @disregard P1006 */
-                $instance = $this->manager->from($table);
-
-                # Check options sort
-                if(is_array($options["sort"] ?? false) && !empty($options["sort"])){
-
-                    # Get sort
-                    $sort = static::prepareOrderBy($options["sort"] ?? []);
-
-                    # Update instance
-                    $sort && $instance->orderBy(static::prepareOrderBy($options["sort"] ?? []));
-
-                }
-
-                # Check options limit
-                if(is_numeric($options["limit"] ?? false) && intval($options["limit"]) > 0){
-
-                    # Set limit
-                    $instance->limit($options["limit"]);
-
-                    # Check options limit
-                    if(
-                        # Check offset
-                        (is_numeric($options["offset"] ?? false) && intval($options["offset"]) > 0) || 
-                        # Check page
-                        (is_numeric($options["page"] ?? false) && intval($options["page"]) > 0)
-                    ){
-
-                        # Set limit
-                        $instance->offset(static::calculateOffsetPage($options["offset"] ?? 0, $options["page"] ?? 0, $options["limit"] ?? 0));
+                        # Bind one value per positional placeholder
+                        $statement->bindValue($index + 1, $value, $type);
 
                     }
 
+                    # Execute the bound query
+                    $statement->execute();
+
                 }
 
-                # Update table
-                $result = $instance->fetchAll();
+                # Read matching rows
+                $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+            } catch (PDOException $exception) {
+
+                # Report execution failures through the existing exception contract
+                throw new CrazyException("Error finding items: ".$exception->getMessage(), 500, [
+                    "custom_code" => "mariadb-009",
+                ]);
 
             }
-
-        } catch (PDOException $e) {
-
-            # New exception
-            throw new CrazyException(
-                "Error finding items: " . $e->getMessage(),
-                500,
-                [
-                    "custom_code"   =>  "mariadb-009",
-                ]
-            );
 
         }
 
@@ -1779,50 +1549,14 @@ class Mysql implements CrazyDatabaseDriver {
      */
     public static function appendSort(array|string|null $sort, string $alias = ""):string {
 
-        # Set result
+        # Prepare result
         $result = "";
 
-        # Check sort
-        if($sort !== null){
+        # Compile validated fields and fixed directions
+        $order = SqlFilter::order($sort, $alias);
 
-            # Check string
-            if(is_string($sort)) $sort = [$sort];
-
-            # Iteration sort
-            if(!empty($sort)) foreach($sort as $field) if($field){
-
-                # Check if asc
-                if(in_array($field, ["asc", "ASC"]))
-
-                    # Set item
-                    $field = "id";
-
-                else
-                # Check if asc
-                if(in_array($field, ["desc", "DESC"]))
-
-                    # Set item
-                    $field = "-id";
-
-                # Check if first character is "-"
-                if($field[0] == "-"){
-
-                    # Push field
-                    $result .= ", ".($alias ? "$alias." : "").ltrim($field, "-")." DESC";
-
-                }else{
-
-                    # Push field
-                    $result .= ", ".($alias ? "$alias." : "")."$field ASC";
-
-                }
-
-            }
-
-        }
-
-        # Append ORDER BY
-        if($result) $result = " ORDER BY".ltrim($result, ",");
+        # Add the ORDER BY keyword when needed
+        $result = $order === "" ? "" : " ORDER BY ".$order;
 
         # Return result
         return $result;
@@ -2014,45 +1748,8 @@ class Mysql implements CrazyDatabaseDriver {
      */
     public static function prepareOrderBy(array $sort = []):string {
 
-        # Set result
-        $result = "";
-
-        # Set result temp;
-        $resultTemp = [];
-
-        # Iteratioon sort
-        if(!empty($sort)) foreach($sort as $item) if(is_string($item) && $item) {
-
-            # Check if asc
-            if(in_array($item, ["asc", "ASC"]))
-
-                # Set item
-                $item = "id";
-
-            else
-            # Check if asc
-            if(in_array($item, ["desc", "DESC"]))
-
-                # Set item
-                $item = "-id";
-
-            # Check if first character is "-"
-            if($item[0] == "-"){
-
-                # Set result temp
-                $resultTemp[] = ltrim($item, "-")." DESC";
-
-            }else{
-
-                # Set
-                $resultTemp[] = $item;
-
-            }
-
-        }
-
-        # Check resultTemp
-        if(!empty($resultTemp)) $result = implode(", ", $resultTemp);
+        # Prepare result with validated fields and fixed directions
+        $result = SqlFilter::order($sort);
 
         # Return result
         return $result;

@@ -1,143 +1,124 @@
 <?php declare(strict_types=1);
 /**
- * Controller
+ * Model Batch API
  *
- * Collection of controllers
- *
- * PHP version 8.1.2
+ * Authorize every batch item before executing any model mutation.
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2024 Kévin Zarshenas
+ * @copyright  2022-2026 Kévin Zarshenas
  */
 namespace CrazyPHP\Controller;
 
 /**
- * Dependances
+ * Dependencies
  */
+use Psr\Http\Message\ServerRequestInterface;
+use CrazyPHP\Library\Router\Middleware;
+use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Core\Controller;
 use Exception;
 
 /**
- * Api V2 Batch
+ * API V2 Batch
  *
- * List all entities available
- *
- * @package    kzarshenas/crazyphp
- * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2024 Kévin Zarshenas
+ * Preserve per-item results while rejecting malformed or unauthorized batches before writes.
  */
 class ApiV2Batch extends Controller {
-    
+
+    /** Public Static Methods
+     ******************************************************
+     */
+
     /**
-     * post
-     * 
+     * Execute Batch
+     *
+     * Apply the same model middleware to each item as to individual CRUD requests.
+     *
+     * @param ServerRequestInterface $request Current HTTP request
      * @return void
      */
     public static function post($request):void {
 
-        # Check model middleware
-        # $request = Middleware::runModelMiddleware($request);
+        # Read the submitted batch before creating any model
+        $items = self::getHttpRequestData();
 
-        # New api state
-        $state = self::ApiState();
+        # Require a request and a nonempty batch collection
+        if(!$request instanceof ServerRequestInterface || !is_array($items) || empty($items)){
 
-        # Get 
-        $requestData = self::getHttpRequestData();
+            # Reject invalid batches before mutation
+            throw new CrazyException("A nonempty model batch is required.", 400);
 
-        # Check request
-        if(empty($requestData))
+        }
 
-            # Push error
-            $state->pushError([
-                "code"  =>  400,
-                "type"  =>  "warn",
-                "detail"=>  "Request empty"
-            ]);
+        # Validate and authorize the entire batch before any item can write
+        foreach($items as $item){
 
-        else
+            # Require an explicit supported operation and model name
+            if(
+                !is_array($item) ||
+                !is_string($item["entity"] ?? null) ||
+                $item["entity"] === "" ||
+                !in_array($item["type"] ?? null, ["create", "update", "delete"], true) ||
+                ($item["type"] !== "delete" && !is_array($item["body"] ?? null)) ||
+                ($item["type"] !== "create" && !is_string($item["id"] ?? null) && !is_int($item["id"] ?? null))
+            ){
 
-            # Iteration request data
-            foreach($requestData as $key => $request){
-
-                # Case create
-                if(($request["type"] ?? "") == "create"){
-
-                    try{
-
-                        # Declare content
-                        $content = self::Model($request["entity"])
-                            ->create($request["body"])
-                        ;
-
-                        # Push content in result
-                        $state->pushResults([$key => $content], $request["entity"]);
-
-                    }catch(Exception $e){
-
-                        # Push error in state
-                        $state->pushException($e);
-
-                    }
-
-                }else
-                # Case delete
-                if(($request["type"] ?? "") == "update"){
-
-                    try{
-
-                        # Declare content
-                        $content = self::Model($request["entity"])
-                            ->updateById($request["id"], $request["body"])
-                        ;
-
-                        # Push content in result
-                        $state->pushResults([$key => $content], $request["entity"]);
-
-                    }catch(Exception $e){
-
-                        # Push error in state
-                        $state->pushException($e);
-
-                    }
-
-                }else
-                # Case delete
-                if(($request["type"] ?? "") == "delete"){
-
-                    try{
-
-                        # Declare content
-                        $content = self::Model($request["entity"])
-                            ->deleteById($request["id"])
-                        ;
-
-                        # Push content in result
-                        $state->pushResults([$key => $content], $request["entity"]);
-
-                    }catch(Exception $e){
-
-                        # Push error in state
-                        $state->pushException($e);
-
-                    }
-                
-                }else
-
-                    # Push error
-                    $state->pushError([
-                        "code"  =>  400,
-                        "type"  =>  "warn",
-                        "detail"=>  "Request type n°$key is not supported with batch"
-                    ]);
+                # Reject malformed items without partial execution
+                throw new CrazyException("Invalid model batch item.", 400);
 
             }
 
-        # Set response
+            # Represent the item's individual CRUD request for model middleware
+            $itemRequest = $request
+                ->withMethod(["create" => "POST", "update" => "PUT", "delete" => "DELETE"][$item["type"]])
+                ->withParsedBody($item["body"] ?? [])
+                ->withAttribute("model.operation", $item["type"])
+                ->withAttribute("model.id", $item["id"] ?? null)
+            ;
+
+            # Enforce declared model checks before loading any batch driver
+            Middleware::runModelMiddleware($itemRequest, $item["entity"]);
+
+        }
+
+        # Collect the established per-item result envelope
+        $state = self::ApiState();
+
+        # Execute only fully authorized batches
+        foreach($items as $key => $item){
+
+            # Preserve per-item handling for runtime model failures
+            try{
+
+                # Construct the authorized model
+                $model = self::Model($item["entity"]);
+
+                # Execute the validated operation
+                $content = match($item["type"]){
+                    "create" => $model->create($item["body"]),
+                    "update" => $model->updateById($item["id"], $item["body"]),
+                    "delete" => $model->deleteById($item["id"]),
+                };
+
+                # Preserve the entity-keyed batch response
+                $state->pushResults([$key => $content], $item["entity"]);
+
+            }catch(Exception $exception){
+
+                # Preserve runtime errors in the batch response
+                $state->pushException($exception);
+
+            }
+
+        }
+
+        # Send the established API response envelope
         self::ApiResponse()
             ->setStatusCode()
             ->pushContent("results", $state->render())
-            ->send();
+            ->send()
+        ;
 
     }
 

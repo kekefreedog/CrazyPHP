@@ -17,7 +17,6 @@ namespace CrazyPHP\Driver\Model;
  */
 
 use CrazyPHP\Library\Database\Driver\Mariadb as MariadbModel;
-use CrazyPHP\Library\Database\Operation\SqlOperation;
 use CrazyPHP\Library\File\Config as FileConfig;
 use CrazyPHP\Interface\CrazyDriverModel;
 use CrazyPHP\Exception\CrazyException;
@@ -188,22 +187,22 @@ class Sql implements CrazyDriverModel {
      */
     public function parseFilter(?array $filters, ?array $options = null):self {
 
-        # Ingest options
+        # Prepare result
+        $result = $this;
+
+        # Ingest model options
         $this->_ingestOptions($options);
 
-        # Check filters
-        if(isset($filters) && is_array($filters)){
+        # Retain the original DSL values for the shared SQL compiler
+        if($filters !== null){
 
-            # Process Operations In Filters
-            $filters = $this->_processOperationsInFilters($filters);
-
-            # Push filters in filters
+            # Store values without converting them into SQL strings
             $this->conditions = $filters;
 
         }
 
-        # Return self
-        return $this;
+        # Return result
+        return $result;
 
     }
 
@@ -216,25 +215,25 @@ class Sql implements CrazyDriverModel {
      */
     public function parseSort(null|array|string $sort, ?array $options = null):self {
 
-        # Ingest options
+        # Prepare result
+        $result = $this;
+
+        # Ingest model options
         $this->_ingestOptions($options);
 
-        # Check sort
+        # Retain every sort field so the SQL compiler can reject malformed input
         if($sort !== null){
 
-            # Convert to array
-            if(is_string($sort)) $sort = [$sort];
+            # Normalize the existing string shorthand
+            $sort = is_string($sort) ? [$sort] : $sort;
 
-            # Iteration sort
-            if(!empty($sort)) foreach($sort as $item) if(is_string($item) && $item)
-
-                # Set sort
-                $this->sort[] = $item;
+            # Append the requested sort fields
+            $this->sort = array_merge($this->sort ?? [], $sort);
 
         }
 
-        # Return self
-        return $this;
+        # Return result
+        return $result;
 
     }
 
@@ -591,7 +590,7 @@ class Sql implements CrazyDriverModel {
             # Set result
             $result = $this->mariadb->find($this->arguments["table"], "", [
                 "filters" =>  [
-                    "id"    =>  " = ".$this->id
+                    "id"    =>  $this->id
                 ],
             ]);
 
@@ -992,38 +991,6 @@ class Sql implements CrazyDriverModel {
 
         # Prepare metadata
         $result["_metadata"]["records_total"] = count($input);
-
-        # Return result
-        return $result;
-
-    }
-
-    /**
-     * Process Operations In Filters
-     * 
-     * @param array $filters
-     * @return array
-     */
-    private function _processOperationsInFilters(array $filters = []):array {
-
-        # Set result
-        $result = $filters;
-
-        # Check filters
-        if(!empty($result)){
-
-            # New operations
-            $operation = new SqlOperation();
-
-            # Iteration filters
-            foreach($result as &$value){
-
-                # Run operation
-                $value = $operation->run($value);
-
-            }
-
-        }
 
         # Return result
         return $result;

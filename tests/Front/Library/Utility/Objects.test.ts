@@ -125,6 +125,91 @@ describe("Front/Library/Utility/Objects", () => {
      */
     describe("unflatten", () => {
 
+        // Keep special names as data without modifying shared objects.
+        it("preserves prototype-looking names as own data without changing shared prototypes", () => {
+
+            // Capture the complete shared descriptors before expanding hostile keys.
+            const before = [Object, Array, Function].map(type => Object.getOwnPropertyDescriptors(type.prototype));
+
+            // Exercise dot and slash paths in a null-prototype filename dictionary.
+            for(const separator of [".", "/"]){
+
+                // Keep attacker-controlled keys literal even before conversion.
+                const flat:Record<string, any> = Object.create(null);
+
+                // Cover root, nested, constructor and inherited-array traversal vectors.
+                for(const key of ["__proto__.polluted", "package.__proto__.nested", "constructor.prototype.polluted", "toString.folder", "hasOwnProperty.folder"]){
+
+                    // Supply a representative delivery file list.
+                    flat[key.replaceAll(".", separator)] = ["shot.exr"];
+
+                }
+
+                // Expand the actual production utility.
+                const result = Objects.unflatten(flat, separator);
+
+                // Preserve the public plain-object contract.
+                assert.equal(Object.getPrototypeOf(result), Object.prototype);
+
+                // Require the dangerous-looking root to be an ordinary own data property.
+                assert.equal(Object.hasOwn(result, "__proto__"), true);
+
+                // Preserve every literal filename after JSON serialization.
+                assert.deepEqual(JSON.parse(JSON.stringify(result)), JSON.parse(
+                    '{"__proto__":{"polluted":["shot.exr"]},"package":{"__proto__":{"nested":["shot.exr"]}},"constructor":{"prototype":{"polluted":["shot.exr"]}},"toString":{"folder":["shot.exr"]},"hasOwnProperty":{"folder":["shot.exr"]}}'
+                ));
+
+            }
+
+            // Detect any addition, deletion or mutation of built-in prototype properties.
+            assert.deepEqual([Object, Array, Function].map(type => Object.getOwnPropertyDescriptors(type.prototype)), before);
+
+        });
+
+        // Cover inherited array branches after a preceding leaf assignment.
+        it("does not follow prototypes when a path overlaps an existing array leaf", () => {
+
+            // Record the shared array prototype independently of result assertions.
+            const before = Object.getOwnPropertyDescriptors(Array.prototype);
+
+            // Retain the established overlapping-path behavior without following inherited nodes.
+            const result = Objects.unflatten({
+                package: ["shot.exr"],
+                "package/__proto__/polluted": ["other.exr"],
+                "package/constructor/prototype/polluted": ["third.exr"],
+            }, "/");
+
+            // Preserve the existing array leaf.
+            assert.equal(Array.isArray(result.package), true);
+
+            // Store nested prototype-looking entries on the local leaf only.
+            assert.equal(Object.hasOwn(result.package, "__proto__"), true);
+
+            // Leave shared arrays unchanged.
+            assert.deepEqual(Object.getOwnPropertyDescriptors(Array.prototype), before);
+
+            // Preserve the local array's normal prototype as well.
+            assert.equal(Object.getPrototypeOf(result.package), Array.prototype);
+
+        });
+
+        // Keep reserved-looking leaf names serializable.
+        it("preserves an own __proto__ leaf through JSON serialization", () => {
+
+            // Create a literal own key rather than object-literal prototype syntax.
+            const input = JSON.parse('{"__proto__":["shot.exr"],"constructor":["notes.txt"],"toString":["preview.mov"]}');
+
+            // Expand actual literal leaf names.
+            const result = Objects.unflatten(input);
+
+            // Keep all filenames visible to downstream serializers and renderers.
+            assert.equal(JSON.stringify(result), JSON.stringify(input));
+
+            // Never replace the result object's prototype with a supplied leaf.
+            assert.equal(Object.getPrototypeOf(result), Object.prototype);
+
+        });
+
         it("expands dotted keys back into a nested object", () => {
 
             // Check result

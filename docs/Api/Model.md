@@ -66,3 +66,14 @@ This class is part of the `CrazyPHP\Core` namespace and serves as the main model
 ### Static Methods
 
 - `getListAllModel(): array`: Retrieves a list of all models.
+
+
+## SQL filter execution
+
+The `Mariadb` and `Sql` model drivers pass original filter values to a shared SQL compiler. The MariaDB and MySQL database drivers execute these filters with PDO placeholders and bound values. Filter fields and sort fields must be simple model identifiers; SQL expressions, comments, quoted identifiers and nested filter objects are rejected with a 400 error.
+
+Supported forms include literal equality, flat `IN` lists, numeric comparisons, ranges, wildcard matching, `||`/`!!` OR prefixes, and `<>`/`@@`/`><` model relations. An empty `IN` list matches no records. Null means `IS NULL`; zero, false and empty strings remain literal values. The historical `=column` and `!=column` forms compare columns: use an unprefixed value or a one-element list for literal equality. Sorting accepts `field`, `-field`, `asc` and `desc` (the last two sort by ID). Relation constraint values are bound as literals.
+
+For low-level integrations, `SqlOperation::run()` now returns an array with `sql` and `parameters` entries rather than an executable SQL string. Pass original model DSL values to database-driver `find()`; do not precompile or concatenate them. All framework callers have been updated. The explicit server-side `parseSql()`/raw-query API remains trusted code and must never receive caller-supplied SQL.
+
+`SqlOperationTest`, `SqlFilterTest` and `MariadbTest` run without a database. `SqlFilterIntegrationTest` requires `CRAZY_SQL_TEST_DSN` pointing to a disposable MariaDB server and optional `CRAZY_SQL_TEST_USER`/`CRAZY_SQL_TEST_PASSWORD`. It creates and removes randomly named fixture databases and never reads application database credentials. Without that explicit DSN, integration cases are skipped.

@@ -16,9 +16,9 @@ namespace CrazyPHP\Library\Router;
  * Dependances
  */
 use Psr\Http\Message\ServerRequestInterface;
-use CrazyPHP\Library\String\Strings;
+use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\File\Config;
-use CrazyPHP\Core\Model;
+use CrazyPHP\Model\Context;
 use ReflectionMethod;
 use ReflectionClass;
 
@@ -312,47 +312,129 @@ class Middleware {
 
     /**
      * Run Model Middleware
-     * 
-     * @param ?ServerRequestInterface $request
+     *
+     * Resolve declared checks before constructing a model driver. Unknown or invalid
+     * middleware fails closed; middleware returning void preserves the current request.
+     *
+     * @param ?ServerRequestInterface $request Current request
+     * @param string $entity Explicit model name for batch operations
      * @return ?ServerRequestInterface
      */
-    public static function runModelMiddleware(?ServerRequestInterface $request = null):?ServerRequestInterface {
+    public static function runModelMiddleware(?ServerRequestInterface $request = null, string $entity = ""):?ServerRequestInterface {
 
-        # Get current
-        $model = (new Model())->getCurrent();
+        # Prepare result
+        $result = $request;
 
-        # Get middle ware register
-        $middlewareRegister = Config::getValue("Middleware");
+        # Resolve the requested entity without loading its driver
+        $entity = $entity !== "" ? $entity : (string) Context::getParameters("entity");
 
-        # Check middleware
-        $middlewareCollection = is_array($middlewareRegister)
-            ? array_column($middlewareRegister, "script", "name")
-            : null
-        ;
+        # Read model declarations
+        $models = Config::getValue("Model") ?? [];
 
-        # check middlewareCollection
-        if($middlewareCollection){
+        # Prepare the selected declaration
+        $model = null;
 
-            # Get middlewares
-            $middlewares = $model["middleware"] ?? $model["middlewares"] ?? null;
+        # Match the same explicit model name used by the model facade
+        foreach($models as $candidate){
 
-            # Check middlewares
-            if(is_array($middlewares)) foreach($middlewares as $middleware) {
+            # Select the requested model configuration
+            if(($candidate["name"] ?? null) === $entity){
 
-                # check if in collection
-                if($middleware && array_key_exists($middleware, $middlewareCollection) && Strings::isValidMethod($middlewareCollection[$middleware])){
+                # Retain the matching declaration
+                $model = $candidate;
 
-                    # Run middleware
-                    $request = $middlewareCollection[$middleware]($request);
+                # Stop iteration
+                break;
 
-                }
-                
             }
 
         }
 
-        # Return request
-        return $request;
+        # Require a configured model before authorization
+        if($model === null){
+
+            # Reject unknown models before any driver access
+            throw new CrazyException("Unknown API model.", 404);
+
+        }
+
+        # Respect explicitly server-only models before any driver can load
+        if(($model["api"] ?? true) === false){
+
+            # Deny generic HTTP access while preserving internal model usage
+            throw new CrazyException("This model is not available through the API.", 403);
+
+        }
+
+        # Read the declared middleware list
+        $middlewares = $model["middleware"] ?? $model["middlewares"] ?? [];
+
+        # Support the same single-name shorthand as route middleware
+        if(is_string($middlewares)){
+
+            # Normalize a single middleware name
+            $middlewares = [$middlewares];
+
+        }
+
+        # Reject malformed declarations instead of skipping their checks
+        if(!is_array($middlewares)){
+
+            # Report invalid authorization configuration
+            throw new CrazyException("Invalid model middleware configuration.", 500);
+
+        }
+
+        # Read the middleware registry
+        $registry = Config::getValue("Middleware") ?? [];
+
+        # Index valid registry entries without silently validating missing names
+        $collection = is_array($registry) ? array_column($registry, "script", "name") : [];
+
+        # Validate all declarations before executing any of them
+        foreach($middlewares as $middleware){
+
+            # Require a registered callable for every declared middleware
+            if(!is_string($middleware) || $middleware === "" || !is_callable($collection[$middleware] ?? null)){
+
+                # Fail closed on misspelled or unavailable authorization checks
+                throw new CrazyException("Unregistered or invalid model middleware.", 500);
+
+            }
+
+        }
+
+        # Expose the canonical model identity to request-aware middleware
+        if($result !== null){
+
+            # Attach the selected model without changing route state
+            $result = $result->withAttribute("model.entity", $model["name"]);
+
+        }
+
+        # Execute every declared authorization check
+        foreach($middlewares as $middleware){
+
+            # Run the registered callable with the current request
+            $next = $collection[$middleware]($result);
+
+            # Preserve void middleware while supporting immutable request replacements
+            if($next instanceof ServerRequestInterface){
+
+                # Retain the updated request
+                $result = $next;
+
+            }else if($next !== null){
+
+                # Reject unsupported middleware return values
+                throw new CrazyException("Invalid model middleware response.", 500);
+
+            }
+
+        }
+
+        # Return result
+        return $result;
 
     }
 

@@ -129,43 +129,79 @@ export default class Objects {
     
     /**
      * Unflatten
-     * 
-     * Convert a flat object to a nested structure using a separator
-     * 
-     * @param obj - The flat object to unflatten
-     * @param separator - The separator used in the keys (default is ".")
-     * @returns A nested object
+     *
+     * Expand literal keys without following inherited properties or invoking prototype setters.
+     *
+     * @param obj Flat own-property collection
+     * @param separator Separator used in the keys, defaulting to a dot
+     * @returns Nested objects preserving ordinary prototypes and literal property names
      */
     public static unflatten = (
-        obj: Record<string, any> = {}, 
-        separator: string = '.'
-    ): Record<string, any> => {
+        obj:Record<string, any> = {},
+        separator:string = "."
+    ):Record<string, any> => {
 
-        const result: Record<string, any> = {};
+        // Prepare result using the established plain-object contract.
+        const result:Record<string, any> = {};
 
-        for (const [key, value] of Object.entries(obj)) {
+        // Read only explicit entries from the supplied collection.
+        for(const [key, value] of Object.entries(obj)){
+
+            // Split the literal path into property names.
             const parts = key.split(separator);
-            let temp = result;
 
-            for (let i = 0; i < parts.length; i++) {
-                const part = parts[i];
+            // Start each entry at the newly created root.
+            let node = result;
 
-                if (!temp[part] || typeof temp[part] !== 'object') {
-                    temp[part] = {};
+            // Descend through this entry's own branches only.
+            for(let index = 0; index < parts.length; index++){
+
+                // Read the current literal property name.
+                const part = parts[index];
+
+                // Store leaves without invoking the inherited __proto__ setter.
+                if(index === parts.length - 1){
+
+                    // Preserve enumerable, writable and configurable data properties.
+                    Object.defineProperty(node, part, {
+                        value,
+                        enumerable: true,
+                        writable: true,
+                        configurable: true,
+                    });
+
+                }else{
+
+                    // Inspect only an existing own data property, never an inherited branch or getter.
+                    const child = Object.getOwnPropertyDescriptor(node, part)?.value;
+
+                    // Create an own branch when no usable object was explicitly stored here.
+                    if(child === null || typeof child !== "object"){
+
+                        // Treat constructor and __proto__ as ordinary local property names.
+                        Object.defineProperty(node, part, {
+                            value: {},
+                            enumerable: true,
+                            writable: true,
+                            configurable: true,
+                        });
+
+                    }
+
+                    // Follow the own branch rather than a shared JavaScript prototype.
+                    node = node[part];
+
                 }
 
-                if (i === parts.length - 1) {
-                    temp[part] = value;
-                } else {
-                    temp = temp[part];
-                }
             }
+
         }
 
+        // Return result.
         return result;
 
     }
-    
+
     /**
      * Deep merge
      * 

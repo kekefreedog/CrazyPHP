@@ -1,109 +1,75 @@
 <?php declare(strict_types=1);
 /**
- * Exception
+ * Public Exception Data
  *
- * Manipulate Exception
+ * Convert failures to public HTTP errors without serializing internal diagnostics.
  *
- * PHP version 8.1.2
+ * PHP version 8.3
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2024 Kévin Zarshenas
+ * @copyright  2022-2026 Kévin Zarshenas
  */
 namespace CrazyPHP\Library\Exception;
 
 /**
- * Dependances
+ * Dependencies
  */
-
-use CrazyPHP\Library\Array\Arrays;
-use CrazyPHP\Library\File\Config;
-use Exception;
+use Nyholm\Psr7\Response;
+use Throwable;
 
 /**
- * Header
+ * Error
  *
- * Methods for get header depending of type
- *
- * @package    kzarshenas/crazyphp
- * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2024 Kévin Zarshenas
+ * Keep status codes separate from exception messages, paths, traces and arguments.
  */
-class Error{
+class Error {
 
-    /** Public static methods
+    /** Public Constants
+     ******************************************************
+     */
+
+    /** @var array Default public error for failures without an HTTP error status */
+    public const DEFAULT = [
+        "code" => 500,
+        "type" => "error",
+        "detail" => "Internal server error",
+    ];
+
+    /** Public Static Methods
      ******************************************************
      */
 
     /**
      * From Exception
-     * 
-     * @param Exception $exception
-     * @return array
+     *
+     * Use only a valid HTTP error status and its fixed reason phrase in public responses.
+     *
+     * @param Throwable $exception Exception or native PHP error
+     * @return array Public error without exception diagnostics
      */
-    public static function fromException(Exception $exception):array {
+    public static function fromException(Throwable $exception):array {
 
-        # Set result
+        # Prepare result
         $result = static::DEFAULT;
 
-        # Iteration of options
-        foreach([
-            "message"   =>  "detail",
-            "code"      =>  "code",
-            "file"      =>  "file",
-            "line"      =>  "line",
-            "trace"     =>  "trace"
-        ] as $name  =>  $target){
+        # Inspect only the numeric status, never the exception message or trace
+        $code = $exception->getCode();
 
-            # Get method
-            $method = "get".ucfirst($name);
+        # Preserve valid HTTP error statuses while rejecting success and database-specific codes
+        if(is_int($code) && $code >= 400 && $code <= 599){
 
-            # Check method
-            if(method_exists($exception, $method)){
+            # Retain the intended error status
+            $result["code"] = $code;
 
-                # Get value
-                $value = $exception->{$method}();
-
-                # Set value in result
-                $result[$target] = $value;
-
-            }
+            # Reuse PSR-7's fixed HTTP reason phrases without loading application configuration
+            $result["detail"] = (new Response($code))->getReasonPhrase() ?: "Request failed";
 
         }
-
-        # Get public folder
-        $publicFolder = Config::getValue("App.public") ?: "public";
-
-        # Get current dir of script
-        $projectDir = str_replace($publicFolder, "", getcwd());
-
-        # Clean path of project
-        Arrays::stringReplaceRecursively($projectDir, "/", $result);
-
-        # Check code
-        if(
-            !isset($result["code"]) || 
-            !is_numeric($result["code"]) ||
-            $result["code"] < 100
-        )
-
-            # Set code
-            $result["code"] = static::DEFAULT["code"];
 
         # Return result
         return $result;
 
     }
-
-    /** Public constant
-     ******************************************************
-     */
-
-    /** @var array DEFAULT */
-    public const DEFAULT = [
-        "code"      =>  500,
-        "type"      =>  "error",
-        "detail"    =>  "Internal server error"
-    ];
 
 }

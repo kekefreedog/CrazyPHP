@@ -17,6 +17,8 @@ namespace CrazyPHP\Core;
  */
 use CrazyPHP\Library\State\Api as ApiState;
 use CrazyPHP\Library\State\Page as State;
+use CrazyPHP\Library\Http\RequestBody;
+use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\File\MessagePack;
 use CrazyPHP\Library\Html\Structure;
 use CrazyPHP\Library\System\Server;
@@ -298,38 +300,62 @@ class Controller {
             case 'DELETE':
             case 'PATCH':
 
-                # Set raw data
-                $rawData = file_get_contents("php://input");
+                # Resolve the actual media type before consuming a multipart request
+                $contentType = strtolower(trim(explode(";", $_SERVER["CONTENT_TYPE"] ?? $_SERVER["HTTP_CONTENT_TYPE"] ?? "")[0]));
 
-                # Check HTTP_CONTENT_TYPE
-                if(($_SERVER["HTTP_CONTENT_TYPE"] ?? false) === "application/msgpack"){
+                # Keep multipart streaming and upload ownership inside PHP on supported runtimes
+                if($contentType === "multipart/form-data"){
 
-                    # Get data
-                    $result = MessagePack::decode((string) file_get_contents('php://input'));
+                    # Reuse one parsed body across model middleware and controller dispatch
+                    $parsedData = RequestBody::multipartRequest();
 
-                }else
-                # Check is json
-                if(Json::check($rawData)){
+                    # Preserve the framework's simulated form globals
+                    $_POST = $parsedData["post"];
 
-                    # Simulate $_POST and $_FILES
-                    $result = $_POST = Json::decode($rawData);
+                    # Preserve PHP upload metadata, including repeated-file arrays
+                    $_FILES = $parsedData["files"];
+
+                    # Return the exact fields and files checked by middleware
+                    $result = $_POST + $_FILES;
 
                 }else{
 
-                    # Process the raw data
-                    $parsedData = static::parseMultipartData($rawData);
+                    # Bound nonmultipart reads by the same server-owned request ceiling
+                    $rawData = RequestBody::read();
 
-                    # Simulate $_POST and $_FILES
-                    $_POST = $parsedData['post'];
-                    
-                    # Get files
-                    $_FILES = $parsedData['files'];
+                    # Decode the already-read MessagePack bytes without consuming the stream again
+                    if($contentType === "application/msgpack"){
 
-                    # Get result
-                    $result = $_POST + $_FILES;
+                        # Preserve the existing structured binary transport
+                        $result = MessagePack::decode($rawData);
+
+                    }else if(Json::check($rawData)){
+
+                        # Preserve existing JSON values and simulated form state
+                        $result = $_POST = Json::decode($rawData);
+
+                    }else if($contentType === "application/x-www-form-urlencoded"){
+
+                        # Parse ordinary URL-encoded mutations without creating any upload files
+                        parse_str($rawData, $_POST);
+
+                        # Retain the decoded form fields
+                        $result = $_POST;
+
+                    }else if($rawData === ""){
+
+                        # Preserve empty-body operations such as DELETE
+                        $result = [];
+
+                    }else{
+
+                        # Refuse nonmultipart input rather than guessing a delimiter from its first line
+                        throw new CrazyException("Unsupported request body format.", 400);
+
+                    }
 
                 }
-                
+
                 # Break
                 break;
 
@@ -475,95 +501,20 @@ class Controller {
 
     /**
      * Parse Multipart Data
-     * 
-     * Function to parse the raw multipart data
-     * 
-     * @param string $rawData
-     * @return array
+     *
+     * Preserve the legacy raw-body API with bounded, request-scoped temporary uploads.
+     *
+     * @param string $rawData Complete multipart body
+     * @return array Parsed post and files collections
      */
-    public static function parseMultipartData($rawData) {
+    public static function parseMultipartData($rawData):array {
 
-        $post = [];
-        $files = [];
-    
-        // Extract boundary
-        $boundary = substr($rawData, 0, strpos($rawData, "\r\n"));
-        $parts = explode($boundary, $rawData);
-        array_pop($parts); // Remove the last boundary
-        array_shift($parts); // Remove the initial empty part
-    
-        foreach ($parts as $part) {
-            if (empty(trim($part))) {
-                continue;
-            }
-    
-            // Split headers and body
-            list($headers, $body) = explode("\r\n\r\n", $part, 2);
-    
-            // Parse headers
-            $headers = explode("\r\n", $headers);
-            $contentDisposition = null;
-            $contentType = null;
-            foreach ($headers as $header) {
-                if (stripos($header, 'Content-Disposition:') === 0) {
-                    $contentDisposition = $header;
-                }
-                if (stripos($header, 'Content-Type:') === 0) {
-                    $contentType = trim(substr($header, strlen('Content-Type:')));
-                }
-            }
-    
-            // Extract metadata from Content-Disposition
-            if (preg_match('/name="([^"]+)"/', $contentDisposition, $nameMatch)) {
-                $name = $nameMatch[1];
-                $body = substr($body, 0, strrpos($body, "\r\n")); // Remove trailing CRLF
-    
-                // Check if this is a file or a regular form field
-                if (preg_match('/filename="([^"]+)"/', $contentDisposition, $filenameMatch)) {
-                    $filename = $filenameMatch[1];
-    
-                    // Handle file inputs
-                    $fileEntry = [
-                        'name' => $filename,
-                        'type' => $contentType,
-                        'tmp_name' => tempnam(sys_get_temp_dir(), 'upload_'),
-                        'error' => 0,
-                        'size' => strlen($body),
-                    ];
-    
-                    // Write file content to a temporary file
-                    file_put_contents($fileEntry['tmp_name'], $body);
-    
-                    // Handle multiple files (e.g., name="images[]")
-                    if (substr($name, -2) === '[]') {
-                        $name = substr($name, 0, -2); // Remove the []
-                        if (!isset($files[$name])) {
-                            $files[$name] = ['name' => [], 'type' => [], 'tmp_name' => [], 'error' => [], 'size' => []];
-                        }
-                        $files[$name]['name'][] = $fileEntry['name'];
-                        $files[$name]['type'][] = $fileEntry['type'];
-                        $files[$name]['tmp_name'][] = $fileEntry['tmp_name'];
-                        $files[$name]['error'][] = $fileEntry['error'];
-                        $files[$name]['size'][] = $fileEntry['size'];
-                    } else {
-                        $files[$name] = $fileEntry;
-                    }
-                } else {
-                    // Handle regular form inputs
-                    if (substr($name, -2) === '[]') {
-                        $name = substr($name, 0, -2); // Remove the []
-                        if (!isset($post[$name])) {
-                            $post[$name] = [];
-                        }
-                        $post[$name][] = $body;
-                    } else {
-                        $post[$name] = $body;
-                    }
-                }
-            }
-        }
-    
-        return ['post' => $post, 'files' => $files];
+        # Prepare result through the shared bounded parser
+        $result = RequestBody::multipart($rawData);
+
+        # Return result
+        return $result;
+
     }
 
     /** Private static methods

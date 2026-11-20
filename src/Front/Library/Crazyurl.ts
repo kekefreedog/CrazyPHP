@@ -93,180 +93,262 @@ export default class Crazyurl {
 
     /**
      * Get Query Parameters
-     * 
-     * Get all query parameters from the current URL.
-     * Supports multidimensional access using PHP-style brackets or dot notation (e.g. "filters[simple_filter][color_input]" or "filters.simple_filter.color_input").
-     * Can retrieve one or several parameter names.
-     * 
-     * @param {string | string[]} [names] Optional parameter name or list of names/paths to retrieve.
-     * @returns {Record<string, any>} An object with key-value pairs representing query parameters.
+     *
+     * Parse bracket or dot paths using only own properties. Discard prototype-control keys
+     * throughout paths and JSON values before exposing parameters to page state or forms.
+     *
+     * @param names Optional parameter names or nested paths to retrieve
+     * @returns Parsed parameters, preserving JSON values and dense numeric arrays
      */
-    public static getQueryParameters = (names?: string | string[]): Record<string, any> => {
+    public static getQueryParameters = (names?:string|string[]):Record<string, any> => {
 
-        // Set result
-        let result: Record<string, any> = {};
+        // Prepare result with the established plain-object contract.
+        let result:Record<string, any> = {};
 
-        // Get params
+        // Decode the actual current URL through the browser's native parser.
         const searchParams = new URLSearchParams(window.location.search);
 
-        // Helper to set nested values like filters[simple_filter][color_input]
-        const setNestedValue = (obj: any, path: string, value: any) => {
+        // Keep object-model control keys out of subsequent state and form merges.
+        const unsafeKeys = new Set(["__proto__", "constructor", "prototype"]);
 
-            // Get parts
-            const parts = path
-                // remove closing brackets
-                .replace(/\]/g, '')
-                // split by [ or .
-                .split(/\[|\./g)
-                // remove empty
-                .filter(Boolean)
-            ;
+        /**
+         * Split Query Path
+         *
+         * @param path Bracket or dot notation
+         * @returns Literal nonempty path components
+         */
+        const splitPath = (path:string):string[] => {
 
-            // Set current
-            let current = obj;
+            // Preserve the established bracket, dot and empty-component normalization.
+            const result = path.replace(/\]/g, "").split(/\[|\./g).filter(Boolean);
 
-            // Iteration of parts
-            parts.forEach((part, index) => {
+            // Return result.
+            return result;
 
-                // Check index
-                if (index === parts.length - 1)
+        };
 
-                    // Set current
-                    current[part] = value;
+        /**
+         * Set Query Value
+         *
+         * @param path Decoded parameter path
+         * @param value Parsed JSON or literal string
+         * @returns void
+         */
+        const setNestedValue = (path:string, value:any):void => {
 
-                // Else
-                else{
+            // Split before touching any result branches.
+            const parts = splitPath(path);
 
-                    // Check part
-                    if (!(part in current) || typeof current[part] !== 'object')
+            // Ignore complete unsafe paths rather than retaining a misleading partial filter.
+            if(parts.length && !parts.some(part => unsafeKeys.has(part))){
 
-                        // Set current part
-                        current[part] = {};
+                // Start at the current request's own result object.
+                let current = result;
 
-                    // Set current part
-                    current = current[part];
+                // Create only local data properties for this parameter.
+                for(let index = 0; index < parts.length; index++){
+
+                    // Read the current literal component.
+                    const part = parts[index];
+
+                    // Store leaves without invoking inherited setters.
+                    if(index === parts.length - 1){
+
+                        // Preserve the existing last-value-wins query behavior.
+                        Object.defineProperty(current, part, {
+                            value,
+                            enumerable: true,
+                            writable: true,
+                            configurable: true,
+                        });
+
+                    }else{
+
+                        // Inspect only an explicit own data property.
+                        const child = Object.getOwnPropertyDescriptor(current, part)?.value;
+
+                        // Replace scalar/null prefixes and expand array prefixes as numeric data keys.
+                        if(child === null || typeof child !== "object" || Array.isArray(child)){
+
+                            // Avoid inherited branches and special array length setters on colliding paths.
+                            Object.defineProperty(current, part, {
+                                value: Array.isArray(child) ? {...child} : {},
+                                enumerable: true,
+                                writable: true,
+                                configurable: true,
+                            });
+
+                        }
+
+                        // Follow only the explicitly stored local branch.
+                        current = current[part];
+
+                    }
 
                 }
 
-            });
+            }
 
         };
 
-        // Fill the main result object
-        searchParams.forEach((value, key) => {
+        // Preserve parameter ordering and native URL decoding.
+        for(const [key, value] of searchParams){
 
-            // Try parse json
-            try {
+            // Default to the exact decoded string.
+            let parsedValue:any = value;
 
-                // Try parse JSON-like values
-                const parsedValue = JSON.parse(value);
+            // Parse JSON independently from object construction.
+            try{
 
-                // Use nested value
-                setNestedValue(result, key, parsedValue);
+                // Retain booleans, numbers, nulls, JSON arrays and JSON objects.
+                parsedValue = JSON.parse(value);
 
-            // If not working
-            } catch {
+            }catch{
 
-                // Use nested value
-                setNestedValue(result, key, value);
+                // Preserve ordinary search text when it is not JSON.
+                parsedValue = value;
 
             }
 
-        });
+            // Write only approved paths to the local result.
+            setNestedValue(key, parsedValue);
 
-        // Helper to turn a dense, zero-based numeric-keyed object
-        const arrayify = (value: any): any => {
+        }
 
-            // Only plain objects need converting — arrays/primitives pass through
-            if (value === null || typeof value !== 'object' || Array.isArray(value))
+        /**
+         * Normalize Query Value
+         *
+         * @param value Parsed query subtree
+         * @param convertDense Whether numeric objects should become arrays
+         * @returns Clean subtree with the established array conversion behavior
+         */
+        const normalizeValue = (value:any, convertDense:boolean = true):any => {
 
-                // Return value as is
-                return value;
+            // Preserve primitive values without coercion.
+            let result = value;
 
-            // Recurse into children first
-            for (const key in value) value[key] = arrayify(value[key]);
+            // Clean JSON arrays recursively while preserving their explicit structure.
+            if(Array.isArray(value)){
 
-            // Get this object's own keys
-            const keys = Object.keys(value);
+                // Keep numeric objects inside explicit JSON arrays as objects, as before.
+                result = Array.from(value, item => normalizeValue(item, false));
 
-            // Check every key is a dense 0-based integer index
-            const isDenseArray = keys.length > 0 && keys.every((key, index) => key === String(index));
+            }else if(value !== null && typeof value === "object"){
 
-            // Return the array form if dense, else the (already recursed) object
-            return isDenseArray ? keys.map(key => value[key]) : value;
+                // Prepare an independent collection with ordinary object semantics.
+                const clean:Record<string, any> = {};
 
-        };
+                // Visit only own entries, including objects decoded from JSON.
+                for(const [key, child] of Object.entries(value)){
 
-        // Arrayify the whole result tree
-        result = arrayify(result);
+                    // Remove prototype-control keys at every object depth.
+                    if(!unsafeKeys.has(key)){
 
-        // Helper to get nested value by path "a.b.c"
-        const getNestedValue = (obj: any, path: string): any => {
+                        // Rebuild own data without inherited setters or properties.
+                        Object.defineProperty(clean, key, {
+                            value: normalizeValue(child, convertDense),
+                            enumerable: true,
+                            writable: true,
+                            configurable: true,
+                        });
 
-            // Set parts
-            const parts = path
-                .replace(/\]/g, '')
-                .split(/\[|\./g)
-                .filter(Boolean)
-            ;
+                    }
 
-            // Return reduce
-            return parts.reduce((acc, part) => {
+                }
 
-                // Check acc is object
-                if (acc && typeof acc === 'object' && part in acc)
+                // Inspect only the retained keys for dense zero-based numeric indexing.
+                const keys = Object.keys(clean);
 
-                    // Return acc
-                    return acc[part];
+                // Preserve sparse objects, empty objects and explicit JSON-array structure.
+                result = convertDense && keys.length > 0 && keys.every((key, index) => key === String(index))
+                    ? keys.map(key => clean[key])
+                    : clean
+                ;
 
-                // Return undifined
-                return undefined;
+            }
 
-            }, obj);
-
-        };
-
-        // Normalize names to array
-        let nameList: string[] = [];
-
-        // check names are string
-        if (typeof names === 'string') 
-            
-            // Convert to array
-            nameList = [names];
-
-        else
-        // Check if array
-        if(Array.isArray(names)) 
-            
-            // Set name list
-            nameList = names;
-
-        // If no specific names provided → return all
-        if (!nameList.length) 
-            
-            // Return result
+            // Return result.
             return result;
 
-        // Filtered result
-        let filtered:Record<string, any> = {};
+        };
 
-        // Iterate through requested names (can include nested)
-        nameList.forEach(name => {
+        // Sanitize every parameter before selected names reach the caller.
+        result = normalizeValue(result);
 
-            // Get nested
-            const nested = getNestedValue(result, name);
+        /**
+         * Get Query Value
+         *
+         * @param path Requested bracket or dot path
+         * @returns Own value or undefined when the path is absent or unsafe
+         */
+        const getNestedValue = (path:string):any => {
 
-            // Check nested
-            if (nested !== undefined) filtered[name] = nested;
+            // Prepare result from the sanitized query collection.
+            let value:any = result;
 
-        });
+            // Traverse the same normalized path format used during assignment.
+            for(const part of splitPath(path)){
 
-        // Return filtered result
-        return filtered;
+                // Refuse unsafe names and traversal through missing or scalar parents.
+                if(unsafeKeys.has(part) || value === null || typeof value !== "object"){
+
+                    // Mark the requested path absent.
+                    value = undefined;
+
+                    // Stop without accessing an inherited value.
+                    break;
+
+                }
+
+                // Read only a stored own data property, never a prototype member.
+                value = Object.getOwnPropertyDescriptor(value, part)?.value;
+
+            }
+
+            // Return result.
+            return value;
+
+        };
+
+        // Preserve string, list and unrestricted selection contracts.
+        const nameList = typeof names === "string" ? [names] : (Array.isArray(names) ? names : []);
+
+        // Restrict output only when the caller actually supplied selected names.
+        if(nameList.length){
+
+            // Keep selected path names as literal own keys.
+            const filtered:Record<string, any> = {};
+
+            // Retain requested values without interpreting missing inherited names.
+            for(const name of nameList){
+
+                // Resolve this requested path against sanitized data.
+                const nested = getNestedValue(name);
+
+                // Preserve present false, zero, null and empty-string values.
+                if(nested !== undefined){
+
+                    // Avoid prototype setters even on the final selected-name result.
+                    Object.defineProperty(filtered, name, {
+                        value: nested,
+                        enumerable: true,
+                        writable: true,
+                        configurable: true,
+                    });
+
+                }
+
+            }
+
+            // Publish the selected-name collection after every lookup is complete.
+            result = filtered;
+
+        }
+
+        // Return result.
+        return result;
 
     }
-
 
     /**
      * Qet Query Parameters (legacy)
@@ -604,7 +686,13 @@ export default class Crazyurl {
 
         var str = [], k, v;
         for(var p in obj) {
-            if (!obj.hasOwnProperty(p)) {continue;} // skip things from the prototype
+            // Ignore inherited keys even when query data contains a literal hasOwnProperty field.
+            if(!Object.prototype.hasOwnProperty.call(obj, p)){
+
+                // Continue with the next own query field.
+                continue;
+
+            }
             if (~p.indexOf('[')) {
                 k = prefix ? prefix + "[" + p.substring(0, p.indexOf('[')) + "]" + p.substring(p.indexOf('[')) : p;
             // only put whatever is before the bracket into new brackets; append the rest

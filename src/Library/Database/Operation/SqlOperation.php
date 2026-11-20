@@ -1,14 +1,14 @@
 <?php declare(strict_types=1);
 /**
- * Form
+ * SQL Filters
  *
- * Useful class for manipulate form
+ * Compile model filters without interpolating caller values into SQL.
  *
- * PHP version 8.1.2
+ * PHP version 8.5
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2024 Kévin Zarshenas
+ * @copyright  2022-2026 Kévin Zarshenas
  */
 namespace CrazyPHP\Library\Database\Operation;
 
@@ -19,451 +19,390 @@ use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\Form\Operation;
 
 /**
- * Process operations in string
+ * SQL Operation
  *
- * Parse operations into string
- *
- * @package    kzarshenas/crazyphp
- * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2024 Kévin Zarshenas
+ * Return SQL fragments and their positional parameters as separate array entries.
+ * Equality operators retain the existing column-comparison syntax (=column / !=column).
+ * Literal equality uses an unprefixed value or a one-element filter list.
  */
 class SqlOperation extends Operation {
 
-    /** Private parameters
+    /** Public Methods
      ******************************************************
      */
 
-    /** @var string $entity Table to add as prefix */
-    private string $entity = "";
-
     /**
-     * Constructor
-     * 
-     * Construct and prepare instance
-     * 
-     * @param string|array $operations Exemple ["=", "[]"] or ["contains", "between"] or "@>" or "contains" or "*" (for all operations)
-     * @return self
+     * Construct Operation Parser
+     *
+     * @param string|array $operations Enabled operations
+     * @param string $entity Optional column-reference prefix
      */
     public function __construct(string|array $operations = "@all", string $entity = ""){
 
-        # Parent
-        parent::__construct($operations, [
-            "prefix"    =>  $entity ? trim($entity)."." : $entity
-        ]);
+        # Configure column-reference prefixes
+        parent::__construct($operations, ["prefix" => $entity ? trim($entity)."." : ""]);
 
     }
 
-    /** Public parameters | Operations
-     ******************************************************
-     */
-
     /**
-     * Equal
-     * 
-     * Exemple : `=value`
-     * Description : Checks if a value is equal to `value`
-     * 
-     * @param string|array $input 
-     * @param array $operation
-     * @param array $options
-     * @return mixed
+     * Parse Equal
+     *
+     * @param string|array $input Matched operation values
+     * @param array $operation Operation definition
+     * @param array $options Prefix and suffix options
+     * @return array{sql:string, parameters:array} Prepared fragment
      */
     public function parseEqual(string|array $input, array $operation, array $options = []):mixed {
 
-        # Set result of parent
-        $parentResult = parent::parseEqual($input, $operation);
+        # Prepare result
+        $result = [];
 
-        # Get value
-        $value = $parentResult["value"][1] ?? "";
+        # Read parsed values
+        $parsed = parent::parseEqual($input, $operation);
 
-        # Process options
-        $this->_processOptions($value, $options);
+        # Validate the existing column-reference syntax
+        $column = self::identifier(($options["prefix"] ?? "").$parsed["value"][1].($options["suffix"] ?? ""), true);
 
-        # Push input in operations
-        $result = "= `$value`";
+        # Compare identifiers without accepting SQL expressions
+        $result = ["sql" => "= ".$column, "parameters" => []];
 
-        # Return input
+        # Return result
         return $result;
 
     }
 
     /**
-     * Not Equal
-     * 
-     * Exemple : `!=value`
-     * Description : Checks if a value is not equal to `value`
-     * 
-     * @param string|array $input 
-     * @param array $operation
-     * @param array $options
-     * @return mixed
+     * Parse NotEqual
+     *
+     * @param string|array $input Matched operation values
+     * @param array $operation Operation definition
+     * @param array $options Prefix and suffix options
+     * @return array{sql:string, parameters:array} Prepared fragment
      */
     public function parseNotEqual(string|array $input, array $operation, array $options = []):mixed {
 
-        # Set result of parent
-        $parentResult = parent::parseNotEqual($input, $operation);
+        # Prepare result
+        $result = [];
 
-        # Get value
-        $value = $parentResult["value"][1] ?? "";
+        # Read parsed values
+        $parsed = parent::parseNotEqual($input, $operation);
 
-        # Process options
-        $this->_processOptions($value, $options);
+        # Validate the existing column-reference syntax
+        $column = self::identifier(($options["prefix"] ?? "").$parsed["value"][1].($options["suffix"] ?? ""), true);
 
-        # Push input in operations
-        $result = "<> `$value`";
+        # Compare identifiers without accepting SQL expressions
+        $result = ["sql" => "<> ".$column, "parameters" => []];
 
-        # Return input
+        # Return result
         return $result;
 
     }
 
     /**
-     * Less Than or Equal
-     * 
-     * Exemple : `<=10`
-     * Description : Checks if a value is less than or equal to 10
-     * 
-     * @param string|array $input 
-     * @param array $operation
-     * @param array $options
-     * @return mixed
+     * Parse LessThanOrEqual
+     *
+     * @param string|array $input Matched operation values
+     * @param array $operation Operation definition
+     * @param array $options Prefix and suffix options
+     * @return array{sql:string, parameters:array} Prepared fragment
      */
     public function parseLessThanOrEqual(string|array $input, array $operation, array $options = []):mixed {
 
-        # Set result of parent
-        $parentResult = parent::parseLessThanOrEqual($input, $operation);
+        # Prepare result
+        $result = [];
 
-        # Get value
-        $value = $parentResult["value"][1] ?? "";
+        # Read parsed values
+        $parsed = parent::parseLessThanOrEqual($input, $operation);
 
-        # Process options
-        $this->_processOptions($value, $options);
+        # Validate the numeric comparison operand
+        $value = self::_number(($options["prefix"] ?? "").$parsed["value"][1].($options["suffix"] ?? ""));
 
-        # Check is numeric
-        if(is_numeric($value))
+        # Bind the numeric operand
+        $result = ["sql" => "<= ?", "parameters" => [$value]];
 
-            # Push input in operations
-            $result = '<= '.floatval($value);
-
-        # Error
-        else
-
-            # Error
-            throw new CrazyException(
-                "\"".$parentResult["value"][1]."\" value cannot be less than or equal...",
-                500,
-                [
-                    "custom_code"   =>  "sqloperator-001"
-                ]
-            );
-
-        # Return input
+        # Return result
         return $result;
 
     }
 
     /**
-     * Greater Than or Equal
-     * 
-     * Exemple : `>=10`
-     * Description : Checks if a value is greater than or equal to 10
-     * 
-     * @param string|array $input 
-     * @param array $operation
-     * @param array $options
-     * @return mixed
+     * Parse GreaterThanOrEqual
+     *
+     * @param string|array $input Matched operation values
+     * @param array $operation Operation definition
+     * @param array $options Prefix and suffix options
+     * @return array{sql:string, parameters:array} Prepared fragment
      */
     public function parseGreaterThanOrEqual(string|array $input, array $operation, array $options = []):mixed {
 
-        # Set result of parent
-        $parentResult = parent::parseGreaterThanOrEqual($input, $operation);
+        # Prepare result
+        $result = [];
 
-        # Get value
-        $value = $parentResult["value"][1] ?? "";
+        # Read parsed values
+        $parsed = parent::parseGreaterThanOrEqual($input, $operation);
 
-        # Process options
-        $this->_processOptions($value, $options);
+        # Validate the numeric comparison operand
+        $value = self::_number(($options["prefix"] ?? "").$parsed["value"][1].($options["suffix"] ?? ""));
 
-        # Check is numeric
-        if(is_numeric($value))
+        # Bind the numeric operand
+        $result = ["sql" => ">= ?", "parameters" => [$value]];
 
-            # Push input in operations
-            $result = '>= '.floatval($value);
-
-        else
-
-            # Error
-            throw new CrazyException(
-                "\"".$parentResult["value"]."\" value cannot be greater than or equal...",
-                500,
-                [
-                    "custom_code"   =>  "sqloperator-002"
-                ]
-            );
-
-        # Return input
+        # Return result
         return $result;
 
     }
 
     /**
-     * Smaller
-     * 
-     * Exemple : `<10`
-     * Description : Checks if a value is smaller than 10.
-     * 
-     * @param string|array $input 
-     * @param array $operation
-     * @param array $options
-     * @return mixed
+     * Parse Smaller
+     *
+     * @param string|array $input Matched operation values
+     * @param array $operation Operation definition
+     * @param array $options Prefix and suffix options
+     * @return array{sql:string, parameters:array} Prepared fragment
      */
     public function parseSmaller(string|array $input, array $operation, array $options = []):mixed {
 
-        # Set result of parent
-        $parentResult = parent::parseSmaller($input, $operation);
+        # Prepare result
+        $result = [];
 
-        # Get value
-        $value = $parentResult["value"][1] ?? "";
+        # Read parsed values
+        $parsed = parent::parseSmaller($input, $operation);
 
-        # Process options
-        $this->_processOptions($value, $options);
+        # Validate the numeric comparison operand
+        $value = self::_number(($options["prefix"] ?? "").$parsed["value"][1].($options["suffix"] ?? ""));
 
-        # Check is numeric
-        if(is_numeric($value))
+        # Bind the numeric operand
+        $result = ["sql" => "< ?", "parameters" => [$value]];
 
-            # Push input in operations
-            $result = '< '.floatval($value);
-
-        else
-
-            # Error
-            throw new CrazyException(
-                "\"".$parentResult["value"]."\" value cannot be smaller than...",
-                500,
-                [
-                    "custom_code"   =>  "sqloperator-003"
-                ]
-            );
-
-        # Return input
+        # Return result
         return $result;
 
     }
 
     /**
-     * Greater
-     * 
-     * Exemple : `>10`
-     * Description : Checks if a value is greater than 10
-     * 
-     * @param string|array $input 
-     * @param array $operation
-     * @param array $options
-     * @return mixed
+     * Parse Greater
+     *
+     * @param string|array $input Matched operation values
+     * @param array $operation Operation definition
+     * @param array $options Prefix and suffix options
+     * @return array{sql:string, parameters:array} Prepared fragment
      */
     public function parseGreater(string|array $input, array $operation, array $options = []):mixed {
 
-        # Set result of parent
-        $parentResult = parent::parseGreater($input, $operation);
+        # Prepare result
+        $result = [];
 
-        # Get value
-        $value = $parentResult["value"][1] ?? "";
+        # Read parsed values
+        $parsed = parent::parseGreater($input, $operation);
 
-        # Process options
-        $this->_processOptions($value, $options);
+        # Validate the numeric comparison operand
+        $value = self::_number(($options["prefix"] ?? "").$parsed["value"][1].($options["suffix"] ?? ""));
 
-        # Check is numeric
-        if(is_numeric($value))
+        # Bind the numeric operand
+        $result = ["sql" => "> ?", "parameters" => [$value]];
 
-            # Push input in operations
-            $result = '> '.floatval($value);
-
-        else
-
-            # Error
-            throw new CrazyException(
-                "\"".$parentResult["value"]."\" value cannot be greater than...",
-                500,
-                [
-                    "custom_code"   =>  "sqloperator-004"
-                ]
-            );
-
-        # Return input
+        # Return result
         return $result;
 
     }
 
     /**
-     * Not Between
-     * 
-     * Exemple : `![1:10]`
-     * Description : Checks if a value is not between 1 and 10
-     * 
-     * @param string|array $input 
-     * @param array $operation
-     * @param array $options
-     * @return mixed
+     * Parse NotBetween
+     *
+     * @param string|array $input Matched operation values
+     * @param array $operation Operation definition
+     * @param array $options Prefix and suffix options
+     * @return array{sql:string, parameters:array} Prepared fragment
      */
     public function parseNotBetween(string|array $input, array $operation, array $options = []):mixed {
 
-        # Set result of parent
-        $parentResult = parent::parseNotBetween($input, $operation);
+        # Prepare result
+        $result = [];
 
-        # Get value A
-        $valueA = $parentResult["value"][1];
+        # Read parsed values
+        $parsed = parent::parseNotBetween($input, $operation);
 
-        # Get value B
-        $valueB = $parentResult["value"][2];
+        # Preserve numeric ranges and bind text ranges literally
+        $values = [$parsed["value"][1], $parsed["value"][2]];
 
-        # Process options on value A
-        $this->_processOptions($valueA, $options);
+        # Normalize numeric endpoints together
+        if(is_numeric($values[0]) && is_numeric($values[1])){
 
-        # Process options on value B
-        $this->_processOptions($valueB, $options);
+            # Convert numeric range endpoints
+            $values = [self::_number($values[0]), self::_number($values[1])];
 
-        # Push input in operations
-        $result = is_numeric($valueA) && is_numeric($valueB)
-            ? "NOT BETWEEN ".floatval($valueA)." AND ".floatval($valueB)
-            : "NOT BETWEEN '$valueA' AND '$valueB'"
-        ;
+        }
 
-        # Return input
+        # Bind both range endpoints
+        $result = ["sql" => "NOT BETWEEN ? AND ?", "parameters" => $values];
+
+        # Return result
         return $result;
 
     }
 
     /**
-     * Between
-     * 
-     * Exemple : `[1:10]`
-     * Description : Checks if a value is between 1 and 10 (inclusive)
-     * 
-     * @param string|array $input 
-     * @param array $operation
-     * @param array $options
-     * @return mixed
+     * Parse Between
+     *
+     * @param string|array $input Matched operation values
+     * @param array $operation Operation definition
+     * @param array $options Prefix and suffix options
+     * @return array{sql:string, parameters:array} Prepared fragment
      */
     public function parseBetween(string|array $input, array $operation, array $options = []):mixed {
 
-        # Set result of parent
-        $parentResult = parent::parseBetween($input, $operation);
+        # Prepare result
+        $result = [];
 
-        # Get value A
-        $valueA = $parentResult["value"][1];
+        # Read parsed values
+        $parsed = parent::parseBetween($input, $operation);
 
-        # Get value B
-        $valueB = $parentResult["value"][2];
+        # Preserve numeric ranges and bind text ranges literally
+        $values = [$parsed["value"][1], $parsed["value"][2]];
 
-        # Process options on value A
-        $this->_processOptions($valueA, $options);
+        # Normalize numeric endpoints together
+        if(is_numeric($values[0]) && is_numeric($values[1])){
 
-        # Process options on value B
-        $this->_processOptions($valueB, $options);
+            # Convert numeric range endpoints
+            $values = [self::_number($values[0]), self::_number($values[1])];
 
-        # Set result of parent
-        $parentResult = parent::parseBetween($input, $operation);
+        }
 
-        # Push input in operations
-        $result = is_numeric($valueA) && is_numeric($valueB)
-            ? "BETWEEN ".floatval($valueA)." AND ".floatval($valueB)
-            : "BETWEEN '$valueA' AND '$valueB'"
-        ;
+        # Bind both range endpoints
+        $result = ["sql" => "BETWEEN ? AND ?", "parameters" => $values];
 
-        # Return input
+        # Return result
         return $result;
 
     }
 
     /**
-     * Like
-     * 
-     * Exemple : `*value`
-     * Description : Performs a pattern match (like SQL's LIKE)
-     * 
-     * @param string|array $input 
-     * @param array $operation
-     * @param array $options
-     * @return mixed
+     * Parse Pattern Match
+     *
+     * @param string|array $input Matched pattern
+     * @param array $operation Operation definition
+     * @param array $options Operation options
+     * @return array{sql:string, parameters:array} Prepared fragment
      */
     public function parseLike(string|array $input, array $operation, array $options = []):mixed {
 
-        # Set result of parent
-        $parentResult = parent::parseLike($input, $operation);
+        # Prepare result
+        $result = [];
 
-        # Check position
-        if($parentResult["position"] == "start"){
+        # Read the existing wildcard direction
+        $parsed = parent::parseLike($input, $operation);
 
-            # Set result
-            $result = 'LIKE "'.$parentResult["value"][1].'%"';
+        # Preserve the established prefix and suffix matching behavior
+        $pattern = match($parsed["position"] ?? ""){
+            "start" => $parsed["value"][1]."%",
+            "end" => "%".$parsed["value"][1],
+            "start,end" => "%".$parsed["value"][1]."%",
+            default => throw new CrazyException("Invalid SQL filter pattern.", 400),
+        };
 
-        }else
-        if($parentResult["position"] == "end"){
+        # Bind the complete pattern
+        $result = ["sql" => "LIKE ?", "parameters" => [$pattern]];
 
-            # Set result
-            $result = 'LIKE "%'.$parentResult["value"][1].'"';
-
-        }else
-        if($parentResult["position"] == "start,end"){
-
-            # Set result
-            $result = 'LIKE "%'.$parentResult["value"][1].'%"';
-
-        }else
-
-            # Set empty result
-            $result = "";
-
-        # Return regex result
+        # Return result
         return $result;
 
     }
 
     /**
-     * Parse Default
-     * 
-     * Description : No operations found
-     * 
-     * @param mixed $input
-     * @param array $options
-     * @return mixed
+     * Parse Literal Equality
+     *
+     * @param mixed $input Literal value
+     * @param array $options Operation options
+     * @return array{sql:string, parameters:array} Prepared fragment
      */
     public function parseDefault(mixed $input, array $options = []):mixed {
 
-        # Set result of parent
-        $parentResult = parent::parseDefault($input);
+        # Prepare result
+        $result = [];
 
-        # Push input in operations
-        $result = '= "'.$parentResult["value"].'"';
+        # Reject nested structures and nonfinite numbers
+        if((!is_scalar($input) && $input !== null) || (is_float($input) && !is_finite($input))){
 
-        # Return input
+            # Reject unsupported filter values
+            throw new CrazyException("SQL filter values must be scalar or null.", 400);
+
+        }
+
+        # Preserve null comparison semantics
+        $result = $input === null
+            ? ["sql" => "IS NULL", "parameters" => []]
+            : ["sql" => "= ?", "parameters" => [$input]];
+
+        # Return result
         return $result;
 
     }
 
-    /** Private parameters
+    /** Public Static Methods
      ******************************************************
      */
 
     /**
-     * Process Options
-     * 
-     * @param array &$result
-     * @param array $options
+     * Quote SQL Identifier
+     *
+     * @param mixed $input Column, table or alias
+     * @param bool $qualified Allow one table or alias prefix
+     * @return string Quoted identifier
      */
-    private function _processOptions(&$result, $options):void {
+    public static function identifier(mixed $input, bool $qualified = false):string {
 
-        # Check prefix
-        if($options["prefix"] ?? false)
+        # Prepare result
+        $result = "";
 
-            # Set prefix in result
-            $result = $options["prefix"]."$result";
+        # Restrict identifiers to the framework's model naming convention
+        if(!is_string($input) || !preg_match(
+            $qualified
+                ? '/\A[A-Za-z_][A-Za-z0-9_]{0,63}(?:\.[A-Za-z_][A-Za-z0-9_]{0,63})?\z/D'
+                : '/\A[A-Za-z_][A-Za-z0-9_]{0,63}\z/D',
+            $input
+        )){
 
-        # Check suffix
-        if($options["suffix"] ?? false)
+            # Reject SQL expressions and malformed field names
+            throw new CrazyException("Invalid SQL filter identifier.", 400);
 
-            # Set prefix in result
-            $result = $result.$options["suffix"];
+        }
+
+        # Quote each identifier component
+        $result = "`".str_replace(".", "`.`", $input)."`";
+
+        # Return result
+        return $result;
+
+    }
+
+    /** Private Static Methods
+     ******************************************************
+     */
+
+    /**
+     * Validate Numeric Operand
+     *
+     * @param mixed $value Numeric input
+     * @return float Finite number
+     */
+    private static function _number(mixed $value):float {
+
+        # Prepare result
+        $result = 0.0;
+
+        # Require a finite numeric operand
+        if(!is_numeric($value) || !is_finite((float)$value)){
+
+            # Reject malformed comparisons
+            throw new CrazyException("SQL comparison requires a finite number.", 400);
+
+        }
+
+        # Normalize the numeric value
+        $result = (float)$value;
+
+        # Return result
+        return $result;
 
     }
 

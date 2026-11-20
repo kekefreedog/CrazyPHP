@@ -1,155 +1,127 @@
 <?php declare(strict_types=1);
 /**
- * Exception
+ * Exception Response
  *
- * Manipulate Exception
+ * Render public HTTP errors while retaining diagnostics only in the server log.
  *
- * PHP version 8.1.2
+ * PHP version 8.3
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2024 Kévin Zarshenas
+ * @copyright  2022-2026 Kévin Zarshenas
  */
 namespace CrazyPHP\Library\Exception;
 
-/** 
- * Dependances
+/**
+ * Dependencies
  */
 use CrazyPHP\Library\State\Page as State;
-use CrazyPHP\Exception\CrazyException;
-use CrazyPHP\Library\Exception\Error;
 use CrazyPHP\Library\Html\Structure;
-use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\File\Header;
 use CrazyPHP\Library\File\File;
-use CrazyPHP\Core\ApiResponse;
 use CrazyPHP\Core\Response;
 use CrazyPHP\Model\Env;
-use Exception;
+use Throwable;
 
 /**
  * ExceptionResponse
  *
- * Response from exception catched
- *
- * @package    kzarshenas/crazyphp
- * @author     kekefreedog <kevin.zarshenas@gmail.com>
- * @copyright  2022-2024 Kévin Zarshenas
+ * Use the same safe error fields in HTML, structured data and plain-text responses.
  */
 class ExceptionResponse {
 
-    /** Public methods
+    /** Public Parameters
      ******************************************************
      */
 
-    /** @var Exception $exception */
-    public Exception $exception;
+    /** @var Throwable Original failure retained only for server-side diagnostics */
+    public Throwable $exception;
 
-    /** @var string $mimeType */
-    public string $mimeType; 
+    /** @var string Negotiated response MIME type */
+    public string $mimeType;
 
-    /** Private methods
+    /** Private Parameters
      ******************************************************
      */
 
-    /** @var mixed $render */
+    /** @var mixed Response renderer */
     private mixed $render;
 
-    /** @var array $data */
+    /** @var array Public response envelope */
     private array $data = [];
 
-    /**
-     * Constructor
-     * 
-     * @return self
-     */
-    public function __construct(Exception|CrazyException $exception){
-
-        # Set env to use file cache
-        Env::set(["cache_driver" => "Files"]);
-
-        # Ingest exception
-        $this->ingestException($exception);
-
-        # Check request Accept
-        $this->checkRequestAccept();
-        
-        # Prepare View
-        $this->prepareView();
-
-        # Prepare Data
-        $this->prepareData();
-
-        # Render
-        $this->render();
-
-        # Push to log
-        $this->pushToLog();
-
-    }
-
-    /** Private methods
+    /** Public Methods
      ******************************************************
      */
 
     /**
-     * Ingest Exception
-     * 
-     * @param Exception $exception
-     * @return void
+     * Construct Response
+     *
+     * @param Throwable $exception Exception or native PHP error to report
      */
-    private function ingestException(Exception|CrazyException $exception):void {
+    public function __construct(Throwable $exception){
 
-        # Ingest exception
+        # Retain the original failure for logging only
         $this->exception = $exception;
 
+        # Record diagnostics before attempting any rendering that may itself fail
+        $this->pushToLog();
+
+        # Keep error-page caching independent from unavailable application cache services
+        Env::set(["cache_driver" => "Files"]);
+
+        # Build only public error data
+        $this->prepareData();
+
+        # Select the requested representation without exposing diagnostics in any format
+        $this->mimeType = Header::getHeaderAccept();
+
+        # Keep SPA error responses out of page-state cache retrieval and its early response path
+        if($this->mimeType === "text/html" && !empty($_GET["catch_state"])){
+
+            # Return a sanitized JSON error envelope with the original failure status
+            $this->mimeType = "application/json";
+
+        }
+
+        # Prepare the corresponding public view
+        $this->prepareView();
+
+        # Emit the response through the normal framework emitter
+        $this->render();
+
     }
 
-    /**
-     * Check Request Accept
-     * 
-     * Check if request is html or json...
-     * 
-     * @return void
+    /** Private Methods
+     ******************************************************
      */
-    private function checkRequestAccept():void {
-
-        # Get mimetype
-        $mimeType = Header::getHeaderAccept();
-
-        # Set mimetype
-        $this->mimeType = $mimeType;
-
-    }
 
     /**
-     * Prepare view
-     * 
-     * Load the view depending of accept
-     * 
+     * Prepare View
+     *
      * @return void
      */
     private function prepareView():void {
 
-        # Check mimetype is html
-        if($this->mimeType === "text/html")
+        # Preserve the application's normal HTML error page using sanitized state
+        if($this->mimeType === "text/html"){
 
-            // Set renderCallable
-            $this->render = function($data){
+            # Render the themed error page without passing the original throwable to state
+            $this->render = static function(array $data):Response {
 
-                # Get public folder
-                $publicFolder = Config::getValue("App.public") ?: "public";
+                # Prepare result
+                $result = null;
 
-                # Template path
-                $templatePath = str_replace($publicFolder, "", getcwd())."app/Environment/Page/Error/template.hbs";
+                # Resolve the existing application template through the framework file abstraction
+                $templatePath = File::path("@app_root/app/Environment/Page/Error/template.hbs");
 
-                # Prepare state
+                # Expose only sanitized fields in the HTML and embedded page state
                 $state = (new State())
-                    ->pushException($this->exception)
+                    ->pushErrors($data["errors"])
                     ->render()
                 ;
 
-                # Set structure
+                # Preserve the application's error-page presentation
                 $structure = (new Structure())
                     ->setDoctype()
                     ->setLanguage()
@@ -160,86 +132,118 @@ class ExceptionResponse {
                     ->render()
                 ;
 
-                # Set response
-                return (new Response())
-                    ->setStatusCode($data["errors"][0]["code"] ?? Error::DEFAULT["code"])
-                    ->setContent($structure);
+                # Prepare the controlled HTML response
+                $result = (new Response())
+                    ->setStatusCode($data["errors"][0]["code"])
+                    ->setContent($structure)
+                ;
+
+                # Return result
+                return $result;
 
             };
 
-        else
-        # Check mimetype is supported by file class
-        if(in_array($this->mimeType, File::EXTENSION_TO_MIMETYPE))
+        }else if(array_key_exists($this->mimeType, File::MIMTYPE_TO_CLASS)){
 
-            // Set renderCallable
-            $this->render = function($data){
+            # Serialize supported JSON, YAML and MessagePack envelopes without API configuration dependencies
+            $this->render = function(array $data):Response {
 
-                # Set response
-                return (new ApiResponse())
-                    ->setContentType($this->mimeType)
-                    ->setStatusCode($data["errors"][0]["code"] ?? Error::DEFAULT["code"])
-                    ->setContent($data);
+                # Prepare result
+                $result = null;
+
+                # Select only a registered structured encoder
+                $encoder = File::MIMTYPE_TO_CLASS[$this->mimeType];
+
+                # Encode the sanitized envelope before passing it to the response body
+                $result = (new Response())
+                    ->setContentType($this->mimeType, $this->mimeType === "application/msgpack" ? null : "UTF-8")
+                    ->setStatusCode($data["errors"][0]["code"])
+                    ->setContent($encoder::encode($data))
+                ;
+
+                # Return result
+                return $result;
+
+            };
+
+        }else{
+
+            # Return fixed plain text for unsupported Accept values instead of dumping an exception
+            $this->render = static function(array $data):Response {
+
+                # Prepare result
+                $result = (new Response())
+                    ->setContentType("text/plain")
+                    ->setStatusCode($data["errors"][0]["code"])
+                    ->setContent($data["errors"][0]["detail"])
+                ;
+
+                # Return result
+                return $result;
 
             };
 
-        else
-
-            // Set renderCallable
-            $this->render = function($data){
-
-                # Set response
-                return (new Response())
-                    ->setStatusCode($data["errors"][0]["code"] ?? Error::DEFAULT["code"])
-                    ->setContent($this->exception->__toString());
-
-            };
+        }
 
     }
 
     /**
      * Prepare Data
-     * 
+     *
      * @return void
      */
     private function prepareData():void {
 
-        # Transform exception to error
-        $error = Error::fromException($this->exception);
-
-        # Push to data
-        /** @disregard P1006 */
-        $this->data["errors"][] = $error;
+        # Keep diagnostic fields out of the response envelope
+        $this->data = ["errors" => [Error::fromException($this->exception)]];
 
     }
 
     /**
      * Render
-     * 
-     * Load the view depending of accept
-     * 
+     *
      * @return void
      */
     private function render():void {
 
-        # Set render
+        # Resolve the selected view
         $render = $this->render;
 
-        # Call render with data
+        # Build the response from public data only
         $response = $render($this->data);
 
-        # Send response
-        $response->send();
+        # Prevent shared caching and content sniffing for failed requests
+        $response
+            ->addHeader("Cache-Control", "private, no-store")
+            ->addHeader("X-Content-Type-Options", "nosniff")
+            ->send()
+        ;
 
     }
 
     /**
-     * Prepare Data
-     * 
+     * Push To Log
+     *
+     * Keep diagnostic messages and call locations in the configured server log, omitting arguments.
+     *
      * @return void
      */
     private function pushToLog():void {
 
-        
+        # Retain call locations without arguments, request objects or previous exception objects
+        $trace = array_map(
+            static fn(array $frame):array => array_intersect_key($frame, array_flip(["file", "line", "class", "type", "function"])),
+            array_slice($this->exception->getTrace(), 0, 40)
+        );
+
+        # Write one JSON log entry without allowing embedded line breaks to forge separate entries
+        error_log(json_encode([
+            "exception" => $this->exception::class,
+            "message" => $this->exception->getMessage(),
+            "file" => $this->exception->getFile(),
+            "line" => $this->exception->getLine(),
+            "trace" => $trace,
+        ], JSON_INVALID_UTF8_SUBSTITUTE | JSON_UNESCAPED_SLASHES));
 
     }
 

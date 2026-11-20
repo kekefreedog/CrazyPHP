@@ -44,6 +44,9 @@ class ApiV2List extends Controller {
         # Get all model available
         $content = Model::getListAllModel();
 
+        # Omit server-only model declarations from API discovery
+        $content = array_values(array_filter($content, static fn(array $model):bool => ($model["api"] ?? true) !== false));
+
         # Set response
         (new ApiResponse())
             ->addLastModified($lastModified)
