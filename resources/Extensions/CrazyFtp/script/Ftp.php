@@ -63,12 +63,12 @@ class Ftp {
 
         # Ingest options
         $this->_ingestOptions([
-            "host"      =>  $host,
-            "username"  =>  $username,
-            "password"  =>  $password,
-            "isFTPs"    =>  $isFTPs,
-            "port"      =>  $port,
-            "rootPath"  =>  $rootPath
+            "host"        =>  $host,
+            "username"    =>  $username,
+            "password"    =>  $password,
+            "isFTPs"      =>  $isFTPs,
+            "port"        =>  $port,
+            "rootPath"    =>  $rootPath
         ]);
 
         # Load driver
@@ -108,10 +108,10 @@ class Ftp {
 
             // Define FTP connection options using `FtpConnectionOptions`
             $options = SftpConnectionProvider::fromArray([
-                'host'      =>  $this->_options["host"],
-                'username'  =>  $this->_options["username"],
-                'password'  =>  $this->_options["password"],
-                'port'      =>  $this->_options["port"],
+                'host'        =>  $this->_options["host"],
+                'username'    =>  $this->_options["username"],
+                'password'    =>  $this->_options["password"],
+                'port'        =>  $this->_options["port"],
             ]);  
 
             # Set rootpath
@@ -124,11 +124,11 @@ class Ftp {
 
             // Define FTP connection options using `FtpConnectionOptions`
             $options = FtpConnectionOptions::fromArray([
-                'host'     =>   $this->_options["host"],
-                'username' =>   $this->_options["username"],
-                'password' =>   $this->_options["password"],
-                'port'      =>  $this->_options["port"],
-                'root'     =>   $this->_options["rootPath"],
+                'host'        =>  $this->_options["host"],
+                'username'    =>  $this->_options["username"],
+                'password'    =>  $this->_options["password"],
+                'port'        =>  $this->_options["port"],
+                'root'        =>  $this->_options["rootPath"],
             ]);  
 
             # Prepare adapteur

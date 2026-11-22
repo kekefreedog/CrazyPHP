@@ -34,52 +34,52 @@ class Operation {
 
     /** @var array $perations */
     public const LIST = [
-        "=" => [ 
-           "name" => "equal",
-           "operation" => "=",
-           "regex" => "/^=(.*)$/"
+        "="      =>  [
+            "name"         =>  "equal",
+            "operation"    =>  "=",
+            "regex"        =>  "/^=(.*)$/"
         ],
-        "!=" => [ 
-           "name" => "notEqual",
-           "operation" => "!=",
-           "regex" => "/^!=(.*)$/"
+        "!="     =>  [
+            "name"         =>  "notEqual",
+            "operation"    =>  "!=",
+            "regex"        =>  "/^!=(.*)$/"
         ],
-        "<=" => [ 
-           "name" => "lessThanOrEqual",
-           "operation" => "<=",
-           "regex" => "/^<=(.*)$/"
+        "<="     =>  [
+            "name"         =>  "lessThanOrEqual",
+            "operation"    =>  "<=",
+            "regex"        =>  "/^<=(.*)$/"
         ],
-        ">=" => [ 
-           "name" => "greaterThanOrEqual",
-           "operation" => ">=",
-           "regex" => "/^>=(.*)$/"
+        ">="     =>  [
+            "name"         =>  "greaterThanOrEqual",
+            "operation"    =>  ">=",
+            "regex"        =>  "/^>=(.*)$/"
         ],
-        "<" => [ 
-           "name" => "smaller",
-           "operation" => "<",
-           "regex" => "/^<(.*)$/"
+        "<"      =>  [
+            "name"         =>  "smaller",
+            "operation"    =>  "<",
+            "regex"        =>  "/^<(.*)$/"
         ],
-        ">" => [ 
-           "name" => "greater",
-           "operation" => ">",
-           "regex" => "/^>(.*)$/"
+        ">"      =>  [
+            "name"         =>  "greater",
+            "operation"    =>  ">",
+            "regex"        =>  "/^>(.*)$/"
         ],
-        "![]" => [ 
-           "name" => "notBetween",
-           "operation" => "![]",
-           "regex" => "/!\[([^:\[\]]*):([^\[\]]+)\]/"
+        "![]"    =>  [
+            "name"         =>  "notBetween",
+            "operation"    =>  "![]",
+            "regex"        =>  "/!\[([^:\[\]]*):([^\[\]]+)\]/"
         ],
-        "[]" => [ 
-           "name" => "between",
-           "operation" => "[]",
-           # "regex" => '/\[([^:\[\]]*):([^\[\]]+)\]/'
-           "regex" => '/\[([^\]:]+):([^\]]+)\]/'
+        "[]"     =>  [
+            "name"         =>  "between",
+            "operation"    =>  "[]",
+            # "regex" => '/\[([^:\[\]]*):([^\[\]]+)\]/'
+            "regex"        =>  '/\[([^\]:]+):([^\]]+)\]/'
         ],
-        "*" => [ 
-           "name" => "like",
-           "operation" => "*",
-           // "regex" => "/\*(.*?)\*/" # REGEX WORKING BUT CATCHING [10:10] or [!10:10] 🔴
-           "regex" => "/(?:\*([^*\n]+)\*|\*([^*\n]+)|([^*\n]+)\*)/" # REGEX WORKING BUT CATCHING [10:10] or [!10:10] 🔴
+        "*"      =>  [
+            "name"         =>  "like",
+            "operation"    =>  "*",
+            // "regex" => "/\*(.*?)\*/" # REGEX WORKING BUT CATCHING [10:10] or [!10:10] 🔴
+            "regex"        =>  "/(?:\*([^*\n]+)\*|\*([^*\n]+)|([^*\n]+)\*)/" # REGEX WORKING BUT CATCHING [10:10] or [!10:10] 🔴
         ],
     ];
 
@@ -241,7 +241,9 @@ class Operation {
 
             # Convert to array
             $input = $input
-                ? [$input]
+                ? [
+                    $input
+                ]
                 : []
             ;
 
@@ -552,8 +554,8 @@ class Operation {
 
         # Push input in operations
         $operation = [
-            "name"  =>  "default",
-            "value" =>  $input
+            "name"     =>  "default",
+            "value"    =>  $input
         ];
 
         # Return input

@@ -86,7 +86,11 @@ class Scenario {
         }
 
         # Iteration of questions hidden for some project types
-        foreach(["authentication", "router", "frontend"] as $name)
+        foreach([
+            "authentication",
+            "router",
+            "frontend"
+        ] as $name)
 
             # Hidden questions read as none
             $result[$name] ??= "none";
@@ -251,8 +255,8 @@ class Scenario {
 
         # Return options with a unique project name
         return [
-            "name"          => $this->id(),
-            "description"   => $this->label(),
+            "name"           =>  $this->id(),
+            "description"    =>  $this->label(),
         ] + $options;
 
     }
@@ -271,9 +275,9 @@ class Scenario {
 
         # Return options with free ports
         return $options + [
-            "hostname"      => "localhost",
-            "http_port"     => $httpPort,
-            "https_port"    => $httpsPort,
+            "hostname"      =>  "localhost",
+            "http_port"     =>  $httpPort,
+            "https_port"    =>  $httpsPort,
         ];
 
     }

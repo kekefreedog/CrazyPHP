@@ -40,10 +40,30 @@ class Helpers {
         ;
 
         # Set result
-        $result = ["enabled" => count(array_intersect(array_keys($config), ["min", "max", "start", "end", "minLabel", "maxLabel"])) > 0];
+        $result = [
+            "enabled"    =>  count(array_intersect(array_keys($config), [
+                "min",
+                "max",
+                "start",
+                "end",
+                "minLabel",
+                "maxLabel"
+            ])) > 0
+        ];
 
         # Resolve bounds and their legacy aliases independently.
-        foreach([["min", "start", "Min"], ["max", "end", "Max"]] as [$bound, $alias, $fallback]){
+        foreach([
+            [
+                "min",
+                "start",
+                "Min"
+            ],
+            [
+                "max",
+                "end",
+                "Max"
+            ]
+        ] as [$bound, $alias, $fallback]){
 
             # Set settings
             $setting = array_key_exists($bound, $config) 
@@ -59,10 +79,10 @@ class Helpers {
 
             # Set result
             $result[$bound] = [
-                "label"     => (string)((is_array($setting)
+                "label"    =>  (string)((is_array($setting)
                     ? ($setting["label"] ?? null) 
                     : null) ?? $config[$bound."Label"] ?? $fallback),
-                "value"     => is_numeric($value) && is_finite((float)$value) 
+                "value"    =>  is_numeric($value) && is_finite((float)$value)
                     ? (string)(0 + $value) 
                     : ""
                 ,
@@ -156,7 +176,7 @@ class Helpers {
                 "Http code \"$code\" given isn't valid",
                 500,
                 [
-                    "custom_code"   =>  "handlebarsHelpers-001",
+                    "custom_code"    =>  "handlebarsHelpers-001",
                 ]
             );
 
@@ -170,15 +190,15 @@ class Helpers {
 
         # Declare result
         $result = [
-            "code"              => $code ? $code : 500,
-            "title"             => $http_status_code[$code]["title"] ?? $collection500["title"],
-            "description"       => (isset($error["detail"]) && $error["detail"]) ?
+            "code"               =>  $code ? $code : 500,
+            "title"              =>  $http_status_code[$code]["title"] ?? $collection500["title"],
+            "description"        =>  (isset($error["detail"]) && $error["detail"]) ?
                 $error["detail"] :
                     ($http_status_code[$code]["description"] ?? $collection500["description"]),
-            "icon-class"        => $http_status_code[$code]["icon"]["class"] ?? $collection500["icon"]["class"],
-            "icon-text"         => $http_status_code[$code]["icon"]["text"] ?? $collection500["icon"]["text"],
-            "primary-color"     => $http_status_code[$code]["color"]["primary"] ?? $collection500["color"]["primary"],
-            "secondary-color"   => $http_status_code[$code]["color"]["secondary"] ?? $collection500["color"]["secondary"]
+            "icon-class"         =>  $http_status_code[$code]["icon"]["class"] ?? $collection500["icon"]["class"],
+            "icon-text"          =>  $http_status_code[$code]["icon"]["text"] ?? $collection500["icon"]["text"],
+            "primary-color"      =>  $http_status_code[$code]["color"]["primary"] ?? $collection500["color"]["primary"],
+            "secondary-color"    =>  $http_status_code[$code]["color"]["secondary"] ?? $collection500["color"]["secondary"]
         ];
 
         # Check what
@@ -195,7 +215,7 @@ class Helpers {
                 "Http code \"$code\" given isn't valid",
                 500,
                 [
-                    "custom_code"   =>  "handlebarsHelpers-001",
+                    "custom_code"    =>  "handlebarsHelpers-001",
                 ]
             );
 
@@ -1764,13 +1784,55 @@ class Helpers {
 
             # Define weekday and month names for supported locales
             $locales = [
-                'en_US' => [
-                    'weekdays' => ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-                    'months' => ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+                'en_US'    =>  [
+                    'weekdays'    =>  [
+                        'Sunday',
+                        'Monday',
+                        'Tuesday',
+                        'Wednesday',
+                        'Thursday',
+                        'Friday',
+                        'Saturday'
+                    ],
+                    'months'      =>  [
+                        'January',
+                        'February',
+                        'March',
+                        'April',
+                        'May',
+                        'June',
+                        'July',
+                        'August',
+                        'September',
+                        'October',
+                        'November',
+                        'December'
+                    ]
                 ],
-                'fr_FR' => [
-                    'weekdays' => ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
-                    'months' => ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
+                'fr_FR'    =>  [
+                    'weekdays'    =>  [
+                        'Dimanche',
+                        'Lundi',
+                        'Mardi',
+                        'Mercredi',
+                        'Jeudi',
+                        'Vendredi',
+                        'Samedi'
+                    ],
+                    'months'      =>  [
+                        'Janvier',
+                        'Février',
+                        'Mars',
+                        'Avril',
+                        'Mai',
+                        'Juin',
+                        'Juillet',
+                        'Août',
+                        'Septembre',
+                        'Octobre',
+                        'Novembre',
+                        'Décembre'
+                    ]
                 ],
                 # Add more locales as needed
             ];
@@ -1824,11 +1886,37 @@ class Helpers {
 
             # Define weekday and month names for supported locales
             $locales = [
-                'en_US' => [
-                    'months' => ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+                'en_US'    =>  [
+                    'months'    =>  [
+                        'January',
+                        'February',
+                        'March',
+                        'April',
+                        'May',
+                        'June',
+                        'July',
+                        'August',
+                        'September',
+                        'October',
+                        'November',
+                        'December'
+                    ]
                 ],
-                'fr_FR' => [
-                    'months' => ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
+                'fr_FR'    =>  [
+                    'months'    =>  [
+                        'Janvier',
+                        'Février',
+                        'Mars',
+                        'Avril',
+                        'Mai',
+                        'Juin',
+                        'Juillet',
+                        'Août',
+                        'Septembre',
+                        'Octobre',
+                        'Novembre',
+                        'Décembre'
+                    ]
                 ],
                 # Add more locales as needed
             ];
@@ -2088,10 +2176,10 @@ class Helpers {
 
             # Execute block with current 'i'
             $buffer .= $options['fn']([
-                'i' => $i,
-                '@index' => $currentIndex,
-                '@first' => $currentIndex === 0,
-                '@last' => $currentIndex === ($count - 1),
+                'i'         =>  $i,
+                '@index'    =>  $currentIndex,
+                '@first'    =>  $currentIndex === 0,
+                '@last'     =>  $currentIndex === ($count - 1),
             ]);
 
         }

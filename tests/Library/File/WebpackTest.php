@@ -50,7 +50,10 @@ class WebpackTest extends TestCase {
     protected function setUp():void {
 
         # Preserve globals and isolate the fixture configuration
-        foreach([Env::PREFIX, Config::PREFIX] as $key){
+        foreach([
+            Env::PREFIX,
+            Config::PREFIX
+        ] as $key){
 
             $this->_globals[$key] = $GLOBALS[$key] ?? null;
             unset($GLOBALS[$key]);
@@ -63,12 +66,23 @@ class WebpackTest extends TestCase {
         mkdir($this->_root."/config");
         file_put_contents($this->_root."/config/App.yml", "App:\n    public: public\n");
         file_put_contents($this->_root."/config/Front.yml", "Front:\n    lastBuild:\n        hash: aaaaaaaa\n        watch: true\n        files: []\n        pages: []\n");
-        Env::set(["app_root" => $this->_root, "phpunit_test" => true]);
+        Env::set([
+            "app_root"        =>  $this->_root,
+            "phpunit_test"    =>  true
+        ]);
 
         # Use explicit modification times independent of filesystem enumeration
-        foreach(["aaaaaaaa" => 100, "bbbbbbbb" => 200] as $hash => $modified){
+        foreach([
+            "aaaaaaaa"    =>  100,
+            "bbbbbbbb"    =>  200
+        ] as $hash => $modified){
 
-            foreach(["runtime", "vendors", "index", "page/app/Project"] as $name){
+            foreach([
+                "runtime",
+                "vendors",
+                "index",
+                "page/app/Project"
+            ] as $name){
 
                 $path = $this->_root."/public/dist/$name.$hash.js";
                 file_put_contents($path, "// Fixture");
@@ -121,8 +135,14 @@ class WebpackTest extends TestCase {
         $this->assertSame("bbbbbbbb", Front::getHash());
 
         # Assert registration includes only existing assets from that build
-        $this->assertSame(["runtime.bbbbbbbb.js", "vendors.bbbbbbbb.js", "index.bbbbbbbb.js"], Config::getValue("Front.lastBuild.files"));
-        $this->assertSame(["Project.bbbbbbbb.js"], Config::getValue("Front.lastBuild.pages"));
+        $this->assertSame([
+            "runtime.bbbbbbbb.js",
+            "vendors.bbbbbbbb.js",
+            "index.bbbbbbbb.js"
+        ], Config::getValue("Front.lastBuild.files"));
+        $this->assertSame([
+            "Project.bbbbbbbb.js"
+        ], Config::getValue("Front.lastBuild.pages"));
         $this->assertSame("bbbbbbbb", Config::getValue("Front.lastBuild.hash"));
 
     }
@@ -160,7 +180,9 @@ class WebpackTest extends TestCase {
         # Keep document metadata pinned even if another build arrives mid-render
         file_put_contents($this->_root."/public/dist/index.dddddddd.js", "// Later build");
         $html = '<meta name="application-hash" content="aaaaaaaa">';
-        $reflection->getMethod("_setHash")->invokeArgs($structure, [&$html]);
+        $reflection->getMethod("_setHash")->invokeArgs($structure, [
+            &$html
+        ]);
         $this->assertSame('<meta name="application-hash" content="bbbbbbbb">', $html);
 
     }

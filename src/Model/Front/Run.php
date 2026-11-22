@@ -182,7 +182,10 @@ class Run extends CrazyModel implements CrazyCommand {
         $bundler = Config::has("Front.bundler") ? Config::getValue("Front.bundler") : "webpack";
 
         # Check bundler
-        if(!in_array($bundler, ["webpack", "vite"], true))
+        if(!in_array($bundler, [
+            "webpack",
+            "vite"
+        ], true))
 
             # New Exception
             throw new CrazyException("Front.bundler must be webpack or vite to run frontend scripts.", 400);
@@ -223,7 +226,9 @@ class Run extends CrazyModel implements CrazyCommand {
             return $this;
 
         # Stop on installation errors in the selected runtime
-        $this->_runtime->execute("npm", ["install"]);
+        $this->_runtime->execute("npm", [
+            "install"
+        ]);
 
         # Return result
         return $this;
@@ -238,7 +243,10 @@ class Run extends CrazyModel implements CrazyCommand {
     public function runCheckIfWatch():self {
 
         # Check the watch metadata was already prepared in a previous phase
-        if(in_array($this->_phase(), ["finish", "failed"], true))
+        if(in_array($this->_phase(), [
+            "finish",
+            "failed"
+        ], true))
 
             # Return result
             return $this;
@@ -259,7 +267,10 @@ class Run extends CrazyModel implements CrazyCommand {
         preg_match_all('/(?:^|\s)(--watch(?:=(?:true|false))?|--no-watch|-w)(?=\s|$)/', $command, $watchOptions);
 
         # Detect watch mode while explicitly clearing stale metadata for ordinary builds
-        $watch = $watchOptions[1] && !in_array(end($watchOptions[1]), ["--watch=false", "--no-watch"], true);
+        $watch = $watchOptions[1] && !in_array(end($watchOptions[1]), [
+            "--watch=false",
+            "--no-watch"
+        ], true);
 
         # Detect mode options
         preg_match_all('/--mode(?:=|\s+)[\'"]?([^\s\'"]+)/', $command, $matches);
@@ -267,11 +278,17 @@ class Run extends CrazyModel implements CrazyCommand {
         # Use the last mode option so command-line arguments override script defaults
         $mode = $matches[1]
             ? end($matches[1])
-            : (in_array($this->_script, ["dev", "watch"], true) ? "development" : "production")
+            : (in_array($this->_script, [
+                "dev",
+                "watch"
+            ], true) ? "development" : "production")
         ;
 
         # Make watch discovery available to middleware while a long-running build is active
-        Config::setValue("Front.lastBuild", array_replace($this->_previousBuild, ["watch" => $watch, "mode" => $mode]));
+        Config::setValue("Front.lastBuild", array_replace($this->_previousBuild, [
+            "watch"    =>  $watch,
+            "mode"     =>  $mode
+        ]));
 
         # Return result
         return $this;
@@ -289,7 +306,10 @@ class Run extends CrazyModel implements CrazyCommand {
         $this->runCheck();
 
         # Check the script runs on the host between the prepare and finish phases
-        if(in_array($this->_phase(), ["prepare", "finish"], true))
+        if(in_array($this->_phase(), [
+            "prepare",
+            "finish"
+        ], true))
 
             # Return result
             return $this;
@@ -311,7 +331,14 @@ class Run extends CrazyModel implements CrazyCommand {
             # Forward all bundler arguments through npm without losing their boundaries
             $this->_runtime->execute(
                 "npm",
-                ["run", $this->_script, ...($this->_flags ? ["--", ...$this->_flags] : [])]
+                [
+                    "run",
+                    $this->_script,
+                    ...($this->_flags ? [
+                        "--",
+                        ...$this->_flags
+                    ] : [])
+                ]
             );
 
         }catch(Throwable $exception){
@@ -374,7 +401,11 @@ class Run extends CrazyModel implements CrazyCommand {
         $phase = getenv(self::PHASE_ENV);
 
         # Return a known phase only
-        return in_array($phase, ["prepare", "finish", "failed"], true) ? $phase : "";
+        return in_array($phase, [
+            "prepare",
+            "finish",
+            "failed"
+        ], true) ? $phase : "";
 
     }
 

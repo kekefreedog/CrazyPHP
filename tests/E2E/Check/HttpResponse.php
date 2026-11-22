@@ -40,8 +40,12 @@ class HttpResponse implements Check {
      * Change here when a project type's contract changes; unlisted types only need to avoid 5xx.
      */
     public const HOME_STATUS = [
-        "application"   => [200],
-        "website"       => [200],
+        "application"    =>  [
+            200
+        ],
+        "website"        =>  [
+            200
+        ],
     ];
 
     /** Public Methods

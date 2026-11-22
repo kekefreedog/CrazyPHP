@@ -48,7 +48,7 @@ class ColorTest extends TestCase{
 
         # Setup env
         Env::set([
-            "phpunit_test"      =>  true,
+            "phpunit_test"    =>  true,
         ]);
 
     }

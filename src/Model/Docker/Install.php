@@ -50,55 +50,91 @@ class Install extends CrazyModel implements CrazyCommand {
     /** @var array REQUIRED_VALUES Questions following the Docker refactor graph */
     public const REQUIRED_VALUES = [
         [
-            "name" => "type",
-            "description" => "Server type",
-            "type" => "VARCHAR",
-            "required" => true,
-            "default" => "nginx",
-            "select" => ["nginx" => "Nginx", "apache" => "Apache 2", "frankenphp" => "FrankenPHP"],
+            "name"           =>  "type",
+            "description"    =>  "Server type",
+            "type"           =>  "VARCHAR",
+            "required"       =>  true,
+            "default"        =>  "nginx",
+            "select"         =>  [
+                "nginx"         =>  "Nginx",
+                "apache"        =>  "Apache 2",
+                "frankenphp"    =>  "FrankenPHP"
+            ],
         ],
         [
-            "name" => "security",
-            "description" => "Connection security",
-            "type" => "VARCHAR",
-            "required" => true,
-            "default" => "http",
-            "select" => ["http" => "HTTP", "https" => "HTTPS"],
+            "name"           =>  "security",
+            "description"    =>  "Connection security",
+            "type"           =>  "VARCHAR",
+            "required"       =>  true,
+            "default"        =>  "http",
+            "select"         =>  [
+                "http"     =>  "HTTP",
+                "https"    =>  "HTTPS"
+            ],
         ],
         [
-            "name" => "proxy",
-            "description" => "Do you already have a reverse proxy handling HTTPS?",
-            "type" => "VARCHAR",
-            "required" => true,
-            "default" => "no",
-            "select" => ["no" => "No — configure Caddy", "yes" => "Yes — show Caddy / Nginx instructions"],
-            "when" => ["security" => ["https"]],
+            "name"           =>  "proxy",
+            "description"    =>  "Do you already have a reverse proxy handling HTTPS?",
+            "type"           =>  "VARCHAR",
+            "required"       =>  true,
+            "default"        =>  "no",
+            "select"         =>  [
+                "no"     =>  "No — configure Caddy",
+                "yes"    =>  "Yes — show Caddy / Nginx instructions"
+            ],
+            "when"           =>  [
+                "security"    =>  [
+                    "https"
+                ]
+            ],
         ],
         [
-            "name" => "hostname",
-            "description" => "HTTPS hostname (localhost for local development)",
-            "type" => "VARCHAR",
-            "required" => true,
-            "default" => [self::class, "defaultHostname"],
-            "process" => ["trim"],
-            "when" => ["security" => ["https"]],
+            "name"           =>  "hostname",
+            "description"    =>  "HTTPS hostname (localhost for local development)",
+            "type"           =>  "VARCHAR",
+            "required"       =>  true,
+            "default"        =>  [
+                self::class,
+                "defaultHostname"
+            ],
+            "process"        =>  [
+                "trim"
+            ],
+            "when"           =>  [
+                "security"    =>  [
+                    "https"
+                ]
+            ],
         ],
         [
-            "name" => "http_port",
-            "description" => "HTTP host port (a free port is proposed)",
-            "type" => "INT",
-            "required" => true,
-            "default" => [self::class, "defaultHttpPort"],
-            "defaultWithAnswers" => true,
+            "name"                  =>  "http_port",
+            "description"           =>  "HTTP host port (a free port is proposed)",
+            "type"                  =>  "INT",
+            "required"              =>  true,
+            "default"               =>  [
+                self::class,
+                "defaultHttpPort"
+            ],
+            "defaultWithAnswers"    =>  true,
         ],
         [
-            "name" => "https_port",
-            "description" => "HTTPS host port (a free port is proposed)",
-            "type" => "INT",
-            "required" => true,
-            "default" => [self::class, "defaultHttpsPort"],
-            "defaultWithAnswers" => true,
-            "when" => ["security" => ["https"], "proxy" => ["no"]],
+            "name"                  =>  "https_port",
+            "description"           =>  "HTTPS host port (a free port is proposed)",
+            "type"                  =>  "INT",
+            "required"              =>  true,
+            "default"               =>  [
+                self::class,
+                "defaultHttpsPort"
+            ],
+            "defaultWithAnswers"    =>  true,
+            "when"                  =>  [
+                "security"    =>  [
+                    "https"
+                ],
+                "proxy"       =>  [
+                    "no"
+                ]
+            ],
         ],
     ];
 
@@ -140,12 +176,12 @@ class Install extends CrazyModel implements CrazyCommand {
 
         # Set conservative defaults without changing application files
         $options = [
-            "type"          => "nginx",
-            "security"      => "http",
-            "proxy"         => "no",
-            "hostname"      => self::defaultHostname(),
-            "http_port"     => null,
-            "https_port"    => null,
+            "type"          =>  "nginx",
+            "security"      =>  "http",
+            "proxy"         =>  "no",
+            "hostname"      =>  self::defaultHostname(),
+            "http_port"     =>  null,
+            "https_port"    =>  null,
         ];
 
         # Accept both the CLI wrapper and programmatic named values
@@ -169,7 +205,21 @@ class Install extends CrazyModel implements CrazyCommand {
             throw new CrazyException("Use type, security and proxy options; the legacy configuration choices have been removed.", 400);
 
         # Validate choices before generating any files
-        foreach(["type" => ["nginx", "apache", "frankenphp"], "security" => ["http", "https"], "proxy" => ["yes", "no"]] as $key => $choices)
+        foreach([
+            "type"        =>  [
+                "nginx",
+                "apache",
+                "frankenphp"
+            ],
+            "security"    =>  [
+                "http",
+                "https"
+            ],
+            "proxy"       =>  [
+                "yes",
+                "no"
+            ]
+        ] as $key => $choices)
 
             # Reject unknown values supplied outside the interactive form
             if(!in_array($options[$key], $choices, true))
@@ -202,7 +252,10 @@ class Install extends CrazyModel implements CrazyCommand {
             $options["https_port"] = self::defaultHttpsPort($options, $this->_runtime);
 
         # Iteration of host ports
-        foreach(["http_port", "https_port"] as $key){
+        foreach([
+            "http_port",
+            "https_port"
+        ] as $key){
 
             # Check port is a valid TCP port
             if(!preg_match('/^[0-9]{1,5}$/D', (string) $options[$key]) || (int) $options[$key] < 1 || (int) $options[$key] > 65535)
@@ -225,7 +278,9 @@ class Install extends CrazyModel implements CrazyCommand {
         $this->_options = $options;
 
         # Use file caching while preparing a database-backed application
-        Env::set(["cache_driver" => "Files"]);
+        Env::set([
+            "cache_driver"    =>  "Files"
+        ]);
 
     }
 
@@ -297,7 +352,9 @@ class Install extends CrazyModel implements CrazyCommand {
     public static function defaultHttpsPort(array $answers = [], ?Runtime $runtime = null):int {
 
         # Never propose the port already chosen for HTTP
-        $exclude = [(int) self::_answer($answers, "http_port", 0)];
+        $exclude = [
+            (int) self::_answer($answers, "http_port", 0)
+        ];
 
         # Prefer the port saved in .env, then the standard HTTPS port
         $preferred = self::_environmentPort("CRAZY_HTTPS_PORT") ?? 443;
@@ -343,10 +400,17 @@ class Install extends CrazyModel implements CrazyCommand {
             return $this;
 
         # Require Docker and Compose before preparing the project
-        $this->_runtime->execute("docker", ["info", "--format", "{{.ServerVersion}}"]);
+        $this->_runtime->execute("docker", [
+            "info",
+            "--format",
+            "{{.ServerVersion}}"
+        ]);
 
         # Require the supported Compose plugin instead of the legacy executable
-        $this->_runtime->execute("docker", ["compose", "version"]);
+        $this->_runtime->execute("docker", [
+            "compose",
+            "version"
+        ]);
 
         # Resolve the actual application directory for bind mounts and linked packages
         $this->_root = realpath(File::path("@app_root")) ?: throw new CrazyException("Application directory does not exist.", 400);
@@ -358,7 +422,14 @@ class Install extends CrazyModel implements CrazyCommand {
             throw new CrazyException("Create the project before running CrazyDocker new.", 400);
 
         # Preserve existing custom Docker setups rather than overwriting them
-        foreach(["docker", "docker-compose.yml", "docker-compose.yaml", "compose.yml", "compose.yaml", "config/Docker.yml"] as $path)
+        foreach([
+            "docker",
+            "docker-compose.yml",
+            "docker-compose.yaml",
+            "compose.yml",
+            "compose.yaml",
+            "config/Docker.yml"
+        ] as $path)
 
             # Reject partial installations too, allowing the user to preserve their files
             if(file_exists($this->_root."/".$path))
@@ -472,7 +543,12 @@ class Install extends CrazyModel implements CrazyCommand {
         $this->runCheck();
 
         # Create only the folders needed by the selected server
-        foreach(["docker/php", "docker/bin", "docker/config", "docker/".$this->_options["type"]] as $folder)
+        foreach([
+            "docker/php",
+            "docker/bin",
+            "docker/config",
+            "docker/".$this->_options["type"]
+        ] as $folder)
 
             # Create nested directories while preserving existing application content
             if(!is_dir($this->_root."/".$folder) && !mkdir($this->_root."/".$folder, 0755, true))
@@ -514,7 +590,13 @@ class Install extends CrazyModel implements CrazyCommand {
         $phpService = $integrated ? "webserver" : "php-fpm";
 
         # Keep host paths identical for installed Composer symlinks
-        $mounts = [["type" => "bind", "source" => $this->_root, "target" => $this->_root]];
+        $mounts = [
+            [
+                "type"      =>  "bind",
+                "source"    =>  $this->_root,
+                "target"    =>  $this->_root
+            ]
+        ];
 
         # Resolve the actual library checkout instead of mounting an unresolved symlink
         $library = realpath(File::path("@crazyphp_root"));
@@ -523,25 +605,56 @@ class Install extends CrazyModel implements CrazyCommand {
         if($library && !str_starts_with($library, $this->_root."/"))
 
             # Make the symlink target accessible inside the PHP container
-            $mounts[] = ["type" => "bind", "source" => $library, "target" => $library];
+            $mounts[] = [
+                "type"      =>  "bind",
+                "source"    =>  $library,
+                "target"    =>  $library
+            ];
 
         # Define the selected PHP runtime without publishing its internal port
-        $php = ["build" => ["context" => "./docker/php"], "working_dir" => $this->_root, "volumes" => $mounts, "restart" => "unless-stopped", "environment" => ["CRAZYPHP_DOCKER" => "1"]];
+        $php = [
+            "build"          =>  [
+                "context"    =>  "./docker/php"
+            ],
+            "working_dir"    =>  $this->_root,
+            "volumes"        =>  $mounts,
+            "restart"        =>  "unless-stopped",
+            "environment"    =>  [
+                "CRAZYPHP_DOCKER"    =>  "1"
+            ]
+        ];
 
         # Give HTTP workers the same filesystem identity as local commands and preparation
-        $php["build"]["args"] = ["CRAZY_UID" => '${CRAZY_UID:-1000}', "CRAZY_GID" => '${CRAZY_GID:-1000}'];
+        $php["build"]["args"] = [
+            "CRAZY_UID"    =>  '${CRAZY_UID:-1000}',
+            "CRAZY_GID"    =>  '${CRAZY_GID:-1000}'
+        ];
 
         # Mount the generated PHP overrides at the official images' common path
         $php["volumes"][] = "./docker/php/php.ini:/usr/local/etc/php/conf.d/99-crazyphp.ini:ro";
 
         # Start the Compose document with the PHP runtime
-        $this->_compose = ["services" => [$phpService => $php]];
+        $this->_compose = [
+            "services"    =>  [
+                $phpService    =>  $php
+            ]
+        ];
 
         # Add Nginx in front of PHP-FPM when selected
         if(!$integrated)
 
             # Share the public directory and forward PHP requests over the private network
-            $this->_compose["services"]["webserver"] = ["image" => "nginx:stable-alpine", "volumes" => [...$mounts, "./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro"], "depends_on" => ["php-fpm"], "restart" => "unless-stopped"];
+            $this->_compose["services"]["webserver"] = [
+                "image"         =>  "nginx:stable-alpine",
+                "volumes"       =>  [
+                    ...$mounts,
+                    "./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro"
+                ],
+                "depends_on"    =>  [
+                    "php-fpm"
+                ],
+                "restart"       =>  "unless-stopped"
+            ];
 
         # Mount the selected integrated server configuration
         elseif($this->_options["type"] === "apache")
@@ -555,12 +668,21 @@ class Install extends CrazyModel implements CrazyCommand {
             $this->_compose["services"]["webserver"]["volumes"][] = "./docker/frankenphp/Caddyfile:/etc/caddy/Caddyfile:ro";
 
             # Load our mounted configuration explicitly across image layout changes
-            $this->_compose["services"]["webserver"]["command"] = ["frankenphp", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"];
+            $this->_compose["services"]["webserver"]["command"] = [
+                "frankenphp",
+                "run",
+                "--config",
+                "/etc/caddy/Caddyfile",
+                "--adapter",
+                "caddyfile"
+            ];
 
         }
 
         # Publish HTTP only on loopback when an existing host proxy is responsible for TLS
-        $this->_compose["services"]["webserver"]["ports"] = [$this->_options["proxy"] === "yes" ? "127.0.0.1:\${CRAZY_HTTP_PORT:-8080}:80" : "\${CRAZY_HTTP_PORT:-80}:80"];
+        $this->_compose["services"]["webserver"]["ports"] = [
+            $this->_options["proxy"] === "yes" ? "127.0.0.1:\${CRAZY_HTTP_PORT:-8080}:80" : "\${CRAZY_HTTP_PORT:-80}:80"
+        ];
 
         # Configure automatic HTTPS only for the no-proxy branch
         if($this->_managedTls()){
@@ -575,7 +697,16 @@ class Install extends CrazyModel implements CrazyCommand {
                 unset($this->_compose["services"]["webserver"]["ports"]);
 
                 # Create the dedicated TLS proxy
-                $this->_compose["services"]["caddy"] = ["image" => "caddy:2", "volumes" => ["./docker/caddy/Caddyfile:/etc/caddy/Caddyfile:ro"], "depends_on" => ["webserver"], "restart" => "unless-stopped"];
+                $this->_compose["services"]["caddy"] = [
+                    "image"         =>  "caddy:2",
+                    "volumes"       =>  [
+                        "./docker/caddy/Caddyfile:/etc/caddy/Caddyfile:ro"
+                    ],
+                    "depends_on"    =>  [
+                        "webserver"
+                    ],
+                    "restart"       =>  "unless-stopped"
+                ];
 
                 # Publish ports on the TLS proxy
                 $edge = "caddy";
@@ -586,10 +717,17 @@ class Install extends CrazyModel implements CrazyCommand {
             array_push($this->_compose["services"][$edge]["volumes"], "caddy_data:/data", "caddy_config:/config");
 
             # Expose HTTP redirects, HTTPS and HTTP/3
-            $this->_compose["services"][$edge]["ports"] = ["\${CRAZY_HTTP_PORT:-80}:80", "\${CRAZY_HTTPS_PORT:-443}:443", "\${CRAZY_HTTPS_PORT:-443}:443/udp"];
+            $this->_compose["services"][$edge]["ports"] = [
+                "\${CRAZY_HTTP_PORT:-80}:80",
+                "\${CRAZY_HTTPS_PORT:-443}:443",
+                "\${CRAZY_HTTPS_PORT:-443}:443/udp"
+            ];
 
             # Declare persistent volumes without deleting existing certificate data
-            $this->_compose["volumes"] = ["caddy_data" => null, "caddy_config" => null];
+            $this->_compose["volumes"] = [
+                "caddy_data"      =>  null,
+                "caddy_config"    =>  null
+            ];
 
         }
 
@@ -601,10 +739,14 @@ class Install extends CrazyModel implements CrazyCommand {
 
         # Persist the selected server and TLS strategy separately from runtime container IDs
         Yaml::create($this->_root."/config/Docker.yml", [
-            "Docker" => $this->_options + [
-                "runtime" => ["service" => $phpService],
-                "lifecycle" => "compose",
-                "edge" => ["service" => $this->_managedTls() && $this->_options["type"] !== "frankenphp" ? "caddy" : "webserver"],
+            "Docker"    =>  $this->_options + [
+                "runtime"      =>  [
+                    "service"    =>  $phpService
+                ],
+                "lifecycle"    =>  "compose",
+                "edge"         =>  [
+                    "service"    =>  $this->_managedTls() && $this->_options["type"] !== "frankenphp" ? "caddy" : "webserver"
+                ],
             ],
         ]);
 
@@ -634,10 +776,22 @@ class Install extends CrazyModel implements CrazyCommand {
 
             # Select a maintained image family and its persistent data directory
             [$image, $directory] = match($engine){
-                "mongodb" => ["mongo:7", "/data/db"],
-                "mysql" => ["mysql:8.4", "/var/lib/mysql"],
-                "mariadb" => ["mariadb:11.4", "/var/lib/mysql"],
-                "postgresql" => ["postgres:16-alpine", "/var/lib/postgresql/data"],
+                "mongodb" => [
+                    "mongo:7",
+                    "/data/db"
+                ],
+                "mysql" => [
+                    "mysql:8.4",
+                    "/var/lib/mysql"
+                ],
+                "mariadb" => [
+                    "mariadb:11.4",
+                    "/var/lib/mysql"
+                ],
+                "postgresql" => [
+                    "postgres:16-alpine",
+                    "/var/lib/postgresql/data"
+                ],
             };
 
             # Read the existing initial database and application account
@@ -648,17 +802,41 @@ class Install extends CrazyModel implements CrazyCommand {
 
             # Pass initialization variables supported by each official image
             $environment = match($engine){
-                "mongodb" => ["MONGO_INITDB_DATABASE" => $database, "MONGO_INITDB_ROOT_USERNAME" => $configuration["root"]["login"] ?? "root", "MONGO_INITDB_ROOT_PASSWORD" => $configuration["root"]["password"]],
-                "postgresql" => ["POSTGRES_DB" => $database, "POSTGRES_USER" => $user["login"], "POSTGRES_PASSWORD" => $user["password"]],
-                "mysql" => ["MYSQL_ROOT_PASSWORD" => $configuration["root"]["password"], "MYSQL_ROOT_HOST" => "%"],
-                default => ["MYSQL_DATABASE" => $database, "MYSQL_USER" => $user["login"], "MYSQL_PASSWORD" => $user["password"], "MYSQL_ROOT_PASSWORD" => $configuration["root"]["password"], "MYSQL_ROOT_HOST" => "%"],
+                "mongodb" => [
+                    "MONGO_INITDB_DATABASE"         =>  $database,
+                    "MONGO_INITDB_ROOT_USERNAME"    =>  $configuration["root"]["login"] ?? "root",
+                    "MONGO_INITDB_ROOT_PASSWORD"    =>  $configuration["root"]["password"]
+                ],
+                "postgresql" => [
+                    "POSTGRES_DB"          =>  $database,
+                    "POSTGRES_USER"        =>  $user["login"],
+                    "POSTGRES_PASSWORD"    =>  $user["password"]
+                ],
+                "mysql" => [
+                    "MYSQL_ROOT_PASSWORD"    =>  $configuration["root"]["password"],
+                    "MYSQL_ROOT_HOST"        =>  "%"
+                ],
+                default => [
+                    "MYSQL_DATABASE"         =>  $database,
+                    "MYSQL_USER"             =>  $user["login"],
+                    "MYSQL_PASSWORD"         =>  $user["password"],
+                    "MYSQL_ROOT_PASSWORD"    =>  $configuration["root"]["password"],
+                    "MYSQL_ROOT_HOST"        =>  "%"
+                ],
             };
 
             # Escape Compose interpolation while preserving literal password characters
             $environment = array_map(static fn($value):string => str_replace('$', '$$', (string)$value), $environment);
 
             # Keep databases private to the stack; external clients can add port mappings explicitly
-            $this->_compose["services"][$service] = ["image" => $image, "environment" => $environment, "volumes" => ["database_$service:$directory"], "restart" => "unless-stopped"];
+            $this->_compose["services"][$service] = [
+                "image"          =>  $image,
+                "environment"    =>  $environment,
+                "volumes"        =>  [
+                    "database_$service:$directory"
+                ],
+                "restart"        =>  "unless-stopped"
+            ];
 
             # Persist each engine independently of the application containers
             $this->_compose["volumes"]["database_$service"] = null;
@@ -690,7 +868,11 @@ class Install extends CrazyModel implements CrazyCommand {
     public function runValidate():self {
 
         # Validate without printing expanded credentials
-        $this->_runtime->execute("docker", ["compose", "config", "--quiet"]);
+        $this->_runtime->execute("docker", [
+            "compose",
+            "config",
+            "--quiet"
+        ]);
 
         # Return the validated installer
         return $this;
@@ -705,7 +887,10 @@ class Install extends CrazyModel implements CrazyCommand {
     public function runDockerComposeBuild():self {
 
         # Build the selected runtime and propagate any nonzero exit status
-        $this->_runtime->execute("docker", ["compose", "build"]);
+        $this->_runtime->execute("docker", [
+            "compose",
+            "build"
+        ]);
 
         # Return without starting containers or provisioning a live database
         return $this;
@@ -731,8 +916,8 @@ class Install extends CrazyModel implements CrazyCommand {
 
         # Save the chosen host ports, replacing values from a previous generation
         foreach([
-            "CRAZY_HTTP_PORT" => (string) $this->_options["http_port"],
-            "CRAZY_HTTPS_PORT" => (string) $this->_options["https_port"],
+            "CRAZY_HTTP_PORT"     =>  (string) $this->_options["http_port"],
+            "CRAZY_HTTPS_PORT"    =>  (string) $this->_options["https_port"],
         ] as $name => $value){
 
             # Set pattern of an existing assignment, including exported variables
@@ -748,8 +933,8 @@ class Install extends CrazyModel implements CrazyCommand {
 
         # Keep the generated defaults editable through Compose's automatic .env loading
         $defaults = [
-            "CRAZY_UID" => function_exists("posix_getuid") ? (string)posix_getuid() : "1000",
-            "CRAZY_GID" => function_exists("posix_getgid") ? (string)posix_getgid() : "1000",
+            "CRAZY_UID"    =>  function_exists("posix_getuid") ? (string)posix_getuid() : "1000",
+            "CRAZY_GID"    =>  function_exists("posix_getgid") ? (string)posix_getgid() : "1000",
         ];
 
         # Add only missing keys, preserving existing values
@@ -783,13 +968,20 @@ class Install extends CrazyModel implements CrazyCommand {
         unset($prepare["ports"], $prepare["restart"], $prepare["command"]);
 
         # Avoid invoking the FPM, Apache or FrankenPHP image's normal server entrypoint
-        $prepare["entrypoint"] = ["/bin/sh", "docker/bin/Prepare"];
+        $prepare["entrypoint"] = [
+            "/bin/sh",
+            "docker/bin/Prepare"
+        ];
 
         # Keep dependency files and generated connection settings owned by the host user
         $prepare["user"] = '${CRAZY_UID:-1000}:${CRAZY_GID:-1000}';
 
         # Use a writable home and tell helpers they are already running inside Docker
-        $prepare["environment"] = ["HOME" => "/tmp", "COMPOSER_HOME" => "/tmp/composer", "CRAZYPHP_DOCKER" => "1"];
+        $prepare["environment"] = [
+            "HOME"               =>  "/tmp",
+            "COMPOSER_HOME"      =>  "/tmp/composer",
+            "CRAZYPHP_DOCKER"    =>  "1"
+        ];
 
         # Wait for every configured database to accept connections
         foreach($this->_databases as $engine => $configuration){
@@ -799,17 +991,42 @@ class Install extends CrazyModel implements CrazyCommand {
 
             # Use each image's supported readiness command
             $test = match($engine){
-                "mariadb" => ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"],
-                "mysql" => ["CMD-SHELL", 'MYSQL_PWD="$$MYSQL_ROOT_PASSWORD" mysql --protocol=TCP -h 127.0.0.1 -uroot -e "SELECT 1" >/dev/null'],
-                "postgresql" => ["CMD-SHELL", 'pg_isready -h 127.0.0.1 -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"'],
-                "mongodb" => ["CMD", "mongosh", "--quiet", "--eval", 'quit(db.adminCommand({ping:1}).ok ? 0 : 1)'],
+                "mariadb" => [
+                    "CMD",
+                    "healthcheck.sh",
+                    "--connect",
+                    "--innodb_initialized"
+                ],
+                "mysql" => [
+                    "CMD-SHELL",
+                    'MYSQL_PWD="$$MYSQL_ROOT_PASSWORD" mysql --protocol=TCP -h 127.0.0.1 -uroot -e "SELECT 1" >/dev/null'
+                ],
+                "postgresql" => [
+                    "CMD-SHELL",
+                    'pg_isready -h 127.0.0.1 -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"'
+                ],
+                "mongodb" => [
+                    "CMD",
+                    "mongosh",
+                    "--quiet",
+                    "--eval",
+                    'quit(db.adminCommand({ping:1}).ok ? 0 : 1)'
+                ],
             };
 
             # Allow first-time initialization while bounding readiness failures
-            $this->_compose["services"][$database]["healthcheck"] = ["test" => $test, "interval" => "5s", "timeout" => "5s", "retries" => 30, "start_period" => "20s"];
+            $this->_compose["services"][$database]["healthcheck"] = [
+                "test"            =>  $test,
+                "interval"        =>  "5s",
+                "timeout"         =>  "5s",
+                "retries"         =>  30,
+                "start_period"    =>  "20s"
+            ];
 
             # Delay Composer/database preparation until this engine is healthy
-            $prepare["depends_on"][$database] = ["condition" => "service_healthy"];
+            $prepare["depends_on"][$database] = [
+                "condition"    =>  "service_healthy"
+            ];
 
         }
 
@@ -817,7 +1034,11 @@ class Install extends CrazyModel implements CrazyCommand {
         $source = $this->_root."/config/Database.yml";
 
         # Include all user-defined database settings without changing the original file
-        $configuration = is_file($source) ? Yaml::open($source) : ["Database" => ["collection" => []]];
+        $configuration = is_file($source) ? Yaml::open($source) : [
+            "Database"    =>  [
+                "collection"    =>  []
+            ]
+        ];
 
         # Replace only the endpoints managed by this generated stack
         $configuration = Bootstrap::containerConfiguration($configuration);
@@ -832,10 +1053,19 @@ class Install extends CrazyModel implements CrazyCommand {
         if(is_file($source))
 
             # Mount the generated settings over the application's file only inside its runtime
-            $this->_compose["services"][$service]["volumes"][] = ["type" => "bind", "source" => "./docker/config/Database.yml", "target" => $this->_root."/config/Database.yml", "read_only" => true];
+            $this->_compose["services"][$service]["volumes"][] = [
+                "type"         =>  "bind",
+                "source"       =>  "./docker/config/Database.yml",
+                "target"       =>  $this->_root."/config/Database.yml",
+                "read_only"    =>  true
+            ];
 
         # Start the application only after all initialization succeeds
-        $this->_compose["services"][$service]["depends_on"] = ["prepare" => ["condition" => "service_completed_successfully"]];
+        $this->_compose["services"][$service]["depends_on"] = [
+            "prepare"    =>  [
+                "condition"    =>  "service_completed_successfully"
+            ]
+        ];
 
         # Add the one-shot service without mounting the generated configuration over its input
         $this->_compose["services"]["prepare"] = $prepare;
@@ -894,12 +1124,11 @@ class Install extends CrazyModel implements CrazyCommand {
 
         # Render the common PHP image, enabling Apache rewrite only for Apache
         $this->_template("php/Dockerfile", "docker/php/Dockerfile", [
-            "{{base}}" => $base,
-            "{{extensions}}" => $extensions,
-            "{{apache}}" => $this->_options["type"] === "apache" ? "RUN a2enmod rewrite\n" : "",
-
+            "{{base}}"          =>  $base,
+            "{{extensions}}"    =>  $extensions,
+            "{{apache}}"        =>  $this->_options["type"] === "apache" ? "RUN a2enmod rewrite\n" : "",
             # FrankenPHP serves requests in its main process; keep caches owned by the host user
-            "{{frankenphp}}" => $this->_options["type"] === "frankenphp"
+            "{{frankenphp}}"    =>  $this->_options["type"] === "frankenphp"
                 ? "RUN chown -R www-data:www-data /data /config\nUSER www-data\n"
                 : "",
         ]);
@@ -911,25 +1140,34 @@ class Install extends CrazyModel implements CrazyCommand {
         if($this->_options["type"] === "nginx")
 
             # Quote the document root for paths containing spaces
-            $this->_template("nginx/nginx.conf", "docker/nginx/nginx.conf", ["{{public}}" => $this->_quote($this->_public)]);
+            $this->_template("nginx/nginx.conf", "docker/nginx/nginx.conf", [
+                "{{public}}"    =>  $this->_quote($this->_public)
+            ]);
 
         # Render Apache's front-controller configuration
         elseif($this->_options["type"] === "apache")
 
             # Apply the same public directory without depending on .htaccess
-            $this->_template("apache/apache.conf", "docker/apache/apache.conf", ["{{public}}" => $this->_quote($this->_public)]);
+            $this->_template("apache/apache.conf", "docker/apache/apache.conf", [
+                "{{public}}"    =>  $this->_quote($this->_public)
+            ]);
 
         # Render the integrated Caddy server in classic PHP mode
         else
 
             # Disable automatic HTTPS when another proxy owns certificates or HTTP was selected
-            $this->_template("frankenphp/Caddyfile", "docker/frankenphp/Caddyfile", ["{{site}}" => $this->_managedTls() ? $this->_options["hostname"] : ":80", "{{public}}" => $this->_quote($this->_public)]);
+            $this->_template("frankenphp/Caddyfile", "docker/frankenphp/Caddyfile", [
+                "{{site}}"      =>  $this->_managedTls() ? $this->_options["hostname"] : ":80",
+                "{{public}}"    =>  $this->_quote($this->_public)
+            ]);
 
         # Render a separate Caddy proxy for Nginx and Apache HTTPS deployments
         if($this->_managedTls() && $this->_options["type"] !== "frankenphp")
 
             # Forward requests to the internal HTTP server
-            $this->_template("caddy/Caddyfile", "docker/caddy/Caddyfile", ["{{site}}" => $this->_options["hostname"]]);
+            $this->_template("caddy/Caddyfile", "docker/caddy/Caddyfile", [
+                "{{site}}"    =>  $this->_options["hostname"]
+            ]);
 
     }
 
@@ -942,7 +1180,19 @@ class Install extends CrazyModel implements CrazyCommand {
     private function _quote(string $value):string {
 
         # Escape paths for the quoted server configuration syntax
-        return '"'.str_replace(["\\", '"', '$', "\n", "\r"], ["\\\\", '\\"', '\\$', "", ""], $value).'"';
+        return '"'.str_replace([
+            "\\",
+            '"',
+            '$',
+            "\n",
+            "\r"
+        ], [
+            "\\\\",
+            '\\"',
+            '\\$',
+            "",
+            ""
+        ], $value).'"';
 
     }
 
@@ -1016,7 +1266,9 @@ class Install extends CrazyModel implements CrazyCommand {
     private function _ports():array {
 
         # Set result with the HTTP port, local only behind an existing proxy
-        $result = ["HTTP" => $this->_options["http_port"]];
+        $result = [
+            "HTTP"    =>  $this->_options["http_port"]
+        ];
 
         # Check Caddy or FrankenPHP publishes HTTPS
         if($this->_managedTls())

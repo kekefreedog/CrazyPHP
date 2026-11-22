@@ -232,13 +232,13 @@ class Cookie {
 
         # Default options
         $defaults = [
-            "expires"   =>  null,
-            "path"      =>  "/",
-            "domain"    =>  null,
-            "secure"    =>  false,
-            "httponly"  =>  true,
-            "samesite"  =>  null,
-            "max-age"   =>  null,
+            "expires"     =>  null,
+            "path"        =>  "/",
+            "domain"      =>  null,
+            "secure"      =>  false,
+            "httponly"    =>  true,
+            "samesite"    =>  null,
+            "max-age"     =>  null,
         ];
 
         # Merge options
@@ -298,7 +298,11 @@ class Cookie {
             $sameSite = ucfirst(strtolower($options["samesite"]));
 
             # Validate
-            if(in_array($sameSite, ["Lax", "Strict", "None"], true))
+            if(in_array($sameSite, [
+                "Lax",
+                "Strict",
+                "None"
+            ], true))
 
                 # Push in cookie
                 $cookie .= "; SameSite=" . $sameSite;

@@ -135,8 +135,8 @@ class Command {
 
         # Prepare result
         $result = [
-            "output"        =>  null,
-            "result_code"   =>  null
+            "output"         =>  null,
+            "result_code"    =>  null
         ];
 
         # Check command

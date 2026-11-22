@@ -36,7 +36,7 @@ class ValidateTest extends TestCase{
 
     /** @var array INPUT */
     public const INPUT = [
-        "phoneNumber"  =>  [
+        "phoneNumber"    =>  [
             "0694450403",
             "+33694454345",
             "toto",
@@ -46,7 +46,7 @@ class ValidateTest extends TestCase{
 
     /** @var array RESULT */
     public const OUTPUT = [
-        "phoneNumber"  =>  [
+        "phoneNumber"    =>  [
             true,
             true,
             false,
@@ -70,10 +70,10 @@ class ValidateTest extends TestCase{
         # Setup env
         Env::set([
             # App root for composer class
-            "crazyphp_root"     =>  getcwd(),
-            "phpunit_test"      =>  true,
-            "env_value"         =>  "env_result",
-            "config_location"   =>  "@crazyphp_root/resources/Yml"
+            "crazyphp_root"      =>  getcwd(),
+            "phpunit_test"       =>  true,
+            "env_value"          =>  "env_result",
+            "config_location"    =>  "@crazyphp_root/resources/Yml"
         ]);
 
     }

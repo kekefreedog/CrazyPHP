@@ -31,9 +31,9 @@ class Error {
 
     /** @var array Default public error for failures without an HTTP error status */
     public const DEFAULT = [
-        "code" => 500,
-        "type" => "error",
-        "detail" => "Internal server error",
+        "code"      =>  500,
+        "type"      =>  "error",
+        "detail"    =>  "Internal server error",
     ];
 
     /** Public Static Methods

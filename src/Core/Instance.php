@@ -59,7 +59,7 @@ class Instance {
     /** @var array LIST List of instances loaded */
     public const LIST = [
         "router"    =>  [
-            "class"     =>  "CrazyPHP\Core\Router"
+            "class"    =>  "CrazyPHP\Core\Router"
         ],
     ];
 

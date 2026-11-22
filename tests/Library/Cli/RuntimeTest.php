@@ -43,7 +43,10 @@ class RuntimeTest extends TestCase {
         mkdir($this->_root);
 
         # Configure the runtime's host mounts
-        Env::set(["app_root" => $this->_root, "crazyphp_root" => dirname(__DIR__, 3)]);
+        Env::set([
+            "app_root"         =>  $this->_root,
+            "crazyphp_root"    =>  dirname(__DIR__, 3)
+        ]);
 
     }
 
@@ -76,13 +79,31 @@ class RuntimeTest extends TestCase {
         $runtime = new ProbedRuntime();
 
         # Simulate all local tools being installed
-        $runtime->available = ["composer", "node", "npm", "docker"];
+        $runtime->available = [
+            "composer",
+            "node",
+            "npm",
+            "docker"
+        ];
 
         # Preserve each argument including shell metacharacters
-        $this->assertSame([PHP_BINARY, "/tools/composer", "update", "a b;$(false)"], $runtime->command("composer", ["update", "a b;$(false)"]));
+        $this->assertSame([
+            PHP_BINARY,
+            "/tools/composer",
+            "update",
+            "a b;$(false)"
+        ], $runtime->command("composer", [
+            "update",
+            "a b;$(false)"
+        ]));
 
         # Prefer local npm as well
-        $this->assertSame(["/tools/npm", "install"], $runtime->command("npm", ["install"]));
+        $this->assertSame([
+            "/tools/npm",
+            "install"
+        ], $runtime->command("npm", [
+            "install"
+        ]));
 
         # Docker must not even be probed when local tools exist
         $this->assertSame([], $runtime->probes);
@@ -100,10 +121,21 @@ class RuntimeTest extends TestCase {
         $runtime = new ProbedRuntime();
 
         # Expose only the Docker client
-        $runtime->available = ["docker"];
+        $runtime->available = [
+            "docker"
+        ];
 
         # Preserve Compose arguments without entering the tool fallback
-        $this->assertSame(["/tools/docker", "compose", "config", "--quiet"], $runtime->command("docker", ["compose", "config", "--quiet"]));
+        $this->assertSame([
+            "/tools/docker",
+            "compose",
+            "config",
+            "--quiet"
+        ], $runtime->command("docker", [
+            "compose",
+            "config",
+            "--quiet"
+        ]));
 
         # Docker management must not recursively build a PHP container
         $this->assertSame([], $runtime->probes);
@@ -115,7 +147,9 @@ class RuntimeTest extends TestCase {
         $this->expectExceptionMessage("Install Docker and its Compose plugin");
 
         # Resolve Docker without falling back to Docker itself
-        $runtime->command("docker", ["info"]);
+        $runtime->command("docker", [
+            "info"
+        ]);
 
     }
 
@@ -131,8 +165,13 @@ class RuntimeTest extends TestCase {
 
         # A local command must not start Docker even when its client is installed
         $runtime = new ProbedRuntime();
-        $runtime->available = ["docker"];
-        foreach(["composer", "npm"] as $tool){
+        $runtime->available = [
+            "docker"
+        ];
+        foreach([
+            "composer",
+            "npm"
+        ] as $tool){
             try{
                 $runtime->command($tool);
                 $this->fail("Missing tool should require explicit --docker.");
@@ -171,7 +210,10 @@ class RuntimeTest extends TestCase {
         $this->expectExceptionMessage("exit code 7");
 
         # Run a harmless PHP subprocess that fails deliberately
-        (new Runtime())->execute("php", ["-r", "exit(7);"]);
+        (new Runtime())->execute("php", [
+            "-r",
+            "exit(7);"
+        ]);
 
     }
 
@@ -186,10 +228,17 @@ class RuntimeTest extends TestCase {
         $argument = "spaces ' quotes ; $(false)";
 
         # Write the received arguments from a real child process
-        (new Runtime())->execute("php", ["-r", 'file_put_contents("arguments.json", json_encode([$argv[1], getcwd()]));', $argument]);
+        (new Runtime())->execute("php", [
+            "-r",
+            'file_put_contents("arguments.json", json_encode([$argv[1], getcwd()]));',
+            $argument
+        ]);
 
         # Verify literal input and the selected working directory
-        $this->assertSame([$argument, realpath($this->_root)], json_decode(file_get_contents($this->_root."/arguments.json"), true));
+        $this->assertSame([
+            $argument,
+            realpath($this->_root)
+        ], json_decode(file_get_contents($this->_root."/arguments.json"), true));
 
     }
 
@@ -201,7 +250,33 @@ class RuntimeTest extends TestCase {
     public function testConfirmationRequiresAnExplicitAnswer():void {
 
         # Exercise the real terminal input path without blocking the test runner
-        foreach([["yes\n", "YES", 0], ["no\n", "NO", 0], ["\n", "NO", 0], ["maybe\nyes\n", "YES", 0], ["", "CLOSED", 2]] as [$input, $expected, $status]){
+        foreach([
+            [
+                "yes\n",
+                "YES",
+                0
+            ],
+            [
+                "no\n",
+                "NO",
+                0
+            ],
+            [
+                "\n",
+                "NO",
+                0
+            ],
+            [
+                "maybe\nyes\n",
+                "YES",
+                0
+            ],
+            [
+                "",
+                "CLOSED",
+                2
+            ]
+        ] as [$input, $expected, $status]){
 
             # Supply a controlled stream, including the closed-input case
             file_put_contents($this->_root."/input", $input);
@@ -210,8 +285,25 @@ class RuntimeTest extends TestCase {
             $code = 'require $argv[1]; try { echo (new \\CrazyPHP\\Library\\Cli\\Runtime())->confirm("Passwords updated?") ? "YES" : "NO"; } catch (\\CrazyPHP\\Exception\\CrazyException $exception) { echo "CLOSED"; exit(2); }';
 
             # Keep the bootstrap path separate from executable code
-            $process = proc_open([PHP_BINARY, "-r", $code, dirname(__DIR__, 3)."/vendor/autoload.php"], [
-                ["file", $this->_root."/input", "r"], ["pipe", "w"], ["pipe", "w"],
+            $process = proc_open([
+                PHP_BINARY,
+                "-r",
+                $code,
+                dirname(__DIR__, 3)."/vendor/autoload.php"
+            ], [
+                [
+                    "file",
+                    $this->_root."/input",
+                    "r"
+                ],
+                [
+                    "pipe",
+                    "w"
+                ],
+                [
+                    "pipe",
+                    "w"
+                ],
             ], $pipes);
 
             # Read the displayed prompt and the observed answer

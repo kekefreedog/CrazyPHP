@@ -94,16 +94,16 @@ class Edl {
 
                 # Parse edit decision
                 $currentEvent = [
-                    'eventNumber' => (int)$matches[1],
-                    'reel' => $matches[2],
-                    'track' => $matches[3],
-                    'editType' => $matches[4],
-                    'sourceIn' => $matches[5],
-                    'sourceOut' => $matches[6],
-                    'recordIn' => $matches[7],
-                    'recordOut' => $matches[8],
-                    'comments' => [],
-                    'details' => []
+                    'eventNumber'    =>  (int)$matches[1],
+                    'reel'           =>  $matches[2],
+                    'track'          =>  $matches[3],
+                    'editType'       =>  $matches[4],
+                    'sourceIn'       =>  $matches[5],
+                    'sourceOut'      =>  $matches[6],
+                    'recordIn'       =>  $matches[7],
+                    'recordOut'      =>  $matches[8],
+                    'comments'       =>  [],
+                    'details'        =>  []
                 ];
 
                 # Push in events

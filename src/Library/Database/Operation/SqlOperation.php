@@ -40,7 +40,9 @@ class SqlOperation extends Operation {
     public function __construct(string|array $operations = "@all", string $entity = ""){
 
         # Configure column-reference prefixes
-        parent::__construct($operations, ["prefix" => $entity ? trim($entity)."." : ""]);
+        parent::__construct($operations, [
+            "prefix"    =>  $entity ? trim($entity)."." : ""
+        ]);
 
     }
 
@@ -64,7 +66,10 @@ class SqlOperation extends Operation {
         $column = self::identifier(($options["prefix"] ?? "").$parsed["value"][1].($options["suffix"] ?? ""), true);
 
         # Compare identifiers without accepting SQL expressions
-        $result = ["sql" => "= ".$column, "parameters" => []];
+        $result = [
+            "sql"           =>  "= ".$column,
+            "parameters"    =>  []
+        ];
 
         # Return result
         return $result;
@@ -91,7 +96,10 @@ class SqlOperation extends Operation {
         $column = self::identifier(($options["prefix"] ?? "").$parsed["value"][1].($options["suffix"] ?? ""), true);
 
         # Compare identifiers without accepting SQL expressions
-        $result = ["sql" => "<> ".$column, "parameters" => []];
+        $result = [
+            "sql"           =>  "<> ".$column,
+            "parameters"    =>  []
+        ];
 
         # Return result
         return $result;
@@ -118,7 +126,12 @@ class SqlOperation extends Operation {
         $value = self::_number(($options["prefix"] ?? "").$parsed["value"][1].($options["suffix"] ?? ""));
 
         # Bind the numeric operand
-        $result = ["sql" => "<= ?", "parameters" => [$value]];
+        $result = [
+            "sql"           =>  "<= ?",
+            "parameters"    =>  [
+                $value
+            ]
+        ];
 
         # Return result
         return $result;
@@ -145,7 +158,12 @@ class SqlOperation extends Operation {
         $value = self::_number(($options["prefix"] ?? "").$parsed["value"][1].($options["suffix"] ?? ""));
 
         # Bind the numeric operand
-        $result = ["sql" => ">= ?", "parameters" => [$value]];
+        $result = [
+            "sql"           =>  ">= ?",
+            "parameters"    =>  [
+                $value
+            ]
+        ];
 
         # Return result
         return $result;
@@ -172,7 +190,12 @@ class SqlOperation extends Operation {
         $value = self::_number(($options["prefix"] ?? "").$parsed["value"][1].($options["suffix"] ?? ""));
 
         # Bind the numeric operand
-        $result = ["sql" => "< ?", "parameters" => [$value]];
+        $result = [
+            "sql"           =>  "< ?",
+            "parameters"    =>  [
+                $value
+            ]
+        ];
 
         # Return result
         return $result;
@@ -199,7 +222,12 @@ class SqlOperation extends Operation {
         $value = self::_number(($options["prefix"] ?? "").$parsed["value"][1].($options["suffix"] ?? ""));
 
         # Bind the numeric operand
-        $result = ["sql" => "> ?", "parameters" => [$value]];
+        $result = [
+            "sql"           =>  "> ?",
+            "parameters"    =>  [
+                $value
+            ]
+        ];
 
         # Return result
         return $result;
@@ -223,18 +251,27 @@ class SqlOperation extends Operation {
         $parsed = parent::parseNotBetween($input, $operation);
 
         # Preserve numeric ranges and bind text ranges literally
-        $values = [$parsed["value"][1], $parsed["value"][2]];
+        $values = [
+            $parsed["value"][1],
+            $parsed["value"][2]
+        ];
 
         # Normalize numeric endpoints together
         if(is_numeric($values[0]) && is_numeric($values[1])){
 
             # Convert numeric range endpoints
-            $values = [self::_number($values[0]), self::_number($values[1])];
+            $values = [
+                self::_number($values[0]),
+                self::_number($values[1])
+            ];
 
         }
 
         # Bind both range endpoints
-        $result = ["sql" => "NOT BETWEEN ? AND ?", "parameters" => $values];
+        $result = [
+            "sql"           =>  "NOT BETWEEN ? AND ?",
+            "parameters"    =>  $values
+        ];
 
         # Return result
         return $result;
@@ -258,18 +295,27 @@ class SqlOperation extends Operation {
         $parsed = parent::parseBetween($input, $operation);
 
         # Preserve numeric ranges and bind text ranges literally
-        $values = [$parsed["value"][1], $parsed["value"][2]];
+        $values = [
+            $parsed["value"][1],
+            $parsed["value"][2]
+        ];
 
         # Normalize numeric endpoints together
         if(is_numeric($values[0]) && is_numeric($values[1])){
 
             # Convert numeric range endpoints
-            $values = [self::_number($values[0]), self::_number($values[1])];
+            $values = [
+                self::_number($values[0]),
+                self::_number($values[1])
+            ];
 
         }
 
         # Bind both range endpoints
-        $result = ["sql" => "BETWEEN ? AND ?", "parameters" => $values];
+        $result = [
+            "sql"           =>  "BETWEEN ? AND ?",
+            "parameters"    =>  $values
+        ];
 
         # Return result
         return $result;
@@ -301,7 +347,12 @@ class SqlOperation extends Operation {
         };
 
         # Bind the complete pattern
-        $result = ["sql" => "LIKE ?", "parameters" => [$pattern]];
+        $result = [
+            "sql"           =>  "LIKE ?",
+            "parameters"    =>  [
+                $pattern
+            ]
+        ];
 
         # Return result
         return $result;
@@ -330,8 +381,16 @@ class SqlOperation extends Operation {
 
         # Preserve null comparison semantics
         $result = $input === null
-            ? ["sql" => "IS NULL", "parameters" => []]
-            : ["sql" => "= ?", "parameters" => [$input]];
+            ? [
+                "sql"           =>  "IS NULL",
+                "parameters"    =>  []
+            ]
+            : [
+                "sql"           =>  "= ?",
+                "parameters"    =>  [
+                    $input
+                ]
+            ];
 
         # Return result
         return $result;

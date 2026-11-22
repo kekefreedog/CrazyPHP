@@ -68,7 +68,14 @@ class RunningStack implements Check {
     public function verify(Workspace $workspace):void {
 
         # Get containers
-        [, $output] = $workspace->run(["docker", "compose", "ps", "--all", "--format", "json"]);
+        [, $output] = $workspace->run([
+            "docker",
+            "compose",
+            "ps",
+            "--all",
+            "--format",
+            "json"
+        ]);
 
         # Decode one JSON object per line (Compose v2) or one array (older versions)
         $containers = str_starts_with(trim($output), "[")

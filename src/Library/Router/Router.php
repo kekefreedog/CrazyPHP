@@ -60,7 +60,9 @@ class Router {
 
                 # Check methodsTemp is array
                 $methodsTemp = !is_array($collection["Router"]["methods"]) ?
-                    [$collection["Router"]["methods"]] :
+                    [
+                        $collection["Router"]["methods"]
+                    ] :
                         $collection["Router"]["methods"];
 
                 # Iteration of methods
@@ -150,7 +152,9 @@ class Router {
 
                 # Check methodsTemp is array
                 $methodsTemp = !is_array($methodsAllowed) ?
-                    [$methodsAllowed] :
+                    [
+                        $methodsAllowed
+                    ] :
                         $methodsAllowed;
 
                 # Iteration of methods
@@ -241,10 +245,14 @@ class Router {
         if(!isset($router["methods"]) || empty($router["methods"]))
 
             # Set get
-            $router["methods"] = ["GET"];
+            $router["methods"] = [
+                "GET"
+            ];
 
         # Check router is array
-        if(!is_array($router["methods"])) $router["methods"] = [$router["methods"]];
+        if(!is_array($router["methods"])) $router["methods"] = [
+            $router["methods"]
+        ];
 
         # Iteration of methods
         foreach($router["methods"] as $method){
@@ -257,7 +265,9 @@ class Router {
 
             # Check patterns is array
             if(!is_array($router["patterns"])) 
-                $router["patterns"] = [$router["patterns"]];
+                $router["patterns"] = [
+                    $router["patterns"]
+                ];
 
             # Iteration of patterns
             foreach($router["patterns"] as $pattern){
@@ -276,7 +286,7 @@ class Router {
                         "Name is missing in router given \"".json_encode($router)."\"",
                         500,
                         [
-                            "custom_code"   =>  "router-001",
+                            "custom_code"    =>  "router-001",
                         ]
                     );
 
@@ -293,7 +303,7 @@ class Router {
                         "Controller class is missing in router given \"".json_encode($router)."\"",
                         500,
                         [
-                            "custom_code"   =>  "router-002",
+                            "custom_code"    =>  "router-002",
                         ]
                     );
 
@@ -380,7 +390,7 @@ class Router {
                 "Router \"$routerName\" doesn't exists...",
                 500,
                 [
-                    "custom_code"   =>  "router-003",
+                    "custom_code"    =>  "router-003",
                 ]
             );
 
@@ -441,7 +451,7 @@ class Router {
                             "Router \"".$router["name"]."\" already exists in router config, make sure all router have unique name !",
                             500,
                             [
-                                "custom_code"   =>  "router-004",
+                                "custom_code"    =>  "router-004",
                             ]
                         );
 
@@ -500,7 +510,7 @@ class Router {
                                 "Api router \"".$router["name"]."\" already exists in router config, make sure all router have unique name !",
                                 500,
                                 [
-                                    "custom_code"   =>  "router-005",
+                                    "custom_code"    =>  "router-005",
                                 ]
                             );
     
@@ -592,7 +602,11 @@ class Router {
         $result = [];
 
         # Get config values
-        foreach(["app", "api", "asset"] as $type){
+        foreach([
+            "app",
+            "api",
+            "asset"
+        ] as $type){
 
             # Get routers
             $routers = Config::getValue("Router.$type");
@@ -731,7 +745,11 @@ class Router {
     ];
 
     /** @var array GROUPS Type of router */
-    public const GROUPS = ["app", "api", "asset"];
+    public const GROUPS = [
+        "app",
+        "api",
+        "asset"
+    ];
 
     /** @var string ROUTER_APP_PATH */
     public const ROUTER_APP_PATH = "@app_root/app/Environment/Page/";

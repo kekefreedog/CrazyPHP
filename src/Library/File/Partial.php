@@ -68,7 +68,11 @@ class Partial {
         }else{
 
             # Iteration type
-            foreach(["script", "style", "template"] as $type){
+            foreach([
+                "script",
+                "style",
+                "template"
+            ] as $type){
 
                 # Set type path
                 $typePath = $type."Path";
@@ -214,8 +218,8 @@ class Partial {
 
                 # Set result
                 $result = [
-                    "name"  =>  $name,
-                    "file"  =>  Process::camelToSnake($name),
+                    "name"    =>  $name,
+                    "file"    =>  Process::camelToSnake($name),
                 ] + $all[$name];
 
         }

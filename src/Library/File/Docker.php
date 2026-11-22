@@ -282,21 +282,21 @@ class Docker{
 
     /** @var array NAME_TO_SERVICE Name to services */
     public const NAME_TO_SERVICE = [
-        "http"      =>  "webserver",
-        "php"       =>  "php-fpm",
-        "node"      =>  "node",
-        "mongo"     =>  "mongo",
-        "mysql"     =>  "mysql",
-        "mariadb"   =>  "mariadb",
-        "postgresql"=>  "postgresql",
+        "http"          =>  "webserver",
+        "php"           =>  "php-fpm",
+        "node"          =>  "node",
+        "mongo"         =>  "mongo",
+        "mysql"         =>  "mysql",
+        "mariadb"       =>  "mariadb",
+        "postgresql"    =>  "postgresql",
     ];
 
     /** @var array DATABASE_TO_SERVICE */
     public const DATABASE_TO_SERVICE = [
-        "mongodb"   =>  "mongo",
-        "mysql"     =>  "mysql",
-        "mariadb"   =>  "mariadb",
-        "postgresql"=>  "postgresql",
+        "mongodb"       =>  "mongo",
+        "mysql"         =>  "mysql",
+        "mariadb"       =>  "mariadb",
+        "postgresql"    =>  "postgresql",
     ];
 
     /** @var string ENV_FILE */

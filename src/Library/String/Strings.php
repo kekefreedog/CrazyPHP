@@ -136,7 +136,10 @@ class Strings {
         if(is_array($input))
 
             # Process array
-            $result = array_map([self::class, __FUNCTION__], $input);
+            $result = array_map([
+                self::class,
+                __FUNCTION__
+            ], $input);
 
         else
         # Is string

@@ -45,7 +45,10 @@ class Handlebars {
         # Enable helpers stored in "CrazyPHP\Library\Template\Handlebars\Helpers"
         'helpers'       =>  true,
         # Delimiters
-        'delimiters'    =>  ["{{", "}}"]
+        'delimiters'    =>  [
+            "{{",
+            "}}"
+        ]
         # 'useCache'  =>  true, // Not working
         /**
          * If you don't want use cache, please set this env before to avoid mongo error
@@ -151,7 +154,9 @@ class Handlebars {
         if(!is_array($inputs))
 
             # Convert inputs to array
-            $inputs = [$inputs];
+            $inputs = [
+                $inputs
+            ];
 
         # Add class in top of inputs
         $collectionKey = [];
@@ -233,7 +238,10 @@ class Handlebars {
 
             # Compile
             $compile = $this->compile($file, [
-                "delimiters"    =>  $this->options["delimiters"] ?? ['{{', '}}']
+                "delimiters"    =>  $this->options["delimiters"] ?? [
+                    '{{',
+                    '}}'
+                ]
             ] + $template);
 
             # Set Cache
@@ -262,7 +270,7 @@ class Handlebars {
                 "You have to load template before render it ! No templates defined...",
                 500,
                 [
-                    "custom_code"   =>  "handlebars-001",
+                    "custom_code"    =>  "handlebars-001",
                 ]
             );
 
@@ -350,7 +358,9 @@ class Handlebars {
         if(!is_array($inputs))
 
             # Convert inputs to array
-            $inputs = [$inputs];
+            $inputs = [
+                $inputs
+            ];
 
         # Process inputs
         $inputs = array_map(
@@ -372,7 +382,16 @@ class Handlebars {
             $result = $inputs;
 
         # Replace {}()/\@: by dot
-        $result = str_replace(["{", "}", "(", ")", "/", "\\", "@", ":"], ".", $prefix.$result);
+        $result = str_replace([
+            "{",
+            "}",
+            "(",
+            ")",
+            "/",
+            "\\",
+            "@",
+            ":"
+        ], ".", $prefix.$result);
 
         # Return result
         return $result;
@@ -401,7 +420,7 @@ class Handlebars {
                 "An error is present in your hbs file",
                 500,
                 [
-                    "custom_code"   =>  "handlebars-002",
+                    "custom_code"    =>  "handlebars-002",
                 ]
             );
 
@@ -429,13 +448,17 @@ class Handlebars {
         if(is_string($partialDirs))
 
             # Convert to array
-            $partialDirs = [$partialDirs];
+            $partialDirs = [
+                $partialDirs
+            ];
 
         # Prepare extensions
         if(is_string($extensions))
 
             # Set extensions
-            $extensions = [$extensions];
+            $extensions = [
+                $extensions
+            ];
 
         # Prepare names
         $names = [];
@@ -519,28 +542,29 @@ class Handlebars {
      * Crazy Preset with the maximum of compatibility
      */
     public const CRAZY_PRESET = [
-        "flags"     =>  LightnCandy::FLAG_HANDLEBARSJS_FULL|LightnCandy::FLAG_RUNTIMEPARTIAL|LightnCandy::FLAG_PARENT|LightnCandy::FLAG_ADVARNAME/*  | LightnCandy::FLAG_ERROR_LOG */,
+        "flags"    =>  LightnCandy::FLAG_HANDLEBARSJS_FULL|LightnCandy::FLAG_RUNTIMEPARTIAL|LightnCandy::FLAG_PARENT|LightnCandy::FLAG_ADVARNAME/*  | LightnCandy::FLAG_ERROR_LOG */,
     ];
 
     /**
      * Crazy Preset with the maximum of compatibility
      */
     public const HTML_STRUCTURE = [
-        "flags" =>  LightnCandy::FLAG_HANDLEBARSJS|LightnCandy::FLAG_RUNTIMEPARTIAL|LightnCandy::FLAG_SPVARS|LightnCandy::FLAG_NAMEDARG|LightnCandy::FLAG_ERROR_LOG|LightnCandy::FLAG_PARENT|LightnCandy::FLAG_ADVARNAME,
+        "flags"    =>  LightnCandy::FLAG_HANDLEBARSJS|LightnCandy::FLAG_RUNTIMEPARTIAL|LightnCandy::FLAG_SPVARS|LightnCandy::FLAG_NAMEDARG|LightnCandy::FLAG_ERROR_LOG|LightnCandy::FLAG_PARENT|LightnCandy::FLAG_ADVARNAME,
     ];
 
     /**
      * Performance Preset with the maximum of performance
      */
     public const PERFORMANCE_PRESET = [
-        "flags" =>  LightnCandy::FLAG_BESTPERFORMANCE,
+        "flags"    =>  LightnCandy::FLAG_BESTPERFORMANCE,
     ];
 
     /**
      * Extension of handlebars template
      */
     public const EXTENSIONS = [
-        "handlebars", "hbs"
+        "handlebars",
+        "hbs"
     ];
     
     /**

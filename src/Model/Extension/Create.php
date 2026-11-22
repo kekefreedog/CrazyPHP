@@ -44,25 +44,27 @@ class Create extends CrazyModel implements CrazyCommand {
     public const REQUIRED_VALUES = [
         # Name
         [
-            "name"          =>  "name",
-            "description"   =>  "Name of your crazy extension",
-            "type"          =>  "ARRAY",
-            "required"      =>  true,
-            "select"        =>  "CrazyPHP\Library\Extension\Extension::getAllAvailable",
-            "multiple"      =>  true
+            "name"           =>  "name",
+            "description"    =>  "Name of your crazy extension",
+            "type"           =>  "ARRAY",
+            "required"       =>  true,
+            "select"         =>  "CrazyPHP\Library\Extension\Extension::getAllAvailable",
+            "multiple"       =>  true
         ],
         # Symlink
         [
-            "name"          =>  "symlink",
-            "description"   =>  "Symlinks for script files",
-            "type"          =>  "BOOL",
-            "required"      =>  true,
-            "default"       =>  false,
-            "select"        =>  [
-                false   =>  "False",
-                true    =>  "True"
+            "name"           =>  "symlink",
+            "description"    =>  "Symlinks for script files",
+            "type"           =>  "BOOL",
+            "required"       =>  true,
+            "default"        =>  false,
+            "select"         =>  [
+                false    =>  "False",
+                true     =>  "True"
             ],
-            "process"   =>  ["bool"]
+            "process"        =>  [
+                "bool"
+            ]
         ],
     ];
 
@@ -79,9 +81,9 @@ class Create extends CrazyModel implements CrazyCommand {
      * Data
      */
     private $data = [
-        "toInstall" =>  [],
-        "managers"  =>  [
-            "composer"  =>  false
+        "toInstall"    =>  [],
+        "managers"     =>  [
+            "composer"    =>  false
         ]
     ];
 
@@ -207,7 +209,7 @@ class Create extends CrazyModel implements CrazyCommand {
                 "Symlink with Windows OS isn't supported yet.",
                 500,
                 [
-                    "custom_code"   =>  "extension-create-001"
+                    "custom_code"    =>  "extension-create-001"
                 ]
             );
 
@@ -288,8 +290,8 @@ class Create extends CrazyModel implements CrazyCommand {
 
                                 # Push file in conflict
                                 $conflicts[] = [
-                                    "extension" =>  $extensionName,
-                                    "script"    =>  $script["destination"]
+                                    "extension"    =>  $extensionName,
+                                    "script"       =>  $script["destination"]
                                 ];
 
                 }else
@@ -299,7 +301,7 @@ class Create extends CrazyModel implements CrazyCommand {
                         "Extension $extensionName is already installed",
                         500,
                         [
-                            "custom_code"   =>  "extension-create-002"
+                            "custom_code"    =>  "extension-create-002"
                         ]
                     );
 
@@ -311,7 +313,7 @@ class Create extends CrazyModel implements CrazyCommand {
                 "Script conflict detected",
                 500,
                 [
-                    "custom_code"   =>  "extension-create-003"
+                    "custom_code"    =>  "extension-create-003"
                 ]
             );
 
@@ -423,7 +425,7 @@ class Create extends CrazyModel implements CrazyCommand {
                                         "Failed to create symlink of the file '".File::path($source)."'",
                                         500,
                                         [
-                                            "custom_code"   =>  "extension-create-002"
+                                            "custom_code"    =>  "extension-create-002"
                                         ]
                                     );
 
@@ -438,7 +440,7 @@ class Create extends CrazyModel implements CrazyCommand {
                                     "Failed to copy the file '".File::path($source)."'",
                                     500,
                                     [
-                                        "custom_code"   =>  "extension-create-003"
+                                        "custom_code"    =>  "extension-create-003"
                                     ]
                                 );
 

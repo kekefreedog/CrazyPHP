@@ -106,14 +106,29 @@ class Workspace {
 
         # Write the bootstrap manifest
         file_put_contents($this->root."/composer.json", json_encode([
-            "repositories"      => [["type" => "path", "url" => $library, "options" => ["symlink" => true]]],
-            "require"           => ["kzarshenas/crazyphp" => "*"],
-            "minimum-stability" => "dev",
-            "prefer-stable"     => true,
+            "repositories"         =>  [
+                [
+                    "type"       =>  "path",
+                    "url"        =>  $library,
+                    "options"    =>  [
+                        "symlink"    =>  true
+                    ]
+                ]
+            ],
+            "require"              =>  [
+                "kzarshenas/crazyphp"    =>  "*"
+            ],
+            "minimum-stability"    =>  "dev",
+            "prefer-stable"        =>  true,
         ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
         # Install the library
-        $this->run(["composer", "install", "--no-interaction", "--no-progress"]);
+        $this->run([
+            "composer",
+            "install",
+            "--no-interaction",
+            "--no-progress"
+        ]);
 
         # Return workspace
         return $this;
@@ -156,7 +171,15 @@ class Workspace {
         $this->_started = true;
 
         # Start and wait for health checks and the prepare job
-        $this->run(["docker", "compose", "up", "--detach", "--wait", "--wait-timeout", (string) $timeout]);
+        $this->run([
+            "docker",
+            "compose",
+            "up",
+            "--detach",
+            "--wait",
+            "--wait-timeout",
+            (string) $timeout
+        ]);
 
         # Return workspace
         return $this;
@@ -178,10 +201,26 @@ class Workspace {
             return $this;
 
         # Keep logs for diagnosis before removing containers
-        $this->run(["docker", "compose", "logs", "--no-color", "--timestamps"], false);
+        $this->run([
+            "docker",
+            "compose",
+            "logs",
+            "--no-color",
+            "--timestamps"
+        ], false);
 
         # Stop and remove containers, networks and database volumes
-        $this->run(["docker", "compose", "down", "--volumes", "--remove-orphans", ...($images ? ["--rmi", "local"] : [])], false);
+        $this->run([
+            "docker",
+            "compose",
+            "down",
+            "--volumes",
+            "--remove-orphans",
+            ...($images ? [
+                "--rmi",
+                "local"
+            ] : [])
+        ], false);
 
         # Mark stopped
         $this->_started = false;
@@ -199,7 +238,11 @@ class Workspace {
     public function remove():void {
 
         # Remove generated files without logging into them; vendor/kzarshenas/crazyphp is a symlink and is only unlinked
-        proc_close(proc_open(["rm", "-rf", $this->root], [], $pipes, dirname($this->root)));
+        proc_close(proc_open([
+            "rm",
+            "-rf",
+            $this->root
+        ], [], $pipes, dirname($this->root)));
 
     }
 
@@ -266,9 +309,19 @@ class Workspace {
         $process = proc_open(
             $command,
             [
-                0 => ["file", "/dev/null", "r"],
-                1 => ["pipe", "w"],
-                2 => ["redirect", 1],
+                0    =>  [
+                    "file",
+                    "/dev/null",
+                    "r"
+                ],
+                1    =>  [
+                    "pipe",
+                    "w"
+                ],
+                2    =>  [
+                    "redirect",
+                    1
+                ],
             ],
             $pipes,
             $directory ?? $this->root,
@@ -305,7 +358,10 @@ class Workspace {
             );
 
         # Return result
-        return [$code, $output];
+        return [
+            $code,
+            $output
+        ];
 
     }
 
@@ -329,10 +385,21 @@ class Workspace {
 
         # Use curl for TLS with Caddy's local certificates
         [, $output] = $this->run([
-            "curl", "--silent", "--show-error", "--insecure", "--max-time", "30",
-            "--retry", "5", "--retry-delay", "2", "--retry-all-errors",
+            "curl",
+            "--silent",
+            "--show-error",
+            "--insecure",
+            "--max-time",
+            "30",
+            "--retry",
+            "5",
+            "--retry-delay",
+            "2",
+            "--retry-all-errors",
             ...$arguments,
-            "--write-out", "\n%{http_code}", $url,
+            "--write-out",
+            "\n%{http_code}",
+            $url,
         ], false);
 
         # Split body and status
@@ -340,8 +407,8 @@ class Workspace {
 
         # Return result
         return [
-            "status"    => (int) substr($output, $position + 1),
-            "body"      => substr($output, 0, $position),
+            "status"    =>  (int) substr($output, $position + 1),
+            "body"      =>  substr($output, 0, $position),
         ];
 
     }
@@ -360,7 +427,13 @@ class Workspace {
     private function _step(string $step, array $options):self {
 
         # Run the generator in its own process
-        $this->run([PHP_BINARY, __DIR__."/step.php", $step, $this->root, json_encode($options, JSON_THROW_ON_ERROR)]);
+        $this->run([
+            PHP_BINARY,
+            __DIR__."/step.php",
+            $step,
+            $this->root,
+            json_encode($options, JSON_THROW_ON_ERROR)
+        ]);
 
         # Return workspace
         return $this;
@@ -380,10 +453,10 @@ class Workspace {
 
         # Inherit the environment, without colours or interactive prompts
         return getenv() + [
-            "NO_COLOR"                  => "1",
-            "COMPOSER_NO_INTERACTION"   => "1",
-            "npm_config_fund"           => "false",
-            "npm_config_audit"          => "false",
+            "NO_COLOR"                   =>  "1",
+            "COMPOSER_NO_INTERACTION"    =>  "1",
+            "npm_config_fund"            =>  "false",
+            "npm_config_audit"           =>  "false",
         ];
 
     }

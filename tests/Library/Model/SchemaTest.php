@@ -37,71 +37,71 @@ class SchemaTest extends TestCase {
     /** @var array SCHEMA */
     public const SCHEMA = [
         [
-            'name' => 'type',
-            'label' => 'Entity type',
-            'type' => 'VARCHAR',
+            'name'     =>  'type',
+            'label'    =>  'Entity type',
+            'type'     =>  'VARCHAR',
         ],
         [
-            'name' => 'id',
-            'label' => 'SG ID of the project',
-            'type' => 'INT',
+            'name'     =>  'id',
+            'label'    =>  'SG ID of the project',
+            'type'     =>  'INT',
         ],
         [
-            'name' => 'attributes.name',
-            'label' => 'Name of the project',
-            'type' => 'VARCHAR',
+            'name'     =>  'attributes.name',
+            'label'    =>  'Name of the project',
+            'type'     =>  'VARCHAR',
         ],
         [
-            'name' => 'attributes.sg_release_title',
-            'label' => 'Release title of the project',
-            'type' => 'VARCHAR',
+            'name'     =>  'attributes.sg_release_title',
+            'label'    =>  'Release title of the project',
+            'type'     =>  'VARCHAR',
         ],
         [
-            'name' => 'attributes.image',
-            'label' => 'Image of the show',
-            'type' => 'VARCHAR',
+            'name'     =>  'attributes.image',
+            'label'    =>  'Image of the show',
+            'type'     =>  'VARCHAR',
         ],
         [
-            'name' => 'links.self',
-            'label' => 'Links to Api of ShotGrid',
-            'type' => 'VARCHAR',
+            'name'     =>  'links.self',
+            'label'    =>  'Links to Api of ShotGrid',
+            'type'     =>  'VARCHAR',
         ],
     ];
 
     /** @var array ITEM */
     public const ITEM = [
-        'type' => 'Project',
-        'attributes' => [
-            'name' => 'test',
-            'image' => '',
-            'sg_release_title' => 'test2',
+        'type'             =>  'Project',
+        'attributes'       =>  [
+            'name'                =>  'test',
+            'image'               =>  '',
+            'sg_release_title'    =>  'test2',
         ],
-        'relationships' => [],
-        'id' => 1111,
-        'links' => [
-            'self' => '/api/v1/entity/projects/1111',
+        'relationships'    =>  [],
+        'id'               =>  1111,
+        'links'            =>  [
+            'self'    =>  '/api/v1/entity/projects/1111',
         ],
     ];
 
     /** @var array ITEM_FILTERED */
     public const ITEM_FILTERED = [
-        'attributes' => [
-            'image' => 'toto',
+        'attributes'    =>  [
+            'image'    =>  'toto',
         ]
     ];
 
     /** @cont array EXPECTED */
     public const EXPECTED = [
         [
-            'type' => 'Project',
-            'id' => 1111,
-            'attributes' => [
-                'name' => 'test',
-                'sg_release_title' => 'test2',
-                'image' => '',
+            'type'          =>  'Project',
+            'id'            =>  1111,
+            'attributes'    =>  [
+                'name'                =>  'test',
+                'sg_release_title'    =>  'test2',
+                'image'               =>  '',
             ],
-            'links' => [
-                'self' => '/api/v1/entity/projects/1111',
+            'links'         =>  [
+                'self'    =>  '/api/v1/entity/projects/1111',
             ],
         ],
     ];
@@ -109,8 +109,8 @@ class SchemaTest extends TestCase {
     /** @cont array EXPECTED_FILTERED */
     public const EXPECTED_FILTERED = [
         [
-            'attributes' => [
-                'image' => 'toto',
+            'attributes'    =>  [
+                'image'    =>  'toto',
             ],
         ],
     ];
@@ -131,8 +131,8 @@ class SchemaTest extends TestCase {
         # Setup env
         Env::set([
             # App root for composer class
-            "crazyphp_root"     =>  getcwd(),
-            "config_location"   =>  "@crazyphp_root/resources/Yml"
+            "crazyphp_root"      =>  getcwd(),
+            "config_location"    =>  "@crazyphp_root/resources/Yml"
         ]);
 
     }
@@ -166,8 +166,10 @@ class SchemaTest extends TestCase {
     public function testPageState():void {
 
         # New schema
-        $schema = new Schema(self::SCHEMA, [self::ITEM], [
-            "flatten"       =>  true,
+        $schema = new Schema(self::SCHEMA, [
+            self::ITEM
+        ], [
+            "flatten"    =>  true,
         ]);
 
         # Get result
@@ -188,10 +190,12 @@ class SchemaTest extends TestCase {
     public function testSkipEmptyValue():void {
 
         # New schema
-        $schema = new Schema(self::SCHEMA, [self::ITEM_FILTERED], [
-            "flatten"       =>  true,
-            "phpunit_test"  =>  true,
-            "skipEmptyValue"=>  true
+        $schema = new Schema(self::SCHEMA, [
+            self::ITEM_FILTERED
+        ], [
+            "flatten"           =>  true,
+            "phpunit_test"      =>  true,
+            "skipEmptyValue"    =>  true
         ]);
 
         # Get result

@@ -43,12 +43,12 @@ class Delete extends CrazyModel implements CrazyCommand {
     public const REQUIRED_VALUES = [
         # Name
         [
-            "name"          =>  "name",
-            "description"   =>  "Name of your crazy extension",
-            "type"          =>  "ARRAY",
-            "required"      =>  true,
-            "select"        =>  "CrazyPHP\Library\Extension\Extension::getAllInstalled",
-            "multiple"      =>  true
+            "name"           =>  "name",
+            "description"    =>  "Name of your crazy extension",
+            "type"           =>  "ARRAY",
+            "required"       =>  true,
+            "select"         =>  "CrazyPHP\Library\Extension\Extension::getAllInstalled",
+            "multiple"       =>  true
         ],
     ];
 
@@ -65,9 +65,9 @@ class Delete extends CrazyModel implements CrazyCommand {
      * Data
      */
     private $data = [
-        "toRemove" =>  [],
-        "managers"  =>  [
-            "composer"  =>  false
+        "toRemove"    =>  [],
+        "managers"    =>  [
+            "composer"    =>  false
         ]
     ];
 

@@ -51,8 +51,8 @@ class MessagePackTest extends TestCase {
 
         # Setup env
         Env::set([
-            "phpunit_test"      =>  true,
-            "crazyphp_root"     =>  getcwd(),
+            "phpunit_test"     =>  true,
+            "crazyphp_root"    =>  getcwd(),
         ]);
 
         # Check folder exists
@@ -193,7 +193,7 @@ class MessagePackTest extends TestCase {
             "third"     =>  3,
             "fourth"    =>  true,
             "param"     =>  [
-                "value"     =>  "deep"
+                "value"    =>  "deep"
             ]
         ];
 
@@ -246,8 +246,8 @@ class MessagePackTest extends TestCase {
 
         # Data 2
         $data2 = [
-            "param2"     =>  [
-                "value"     =>  "deep"
+            "param2"    =>  [
+                "value"    =>  "deep"
             ]
         ];
 
@@ -275,8 +275,8 @@ class MessagePackTest extends TestCase {
 
         # Data 2
         $data2 = [
-            "param2"     =>  [
-                "value"     =>  "newDeep"
+            "param2"    =>  [
+                "value"    =>  "newDeep"
             ]
         ];
 
@@ -306,7 +306,7 @@ class MessagePackTest extends TestCase {
             "third"     =>  3,
             "fourth"    =>  true,
             "param"     =>  [
-                "value"     =>  "deep"
+                "value"    =>  "deep"
             ]
         ];
 
@@ -314,7 +314,9 @@ class MessagePackTest extends TestCase {
         $path = static::TEST_PATH."MessagePack.".MessagePack::FILE_EXT;
 
         # Data 2
-        $data2 = ["param2"];
+        $data2 = [
+            "param2"
+        ];
 
         # Create file
         MessagePack::delete($path, $data2);

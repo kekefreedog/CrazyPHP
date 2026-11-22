@@ -44,13 +44,25 @@ class FrontRunTest extends TestCase {
         # Use a custom document root to verify asset discovery follows App.public
         $this->_root = sys_get_temp_dir()."/crazy front ".bin2hex(random_bytes(6));
         mkdir($this->_root."/config", 0755, true);
-        Env::set(["app_root" => $this->_root, "crazyphp_root" => dirname(__DIR__, 2)]);
+        Env::set([
+            "app_root"         =>  $this->_root,
+            "crazyphp_root"    =>  dirname(__DIR__, 2)
+        ]);
         unset($GLOBALS[Config::PREFIX]);
-        Yaml::create($this->_root."/config/App.yml", ["App" => ["public" => "web"]]);
+        Yaml::create($this->_root."/config/App.yml", [
+            "App"    =>  [
+                "public"    =>  "web"
+            ]
+        ]);
         $this->_runtime = new FrontRuntime($this->_root);
 
         # Preserve script values containing spaces and literal shell metacharacters
-        file_put_contents($this->_root."/package.json", json_encode(["scripts" => ["build" => "compiler --mode production", "watch" => "compiler --watch --mode development"]]));
+        file_put_contents($this->_root."/package.json", json_encode([
+            "scripts"    =>  [
+                "build"    =>  "compiler --mode production",
+                "watch"    =>  "compiler --watch --mode development"
+            ]
+        ]));
 
     }
 
@@ -76,7 +88,17 @@ class FrontRunTest extends TestCase {
     public static function bundlers():array {
 
         # Include old Front.yml files that do not declare a bundler
-        return [["webpack"], ["vite"], [null]];
+        return [
+            [
+                "webpack"
+            ],
+            [
+                "vite"
+            ],
+            [
+                null
+            ]
+        ];
 
     }
 
@@ -93,18 +115,49 @@ class FrontRunTest extends TestCase {
         $this->_front($bundler);
 
         # Forward an explicit mode and a value that must remain a single argument
-        (new Run(["args" => ["build", "--", "--mode", "development", "--define", 'literal spaces;$(false)']], $this->_runtime))->run();
+        (new Run([
+            "args"    =>  [
+                "build",
+                "--",
+                "--mode",
+                "development",
+                "--define",
+                'literal spaces;$(false)'
+            ]
+        ], $this->_runtime))->run();
 
         # Use one checked installation and one compiler invocation
         $this->assertSame([
-            ["npm", ["install"]],
-            ["npm", ["run", "build", "--", "--mode", "development", "--define", 'literal spaces;$(false)']],
+            [
+                "npm",
+                [
+                    "install"
+                ]
+            ],
+            [
+                "npm",
+                [
+                    "run",
+                    "build",
+                    "--",
+                    "--mode",
+                    "development",
+                    "--define",
+                    'literal spaces;$(false)'
+                ]
+            ],
         ], $this->_runtime->commands);
 
         # Select only the new build and preserve runtime-before-entry ordering
         $front = Yaml::open($this->_root."/config/Front.yml")["Front"];
-        $this->assertSame(["runtime.bbbbbbbb.js", "vendors.bbbbbbbb.js", "index.bbbbbbbb.js"], $front["lastBuild"]["files"]);
-        $this->assertSame(["Home.bbbbbbbb.js"], $front["lastBuild"]["pages"]);
+        $this->assertSame([
+            "runtime.bbbbbbbb.js",
+            "vendors.bbbbbbbb.js",
+            "index.bbbbbbbb.js"
+        ], $front["lastBuild"]["files"]);
+        $this->assertSame([
+            "Home.bbbbbbbb.js"
+        ], $front["lastBuild"]["pages"]);
         $this->assertSame("bbbbbbbb", $front["lastBuild"]["hash"]);
         $this->assertSame("development", $front["lastBuild"]["mode"]);
         $this->assertFalse($front["lastBuild"]["watch"]);
@@ -122,7 +175,11 @@ class FrontRunTest extends TestCase {
 
         # Run the watch script through the explicit storyline
         $this->_front("vite");
-        $runner = new Run(["args" => ["watch"]], $this->_runtime);
+        $runner = new Run([
+            "args"    =>  [
+                "watch"
+            ]
+        ], $this->_runtime);
         $this->assertSame(Run::STORYLINE, $runner->getStoryline());
         $runner->run();
 
@@ -143,7 +200,13 @@ class FrontRunTest extends TestCase {
 
         # Override a watch script with one finite build and an explicit mode
         $this->_front("vite");
-        (new Run(["args" => ["watch", "--watch=false", "--mode=production"]], $this->_runtime))->run();
+        (new Run([
+            "args"    =>  [
+                "watch",
+                "--watch=false",
+                "--mode=production"
+            ]
+        ], $this->_runtime))->run();
 
         # Ensure recorded metadata agrees with the flags forwarded to the compiler
         $this->assertFalse($this->_runtime->watchDuringCompilation);
@@ -160,7 +223,11 @@ class FrontRunTest extends TestCase {
     public function testFirstBuildWithoutPageOutputs():void {
 
         # Missing output directories must not make discovery throw before the first build
-        Yaml::create($this->_root."/config/Front.yml", ["Front" => ["bundler" => "vite"]]);
+        Yaml::create($this->_root."/config/Front.yml", [
+            "Front"    =>  [
+                "bundler"    =>  "vite"
+            ]
+        ]);
         $runner = new Run([], $this->_runtime);
         $runner->runGeneratedFilesOnConfig();
         $this->assertFalse(Config::has("Front.lastBuild.hash"));
@@ -218,7 +285,11 @@ class FrontRunTest extends TestCase {
 
             # Prepare: no npm call, watch metadata written, previous build kept for the next phase
             putenv(Run::PHASE_ENV."=prepare");
-            (new Run(["args" => ["build"]], $this->_runtime))->run();
+            (new Run([
+                "args"    =>  [
+                    "build"
+                ]
+            ], $this->_runtime))->run();
             $this->assertSame([], $this->_runtime->commands);
             $this->assertSame("production", Config::getValue("Front.lastBuild.mode"));
             $this->assertFileExists(File::path(Run::PREVIOUS_BUILD_FILE));
@@ -226,7 +297,11 @@ class FrontRunTest extends TestCase {
             # Failed: the previous build is restored, the saved copy removed and the failure reported
             putenv(Run::PHASE_ENV."=failed");
             try{
-                (new Run(["args" => ["build"]], $this->_runtime))->run();
+                (new Run([
+                    "args"    =>  [
+                        "build"
+                    ]
+                ], $this->_runtime))->run();
                 $this->fail("A failed host script must be reported.");
             }catch(CrazyException $exception){
                 $this->assertStringContainsString("failed or was stopped", $exception->getMessage());
@@ -236,9 +311,17 @@ class FrontRunTest extends TestCase {
 
             # Prepare then finish: the build is registered without any npm call in Docker
             putenv(Run::PHASE_ENV."=prepare");
-            (new Run(["args" => ["build"]], $this->_runtime))->run();
+            (new Run([
+                "args"    =>  [
+                    "build"
+                ]
+            ], $this->_runtime))->run();
             putenv(Run::PHASE_ENV."=finish");
-            (new Run(["args" => ["build"]], $this->_runtime))->run();
+            (new Run([
+                "args"    =>  [
+                    "build"
+                ]
+            ], $this->_runtime))->run();
             $this->assertSame([], $this->_runtime->commands);
             $this->assertFileDoesNotExist(File::path(Run::PREVIOUS_BUILD_FILE));
 
@@ -266,13 +349,19 @@ class FrontRunTest extends TestCase {
         try{
 
             # Keep interruption visible to callers while preserving usable output references
-            (new Run(["args" => ["watch"]], $this->_runtime))->run();
+            (new Run([
+                "args"    =>  [
+                    "watch"
+                ]
+            ], $this->_runtime))->run();
 
         }finally{
 
             # Do not restore the old hash after the watcher replaced its files
             $this->assertSame("bbbbbbbb", Config::getValue("Front.lastBuild.hash"));
-            $this->assertSame(["Home.bbbbbbbb.js"], Config::getValue("Front.lastBuild.pages"));
+            $this->assertSame([
+                "Home.bbbbbbbb.js"
+            ], Config::getValue("Front.lastBuild.pages"));
 
         }
 
@@ -299,7 +388,14 @@ class FrontRunTest extends TestCase {
         }finally{
 
             # Execute no compiler process and preserve the previous build
-            $this->assertSame([["npm", ["install"]]], $this->_runtime->commands);
+            $this->assertSame([
+                [
+                    "npm",
+                    [
+                        "install"
+                    ]
+                ]
+            ], $this->_runtime->commands);
             $this->assertSame($previous, Config::getValue("Front.lastBuild"));
 
         }
@@ -314,7 +410,20 @@ class FrontRunTest extends TestCase {
     public static function invalidSelections():array {
 
         # Cover disabled frontend projects, unsupported bundlers and absent package scripts
-        return [["none", "build"], ["unknown", "build"], ["vite", "missing"]];
+        return [
+            [
+                "none",
+                "build"
+            ],
+            [
+                "unknown",
+                "build"
+            ],
+            [
+                "vite",
+                "missing"
+            ]
+        ];
 
     }
 
@@ -335,7 +444,11 @@ class FrontRunTest extends TestCase {
         try{
 
             # Reject the invalid selection
-            (new Run(["args" => [$script]], $this->_runtime))->run();
+            (new Run([
+                "args"    =>  [
+                    $script
+                ]
+            ], $this->_runtime))->run();
 
         }finally{
 
@@ -355,12 +468,25 @@ class FrontRunTest extends TestCase {
     private function _front(?string $bundler):void {
 
         # Keep a recognizable old build for failure and watch-mode assertions
-        $front = ["custom" => "keep", "lastBuild" => ["watch" => true, "mode" => "old", "hash" => "aaaaaaaa", "date" => "old", "files" => ["index.aaaaaaaa.js"]]];
+        $front = [
+            "custom"       =>  "keep",
+            "lastBuild"    =>  [
+                "watch"    =>  true,
+                "mode"     =>  "old",
+                "hash"     =>  "aaaaaaaa",
+                "date"     =>  "old",
+                "files"    =>  [
+                    "index.aaaaaaaa.js"
+                ]
+            ]
+        ];
         if($bundler !== null)
             $front["bundler"] = $bundler;
 
         # Save the fixture's frontend configuration
-        Yaml::create($this->_root."/config/Front.yml", ["Front" => $front]);
+        Yaml::create($this->_root."/config/Front.yml", [
+            "Front"    =>  $front
+        ]);
 
     }
 
@@ -395,7 +521,10 @@ class FrontRuntime extends Runtime {
     public function execute(string $tool, array $arguments = []):void {
 
         # Record invocation boundaries and inject failures before emitting assets
-        $this->commands[] = [$tool, $arguments];
+        $this->commands[] = [
+            $tool,
+            $arguments
+        ];
         if($this->fail === $arguments[0])
             throw new CrazyException("compiler failed", 500);
 
@@ -406,8 +535,16 @@ class FrontRuntime extends Runtime {
         # Inspect live watch metadata and generate both an old and a new build
         $this->watchDuringCompilation = Config::getValue("Front.lastBuild.watch");
         mkdir($this->_root."/web/dist/page/app", 0755, true);
-        foreach(["aaaaaaaa" => 100, "bbbbbbbb" => 200] as $hash => $time)
-            foreach(["runtime", "vendors", "index", "page/app/Home"] as $name){
+        foreach([
+            "aaaaaaaa"    =>  100,
+            "bbbbbbbb"    =>  200
+        ] as $hash => $time)
+            foreach([
+                "runtime",
+                "vendors",
+                "index",
+                "page/app/Home"
+            ] as $name){
 
                 # Give the build selector deterministic timestamps
                 $path = $this->_root."/web/dist/$name.$hash.js";

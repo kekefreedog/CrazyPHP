@@ -57,9 +57,9 @@ class CacheTest extends TestCase {
         # Setup env
         Env::set([
             # App root for composer class
-            "phpunit_test"  =>  true,
-            "crazyphp_root" =>  getcwd(),
-            "app_root"      =>  getcwd(),
+            "phpunit_test"     =>  true,
+            "crazyphp_root"    =>  getcwd(),
+            "app_root"         =>  getcwd(),
         ]);
 
         # Check folder exists
@@ -153,13 +153,20 @@ class CacheTest extends TestCase {
         $template = eval($this->cache->get("test-template"));
 
         # Execute template
-        $result = $template(["id" => 1, "name" => "Kevin"]);
+        $result = $template([
+            "id"      =>  1,
+            "name"    =>  "Kevin"
+        ]);
 
         # Check
         $this->assertSame($result, "1 is corresponding to Kevin");
             
         # Remove cache folder
-        $this->cache->deleteMultiple(["test-string", "test-array", "test-template"]);
+        $this->cache->deleteMultiple([
+            "test-string",
+            "test-array",
+            "test-template"
+        ]);
         File::remove(self::TEST_PATH);
 
     }
@@ -177,12 +184,12 @@ class CacheTest extends TestCase {
     /* Array */
     const TEST_ARRAY = [
         [
-            "id"    =>  1,
-            "name"  =>  "Kevin"
+            "id"      =>  1,
+            "name"    =>  "Kevin"
         ],
         [
-            "id"    =>  2,
-            "name"  =>  "Justine"
+            "id"      =>  2,
+            "name"    =>  "Justine"
         ],
     ];
 

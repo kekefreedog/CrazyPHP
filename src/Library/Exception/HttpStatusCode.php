@@ -118,7 +118,7 @@ class HttpStatusCode {
                 "Default does not exist in Http Status Code collection...",
                 500,
                 [
-                    "custom_code"   =>  "http_status_code-020",
+                    "custom_code"    =>  "http_status_code-020",
                 ]
             );
 
@@ -169,7 +169,7 @@ class HttpStatusCode {
                 "Http Status Code collection file is not valid...",
                 500,
                 [
-                    "custom_code"   =>  "http_status_code-010",
+                    "custom_code"    =>  "http_status_code-010",
                 ]
             );
 

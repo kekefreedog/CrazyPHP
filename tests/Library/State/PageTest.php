@@ -37,9 +37,11 @@ class PageTest extends TestCase{
 
     /** @var array INPUT */
     public const INPUT = [
-        "context"   =>  true,
-        "cookie"    =>  true,
-        "config"    =>  ["Middleware"]
+        "context"    =>  true,
+        "cookie"     =>  true,
+        "config"     =>  [
+            "Middleware"
+        ]
     ];
 
     /** @var array RESULT */
@@ -61,9 +63,9 @@ class PageTest extends TestCase{
         # Setup env
         Env::set([
             # App root for composer class
-            "crazyphp_root"     =>  getcwd(),
-            "phpunit_test"      =>  true,
-            "config_location"   =>  "@crazyphp_root/resources/Yml"
+            "crazyphp_root"      =>  getcwd(),
+            "phpunit_test"       =>  true,
+            "config_location"    =>  "@crazyphp_root/resources/Yml"
         ]);
 
     }
@@ -104,9 +106,9 @@ class PageTest extends TestCase{
 
         # Prepare result await
         $resultAwait = [
-            "_context"  =>  [],
-            "_cookies"  =>  [],
-            "_config"   =>  Config::get(static::INPUT["config"])
+            "_context"    =>  [],
+            "_cookies"    =>  [],
+            "_config"     =>  Config::get(static::INPUT["config"])
         ];
 
         # Assert

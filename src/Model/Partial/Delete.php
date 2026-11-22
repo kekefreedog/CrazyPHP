@@ -41,12 +41,12 @@ class Delete extends CrazyModel implements CrazyCommand {
     public const REQUIRED_VALUES = [
         # Type
         [
-            "name"          =>  "partials",
-            "description"   =>  "Partials to delete",
-            "type"          =>  "ARRAY",
-            "required"      =>  true,
-            "multiple"      =>  true,
-            "select"        =>  "CrazyPHP\Library\File\Partial::getSummary"
+            "name"           =>  "partials",
+            "description"    =>  "Partials to delete",
+            "type"           =>  "ARRAY",
+            "required"       =>  true,
+            "multiple"       =>  true,
+            "select"         =>  "CrazyPHP\Library\File\Partial::getSummary"
         ],
     ];
 
@@ -171,7 +171,7 @@ class Delete extends CrazyModel implements CrazyCommand {
                 "No partial selected.",
                 500,
                 [
-                    "custom_code"   =>  "create-partial-001",
+                    "custom_code"    =>  "create-partial-001",
                 ]
             );
 

@@ -44,7 +44,14 @@ class BootstrapTest extends TestCase {
         $library = dirname(__DIR__, 3);
         symlink($library, $this->_root."/vendor/kzarshenas/crazyphp");
         file_put_contents($this->_root."/vendor/autoload.php", "<?php require ".var_export($library."/vendor/autoload.php", true).";");
-        file_put_contents($this->_root."/composer.json", json_encode(["version" => "1.2.3", "config" => ["platform" => ["php" => "8.5.0"]]]));
+        file_put_contents($this->_root."/composer.json", json_encode([
+            "version"    =>  "1.2.3",
+            "config"     =>  [
+                "platform"    =>  [
+                    "php"    =>  "8.5.0"
+                ]
+            ]
+        ]));
 
         # Record each invocation and control failures without contacting Docker
         file_put_contents($this->_root."/tools/docker", "#!".PHP_BINARY."\n<?php\n". <<<'CLIENT'
@@ -84,7 +91,9 @@ CLIENT);
 
         # Help requires no confirmation and never invokes Docker by default
         foreach(glob(dirname(__DIR__, 3)."/bin/Crazy*") as $entry){
-            [$status, $output, $error] = $this->_run(basename($entry), ["--help"]);
+            [$status, $output, $error] = $this->_run(basename($entry), [
+                "--help"
+            ]);
             $this->assertSame(0, $status, $error);
             $this->assertStringContainsString("--docker", $output);
             $this->assertStringContainsString("--yes", $output);
@@ -102,8 +111,31 @@ CLIENT);
     public function testStartupConfirmationAndBypass():void {
 
         # Negative and empty responses cancel before the action; EOF fails clearly
-        foreach([["no\n", 0, false], ["\n", 0, false], ["yes\n", 0, true], ["", 1, false]] as [$answer, $expected, $executed]){
-            [$status, $output, $error] = $this->_run("CrazyCommand", ["version"], $answer);
+        foreach([
+            [
+                "no\n",
+                0,
+                false
+            ],
+            [
+                "\n",
+                0,
+                false
+            ],
+            [
+                "yes\n",
+                0,
+                true
+            ],
+            [
+                "",
+                1,
+                false
+            ]
+        ] as [$answer, $expected, $executed]){
+            [$status, $output, $error] = $this->_run("CrazyCommand", [
+                "version"
+            ], $answer);
             $this->assertSame($expected, $status, $error);
             $this->assertStringContainsString("Run CrazyCommand version?", $output);
             $this->assertSame($executed, str_contains($output.$error, "1.2.3"));
@@ -112,8 +144,14 @@ CLIENT);
         }
 
         # Both option spellings work after the command with stdin already closed
-        foreach(["--yes", "-y"] as $option){
-            [$status, $output, $error] = $this->_run("CrazyCommand", ["version", $option]);
+        foreach([
+            "--yes",
+            "-y"
+        ] as $option){
+            [$status, $output, $error] = $this->_run("CrazyCommand", [
+                "version",
+                $option
+            ]);
             $this->assertSame(0, $status, $error);
             $this->assertStringContainsString("1.2.3", $output.$error);
             $this->assertStringNotContainsString("[y/N]", $output);
@@ -131,20 +169,108 @@ CLIENT);
 
         # Cancel every action before forms, extension checks or project mutations
         $commands = [
-            ["CrazyCommand", ["version"], "🚀 Run version"],
-            ["CrazyCommand", ["new", "project"], "🚀 Run new project"],
-            ["CrazyCommand", ["update", "extension"], "🍿 Run update extension"],
-            ["CrazyCommand", ["delete", "project"], "🚀 Run delete project"],
-            ["CrazyDocker", ["new"], "🚀 Run new Docker"],
-            ["CrazyDocker", ["delete"], "🚀 Run delete Docker"],
-            ["CrazyAsset", ["register"], "🚀 Run Register Config Asset"],
-            ["CrazyFront", ["run", "build"], "🚀 Run Frontend Build"],
-            ["CrazyMigration", ["check"], "🚀 Run check migration"],
-            ["CrazyMigration", ["run"], "🚀 Run migration"],
-            ["CrazyWebsocket", ["run"], "🚀 Run Websocket Server"],
-            ["CrazyWebsocket", ["stop"], "🚀 Stop Websocket Server"],
-            ["CrazyWorkers", ["run"], "🚀 Run Workers Server"],
-            ["CrazyWorkers", ["stop"], "🚀 Stop Workers Server"],
+            [
+                "CrazyCommand",
+                [
+                    "version"
+                ],
+                "🚀 Run version"
+            ],
+            [
+                "CrazyCommand",
+                [
+                    "new",
+                    "project"
+                ],
+                "🚀 Run new project"
+            ],
+            [
+                "CrazyCommand",
+                [
+                    "update",
+                    "extension"
+                ],
+                "🍿 Run update extension"
+            ],
+            [
+                "CrazyCommand",
+                [
+                    "delete",
+                    "project"
+                ],
+                "🚀 Run delete project"
+            ],
+            [
+                "CrazyDocker",
+                [
+                    "new"
+                ],
+                "🚀 Run new Docker"
+            ],
+            [
+                "CrazyDocker",
+                [
+                    "delete"
+                ],
+                "🚀 Run delete Docker"
+            ],
+            [
+                "CrazyAsset",
+                [
+                    "register"
+                ],
+                "🚀 Run Register Config Asset"
+            ],
+            [
+                "CrazyFront",
+                [
+                    "run",
+                    "build"
+                ],
+                "🚀 Run Frontend Build"
+            ],
+            [
+                "CrazyMigration",
+                [
+                    "check"
+                ],
+                "🚀 Run check migration"
+            ],
+            [
+                "CrazyMigration",
+                [
+                    "run"
+                ],
+                "🚀 Run migration"
+            ],
+            [
+                "CrazyWebsocket",
+                [
+                    "run"
+                ],
+                "🚀 Run Websocket Server"
+            ],
+            [
+                "CrazyWebsocket",
+                [
+                    "stop"
+                ],
+                "🚀 Stop Websocket Server"
+            ],
+            [
+                "CrazyWorkers",
+                [
+                    "run"
+                ],
+                "🚀 Run Workers Server"
+            ],
+            [
+                "CrazyWorkers",
+                [
+                    "stop"
+                ],
+                "🚀 Stop Workers Server"
+            ],
         ];
 
         # The logo and script title must precede the first yes/no prompt
@@ -173,7 +299,10 @@ CLIENT);
     public function testYesAlsoSkipsActionConfirmation():void {
 
         # Asset registration has a second confirmation after its startup prompt
-        [$status, $output, $error] = $this->_run("CrazyAsset", ["register", "--yes"]);
+        [$status, $output, $error] = $this->_run("CrazyAsset", [
+            "register",
+            "--yes"
+        ]);
         $this->assertSame(0, $status, $error);
         $this->assertStringContainsString("Asset registered with success", $output);
         $this->assertStringNotContainsString("[y/N]", $output);
@@ -181,13 +310,17 @@ CLIENT);
         $this->assertSame(1, substr_count($output, "🚀 Run Register Config Asset"));
 
         # An explicit No at the startup prompt prevents even that second prompt
-        [$status, $output, $error] = $this->_run("CrazyAsset", ["register"], "no\n");
+        [$status, $output, $error] = $this->_run("CrazyAsset", [
+            "register"
+        ], "no\n");
         $this->assertSame(0, $status, $error);
         $this->assertStringNotContainsString("Asset registered with success", $output);
         $this->assertSame(1, substr_count($output, "[y/N]"));
 
         # Successive prompts must retain piped answers and display input on the prompt line
-        [$status, $output, $error] = $this->_run("CrazyAsset", ["register"], "yes\nyes\n");
+        [$status, $output, $error] = $this->_run("CrazyAsset", [
+            "register"
+        ], "yes\nyes\n");
         $this->assertSame(0, $status, $error);
         $this->assertStringContainsString("Asset registered with success", $output);
         $this->assertSame(2, substr_count($output, "[y/N]"));
@@ -204,19 +337,45 @@ CLIENT);
 
         # A host-side platform check must not execute when Docker is explicitly selected
         file_put_contents($this->_root."/vendor/autoload.php", "<?php exit(93);");
-        $flags = ["--", "--docker", "--yes", "literal spaces;$(false)"];
-        [$status, , $error] = $this->_run("CrazyFront", ["run", "build", "--docker", "-y", ...$flags]);
+        $flags = [
+            "--",
+            "--docker",
+            "--yes",
+            "literal spaces;$(false)"
+        ];
+        [$status, , $error] = $this->_run("CrazyFront", [
+            "run",
+            "build",
+            "--docker",
+            "-y",
+            ...$flags
+        ]);
         $this->assertSame(0, $status, $error);
         $calls = $this->_calls();
-        $this->assertSame(["info"], $calls[0]);
-        $this->assertSame(["build", "--build-arg", "PHP_VERSION=8.5"], array_slice($calls[1], 0, 3));
+        $this->assertSame([
+            "info"
+        ], $calls[0]);
+        $this->assertSame([
+            "build",
+            "--build-arg",
+            "PHP_VERSION=8.5"
+        ], array_slice($calls[1], 0, 3));
         $command = $calls[2];
         $this->assertContains("CRAZY_DOCKER_RUNTIME=1", $command);
         $root = realpath($this->_root);
         $this->assertContains("$root:$root", $command);
         $library = dirname(__DIR__, 3);
         $this->assertContains("$library:$library", $command);
-        $this->assertSame(["crazyphp-cli:php8.5-node22", "php", $library."/bin/CrazyFront", "--docker", "-y", "run", "build", ...$flags], array_slice($command, -11));
+        $this->assertSame([
+            "crazyphp-cli:php8.5-node22",
+            "php",
+            $library."/bin/CrazyFront",
+            "--docker",
+            "-y",
+            "run",
+            "build",
+            ...$flags
+        ], array_slice($command, -11));
         $this->assertNotContains("DOCKER_HOST=unix:///var/run/docker.sock", $command);
 
     }
@@ -229,9 +388,28 @@ CLIENT);
     public function testDockerFailurePropagation():void {
 
         # Probe and build failures stop before launching a command; command status reaches callers
-        foreach(["info" => [1, 1], "build" => [1, 2], "run" => [7, 3]] as $failure => [$expected, $count]){
+        foreach([
+            "info"     =>  [
+                1,
+                1
+            ],
+            "build"    =>  [
+                1,
+                2
+            ],
+            "run"      =>  [
+                7,
+                3
+            ]
+        ] as $failure => [$expected, $count]){
             @unlink($this->_root."/calls");
-            [$status, , $error] = $this->_run("CrazyCommand", ["--docker", "--yes", "version"], "", ["FAIL_COMMAND" => $failure]);
+            [$status, , $error] = $this->_run("CrazyCommand", [
+                "--docker",
+                "--yes",
+                "version"
+            ], "", [
+                "FAIL_COMMAND"    =>  $failure
+            ]);
             $this->assertSame($expected, $status, $error);
             $this->assertCount($count, $this->_calls());
         }
@@ -246,7 +424,13 @@ CLIENT);
     public function testContainerDoesNotReenterDocker():void {
 
         # The inner entrypoint keeps the option but runs PHP and Node in its existing container
-        [$status, $output, $error] = $this->_run("CrazyCommand", ["--docker", "--yes", "version"], "", ["CRAZY_DOCKER_RUNTIME" => "1"]);
+        [$status, $output, $error] = $this->_run("CrazyCommand", [
+            "--docker",
+            "--yes",
+            "version"
+        ], "", [
+            "CRAZY_DOCKER_RUNTIME"    =>  "1"
+        ]);
         $this->assertSame(0, $status, $error);
         $this->assertStringContainsString("1.2.3", $output.$error);
         $this->assertFileDoesNotExist($this->_root."/calls");
@@ -261,7 +445,13 @@ CLIENT);
     public function testScriptFlagsDoNotSelectDocker():void {
 
         # Options after the separator belong to the frontend script
-        [$status] = $this->_run("CrazyFront", ["run", "missing", "--", "--docker", "--yes"], "no\n");
+        [$status] = $this->_run("CrazyFront", [
+            "run",
+            "missing",
+            "--",
+            "--docker",
+            "--yes"
+        ], "no\n");
         $this->assertSame(0, $status);
         $this->assertFileDoesNotExist($this->_root."/calls");
 
@@ -284,9 +474,29 @@ CLIENT);
 
             # Both stack generation and project deletion need the selected host daemon
             file_put_contents($this->_root."/docker-compose.yml", "services: {}\n");
-            foreach([["CrazyDocker", ["new"]], ["CrazyCommand", ["delete", "project"]]] as [$entry, $arguments]){
+            foreach([
+                [
+                    "CrazyDocker",
+                    [
+                        "new"
+                    ]
+                ],
+                [
+                    "CrazyCommand",
+                    [
+                        "delete",
+                        "project"
+                    ]
+                ]
+            ] as [$entry, $arguments]){
                 @unlink($this->_root."/calls");
-                [$status, , $error] = $this->_run($entry, [...$arguments, "--docker", "--yes"], "", ["DOCKER_ENDPOINT" => "unix://".$path]);
+                [$status, , $error] = $this->_run($entry, [
+                    ...$arguments,
+                    "--docker",
+                    "--yes"
+                ], "", [
+                    "DOCKER_ENDPOINT"    =>  "unix://".$path
+                ]);
                 $this->assertSame(0, $status, $error);
                 $calls = $this->_calls();
                 $command = end($calls);
@@ -314,7 +524,13 @@ CLIENT);
     public function testRemoteDockerManagementRequiresLocalPhp():void {
 
         # Reject unsupported daemon mounts before launching the entrypoint
-        [$status, , $error] = $this->_run("CrazyDocker", ["new", "--docker", "--yes"], "", ["DOCKER_HOST" => "tcp://example.invalid:2375"]);
+        [$status, , $error] = $this->_run("CrazyDocker", [
+            "new",
+            "--docker",
+            "--yes"
+        ], "", [
+            "DOCKER_HOST"    =>  "tcp://example.invalid:2375"
+        ]);
         $this->assertSame(1, $status);
         $this->assertStringContainsString("requires a local Unix Docker socket", $error);
         $this->assertCount(2, $this->_calls());
@@ -338,15 +554,40 @@ CLIENT);
 
         # Use files for input so a refused or skipped prompt cannot block the test
         file_put_contents($this->_root."/input", $input);
-        $environment += ["PATH" => $this->_root."/tools", "CALL_LOG" => $this->_root."/calls", "CRAZY_DOCKER_RUNTIME" => "", "DOCKER_HOST" => ""];
-        $process = proc_open([PHP_BINARY, dirname(__DIR__, 3)."/bin/".$entry, ...$arguments], [
-            ["file", $this->_root."/input", "r"], ["pipe", "w"], ["pipe", "w"],
+        $environment += [
+            "PATH"                    =>  $this->_root."/tools",
+            "CALL_LOG"                =>  $this->_root."/calls",
+            "CRAZY_DOCKER_RUNTIME"    =>  "",
+            "DOCKER_HOST"             =>  ""
+        ];
+        $process = proc_open([
+            PHP_BINARY,
+            dirname(__DIR__, 3)."/bin/".$entry,
+            ...$arguments
+        ], [
+            [
+                "file",
+                $this->_root."/input",
+                "r"
+            ],
+            [
+                "pipe",
+                "w"
+            ],
+            [
+                "pipe",
+                "w"
+            ],
         ], $pipes, $this->_root, $environment);
         $output = stream_get_contents($pipes[1]);
         $error = stream_get_contents($pipes[2]);
         fclose($pipes[1]);
         fclose($pipes[2]);
-        return [proc_close($process), $output, $error];
+        return [
+            proc_close($process),
+            $output,
+            $error
+        ];
 
     }
 

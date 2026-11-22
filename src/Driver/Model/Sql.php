@@ -225,7 +225,9 @@ class Sql implements CrazyDriverModel {
         if($sort !== null){
 
             # Normalize the existing string shorthand
-            $sort = is_string($sort) ? [$sort] : $sort;
+            $sort = is_string($sort) ? [
+                $sort
+            ] : $sort;
 
             # Append the requested sort fields
             $this->sort = array_merge($this->sort ?? [], $sort);
@@ -488,7 +490,9 @@ class Sql implements CrazyDriverModel {
     public function ingestData(array $data, ?array $options = null):self {
 
         # New schema
-        $schema = new Schema($this->arguments["schema"], [$data], [
+        $schema = new Schema($this->arguments["schema"], [
+            $data
+        ], [
             "flatten"           =>  true,
             "skipEmptyValue"    =>  $this->isUpdate()
         ]);
@@ -544,7 +548,7 @@ class Sql implements CrazyDriverModel {
 
             # Set result
             $result = $this->mariadb->find($this->arguments["table"], "", [
-                "query" =>  $this->rawQuery
+                "query"    =>  $this->rawQuery
             ]);
 
         }else
@@ -560,7 +564,9 @@ class Sql implements CrazyDriverModel {
 
             # Check collection
             $schemaResult = $this->schema->getResult([
-                "skipAttributes"    =>  ["id"]
+                "skipAttributes"    =>  [
+                    "id"
+                ]
             ]);
 
             # Iteration
@@ -589,7 +595,7 @@ class Sql implements CrazyDriverModel {
 
             # Set result
             $result = $this->mariadb->find($this->arguments["table"], "", [
-                "filters" =>  [
+                "filters"    =>  [
                     "id"    =>  $this->id
                 ],
             ]);
@@ -653,7 +659,9 @@ class Sql implements CrazyDriverModel {
 
             # Check collection
             $schemaResult = $this->schema->getResult([
-                "skipAttributes"    =>  ["id"]
+                "skipAttributes"    =>  [
+                    "id"
+                ]
             ]);
 
             # Iteration
@@ -725,11 +733,11 @@ class Sql implements CrazyDriverModel {
                     $this->arguments["table"], 
                     "",
                     [
-                        "filters"   =>  $this->conditions,
-                        "sort"      =>  $this->sort,
-                        "limit"     =>  $this->limit,
-                        "offset"    =>  $this->offset,
-                        "page"      =>  $this->page,
+                        "filters"    =>  $this->conditions,
+                        "sort"       =>  $this->sort,
+                        "limit"      =>  $this->limit,
+                        "offset"     =>  $this->offset,
+                        "page"       =>  $this->page,
                     ]
                 );
 
@@ -738,7 +746,7 @@ class Sql implements CrazyDriverModel {
 
                 # Set result
                 $result = $this->mariadb->find($this->arguments["table"], "", [
-                    'sort'  =>  $this->sort,
+                    'sort'      =>  $this->sort,
                     "limit"     =>  $this->limit,
                     "offset"    =>  $this->offset,
                     "page"      =>  $this->page,
@@ -986,7 +994,7 @@ class Sql implements CrazyDriverModel {
 
         # Set result
         $result = [
-            "records"   =>  $input
+            "records"    =>  $input
         ];
 
         # Prepare metadata
@@ -1050,7 +1058,7 @@ class Sql implements CrazyDriverModel {
                 "No mongodb database defined in config.", 
                 500,
                 [
-                    "custom_code"   =>  "model-mongodb-001",
+                    "custom_code"    =>  "model-mongodb-001",
                 ]
             );
 
@@ -1153,15 +1161,15 @@ class Sql implements CrazyDriverModel {
 
     /** @var array */
     public const ARGUMENTS = [
-        "table"             =>  "",
-        "sanity"            =>  false,
-        "schema"            =>  [],
-        "database"          =>  [],
-        "pageStateProcess"  =>  false,
-        "sqlPrefix"         =>  false,
-        "unflatten"         =>  false,
-        "loadReference"     =>  false,
-        "extended"          =>  false, # Apply sqlPrefix , loadReference , unflatten
+        "table"               =>  "",
+        "sanity"              =>  false,
+        "schema"              =>  [],
+        "database"            =>  [],
+        "pageStateProcess"    =>  false,
+        "sqlPrefix"           =>  false,
+        "unflatten"           =>  false,
+        "loadReference"       =>  false,
+        "extended"            =>  false, # Apply sqlPrefix , loadReference , unflatten
     ];
 
 }

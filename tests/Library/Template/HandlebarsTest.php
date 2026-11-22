@@ -56,8 +56,8 @@ class HandlebarsTest extends TestCase {
         # Setup env
         Env::set([
             # App root for composer class
-            "crazyphp_root" => getcwd(),
-            "phpunit_test" => true,
+            "crazyphp_root"    =>  getcwd(),
+            "phpunit_test"     =>  true,
         ]);
 
     }
@@ -203,8 +203,8 @@ class HandlebarsTest extends TestCase {
             $compiled = LightnCandy::compile(
                 "{{> filter/_operator}}|{{> filter/operator}}",
                 [
-                    "flags"    => Handlebars::CRAZY_PRESET["flags"] | LightnCandy::FLAG_ERROR_EXCEPTION,
-                    "partials" => $partials,
+                    "flags"       =>  Handlebars::CRAZY_PRESET["flags"] | LightnCandy::FLAG_ERROR_EXCEPTION,
+                    "partials"    =>  $partials,
                 ]
             );
 
@@ -215,7 +215,9 @@ class HandlebarsTest extends TestCase {
             $render = LightnCandy::prepare($compiled);
 
             # Assert same
-            $this->assertSame("Operator equal|Operator equal", $render(["value" => "equal"]));
+            $this->assertSame("Operator equal|Operator equal", $render([
+                "value"    =>  "equal"
+            ]));
 
         }
         # Finally
@@ -240,7 +242,9 @@ class HandlebarsTest extends TestCase {
     public function testJsonStringify():void {
 
         # Set input
-        $input = ["toto" => "titi"];
+        $input = [
+            "toto"    =>  "titi"
+        ];
 
         # Assert
         $this->assertEquals(Helpers::JSONstringify($input), json_encode($input));
@@ -256,8 +260,8 @@ class HandlebarsTest extends TestCase {
 
         # Set input 1
         $input1 = [
-            "fill" => "blue",
-            "text" => "red",
+            "fill"    =>  "blue",
+            "text"    =>  "red",
         ];
 
         # Set output1
@@ -265,8 +269,8 @@ class HandlebarsTest extends TestCase {
 
         # Set input 2
         $input2 = [
-            "fill" => "blue darken-1",
-            "text" => "red lighten-6",
+            "fill"    =>  "blue darken-1",
+            "text"    =>  "red lighten-6",
         ];
 
         # Set output2
@@ -274,8 +278,8 @@ class HandlebarsTest extends TestCase {
 
         # Set input 3
         $input3 = [
-            "fill" => "blue",
-            "text" => "red",
+            "fill"    =>  "blue",
+            "text"    =>  "red",
         ];
 
         # Set output 3
@@ -283,8 +287,8 @@ class HandlebarsTest extends TestCase {
 
         # Set input 4
         $input4 = [
-            "fill" => "blue darken-1",
-            "text" => "red lighten-6",
+            "fill"    =>  "blue darken-1",
+            "text"    =>  "red lighten-6",
         ];
 
         # Set output 4
@@ -307,8 +311,8 @@ class HandlebarsTest extends TestCase {
 
         # Set input 1
         $input1 = [
-            "text" => "blue",
-            "fill" => "red",
+            "text"    =>  "blue",
+            "fill"    =>  "red",
         ];
 
         # Set output1
@@ -316,8 +320,8 @@ class HandlebarsTest extends TestCase {
 
         # Set input 2
         $input2 = [
-            "text" => "blue darken-1",
-            "fill" => "red lighten-6",
+            "text"    =>  "blue darken-1",
+            "fill"    =>  "red lighten-6",
         ];
 
         # Set output2
@@ -325,8 +329,8 @@ class HandlebarsTest extends TestCase {
 
         # Set input 3
         $input3 = [
-            "text" => "blue",
-            "fill" => "red",
+            "text"    =>  "blue",
+            "fill"    =>  "red",
         ];
 
         # Set output 3
@@ -334,8 +338,8 @@ class HandlebarsTest extends TestCase {
 
         # Set input 4
         $input4 = [
-            "text" => "blue darken-1",
-            "fill" => "red lighten-6",
+            "text"    =>  "blue darken-1",
+            "fill"    =>  "red lighten-6",
         ];
 
         # Set output 4
@@ -358,8 +362,8 @@ class HandlebarsTest extends TestCase {
 
         # Set input 1
         $input1 = [
-            "fill" => "blue",
-            "text" => "red",
+            "fill"    =>  "blue",
+            "text"    =>  "red",
         ];
 
         # Set output 1 a & b
@@ -368,8 +372,8 @@ class HandlebarsTest extends TestCase {
 
         # Set input 2
         $input2 = [
-            "fill" => "blue darken-1",
-            "text" => "red lighten-6",
+            "fill"    =>  "blue darken-1",
+            "text"    =>  "red lighten-6",
         ];
 
         # Set output 1 a & b
@@ -378,8 +382,8 @@ class HandlebarsTest extends TestCase {
 
         # Set input 2
         $input3 = [
-            "fill" => "",
-            "text" => "",
+            "fill"    =>  "",
+            "text"    =>  "",
         ];
 
         # Set output 1 a & b
@@ -420,25 +424,30 @@ class HandlebarsTest extends TestCase {
 
         # Compile the server template with its helpers
         $compiled = LightnCandy::compile("{{> filter/filter_number}}", [
-            "flags"    => Handlebars::CRAZY_PRESET["flags"] | LightnCandy::FLAG_ERROR_EXCEPTION,
-            "partials" => $partials,
-            "helpers" => Helpers::listArray(),
+            "flags"       =>  Handlebars::CRAZY_PRESET["flags"] | LightnCandy::FLAG_ERROR_EXCEPTION,
+            "partials"    =>  $partials,
+            "helpers"     =>  Helpers::listArray(),
         ]);
 
         # Prepare the renderer and field context
         $render = LightnCandy::prepare($compiled);
         $base = [
-            "name"  => "amount",
-            "label" => "Amount",
-            "form" => ["id" => "numbers"],
+            "name"     =>  "amount",
+            "label"    =>  "Amount",
+            "form"     =>  [
+                "id"    =>  "numbers"
+            ],
         ];
 
         # Render labeled min and max bounds
         $output = $render($base + [
-            "_style" => [
-                "number" => [
-                    "min" => 0,
-                    "max" => ["label" => "At most", "value" => 50],
+            "_style"    =>  [
+                "number"    =>  [
+                    "min"    =>  0,
+                    "max"    =>  [
+                        "label"    =>  "At most",
+                        "value"    =>  50
+                    ],
                 ],
             ],
         ]);
@@ -452,7 +461,9 @@ class HandlebarsTest extends TestCase {
         $this->assertSame(1, substr_count($output, 'name="amount"'));
 
         # Render the ordinary single-value filter
-        $output = $render($base + ["default" => 5]);
+        $output = $render($base + [
+            "default"    =>  5
+        ]);
 
         # Assert the ordinary control retains its operator
         $this->assertStringNotContainsString("data-filter-number-bounds", $output);

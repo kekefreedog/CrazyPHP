@@ -83,7 +83,11 @@ class Bootstrap {
         $source = File::path("@app_root/config/Database.yml");
 
         # Support projects that intentionally have no database
-        $configuration = is_file($source) ? Yaml::open($source) : ["Database" => ["collection" => []]];
+        $configuration = is_file($source) ? Yaml::open($source) : [
+            "Database"    =>  [
+                "collection"    =>  []
+            ]
+        ];
 
         # Resolve all container endpoints before contacting databases
         $configuration = self::containerConfiguration($configuration);
@@ -181,13 +185,18 @@ class Bootstrap {
     private static function _sql(string $engine, array $database):void {
 
         # Match the administrator initialized by the official image
-        $admin = $engine === "postgresql" ? $database["users"][0] : ["login" => "root", "password" => $database["root"]["password"]];
+        $admin = $engine === "postgresql" ? $database["users"][0] : [
+            "login"       =>  "root",
+            "password"    =>  $database["root"]["password"]
+        ];
 
         # Connect to the existing administrative database rather than one we may need to create
         $dsn = ($engine === "postgresql" ? "pgsql" : "mysql").":host=".$database["host"].";port=".$database["port"].($engine === "postgresql" ? ";dbname=postgres" : ";charset=utf8mb4");
 
         # Make all SQL errors fail the preparation service
-        $pdo = new PDO($dsn, $admin["login"], $admin["password"], [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+        $pdo = new PDO($dsn, $admin["login"], $admin["password"], [
+            PDO::ATTR_ERRMODE    =>  PDO::ERRMODE_EXCEPTION
+        ]);
 
         # Quote identifiers using the selected server's syntax
         $quote = static fn(string $name):string => $engine === "postgresql" ? '"'.str_replace('"', '""', $name).'"' : '`'.str_replace('`', '``', $name).'`';
@@ -202,7 +211,9 @@ class Bootstrap {
                 $statement = $pdo->prepare("SELECT 1 FROM pg_roles WHERE rolname = ?");
 
                 # Keep the login separate from SQL code
-                $statement->execute([$user["login"]]);
+                $statement->execute([
+                    $user["login"]
+                ]);
 
                 # Create the role only when it does not already exist
                 if(!$statement->fetchColumn())
@@ -229,7 +240,9 @@ class Bootstrap {
                 $statement = $pdo->prepare("SELECT 1 FROM pg_database WHERE datname = ?");
 
                 # Bind the requested database name
-                $statement->execute([$name]);
+                $statement->execute([
+                    $name
+                ]);
 
                 # Create only missing databases
                 if(!$statement->fetchColumn())
@@ -254,7 +267,9 @@ class Bootstrap {
                     $pdo->exec("GRANT ALL PRIVILEGES ON DATABASE ".$quote($name)." TO ".$quote($user["login"]));
 
                     # Connect to the target database to grant schema-level creation rights
-                    $target = new PDO("pgsql:host=".$database["host"].";port=".$database["port"].";dbname=$name", $admin["login"], $admin["password"], [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+                    $target = new PDO("pgsql:host=".$database["host"].";port=".$database["port"].";dbname=$name", $admin["login"], $admin["password"], [
+                        PDO::ATTR_ERRMODE    =>  PDO::ERRMODE_EXCEPTION
+                    ]);
 
                     # PostgreSQL 15 and newer restrict creation in the public schema by default
                     $target->exec("GRANT USAGE, CREATE ON SCHEMA public TO ".$quote($user["login"]));
@@ -290,25 +305,41 @@ class Bootstrap {
         foreach($database["database"] as $name){
 
             # Query the marker collection to avoid duplicate-collection errors on restarts
-            $collections = $manager->executeCommand($name, new Command(["listCollections" => 1, "filter" => ["name" => "_crazyphp"]]))->toArray();
+            $collections = $manager->executeCommand($name, new Command([
+                "listCollections"    =>  1,
+                "filter"             =>  [
+                    "name"    =>  "_crazyphp"
+                ]
+            ]))->toArray();
 
             # MongoDB materializes a database when its first collection is created
             if($collections === [])
 
                 # Create a harmless marker collection without deleting application data
-                $manager->executeCommand($name, new Command(["create" => "_crazyphp"]));
+                $manager->executeCommand($name, new Command([
+                    "create"    =>  "_crazyphp"
+                ]));
 
             # Authenticate application users against their configured database
             foreach($database["users"] ?? [] as $user){
 
                 # Check whether this account already exists in this database
-                $information = $manager->executeCommand($name, new Command(["usersInfo" => $user["login"]]))->toArray();
+                $information = $manager->executeCommand($name, new Command([
+                    "usersInfo"    =>  $user["login"]
+                ]))->toArray();
 
                 # Preserve existing passwords across repeated startup
                 if(empty($information[0]->users))
 
                     # Grant application read/write access to every configured database
-                    $manager->executeCommand($name, new Command(["createUser" => $user["login"], "pwd" => $user["password"], "roles" => array_map(static fn(string $target):array => ["role" => "readWrite", "db" => $target], $database["database"])]));
+                    $manager->executeCommand($name, new Command([
+                        "createUser"    =>  $user["login"],
+                        "pwd"           =>  $user["password"],
+                        "roles"         =>  array_map(static fn(string $target):array => [
+                            "role"    =>  "readWrite",
+                            "db"      =>  $target
+                        ], $database["database"])
+                    ]));
 
             }
 

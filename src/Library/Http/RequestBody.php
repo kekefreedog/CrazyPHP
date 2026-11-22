@@ -122,7 +122,10 @@ class RequestBody {
                     [$post, $files] = request_parse_body($limits);
 
                     # Preserve the framework's post/files envelope
-                    self::$_multipart = ["post" => $post, "files" => $files];
+                    self::$_multipart = [
+                        "post"     =>  $post,
+                        "files"    =>  $files
+                    ];
 
                 }else{
 
@@ -207,7 +210,10 @@ class RequestBody {
         # Reject incomplete bodies and ambiguous data following the closing marker
         if(
             $end === false ||
-            !in_array(substr($rawData, $end + strlen($boundary) + 4), ["", "\r\n"], true)
+            !in_array(substr($rawData, $end + strlen($boundary) + 4), [
+                "",
+                "\r\n"
+            ], true)
         ){
 
             # Avoid saving uploads from a truncated body
@@ -227,7 +233,10 @@ class RequestBody {
         }
 
         # Prepare the two established result collections
-        $parsed = ["post" => [], "files" => []];
+        $parsed = [
+            "post"     =>  [],
+            "files"    =>  []
+        ];
 
         # Count actual file parts independently from duplicate field names
         $fileCount = 0;
@@ -291,11 +300,11 @@ class RequestBody {
 
                     # Preserve PHP-style metadata without using the filename as a filesystem path
                     $entry = [
-                        "name" => $filenameMatch[1],
-                        "type" => $typeMatch[1] ?? "",
-                        "tmp_name" => "",
-                        "error" => UPLOAD_ERR_NO_FILE,
-                        "size" => 0,
+                        "name"        =>  $filenameMatch[1],
+                        "type"        =>  $typeMatch[1] ?? "",
+                        "tmp_name"    =>  "",
+                        "error"       =>  UPLOAD_ERR_NO_FILE,
+                        "size"        =>  0,
                     ];
 
                     # Allocate storage only for an actual file selection
@@ -468,15 +477,18 @@ class RequestBody {
 
         # Prepare result from server-owned PHP configuration
         $result = [
-            "post_max_size" => ini_parse_quantity(ini_get("post_max_size") ?: "8M"),
-            "upload_max_filesize" => ini_parse_quantity(ini_get("upload_max_filesize") ?: "2M"),
-            "max_file_uploads" => max(0, (int) ini_get("max_file_uploads")),
-            "max_input_vars" => max(0, (int) ini_get("max_input_vars")),
-            "max_multipart_body_parts" => (int) ini_get("max_multipart_body_parts"),
+            "post_max_size"               =>  ini_parse_quantity(ini_get("post_max_size") ?: "8M"),
+            "upload_max_filesize"         =>  ini_parse_quantity(ini_get("upload_max_filesize") ?: "2M"),
+            "max_file_uploads"            =>  max(0, (int) ini_get("max_file_uploads")),
+            "max_input_vars"              =>  max(0, (int) ini_get("max_input_vars")),
+            "max_multipart_body_parts"    =>  (int) ini_get("max_multipart_body_parts"),
         ];
 
         # Keep bounded parsing when a deployment uses unlimited or invalid byte settings
-        foreach(["post_max_size" => 8 * 1024 * 1024, "upload_max_filesize" => 2 * 1024 * 1024] as $name => $fallback){
+        foreach([
+            "post_max_size"          =>  8 * 1024 * 1024,
+            "upload_max_filesize"    =>  2 * 1024 * 1024
+        ] as $name => $fallback){
 
             # Leave positive deployment limits intact and reserve one byte for overflow detection
             $result[$name] = $result[$name] > 0 ? min($result[$name], PHP_INT_MAX - 1) : $fallback;

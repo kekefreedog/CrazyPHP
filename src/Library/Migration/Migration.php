@@ -137,7 +137,7 @@ class Migration {
                 "You must run preview method before run actions of migration.",
                 500,
                 [
-                    "custom_code"   =>  "migration-001"
+                    "custom_code"    =>  "migration-001"
                 ]
             );
 
@@ -462,7 +462,9 @@ class Migration {
         if(!is_array($in))
 
             # Convert in to array
-            $in = [$in];
+            $in = [
+                $in
+            ];
 
         # Set in clean
         $inClean = [];
@@ -511,7 +513,9 @@ class Migration {
         if(!is_array($name))
 
             # Convert in to array
-            $name = [$name];
+            $name = [
+                $name
+            ];
 
         # Set in clean
         $nameClean = [];
@@ -549,11 +553,11 @@ class Migration {
 
                 # Push value to result
                 $temp = [
-                    "description"   =>  "Will replace \"$from\" by \"$to\"",
-                    "parameters"    =>  [
-                        "file"          =>  $file->getRealPath(),
-                        "search"        =>  $from,
-                        "replace"       =>  $to
+                    "description"    =>  "Will replace \"$from\" by \"$to\"",
+                    "parameters"     =>  [
+                        "file"       =>  $file->getRealPath(),
+                        "search"     =>  $from,
+                        "replace"    =>  $to
                     ],
                 ];
 
@@ -593,7 +597,10 @@ class Migration {
         $result = null;
 
         # Check in exists
-        if($in == "" || empty($in) || $add == "" || !in_array($position, ["start", "end"]))
+        if($in == "" || empty($in) || $add == "" || !in_array($position, [
+            "start",
+            "end"
+        ]))
 
             # Stop function
             return $result;
@@ -607,7 +614,9 @@ class Migration {
         if(!is_array($in))
 
             # Convert in to array
-            $in = [$in];
+            $in = [
+                $in
+            ];
 
         # Set in clean
         $inClean = [];
@@ -656,7 +665,9 @@ class Migration {
         if(!is_array($name))
 
             # Convert in to array
-            $name = [$name];
+            $name = [
+                $name
+            ];
 
         # Set in clean
         $nameClean = [];
@@ -702,11 +713,11 @@ class Migration {
 
                 # Push value to result
                 $temp = [
-                    "description"   =>  "Will add new line \"".preg_replace('~[\r\n]~', '<br>', $add)."\" at the \"$position\"",
-                    "parameters"    =>  [
-                        "file"          =>  $file->getRealPath(),
-                        "add"           =>  $add,
-                        "position"      =>  $position
+                    "description"    =>  "Will add new line \"".preg_replace('~[\r\n]~', '<br>', $add)."\" at the \"$position\"",
+                    "parameters"     =>  [
+                        "file"        =>  $file->getRealPath(),
+                        "add"         =>  $add,
+                        "position"    =>  $position
                     ],
                 ];
 
@@ -750,7 +761,9 @@ class Migration {
         if(!is_array($env))
 
             # Convert to array
-            $env = [$env];
+            $env = [
+                $env
+            ];
 
         # Set clean env
         $envClean = [];
@@ -782,7 +795,9 @@ class Migration {
                 if(!is_array($key))
 
                     # Convert to array
-                    $key = [$key];
+                    $key = [
+                        $key
+                    ];
 
                 # Check key
                 if(!empty($key))
@@ -816,15 +831,15 @@ class Migration {
 
                             # Push value to result
                             $temp = [
-                                "description"   =>  "Will reduce path of \"$value\" from key \"$currentKey\"",
-                                "parameters"    =>  [
-                                    "file"          =>  File::resolve($filePath),
-                                    "key"           =>  $currentKey,
-                                    "env"           =>  count($envBackup) <= 1
+                                "description"    =>  "Will reduce path of \"$value\" from key \"$currentKey\"",
+                                "parameters"     =>  [
+                                    "file"     =>  File::resolve($filePath),
+                                    "key"      =>  $currentKey,
+                                    "env"      =>  count($envBackup) <= 1
                                         ? ( $envBackup[0] ?? "" )
                                         : $envBackup
                                     ,
-                                    "value"         =>  $value
+                                    "value"    =>  $value
                                 ],
                             ];
 
@@ -915,7 +930,10 @@ class Migration {
         $result = false;
 
         # Check file exists
-        if(File::exists($file) && in_array($position, ["start", "end"])){
+        if(File::exists($file) && in_array($position, [
+            "start",
+            "end"
+        ])){
 
             # Open file
             $fileContent = file_get_contents($file);
@@ -1173,8 +1191,8 @@ class Migration {
 
                 # Push value in summary
                 $this->_cliMessageSummary[] = [
-                    "Action"        =>  $actionName ? ucfirst(strtolower(Process::spaceBeforeCapital($actionName))) : "Migration Action",
-                    "Description"   =>  $summary
+                    "Action"         =>  $actionName ? ucfirst(strtolower(Process::spaceBeforeCapital($actionName))) : "Migration Action",
+                    "Description"    =>  $summary
                 ];
 
         # Clean _cliMessageSummary
@@ -1223,7 +1241,10 @@ class Migration {
             # Push trash to summary
             $this->_trashSummary[] = [
                 "before"    =>  $trashPath,
-                "now"       =>  File::pathReverse($filePath, ["app_root", "crazyphp_root"])
+                "now"       =>  File::pathReverse($filePath, [
+                    "app_root",
+                    "crazyphp_root"
+                ])
             ];
 
         }
@@ -1245,8 +1266,8 @@ class Migration {
             # Send summary in trash
             Trash::sendAnObject(
                 [
-                    "date"          =>  explode("/", $this->_trashSubFolder)[1],
-                    "filesMigrated" =>  $this->_trashSummary
+                    "date"             =>  explode("/", $this->_trashSubFolder)[1],
+                    "filesMigrated"    =>  $this->_trashSummary
                 ],
                 "migration",
                 $this->_trashSubFolder
@@ -1276,7 +1297,7 @@ class Migration {
 
     /** @var array FOLDERS_TO_IGNORE */
     private const array FOLDERS_TO_IGNORE = [
-        "vendor", 
+        "vendor",
         "node_modules"
     ];
 

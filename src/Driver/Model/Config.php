@@ -50,11 +50,11 @@ class Config implements CrazyDriverModel {
     /** @var array $filterParser */
     private array $filterParser = [
         # "ids"       =>  null,
-        "filterBy"  =>  null,
-        "order"     =>  null,
-        "limit"     =>  null,
-        "offset"    =>  null,
-        "group"     =>  null,
+        "filterBy"    =>  null,
+        "order"       =>  null,
+        "limit"       =>  null,
+        "offset"      =>  null,
+        "group"       =>  null,
     ];
 
     /**
@@ -145,7 +145,7 @@ class Config implements CrazyDriverModel {
             "Get Id isn't supported for your request", 
             500,
             [
-                "custom_code"   =>  "model-003",
+                "custom_code"    =>  "model-003",
             ]
         );
 
@@ -198,7 +198,7 @@ class Config implements CrazyDriverModel {
                     "Given limit \"".$options["limit"]."\" given must be a integer...", 
                     500,
                     [
-                        "custom_code"   =>  "driver-model-config-002",
+                        "custom_code"    =>  "driver-model-config-002",
                     ]
                 );
 
@@ -525,7 +525,7 @@ class Config implements CrazyDriverModel {
                 "Given config name \"".$this->arguments["name"]."\" isn't supported by the Config Model Driver...", 
                 500,
                 [
-                    "custom_code"   =>  "driver-model-config-001",
+                    "custom_code"    =>  "driver-model-config-001",
                 ]
             );
 
@@ -549,7 +549,7 @@ class Config implements CrazyDriverModel {
                 "No attributes found in current \"".$this->arguments["name"]."\" modal schema", 
                 404,
                 [
-                    "custom_code"   =>  "driver-model-config-001",
+                    "custom_code"    =>  "driver-model-config-001",
                 ]
             );
 
@@ -557,7 +557,7 @@ class Config implements CrazyDriverModel {
         $this->schema = new Schema(
             source: $this->arguments["attributes"],
             options: [
-                "flatten"   => true
+                "flatten"    =>  true
             ]
         );
 
@@ -588,7 +588,7 @@ class Config implements CrazyDriverModel {
                 "Root parameter is missing in current model \"".$this->arguments["name"]."\"", 
                 500,
                 [
-                    "custom_code"   =>  "driver-model-config-002",
+                    "custom_code"    =>  "driver-model-config-002",
                 ]
             );
 
@@ -603,7 +603,7 @@ class Config implements CrazyDriverModel {
                 "Data obtain from root \"".$this->arguments["root"]."\" isn't valid for current model \"".$this->arguments["name"]."\"", 
                 500,
                 [
-                    "custom_code"   =>  "driver-model-config-002",
+                    "custom_code"    =>  "driver-model-config-002",
                 ]
             );
 

@@ -67,10 +67,10 @@ class ModelDriverConfigTest extends TestCase {
 
         # Setup env
         Env::set([
-            "phpunit_test"      =>  true,
-            "crazyphp_root"     =>  getcwd(),
-            "app_root"          =>  getcwd(),
-            "config_location"   =>  "@crazyphp_root/resources/Yml"
+            "phpunit_test"       =>  true,
+            "crazyphp_root"      =>  getcwd(),
+            "app_root"           =>  getcwd(),
+            "config_location"    =>  "@crazyphp_root/resources/Yml"
         ]);
 
     }
@@ -159,7 +159,7 @@ class ModelDriverConfigTest extends TestCase {
                 "DESC",
                 null,
                 [
-                    "limit" =>  1
+                    "limit"    =>  1
                 ]
             )
         ;
@@ -188,7 +188,7 @@ class ModelDriverConfigTest extends TestCase {
         # Set result
         $result = $modelInstance
             ->readAttributes([
-                'summary'   =>  false
+                'summary'    =>  false
             ])
             ->readWithFilters()
         ;
@@ -267,7 +267,7 @@ class ModelDriverConfigTest extends TestCase {
     /* Array */
     const MODEL_TEST = [
         [
-            "name"          =>  "Test",
+            "name"    =>  "Test",
         ]
     ];
 

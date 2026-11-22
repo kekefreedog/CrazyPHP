@@ -161,7 +161,7 @@ class Page {
                 "Key \"$key\" do not exists in UI content of the current page state. Switch parameter to \"createIfNotExists\" for fixing it.", 
                 500,
                 [
-                    "custom_code"   =>  "state-page-001",
+                    "custom_code"    =>  "state-page-001",
                 ]
             );
 
@@ -191,7 +191,7 @@ class Page {
                 "Key \"$key\" do not exists in UI content of the current page state. Switch parameter to \"createIfNotExists\" for fixing it.", 
                 500,
                 [
-                    "custom_code"   =>  "state-page-001",
+                    "custom_code"    =>  "state-page-001",
                 ]
             );
 
@@ -470,8 +470,8 @@ class Page {
 
         # Push event
         $this->pushEvent([
-                "type"  =>  "redirect",
-            ] + $temp);
+            "type"    =>  "redirect",
+        ] + $temp);
 
         # Return self
         return $this;
@@ -549,7 +549,9 @@ class Page {
         if(is_string($configs))
 
             # Convert to array
-            $configs = [$configs];
+            $configs = [
+                $configs
+            ];
 
         # Push config
         $this->options["config"] = $configs;
@@ -741,7 +743,9 @@ class Page {
                     ? []
                     : ( is_array($this->options["config"])
                             ? $this->options["config"] 
-                            :[$this->options["config"]]
+                            :[
+                                $this->options["config"]
+                            ]
                     )
             );
 
@@ -968,9 +972,9 @@ class Page {
  
                 # Set env to catch state
                 Env::set([
-                    static::ENV_CATCH_STATE         =>  true,
+                    static::ENV_CATCH_STATE      =>  true,
                     # "http_request_data_override"    =>  $currentRequestData["options"]["arguments"] ?? []
-                    "parameters_url_override"       =>  $currentRequestData["options"]["arguments"] ?? []
+                    "parameters_url_override"    =>  $currentRequestData["options"]["arguments"] ?? []
                 ]);
 
                 # Prepare method string
@@ -1006,16 +1010,16 @@ class Page {
 
     public const DEFAULT_OPTIONS = [
         // HTML Template
-        "template"  =>  [
-            "path"      =>  null,
-            "content"   =>  null,
+        "template"    =>  [
+            "path"       =>  null,
+            "content"    =>  null,
         ],
         // Have context
-        "context"   =>  false,
+        "context"     =>  false,
         // Cookie
-        "cookie"    =>  false,
+        "cookie"      =>  false,
         // Config => ["app", "router"...]
-        "config"    =>  false
+        "config"      =>  false
     ];
 
     /** @var string ENV_CATCH_STATE  */

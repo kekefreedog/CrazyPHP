@@ -52,14 +52,14 @@ class Validate {
      * Dispatch of action
      */
     private array $dispatch = [
-        "INT"       =>  [
+        "INT"        =>  [
             "isValidHttpStatusCode",
             "isMobilePhone"
         ],
-        "DECIMAL"   =>  [
+        "DECIMAL"    =>  [
 
         ],
-        "VARCHAR"   =>  [
+        "VARCHAR"    =>  [
             "isEmail",
             "isIpAddress",
             "isValidUrl",
@@ -67,14 +67,14 @@ class Validate {
             "isMobilePhone",
             "isValidStaticCallable"
         ],
-        "ARRAY"     =>  [
-        ], 
-        "BOOL"      =>  [
+        "ARRAY"      =>  [
         ],
-        "FILE"      =>  [
+        "BOOL"       =>  [
+        ],
+        "FILE"       =>  [
             "isValidFile"
         ],
-        "JSON"      =>  [
+        "JSON"       =>  [
         ]
     ];
 
@@ -100,7 +100,9 @@ class Validate {
         if( ( $formResult['name'] ?? false ) || ( $formResult['type'] ?? false )):
 
             # Put input in an array
-            $formResult = [$formResult];
+            $formResult = [
+                $formResult
+            ];
 
             # Set 
             $this->oneItemOnly = true;
@@ -187,7 +189,7 @@ class Validate {
                 "Value of \”".$input["name"]."\” isn't a integer...",
                 500,
                 [
-                    "custom_code"   =>  "validate-010",
+                    "custom_code"    =>  "validate-010",
                 ]
             );
 
@@ -224,7 +226,7 @@ class Validate {
                 "Value of \”".$input["name"]."\” isn't a integer...",
                 500,
                 [
-                    "custom_code"   =>  "validate-010",
+                    "custom_code"    =>  "validate-010",
                 ]
             );
 
@@ -247,7 +249,7 @@ class Validate {
                 "Value of \”".$input["name"]."\” isn't a string of characters...",
                 500,
                 [
-                    "custom_code"   =>  "validate-020",
+                    "custom_code"    =>  "validate-020",
                 ]
             );
 
@@ -297,7 +299,7 @@ class Validate {
                 "Value of \”".$input["name"]."\” isn't an array...",
                 500,
                 [
-                    "custom_code"   =>  "validate-030",
+                    "custom_code"    =>  "validate-030",
                 ]
             );
 
@@ -327,7 +329,7 @@ class Validate {
                 "Value of \"".$input["name"]."\" isn't an boolean...",
                 500,
                 [
-                    "custom_code"   =>  "validate-040",
+                    "custom_code"    =>  "validate-040",
                 ]
             );
 
@@ -388,7 +390,9 @@ class Validate {
                 if(!is_array($extAllow))
 
                     # Convert to array
-                    $extAllow = [$extAllow];
+                    $extAllow = [
+                        $extAllow
+                    ];
 
                 # Guess the mime type of the file
                 $mimeType = File::guessMime($input["value"]["tmp_name"]);
@@ -410,7 +414,7 @@ class Validate {
                         "Extension \"$ext\" of the file \"".$input["value"]["name"]."\" given isn't allowed... Here the file extension allowed : ".implode(", ", $extAllow),
                         500,
                         [
-                            "custom_code"   =>  "validate-050",
+                            "custom_code"    =>  "validate-050",
                         ]
                     );
 
@@ -426,7 +430,9 @@ class Validate {
                 if(!is_array($extOmit))
 
                     # Convert to array
-                    $extOmit = [$extOmit];
+                    $extOmit = [
+                        $extOmit
+                    ];
 
                 # check if ext already set
                 if($ext === null){
@@ -453,7 +459,7 @@ class Validate {
                         "Extension \"$ext\" of the file \"".$input["value"]["name"]."\" given is omited... Here the other file extension not allowed : ".implode(", ", $extOmit),
                         500,
                         [
-                            "custom_code"   =>  "validate-060",
+                            "custom_code"    =>  "validate-060",
                         ]
                     );
 
@@ -478,7 +484,7 @@ class Validate {
                 "Value of \”".$input["name"]."\” isn't a correct json...",
                 500,
                 [
-                    "custom_code"   =>  "validate-020",
+                    "custom_code"    =>  "validate-020",
                 ]
             );
 
@@ -653,7 +659,9 @@ class Validate {
         if( ( $inputs['name'] ?? false ) || ( $inputs['type'] ?? false ))
 
             # Put input in an array
-            $inputs = [$inputs];
+            $inputs = [
+                $inputs
+            ];
 
         # Iteration of input
         foreach($inputs as $kInput => $input){
@@ -776,7 +784,7 @@ class Validate {
                 "\”".$input["value"]."\” isn't a valid email...",
                 500,
                 [
-                    "custom_code"   =>  "validate-070",
+                    "custom_code"    =>  "validate-070",
                 ]
             );
 
@@ -828,7 +836,7 @@ class Validate {
                 "\”".$input["value"]."\” isn't a valid url...",
                 500,
                 [
-                    "custom_code"   =>  "validate-070",
+                    "custom_code"    =>  "validate-070",
                 ]
             );
 

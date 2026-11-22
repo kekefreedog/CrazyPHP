@@ -272,7 +272,9 @@ class Schema {
         if(isset($values["name"]) || !is_int(array_key_first($values))){
 
             # Add depth in values
-            $values = [$values];
+            $values = [
+                $values
+            ];
 
         }
 
@@ -312,7 +314,7 @@ class Schema {
                             "\"".$item['name']."\" is required.",
                             500,
                             [
-                                "custom_code"   =>  "schema-001",
+                                "custom_code"    =>  "schema-001",
                             ]
                         );
                         
@@ -687,19 +689,19 @@ class Schema {
     /** @var array DEFAULT_OPTIONS Options by default */
     private const DEFAULT_OPTIONS = [
         # Define the root of the schema in given array
-        "array_root"    =>  "",
+        "array_root"        =>  "",
         # Flatten value array received
-        "flatten"       =>  false,
+        "flatten"           =>  false,
         # Skip empty values
-        "skipEmptyValue"=>  false,
+        "skipEmptyValue"    =>  false,
         # Isolate specific schema for test / debug
-        "phpunit_test"  =>  false,
+        "phpunit_test"      =>  false,
     ];
 
     /** @var array DEFAULT_VALUES_OPTIONS Options by default */
     private const DEFAULT_VALUES_OPTIONS = [
         # Define if multiple value
-        "multiple"      =>  false
+        "multiple"    =>  false
     ];
 
 

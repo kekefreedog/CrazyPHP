@@ -77,7 +77,11 @@ abstract class Adapter implements CrazyRouter {
             $this->_validateMethod($method);
 
             # Append the callback and pattern in registration order
-            $this->_routes[] = ["pattern" => $pattern, "callback" => $callback, "method" => $method];
+            $this->_routes[] = [
+                "pattern"     =>  $pattern,
+                "callback"    =>  $callback,
+                "method"      =>  $method
+            ];
 
         }
 
@@ -186,7 +190,9 @@ abstract class Adapter implements CrazyRouter {
             return call_user_func($callback, $path, $this->_parameters);
 
         # Retain the established middleware argument transformation contract
-        $this->_parameters = array_merge([$path], $this->_parameters);
+        $this->_parameters = array_merge([
+            $path
+        ], $this->_parameters);
 
         # Apply middleware in registration order
         foreach($middleware as $handler){
@@ -203,7 +209,9 @@ abstract class Adapter implements CrazyRouter {
             }elseif($result !== null){
 
                 # Wrap a non-null middleware result as the single next argument
-                $this->_parameters = [$result];
+                $this->_parameters = [
+                    $result
+                ];
 
             }
 
@@ -362,11 +370,11 @@ abstract class Adapter implements CrazyRouter {
 
         # Prepare the adapter identity, route metadata and compiled tables for export
         $data = [
-            "adapter"  => static::class,
-            "version"  => 1,
-            "routes"   => $this->_routes,
-            "names"    => $this->_names,
-            "compiled" => $this->_compiled,
+            "adapter"     =>  static::class,
+            "version"     =>  1,
+            "routes"      =>  $this->_routes,
+            "names"       =>  $this->_names,
+            "compiled"    =>  $this->_compiled,
         ];
 
         # YAML controllers are strings; object callbacks cannot be exported as portable PHP
@@ -461,7 +469,10 @@ abstract class Adapter implements CrazyRouter {
             $parameters[$id] = $translated["parameters"];
 
             # Attach the route identifier and HTTP method to the translated definition
-            $entry = $translated + ["id" => $id, "method" => $route["method"]];
+            $entry = $translated + [
+                "id"        =>  $id,
+                "method"    =>  $route["method"]
+            ];
 
             # Identify equivalent patterns within the same HTTP method
             $key = $route["method"]." ".$translated["path"].serialize($translated["requirements"]);
@@ -483,9 +494,9 @@ abstract class Adapter implements CrazyRouter {
 
         # Compile static routes before dynamic routes and retain the application metadata
         $this->_compiled = [
-            "vendor"     => $this->compileRoutes(array_merge(array_values($static), array_values($dynamic))),
-            "parameters" => $parameters,
-            "fallback"   => $fallback,
+            "vendor"        =>  $this->compileRoutes(array_merge(array_values($static), array_values($dynamic))),
+            "parameters"    =>  $parameters,
+            "fallback"      =>  $fallback,
         ];
 
     }
@@ -516,7 +527,10 @@ abstract class Adapter implements CrazyRouter {
     public function getNoProcessorErrorHandler():callable {
 
         # Return the active handler, initializing the default when needed
-        return $this->_errorHandler ??= [$this, "noProcessorFoundErrorHandler"];
+        return $this->_errorHandler ??= [
+            $this,
+            "noProcessorFoundErrorHandler"
+        ];
 
     }
 
@@ -540,7 +554,10 @@ abstract class Adapter implements CrazyRouter {
     public function addGetRoute(string $route, object $object, string $method):void {
 
         # Register the object method for GET requests
-        $this->addRoute($route, [$object, $method], "GET");
+        $this->addRoute($route, [
+            $object,
+            $method
+        ], "GET");
 
     }
 
@@ -552,7 +569,10 @@ abstract class Adapter implements CrazyRouter {
     public function addPostRoute(string $route, object $object, string $method):void {
 
         # Register the object method for POST requests
-        $this->addRoute($route, [$object, $method], "POST");
+        $this->addRoute($route, [
+            $object,
+            $method
+        ], "POST");
 
     }
 
@@ -579,7 +599,13 @@ abstract class Adapter implements CrazyRouter {
             $route = strtolower(preg_replace("/[A-Z]/", "-$0", lcfirst($name)));
 
             # Register the action with its configured methods or the GET and POST defaults
-            $this->addRoute($route, [$object, $method], $map[$name] ?? ["GET", "POST"]);
+            $this->addRoute($route, [
+                $object,
+                $method
+            ], $map[$name] ?? [
+                "GET",
+                "POST"
+            ]);
 
         }
 
@@ -667,7 +693,14 @@ abstract class Adapter implements CrazyRouter {
     private function _validateMethod(string $method):void {
 
         # Check the methods supported by the existing route schema
-        if(!in_array($method, ["GET", "POST", "PUT", "DELETE", "OPTION", "PATCH"], true))
+        if(!in_array($method, [
+            "GET",
+            "POST",
+            "PUT",
+            "DELETE",
+            "OPTION",
+            "PATCH"
+        ], true))
 
             # Reject an unsupported request method
             throw new InvalidArgumentException("Unsupported request method: \"".$method."\"", -1);
@@ -684,11 +717,11 @@ abstract class Adapter implements CrazyRouter {
 
         # Preserve built-in matching; [\s\S] also works in vendor prefix analysis without Unicode mode
         $types = [
-            "i"  => '[-+]{0,1}[0-9]+',
-            "a"  => '[a-z0-9A-Z_.\-@]+',
-            "il" => '[0-9,]+',
-            "fp" => '[-+]{0,1}[0-9]+.[0-9]+',
-            "s"  => '[\s\S][^/]+',
+            "i"     =>  '[-+]{0,1}[0-9]+',
+            "a"     =>  '[a-z0-9A-Z_.\-@]+',
+            "il"    =>  '[0-9,]+',
+            "fp"    =>  '[-+]{0,1}[0-9]+.[0-9]+',
+            "s"     =>  '[\s\S][^/]+',
         ];
 
         # Prepare parameter requirements and original-name mappings
@@ -735,7 +768,11 @@ abstract class Adapter implements CrazyRouter {
         );
 
         # Return the vendor path, requirements and original parameter names
-        return ["path" => $path, "requirements" => $requirements, "parameters" => $parameters];
+        return [
+            "path"            =>  $path,
+            "requirements"    =>  $requirements,
+            "parameters"      =>  $parameters
+        ];
 
     }
 

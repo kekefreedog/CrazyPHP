@@ -51,9 +51,9 @@ class MariadbTest extends TestCase {
         # Setup env
         Env::set([
             # App root for composer class
-            "crazyphp_root"     =>  getcwd(),
-            "phpunit_test"      =>  true,
-            "config_location"   =>  "@crazyphp_root/resources/Yml"
+            "crazyphp_root"      =>  getcwd(),
+            "phpunit_test"       =>  true,
+            "config_location"    =>  "@crazyphp_root/resources/Yml"
         ]);
 
     }
@@ -139,12 +139,12 @@ class MariadbTest extends TestCase {
         $input = [
             "unique",
             [
-                "name_id_toto"  =>  [ 
+                "name_id_toto"    =>  [
                     "name",
                     "id",
                     "toto"
                 ],
-                "id_royal_po"  =>   [
+                "id_royal_po"     =>  [
                     "id",
                     "royal_po"
                 ],
@@ -201,19 +201,27 @@ class MariadbTest extends TestCase {
     public function testPrepareOrderBy():void {
 
         # Set input 1
-        $input1 = ["test1"];
+        $input1 = [
+            "test1"
+        ];
 
         # Set expected
         $expected1 = "`test1` ASC";
 
         # Set input 1
-        $input2 = ["-test2"];
+        $input2 = [
+            "-test2"
+        ];
 
         # Set expected
         $expected2 = "`test2` DESC";
 
         # Set input 1
-        $input3 = ["test3", "test4", "-test5"];
+        $input3 = [
+            "test3",
+            "test4",
+            "-test5"
+        ];
 
         # Set expected
         $expected3 = "`test3` ASC, `test4` ASC, `test5` DESC";

@@ -35,11 +35,32 @@ class BootstrapTest extends TestCase {
     public function testManagedEndpointsOnly():void {
 
         # Include disabled and external databases alongside a generated service
-        $configuration = ["Database" => ["collection" => [
-            "mysql" => false,
-            "postgresql" => ["host" => "external.example", "port" => 5433],
-            "mongodb" => ["host" => "localhost", "port" => 27018, "docker" => ["service" => ["name" => "mongo"]], "users" => [["login" => "app", "password" => 'literal ${secret}']]],
-        ]]];
+        $configuration = [
+            "Database"    =>  [
+                "collection"    =>  [
+                    "mysql"         =>  false,
+                    "postgresql"    =>  [
+                        "host"    =>  "external.example",
+                        "port"    =>  5433
+                    ],
+                    "mongodb"       =>  [
+                        "host"      =>  "localhost",
+                        "port"      =>  27018,
+                        "docker"    =>  [
+                            "service"    =>  [
+                                "name"    =>  "mongo"
+                            ]
+                        ],
+                        "users"     =>  [
+                            [
+                                "login"       =>  "app",
+                                "password"    =>  'literal ${secret}'
+                            ]
+                        ]
+                    ],
+                ]
+            ]
+        ];
 
         # Derive the container copy without writing or modifying the source
         $result = Bootstrap::containerConfiguration($configuration);
@@ -69,7 +90,19 @@ class BootstrapTest extends TestCase {
         $this->expectException(RuntimeException::class);
 
         # Avoid silently assigning a MySQL port to an unsupported protocol
-        Bootstrap::containerConfiguration(["Database" => ["collection" => ["unknown" => ["docker" => ["service" => ["name" => "unknown"]]]]]]);
+        Bootstrap::containerConfiguration([
+            "Database"    =>  [
+                "collection"    =>  [
+                    "unknown"    =>  [
+                        "docker"    =>  [
+                            "service"    =>  [
+                                "name"    =>  "unknown"
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]);
 
     }
 
@@ -87,7 +120,10 @@ class BootstrapTest extends TestCase {
         mkdir($root."/docker/config", 0700, true);
 
         # Resolve bootstrap paths against the fixture
-        Env::set(["app_root" => $root, "crazyphp_root" => dirname(__DIR__, 4)]);
+        Env::set([
+            "app_root"         =>  $root,
+            "crazyphp_root"    =>  dirname(__DIR__, 4)
+        ]);
 
         try{
 
@@ -96,7 +132,11 @@ class BootstrapTest extends TestCase {
             Bootstrap::run();
 
             # Generate an empty runtime configuration without inventing a local source file
-            $this->assertSame(["Database" => ["collection" => []]], Yaml::open($root."/docker/config/Database.yml"));
+            $this->assertSame([
+                "Database"    =>  [
+                    "collection"    =>  []
+                ]
+            ], Yaml::open($root."/docker/config/Database.yml"));
             $this->assertFileDoesNotExist($root."/config/Database.yml");
 
         }finally{

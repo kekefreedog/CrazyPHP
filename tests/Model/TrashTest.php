@@ -47,10 +47,10 @@ class TrashTest extends TestCase {
 
         # Setup env
         Env::set([
-            "phpunit_test"      =>  true,
-            "crazyphp_root"     =>  getcwd(),
-            "app_root"          =>  getcwd(),
-            "trash_path"        =>  self::TRASH_PATH,
+            "phpunit_test"     =>  true,
+            "crazyphp_root"    =>  getcwd(),
+            "app_root"         =>  getcwd(),
+            "trash_path"       =>  self::TRASH_PATH,
         ]);
 
     }
@@ -94,7 +94,7 @@ class TrashTest extends TestCase {
                 "Test can't create folder \"/tests/.trash\"... Please check permission of the parent folder.",
                 500,
                 [
-                    "custom_code"   =>  "trash-test-001",
+                    "custom_code"    =>  "trash-test-001",
                 ]
             );
 

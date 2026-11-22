@@ -52,7 +52,7 @@ class SqlOperationTest extends TestCase {
 
         # Setup env
         Env::set([
-            "phpunit_test"      =>  true,
+            "phpunit_test"    =>  true,
         ]);
 
         # Set sql operation instance
@@ -91,7 +91,10 @@ class SqlOperationTest extends TestCase {
         $resultSimple = static::$sqlOperation->run("=toto");
 
         # Check result
-        $this->assertEquals(["sql" => "= `toto`", "parameters" => []], $resultSimple);
+        $this->assertEquals([
+            "sql"           =>  "= `toto`",
+            "parameters"    =>  []
+        ], $resultSimple);
 
         # Get result complex
         $resultComplex = static::$sqlOperation->run("=toto", [
@@ -99,7 +102,10 @@ class SqlOperationTest extends TestCase {
         ]);
 
         # Check complex result
-        $this->assertEquals(["sql" => "= `Tabletoto`", "parameters" => []], $resultComplex);
+        $this->assertEquals([
+            "sql"           =>  "= `Tabletoto`",
+            "parameters"    =>  []
+        ], $resultComplex);
 
         # Check suffix
         $resultComplex = static::$sqlOperation->run("=toto", [
@@ -107,7 +113,10 @@ class SqlOperationTest extends TestCase {
         ]);
 
         # Check complex result
-        $this->assertEquals(["sql" => "= `totoSuffix`", "parameters" => []], $resultComplex);
+        $this->assertEquals([
+            "sql"           =>  "= `totoSuffix`",
+            "parameters"    =>  []
+        ], $resultComplex);
 
     }
 
@@ -124,7 +133,10 @@ class SqlOperationTest extends TestCase {
         $resultSimple = static::$sqlOperation->run("!=toto");
 
         # Check result
-        $this->assertEquals(["sql" => "<> `toto`", "parameters" => []], $resultSimple);
+        $this->assertEquals([
+            "sql"           =>  "<> `toto`",
+            "parameters"    =>  []
+        ], $resultSimple);
 
     }
 
@@ -141,7 +153,12 @@ class SqlOperationTest extends TestCase {
         $resultSimple = static::$sqlOperation->run("<=10");
 
         # Check result
-        $this->assertEquals(["sql" => "<= ?", "parameters" => [10.0]], $resultSimple);
+        $this->assertEquals([
+            "sql"           =>  "<= ?",
+            "parameters"    =>  [
+                10.0
+            ]
+        ], $resultSimple);
 
     }
 
@@ -158,7 +175,12 @@ class SqlOperationTest extends TestCase {
         $resultSimple = static::$sqlOperation->run(">=10");
 
         # Check result
-        $this->assertEquals(["sql" => ">= ?", "parameters" => [10.0]], $resultSimple);
+        $this->assertEquals([
+            "sql"           =>  ">= ?",
+            "parameters"    =>  [
+                10.0
+            ]
+        ], $resultSimple);
 
     }
 
@@ -175,7 +197,12 @@ class SqlOperationTest extends TestCase {
         $resultSimple = static::$sqlOperation->run("<10");
 
         # Check result
-        $this->assertEquals(["sql" => "< ?", "parameters" => [10.0]], $resultSimple);
+        $this->assertEquals([
+            "sql"           =>  "< ?",
+            "parameters"    =>  [
+                10.0
+            ]
+        ], $resultSimple);
 
     }
 
@@ -192,7 +219,12 @@ class SqlOperationTest extends TestCase {
         $resultSimple = static::$sqlOperation->run(">10");
 
         # Check result
-        $this->assertEquals(["sql" => "> ?", "parameters" => [10.0]], $resultSimple);
+        $this->assertEquals([
+            "sql"           =>  "> ?",
+            "parameters"    =>  [
+                10.0
+            ]
+        ], $resultSimple);
 
     }
 
@@ -209,13 +241,25 @@ class SqlOperationTest extends TestCase {
         $resultA = static::$sqlOperation->run("[1:10]");
 
         # Check result A
-        $this->assertEquals(["sql" => "BETWEEN ? AND ?", "parameters" => [1.0, 10.0]], $resultA);
+        $this->assertEquals([
+            "sql"           =>  "BETWEEN ? AND ?",
+            "parameters"    =>  [
+                1.0,
+                10.0
+            ]
+        ], $resultA);
 
         # Get result B
         $resultB = static::$sqlOperation->run("[A:Z]");
 
         # Check result B
-        $this->assertEquals(["sql" => "BETWEEN ? AND ?", "parameters" => ["A", "Z"]], $resultB);
+        $this->assertEquals([
+            "sql"           =>  "BETWEEN ? AND ?",
+            "parameters"    =>  [
+                "A",
+                "Z"
+            ]
+        ], $resultB);
 
     }
 
@@ -232,13 +276,25 @@ class SqlOperationTest extends TestCase {
         $resultA = static::$sqlOperation->run("![1:10]");
 
         # Check result A
-        $this->assertEquals(["sql" => "NOT BETWEEN ? AND ?", "parameters" => [1.0, 10.0]], $resultA);
+        $this->assertEquals([
+            "sql"           =>  "NOT BETWEEN ? AND ?",
+            "parameters"    =>  [
+                1.0,
+                10.0
+            ]
+        ], $resultA);
 
         # Get result B
         $resultB = static::$sqlOperation->run("![A:Z]");
 
         # Check result B
-        $this->assertEquals(["sql" => "NOT BETWEEN ? AND ?", "parameters" => ["A", "Z"]], $resultB);
+        $this->assertEquals([
+            "sql"           =>  "NOT BETWEEN ? AND ?",
+            "parameters"    =>  [
+                "A",
+                "Z"
+            ]
+        ], $resultB);
 
     }
 

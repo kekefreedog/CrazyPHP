@@ -154,7 +154,7 @@ class Core extends Kernel {
                 "Please check if router instance is correctly launch in your app.",
                 500,
                 [
-                    "custom_code"   =>  "core-001",
+                    "custom_code"    =>  "core-001",
                 ]
             );
 
@@ -178,7 +178,7 @@ class Core extends Kernel {
                 "Please check if router instance is correctly launch in your app.",
                 500,
                 [
-                    "custom_code"   =>  "core-002",
+                    "custom_code"    =>  "core-002",
                 ]
             );
         
@@ -206,7 +206,7 @@ class Core extends Kernel {
                 "Please check if router instance is correctly launch in your app.",
                 500,
                 [
-                    "custom_code"   =>  "core-002",
+                    "custom_code"    =>  "core-002",
                 ]
             );
         

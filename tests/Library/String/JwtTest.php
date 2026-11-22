@@ -45,7 +45,7 @@ class JwtTest extends TestCase{
 
         # Setup env
         Env::set([
-            "phpunit_test"      =>  true,
+            "phpunit_test"    =>  true,
         ]);
 
     }
@@ -85,18 +85,18 @@ class JwtTest extends TestCase{
 
         # Expected
         $expected = [
-            "header"    => [
-                "alg"       =>  "HS256",
-                "typ"       =>  "JWT"
+            "header"     =>  [
+                "alg"    =>  "HS256",
+                "typ"    =>  "JWT"
             ],
-            "payload"   => [
-                "sub"       => 1234567890,
-                "username"  => "kevin",
-                "scope"     => [
-                    0           =>  "read",
-                    1           =>  "write"
+            "payload"    =>  [
+                "sub"         =>  1234567890,
+                "username"    =>  "kevin",
+                "scope"       =>  [
+                    0    =>  "read",
+                    1    =>  "write"
                 ],
-                "exp"   => 4102444800
+                "exp"         =>  4102444800
             ]
         ];
 

@@ -49,8 +49,8 @@ class PartialTest extends TestCase {
 
         # Setup env
         Env::set([
-            "phpunit_test"      =>  true,
-            "crazyphp_root"     =>  getcwd(),
+            "phpunit_test"     =>  true,
+            "crazyphp_root"    =>  getcwd(),
         ]);
 
     }
@@ -141,7 +141,11 @@ SCSS
 
             # Check discovery and descending name-length order
             $this->assertSame(
-                ["LegacyWidget", "ModernWidget", "Form"],
+                [
+                    "LegacyWidget",
+                    "ModernWidget",
+                    "Form"
+                ],
                 Partial::getAllFromStyle($path)
             );
 
@@ -219,43 +223,43 @@ SCSS
 
         # Set expect
         $expect = [
-            0   =>  "PreloaderLinearIndeterminate",
-            1   =>  "Navigation",
-            2   =>  "Hello",
-            3   =>  "Form",
-            6   =>  "Filter/FilterCheckbox",
-            7   =>  "Filter/FilterPassword",
-            8   =>  "Filter/NumberEndpoint",
-            9   =>  "Filter/FilterDefault",
-            10  =>  "Filter/NumberControl",
-            11  =>  "Filter/RangeInterval",
-            12  =>  "Filter/FilterHidden",
-            13  =>  "Filter/FilterNumber",
-            14  =>  "Filter/FilterSelect",
-            15  =>  "Filter/FilterSwitch",
-            16  =>  "Filter/FilterColor",
-            17  =>  "Filter/FilterRadio",
-            18  =>  "Filter/FilterRange",
-            19  =>  "Form/FormSeparator",
-            20  =>  "Filter/FilterDate",
-            21  =>  "Filter/FilterFile",
-            22  =>  "Filter/FilterText",
-            23  =>  "Form/FormCheckbox",
-            24  =>  "Form/FormPassword",
-            25  =>  "Form/FormTextarea",
-            26  =>  "Form/FormDefault",
-            27  =>  "Filter/Operator",
-            28  =>  "Form/FormHidden",
-            29  =>  "Form/FormNumber",
-            30  =>  "Form/FormSelect",
-            31  =>  "Form/FormSwitch",
-            32  =>  "Form/FormChips",
-            33  =>  "Form/FormColor",
-            34  =>  "Form/FormRadio",
-            35  =>  "Form/FormRange",
-            36  =>  "Form/FormDate",
-            37  =>  "Form/FormFile",
-            38  =>  "Form/FormOtp",
+            0     =>  "PreloaderLinearIndeterminate",
+            1     =>  "Navigation",
+            2     =>  "Hello",
+            3     =>  "Form",
+            6     =>  "Filter/FilterCheckbox",
+            7     =>  "Filter/FilterPassword",
+            8     =>  "Filter/NumberEndpoint",
+            9     =>  "Filter/FilterDefault",
+            10    =>  "Filter/NumberControl",
+            11    =>  "Filter/RangeInterval",
+            12    =>  "Filter/FilterHidden",
+            13    =>  "Filter/FilterNumber",
+            14    =>  "Filter/FilterSelect",
+            15    =>  "Filter/FilterSwitch",
+            16    =>  "Filter/FilterColor",
+            17    =>  "Filter/FilterRadio",
+            18    =>  "Filter/FilterRange",
+            19    =>  "Form/FormSeparator",
+            20    =>  "Filter/FilterDate",
+            21    =>  "Filter/FilterFile",
+            22    =>  "Filter/FilterText",
+            23    =>  "Form/FormCheckbox",
+            24    =>  "Form/FormPassword",
+            25    =>  "Form/FormTextarea",
+            26    =>  "Form/FormDefault",
+            27    =>  "Filter/Operator",
+            28    =>  "Form/FormHidden",
+            29    =>  "Form/FormNumber",
+            30    =>  "Form/FormSelect",
+            31    =>  "Form/FormSwitch",
+            32    =>  "Form/FormChips",
+            33    =>  "Form/FormColor",
+            34    =>  "Form/FormRadio",
+            35    =>  "Form/FormRange",
+            36    =>  "Form/FormDate",
+            37    =>  "Form/FormFile",
+            38    =>  "Form/FormOtp",
         ];
 
         # Get all partial from ts
@@ -280,123 +284,123 @@ SCSS
 
         # Set expect
         $expect = [
-            "PreloaderLinearIndeterminate"  =>  [
-                "script"    => "@crazyphp_root/resources/Ts/Environment/Partials/PreloaderLinearIndeterminate.ts",
-                "style"     => "@crazyphp_root/resources/Scss/style/partial/_preloader_linear_indeterminate.scss",
-                "template"  => "@crazyphp_root/resources/Hbs/Partials/preloader_linear_indeterminate.hbs",
+            "PreloaderLinearIndeterminate"    =>  [
+                "script"      =>  "@crazyphp_root/resources/Ts/Environment/Partials/PreloaderLinearIndeterminate.ts",
+                "style"       =>  "@crazyphp_root/resources/Scss/style/partial/_preloader_linear_indeterminate.scss",
+                "template"    =>  "@crazyphp_root/resources/Hbs/Partials/preloader_linear_indeterminate.hbs",
             ],
-            "Navigation"                    =>  [
-                "script"    => "@crazyphp_root/resources/Ts/Environment/Partials/Navigation.ts",
-                "template"  => "@crazyphp_root/resources/Hbs/Partials/navigation.hbs",
+            "Navigation"                      =>  [
+                "script"      =>  "@crazyphp_root/resources/Ts/Environment/Partials/Navigation.ts",
+                "template"    =>  "@crazyphp_root/resources/Hbs/Partials/navigation.hbs",
             ],
-            "Hello"                         =>  [
-                "script"    => "@crazyphp_root/resources/Ts/Environment/Partials/Hello.ts",
-                "template"  => "@crazyphp_root/resources/Hbs/Partials/hello.hbs",
+            "Hello"                           =>  [
+                "script"      =>  "@crazyphp_root/resources/Ts/Environment/Partials/Hello.ts",
+                "template"    =>  "@crazyphp_root/resources/Hbs/Partials/hello.hbs",
             ],
-            "Form"                          =>  [
-                "script"    => "@crazyphp_root/resources/Ts/Environment/Partials/Form.ts",
-                "template"  => "@crazyphp_root/resources/Hbs/Partials/form.hbs",
+            "Form"                            =>  [
+                "script"      =>  "@crazyphp_root/resources/Ts/Environment/Partials/Form.ts",
+                "template"    =>  "@crazyphp_root/resources/Hbs/Partials/form.hbs",
             ],
             # form.hbs's per-item.type sub-partials: template-only entries (no .ts/.scss of
             # their own, they're plain includes rather than fully-registered DOM partials)
-            "Filter/FilterPassword"        =>  [
-                "template"  => "@crazyphp_root/resources/Hbs/Partials/filter/filter_password.hbs",
+            "Filter/FilterPassword"           =>  [
+                "template"    =>  "@crazyphp_root/resources/Hbs/Partials/filter/filter_password.hbs",
             ],
-            "Filter/FilterCheckbox"        =>  [
-                "template"  => "@crazyphp_root/resources/Hbs/Partials/filter/filter_checkbox.hbs",
+            "Filter/FilterCheckbox"           =>  [
+                "template"    =>  "@crazyphp_root/resources/Hbs/Partials/filter/filter_checkbox.hbs",
             ],
-            "Filter/FilterDefault"         =>  [
-                "template"  => "@crazyphp_root/resources/Hbs/Partials/filter/filter_default.hbs",
+            "Filter/FilterDefault"            =>  [
+                "template"    =>  "@crazyphp_root/resources/Hbs/Partials/filter/filter_default.hbs",
             ],
-            "Filter/FilterSelect"          =>  [
-                "template"  => "@crazyphp_root/resources/Hbs/Partials/filter/filter_select.hbs",
+            "Filter/FilterSelect"             =>  [
+                "template"    =>  "@crazyphp_root/resources/Hbs/Partials/filter/filter_select.hbs",
             ],
-            "Filter/FilterSwitch"          =>  [
-                "template"  => "@crazyphp_root/resources/Hbs/Partials/filter/filter_switch.hbs",
+            "Filter/FilterSwitch"             =>  [
+                "template"    =>  "@crazyphp_root/resources/Hbs/Partials/filter/filter_switch.hbs",
             ],
-            "Filter/FilterHidden"          =>  [
-                "template"  => "@crazyphp_root/resources/Hbs/Partials/filter/filter_hidden.hbs",
+            "Filter/FilterHidden"             =>  [
+                "template"    =>  "@crazyphp_root/resources/Hbs/Partials/filter/filter_hidden.hbs",
             ],
-            "Filter/FilterNumber"          =>  [
-                "template"  => "@crazyphp_root/resources/Hbs/Partials/filter/filter_number.hbs",
+            "Filter/FilterNumber"             =>  [
+                "template"    =>  "@crazyphp_root/resources/Hbs/Partials/filter/filter_number.hbs",
             ],
-            "Filter/FilterRadio"           =>  [
-                "template"  => "@crazyphp_root/resources/Hbs/Partials/filter/filter_radio.hbs",
+            "Filter/FilterRadio"              =>  [
+                "template"    =>  "@crazyphp_root/resources/Hbs/Partials/filter/filter_radio.hbs",
             ],
-            "Filter/FilterRange"           =>  [
-                "template"  => "@crazyphp_root/resources/Hbs/Partials/filter/filter_range.hbs",
+            "Filter/FilterRange"              =>  [
+                "template"    =>  "@crazyphp_root/resources/Hbs/Partials/filter/filter_range.hbs",
             ],
-            "Filter/FilterColor"           =>  [
-                "template"  => "@crazyphp_root/resources/Hbs/Partials/filter/filter_color.hbs",
+            "Filter/FilterColor"              =>  [
+                "template"    =>  "@crazyphp_root/resources/Hbs/Partials/filter/filter_color.hbs",
             ],
-            "Form/FormPassword"            =>  [
-                "template"  => "@crazyphp_root/resources/Hbs/Partials/form/form_password.hbs",
+            "Form/FormPassword"               =>  [
+                "template"    =>  "@crazyphp_root/resources/Hbs/Partials/form/form_password.hbs",
             ],
-            "Form/FormCheckbox"            =>  [
-                "template"  => "@crazyphp_root/resources/Hbs/Partials/form/form_checkbox.hbs",
+            "Form/FormCheckbox"               =>  [
+                "template"    =>  "@crazyphp_root/resources/Hbs/Partials/form/form_checkbox.hbs",
             ],
-            "Filter/FilterFile"            =>  [
-                "template"  => "@crazyphp_root/resources/Hbs/Partials/filter/filter_file.hbs",
+            "Filter/FilterFile"               =>  [
+                "template"    =>  "@crazyphp_root/resources/Hbs/Partials/filter/filter_file.hbs",
             ],
-            "Filter/FilterDate"            =>  [
-                "template"  => "@crazyphp_root/resources/Hbs/Partials/filter/filter_date.hbs",
+            "Filter/FilterDate"               =>  [
+                "template"    =>  "@crazyphp_root/resources/Hbs/Partials/filter/filter_date.hbs",
             ],
-            "Form/FormDefault"             =>  [
-                "template"  => "@crazyphp_root/resources/Hbs/Partials/form/form_default.hbs",
+            "Form/FormDefault"                =>  [
+                "template"    =>  "@crazyphp_root/resources/Hbs/Partials/form/form_default.hbs",
             ],
-            "Form/FormNumber"              =>  [
-                "template"  => "@crazyphp_root/resources/Hbs/Partials/form/form_number.hbs",
+            "Form/FormNumber"                 =>  [
+                "template"    =>  "@crazyphp_root/resources/Hbs/Partials/form/form_number.hbs",
             ],
-            "Form/FormHidden"              =>  [
-                "template"  => "@crazyphp_root/resources/Hbs/Partials/form/form_hidden.hbs",
+            "Form/FormHidden"                 =>  [
+                "template"    =>  "@crazyphp_root/resources/Hbs/Partials/form/form_hidden.hbs",
             ],
-            "Form/FormSwitch"              =>  [
-                "template"  => "@crazyphp_root/resources/Hbs/Partials/form/form_switch.hbs",
+            "Form/FormSwitch"                 =>  [
+                "template"    =>  "@crazyphp_root/resources/Hbs/Partials/form/form_switch.hbs",
             ],
-            "Form/FormSelect"              =>  [
-                "template"  => "@crazyphp_root/resources/Hbs/Partials/form/form_select.hbs",
+            "Form/FormSelect"                 =>  [
+                "template"    =>  "@crazyphp_root/resources/Hbs/Partials/form/form_select.hbs",
             ],
-            "Form/FormRange"               =>  [
-                "template"  => "@crazyphp_root/resources/Hbs/Partials/form/form_range.hbs",
+            "Form/FormRange"                  =>  [
+                "template"    =>  "@crazyphp_root/resources/Hbs/Partials/form/form_range.hbs",
             ],
-            "Form/FormColor"               =>  [
-                "template"  => "@crazyphp_root/resources/Hbs/Partials/form/form_color.hbs",
+            "Form/FormColor"                  =>  [
+                "template"    =>  "@crazyphp_root/resources/Hbs/Partials/form/form_color.hbs",
             ],
-            "Form/FormRadio"               =>  [
-                "template"  => "@crazyphp_root/resources/Hbs/Partials/form/form_radio.hbs",
+            "Form/FormRadio"                  =>  [
+                "template"    =>  "@crazyphp_root/resources/Hbs/Partials/form/form_radio.hbs",
             ],
-            "Form/FormDate"                =>  [
-                "template"  => "@crazyphp_root/resources/Hbs/Partials/form/form_date.hbs",
+            "Form/FormDate"                   =>  [
+                "template"    =>  "@crazyphp_root/resources/Hbs/Partials/form/form_date.hbs",
             ],
-            "Form/FormFile"                =>  [
-                "template"  => "@crazyphp_root/resources/Hbs/Partials/form/form_file.hbs",
+            "Form/FormFile"                   =>  [
+                "template"    =>  "@crazyphp_root/resources/Hbs/Partials/form/form_file.hbs",
             ],
-            "Filter/FilterText"            =>  [
-                "template"  => "@crazyphp_root/resources/Hbs/Partials/filter/filter_text.hbs",
+            "Filter/FilterText"               =>  [
+                "template"    =>  "@crazyphp_root/resources/Hbs/Partials/filter/filter_text.hbs",
             ],
             "Filter/RangeInterval"            =>  [
-                "template"  => "@crazyphp_root/resources/Hbs/Partials/filter/_range_interval.hbs",
+                "template"    =>  "@crazyphp_root/resources/Hbs/Partials/filter/_range_interval.hbs",
             ],
             "Filter/Operator"                 =>  [
-                "template"  => "@crazyphp_root/resources/Hbs/Partials/filter/_operator.hbs",
+                "template"    =>  "@crazyphp_root/resources/Hbs/Partials/filter/_operator.hbs",
             ],
             "Form/FormTextarea"               =>  [
-                "template"  => "@crazyphp_root/resources/Hbs/Partials/form/form_textarea.hbs",
+                "template"    =>  "@crazyphp_root/resources/Hbs/Partials/form/form_textarea.hbs",
             ],
             "Form/FormChips"                  =>  [
-                "template"  => "@crazyphp_root/resources/Hbs/Partials/form/form_chips.hbs",
+                "template"    =>  "@crazyphp_root/resources/Hbs/Partials/form/form_chips.hbs",
             ],
-            "Filter/NumberEndpoint"           => [
-                "template"  => "@crazyphp_root/resources/Hbs/Partials/filter/_number_endpoint.hbs",
+            "Filter/NumberEndpoint"           =>  [
+                "template"    =>  "@crazyphp_root/resources/Hbs/Partials/filter/_number_endpoint.hbs",
             ],
-            "Filter/NumberControl"            => [
-                "template"  => "@crazyphp_root/resources/Hbs/Partials/filter/_number_control.hbs",
+            "Filter/NumberControl"            =>  [
+                "template"    =>  "@crazyphp_root/resources/Hbs/Partials/filter/_number_control.hbs",
             ],
-            "Form/FormSeparator"              => [
-                "template"  => "@crazyphp_root/resources/Hbs/Partials/form/form_separator.hbs",
+            "Form/FormSeparator"              =>  [
+                "template"    =>  "@crazyphp_root/resources/Hbs/Partials/form/form_separator.hbs",
             ],
             "Form/FormOtp"                    =>  [
-                "template"  => "@crazyphp_root/resources/Hbs/Partials/form/form_otp.hbs",
+                "template"    =>  "@crazyphp_root/resources/Hbs/Partials/form/form_otp.hbs",
             ],
         ];
 
@@ -422,10 +426,10 @@ SCSS
 
         # Set expect
         $expect = [
-            "name"      =>  "Form",
-            "file"      =>  "form",
-            "script"    =>  "@crazyphp_root/resources/Ts/Environment/Partials/Form.ts",
-            "template"  =>  "@crazyphp_root/resources/Hbs/Partials/form.hbs",
+            "name"        =>  "Form",
+            "file"        =>  "form",
+            "script"      =>  "@crazyphp_root/resources/Ts/Environment/Partials/Form.ts",
+            "template"    =>  "@crazyphp_root/resources/Hbs/Partials/form.hbs",
         ];
 
         # Get all partial from ts
@@ -470,43 +474,43 @@ SCSS
         # Set expect (resources/Hbs/Partials is no longer flat: form.hbs's per-item.type
         # sub-partials live under nested form/ and filter/ folders)
         $expect = [
-            "PreloaderLinearIndeterminate"  =>  "PreloaderLinearIndeterminate",
-            "Navigation"                    =>  "Navigation",
-            "Hello"                         =>  "Hello",
-            "Form"                          =>  "Form",
-            "Filter/FilterPassword"         =>  "Filter/FilterPassword",
-            "Filter/FilterCheckbox"         =>  "Filter/FilterCheckbox",
-            "Filter/FilterDefault"          =>  "Filter/FilterDefault",
-            "Filter/FilterSelect"           =>  "Filter/FilterSelect",
-            "Filter/FilterSwitch"           =>  "Filter/FilterSwitch",
-            "Filter/FilterHidden"           =>  "Filter/FilterHidden",
-            "Filter/FilterNumber"           =>  "Filter/FilterNumber",
-            "Filter/FilterRadio"            =>  "Filter/FilterRadio",
-            "Filter/FilterRange"            =>  "Filter/FilterRange",
-            "Filter/FilterColor"            =>  "Filter/FilterColor",
-            "Form/FormPassword"             =>  "Form/FormPassword",
-            "Form/FormCheckbox"             =>  "Form/FormCheckbox",
-            "Filter/FilterFile"             =>  "Filter/FilterFile",
-            "Filter/FilterDate"             =>  "Filter/FilterDate",
-            "Form/FormDefault"              =>  "Form/FormDefault",
-            "Form/FormNumber"               =>  "Form/FormNumber",
-            "Form/FormHidden"               =>  "Form/FormHidden",
-            "Form/FormSwitch"               =>  "Form/FormSwitch",
-            "Form/FormSelect"               =>  "Form/FormSelect",
-            "Form/FormRange"                =>  "Form/FormRange",
-            "Form/FormColor"                =>  "Form/FormColor",
-            "Form/FormRadio"                =>  "Form/FormRadio",
-            "Form/FormDate"                 =>  "Form/FormDate",
-            "Form/FormFile"                 =>  "Form/FormFile",
-            "Filter/FilterText"             =>  "Filter/FilterText",
-            "Filter/RangeInterval"          =>  "Filter/RangeInterval",
-            "Filter/Operator"               =>  "Filter/Operator",
-            "Form/FormTextarea"             =>  "Form/FormTextarea",
-            "Form/FormChips"                =>  "Form/FormChips",
-            "Form/FormOtp"                  =>  "Form/FormOtp",
-            "Filter/NumberEndpoint"           => "Filter/NumberEndpoint",
-            "Filter/NumberControl"            => "Filter/NumberControl",
-            "Form/FormSeparator"              => "Form/FormSeparator",
+            "PreloaderLinearIndeterminate"    =>  "PreloaderLinearIndeterminate",
+            "Navigation"                      =>  "Navigation",
+            "Hello"                           =>  "Hello",
+            "Form"                            =>  "Form",
+            "Filter/FilterPassword"           =>  "Filter/FilterPassword",
+            "Filter/FilterCheckbox"           =>  "Filter/FilterCheckbox",
+            "Filter/FilterDefault"            =>  "Filter/FilterDefault",
+            "Filter/FilterSelect"             =>  "Filter/FilterSelect",
+            "Filter/FilterSwitch"             =>  "Filter/FilterSwitch",
+            "Filter/FilterHidden"             =>  "Filter/FilterHidden",
+            "Filter/FilterNumber"             =>  "Filter/FilterNumber",
+            "Filter/FilterRadio"              =>  "Filter/FilterRadio",
+            "Filter/FilterRange"              =>  "Filter/FilterRange",
+            "Filter/FilterColor"              =>  "Filter/FilterColor",
+            "Form/FormPassword"               =>  "Form/FormPassword",
+            "Form/FormCheckbox"               =>  "Form/FormCheckbox",
+            "Filter/FilterFile"               =>  "Filter/FilterFile",
+            "Filter/FilterDate"               =>  "Filter/FilterDate",
+            "Form/FormDefault"                =>  "Form/FormDefault",
+            "Form/FormNumber"                 =>  "Form/FormNumber",
+            "Form/FormHidden"                 =>  "Form/FormHidden",
+            "Form/FormSwitch"                 =>  "Form/FormSwitch",
+            "Form/FormSelect"                 =>  "Form/FormSelect",
+            "Form/FormRange"                  =>  "Form/FormRange",
+            "Form/FormColor"                  =>  "Form/FormColor",
+            "Form/FormRadio"                  =>  "Form/FormRadio",
+            "Form/FormDate"                   =>  "Form/FormDate",
+            "Form/FormFile"                   =>  "Form/FormFile",
+            "Filter/FilterText"               =>  "Filter/FilterText",
+            "Filter/RangeInterval"            =>  "Filter/RangeInterval",
+            "Filter/Operator"                 =>  "Filter/Operator",
+            "Form/FormTextarea"               =>  "Form/FormTextarea",
+            "Form/FormChips"                  =>  "Form/FormChips",
+            "Form/FormOtp"                    =>  "Form/FormOtp",
+            "Filter/NumberEndpoint"           =>  "Filter/NumberEndpoint",
+            "Filter/NumberControl"            =>  "Filter/NumberControl",
+            "Form/FormSeparator"              =>  "Form/FormSeparator",
         ];
 
         # Get all partial from ts

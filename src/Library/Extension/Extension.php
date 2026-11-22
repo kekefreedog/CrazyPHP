@@ -74,7 +74,7 @@ class Extension {
                 "Properties given isn't valid, check name please",
                 500,
                 [
-                    "custom_code"   =>  "extension-001"
+                    "custom_code"    =>  "extension-001"
                 ]
             );
 
@@ -144,7 +144,10 @@ class Extension {
         # Search all extensions properties
         $files = $finder
             ->files()
-            ->name(['*.yml', '*.yaml'])
+            ->name([
+                '*.yml',
+                '*.yaml'
+            ])
             ->in(File::path(static::EXTENSION_DIRECTORY))
             ->depth('== 1')
         ;
@@ -203,7 +206,10 @@ class Extension {
             # Search all extensions properties
             $files = $finder
                 ->files()
-                ->name(["*.yml", "*.yaml"])
+                ->name([
+                    "*.yml",
+                    "*.yaml"
+                ])
                 ->in(File::path(static::EXTENSION_DIRECTORY)."/".$name)
                 ->depth('== 0')
             ;

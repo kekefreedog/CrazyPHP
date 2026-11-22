@@ -47,26 +47,43 @@ class FormDateDefaultsTest extends TestCase {
         try{
 
             # Test timezones on both sides of UTC
-            foreach(["Europe/Paris", "America/Los_Angeles", "Pacific/Kiritimati"] as $zone){
+            foreach([
+                "Europe/Paris",
+                "America/Los_Angeles",
+                "Pacific/Kiritimati"
+            ] as $zone){
 
                 # Set the server timezone
                 date_default_timezone_set($zone);
 
                 # Test forms and filters with each supported alias
-                foreach([false, true] as $filter){
+                foreach([
+                    false,
+                    true
+                ] as $filter){
 
-                    foreach(["today", "yesterday", "tomorrow"] as $relative){
+                    foreach([
+                        "today",
+                        "yesterday",
+                        "tomorrow"
+                    ] as $relative){
 
-                        foreach([$relative, $relative."()", " ".strtoupper($relative)." "] as $alias){
+                        foreach([
+                            $relative,
+                            $relative."()",
+                            " ".strtoupper($relative)." "
+                        ] as $alias){
 
                             # Normalize the date default
                             $form = new Form([
-                                "filter" => $filter,
-                                "items"  => [[
-                                    "type"    => "date",
-                                    "name"    => "date",
-                                    "default" => $alias,
-                                ]],
+                                "filter"    =>  $filter,
+                                "items"     =>  [
+                                    [
+                                        "type"       =>  "date",
+                                        "name"       =>  "date",
+                                        "default"    =>  $alias,
+                                    ]
+                                ],
                             ]);
 
                             # Assert the resolved local date
@@ -103,14 +120,27 @@ class FormDateDefaultsTest extends TestCase {
         $tomorrow = (new DateTimeImmutable("tomorrow"))->format("Y-m-d");
 
         # Test both range configurations
-        foreach([["_style" => ["date" => ["range" => true]]], ["multiple" => true]] as $mode){
+        foreach([
+            [
+                "_style"    =>  [
+                    "date"    =>  [
+                        "range"    =>  true
+                    ]
+                ]
+            ],
+            [
+                "multiple"    =>  true
+            ]
+        ] as $mode){
 
             # Normalize the range default
             $form = new Form([
-                "items" => [[
-                    "type"    => "date",
-                    "default" => "yesterday() - tomorrow",
-                ] + $mode],
+                "items"    =>  [
+                    [
+                        "type"       =>  "date",
+                        "default"    =>  "yesterday() - tomorrow",
+                    ] + $mode
+                ],
             ]);
 
             # Assert the resolved range
@@ -120,14 +150,30 @@ class FormDateDefaultsTest extends TestCase {
 
         # Normalize the selection bounds
         $form = new Form([
-            "items" => [[
-                "type"   => "date",
-                "select" => [["value" => "yesterday"], ["value" => "tomorrow()"]],
-            ]],
+            "items"    =>  [
+                [
+                    "type"      =>  "date",
+                    "select"    =>  [
+                        [
+                            "value"    =>  "yesterday"
+                        ],
+                        [
+                            "value"    =>  "tomorrow()"
+                        ]
+                    ],
+                ]
+            ],
         ]);
 
         # Assert the resolved bounds
-        $this->assertSame([["value" => $yesterday], ["value" => $tomorrow]], $form->getItems()[0]["select"]);
+        $this->assertSame([
+            [
+                "value"    =>  $yesterday
+            ],
+            [
+                "value"    =>  $tomorrow
+            ]
+        ], $form->getItems()[0]["select"]);
 
     }
 
@@ -142,13 +188,20 @@ class FormDateDefaultsTest extends TestCase {
 
         # Test explicit, unsupported and invalid dates
         foreach([
-            "2026-09-29" => "2026-09-29",
-            "next week"  => null,
-            "2026-02-30" => null,
+            "2026-09-29"    =>  "2026-09-29",
+            "next week"     =>  null,
+            "2026-02-30"    =>  null,
         ] as $input => $expected){
 
             # Normalize the date default
-            $form = new Form(["items" => [["type" => "date", "default" => $input]]]);
+            $form = new Form([
+                "items"    =>  [
+                    [
+                        "type"       =>  "date",
+                        "default"    =>  $input
+                    ]
+                ]
+            ]);
 
             # Assert the normalized default
             $this->assertSame($expected, $form->getItems()[0]["default"]);
@@ -157,11 +210,17 @@ class FormDateDefaultsTest extends TestCase {
 
         # Normalize a reversed range
         $form = new Form([
-            "items" => [[
-                "type"    => "date",
-                "default" => "tomorrow - yesterday",
-                "_style"  => ["date" => ["range" => true]],
-            ]],
+            "items"    =>  [
+                [
+                    "type"       =>  "date",
+                    "default"    =>  "tomorrow - yesterday",
+                    "_style"     =>  [
+                        "date"    =>  [
+                            "range"    =>  true
+                        ]
+                    ],
+                ]
+            ],
         ]);
 
         # Assert the reversed range is rejected

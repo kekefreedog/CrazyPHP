@@ -110,7 +110,7 @@ class Env{
                     "Please check custom env \"$k\" => \"$v\". Actually env name looks not valid, you have to choose a char string name.",
                     500,
                     [
-                        "custom_code"   =>  "env-003",
+                        "custom_code"    =>  "env-003",
                     ]
                 );
 
@@ -157,7 +157,7 @@ class Env{
                 "No env variable match with \"$input\", please define it before !",
                 500,
                 [
-                    "custom_code"   =>  "env-002",
+                    "custom_code"    =>  "env-002",
                 ]
             );
 
@@ -181,9 +181,9 @@ class Env{
 
         # Set result
         $result = [
-            "app_root"      =>  realpath($indexRoot.".."),
-            "crazyphp_root" =>  realpath($indexRoot."../vendor/kzarshenas/crazyphp"),
-            "app_assets"    =>  realpath($indexRoot."../assets"),
+            "app_root"         =>  realpath($indexRoot.".."),
+            "crazyphp_root"    =>  realpath($indexRoot."../vendor/kzarshenas/crazyphp"),
+            "app_assets"       =>  realpath($indexRoot."../assets"),
         ];
 
         # Return result
@@ -258,7 +258,7 @@ class Env{
                 "Input can't be an empty string !",
                 500,
                 [
-                    "custom_code"   =>  "env-001",
+                    "custom_code"    =>  "env-001",
                 ]
             );
 

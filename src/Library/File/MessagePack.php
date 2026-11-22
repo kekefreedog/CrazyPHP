@@ -206,10 +206,10 @@ class MessagePack {
 
         # Return result
         return [
-            'path'      =>  $path,
-            'size'      =>  filesize($path),
-            'data'      =>  $data,
-            'encoded'   =>  true,
+            'path'       =>  $path,
+            'size'       =>  filesize($path),
+            'data'       =>  $data,
+            'encoded'    =>  true,
         ];
 
 	}
@@ -486,7 +486,7 @@ class MessagePack {
                     "Function \"gzdecode\" doesn't exists, please check if zlib extension is enabled...",
                     500,
                     [
-                        "custom_code"   =>  "message-pack-002",
+                        "custom_code"    =>  "message-pack-002",
                     ]
                 );
 

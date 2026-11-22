@@ -67,13 +67,28 @@ class AppCreateTest extends TestCase {
         unset($GLOBALS[FileConfig::PREFIX]);
 
         # Point all generators at the fixture
-        Env::set(["app_root" => $this->_root, "crazyphp_root" => dirname(__DIR__, 2), "phpunit_test" => true]);
+        Env::set([
+            "app_root"         =>  $this->_root,
+            "crazyphp_root"    =>  dirname(__DIR__, 2),
+            "phpunit_test"     =>  true
+        ]);
 
         # Preserve a custom dependency and repository in the bootstrap manifest
         Json::create("@app_root/composer.json", [
-            "require" => ["kzarshenas/crazyphp" => "@dev"],
-            "repositories" => [["type" => "path", "url" => dirname(__DIR__, 2)]],
-            "autoload" => ["psr-4" => ["Existing\\" => "existing/"]],
+            "require"         =>  [
+                "kzarshenas/crazyphp"    =>  "@dev"
+            ],
+            "repositories"    =>  [
+                [
+                    "type"    =>  "path",
+                    "url"     =>  dirname(__DIR__, 2)
+                ]
+            ],
+            "autoload"        =>  [
+                "psr-4"    =>  [
+                    "Existing\\"    =>  "existing/"
+                ]
+            ],
         ]);
 
         # Record tools without changing the host runtime
@@ -113,10 +128,24 @@ class AppCreateTest extends TestCase {
     public function testBackendProjectsSkipFrontend(string $type):void {
 
         # Run the complete creation flow with a legacy frontend default supplied
-        (new Create(["application" => ["name" => "Example Project", "type" => $type, "frontend" => "vite"]], $this->_runtime))->run();
+        (new Create([
+            "application"    =>  [
+                "name"        =>  "Example Project",
+                "type"        =>  $type,
+                "frontend"    =>  "vite"
+            ]
+        ], $this->_runtime))->run();
 
         # Backend projects require only Composer
-        $this->assertSame([["composer", ["update", "--no-interaction"]]], $this->_runtime->commands);
+        $this->assertSame([
+            [
+                "composer",
+                [
+                    "update",
+                    "--no-interaction"
+                ]
+            ]
+        ], $this->_runtime->commands);
 
         # Skip password confirmation when no databases are configured
         $this->assertSame([], $this->_runtime->questions);
@@ -179,7 +208,17 @@ class AppCreateTest extends TestCase {
     public static function backendTypes():array {
 
         # Cover each branch that skips frontend setup
-        return [["api"], ["library"], ["other"]];
+        return [
+            [
+                "api"
+            ],
+            [
+                "library"
+            ],
+            [
+                "other"
+            ]
+        ];
 
     }
 
@@ -193,7 +232,14 @@ class AppCreateTest extends TestCase {
     public function testFrontendScaffolds(string $bundler):void {
 
         # Create a website using the selected bundler and router
-        $create = new Create(["application" => ["name" => "Example", "type" => "website", "frontend" => $bundler, "router" => "symfony"]], $this->_runtime);
+        $create = new Create([
+            "application"    =>  [
+                "name"        =>  "Example",
+                "type"        =>  "website",
+                "frontend"    =>  $bundler,
+                "router"      =>  "symfony"
+            ]
+        ], $this->_runtime);
 
         # Verify both invocation paths use the explicit scenario
         $this->assertSame(Create::STORYLINE, $create->getStoryline());
@@ -203,9 +249,26 @@ class AppCreateTest extends TestCase {
 
         # Install dependencies once and compile once
         $this->assertSame([
-            ["composer", ["update", "--no-interaction"]],
-            ["npm", ["install"]],
-            ["npm", ["run", "build"]],
+            [
+                "composer",
+                [
+                    "update",
+                    "--no-interaction"
+                ]
+            ],
+            [
+                "npm",
+                [
+                    "install"
+                ]
+            ],
+            [
+                "npm",
+                [
+                    "run",
+                    "build"
+                ]
+            ],
         ], $this->_runtime->commands);
 
         # Preserve the frontend page sources
@@ -221,7 +284,9 @@ class AppCreateTest extends TestCase {
         $this->assertSame($bundler === "webpack", is_file($this->_root."/webpack.config.js"));
 
         # Register the actual compiled entrypoint
-        $this->assertSame(["index.1234abcd.js"], FileConfig::getValue("Front.lastBuild.files"));
+        $this->assertSame([
+            "index.1234abcd.js"
+        ], FileConfig::getValue("Front.lastBuild.files"));
 
         # Persist the compiler choice in the generated YAML, independent of its cache
         $this->assertSame($bundler, Yaml::open("@app_root/config/Front.yml")["Front"]["bundler"]);
@@ -257,13 +322,31 @@ class AppCreateTest extends TestCase {
         $this->assertSame("^2.3.3-1.0.38", $package["devDependencies"]["kmaterialize"]);
 
         # Omit the original framework and unused legacy UI packages
-        foreach(["@materializecss/materialize", "material-dynamic-colors", "maska", "clipboard", "@sweetalert2/theme-dark", "@types/quill", "material-symbols", "material-icons", "i18next", "repair", "handlebars-utils"] as $removed)
+        foreach([
+            "@materializecss/materialize",
+            "material-dynamic-colors",
+            "maska",
+            "clipboard",
+            "@sweetalert2/theme-dark",
+            "@types/quill",
+            "material-symbols",
+            "material-icons",
+            "i18next",
+            "repair",
+            "handlebars-utils"
+        ] as $removed)
 
             # Keep removed defaults out of the generated manifest
             $this->assertArrayNotHasKey($removed, $package["devDependencies"]);
 
         # Retain optional peers that the generated UI imports directly
-        foreach(["tippy.js", "sweetalert2", "tom-select", "filepond", "@simonwep/pickr"] as $peer)
+        foreach([
+            "tippy.js",
+            "sweetalert2",
+            "tom-select",
+            "filepond",
+            "@simonwep/pickr"
+        ] as $peer)
 
             # Kmaterialize integration does not bundle the underlying widget
             $this->assertArrayHasKey($peer, $package["devDependencies"]);
@@ -272,10 +355,20 @@ class AppCreateTest extends TestCase {
         $this->assertFileDoesNotExist($this->_root."/app/Front/types/materialize.d.ts");
 
         # Reuse the same runtime when compiling the project again through CrazyFront
-        (new FrontRun(["args" => ["build"]], $this->_runtime))->runFrontScript();
+        (new FrontRun([
+            "args"    =>  [
+                "build"
+            ]
+        ], $this->_runtime))->runFrontScript();
 
         # Keep the public frontend command connected to the selected toolchain
-        $this->assertSame(["npm", ["run", "build"]], $this->_runtime->commands[3]);
+        $this->assertSame([
+            "npm",
+            [
+                "run",
+                "build"
+            ]
+        ], $this->_runtime->commands[3]);
 
     }
 
@@ -287,7 +380,14 @@ class AppCreateTest extends TestCase {
     public static function frontendBundlers():array {
 
         # Exercise both frontend choices
-        return [["webpack"], ["vite"]];
+        return [
+            [
+                "webpack"
+            ],
+            [
+                "vite"
+            ]
+        ];
 
     }
 
@@ -302,19 +402,42 @@ class AppCreateTest extends TestCase {
         mkdir($this->_root."/framework/resources/Yml", 0777, true);
 
         # Define distinct shared and compiler-specific requirements
-        Yaml::create($this->_root."/framework/resources/Yml/Package.yml", ["Package" => [
-            "devDependencies" => ["shared-package" => "^1.0", "existing-package" => "^2.0"],
-            "bundlers" => ["vite" => ["vite-only" => "^3.0"], "webpack" => ["webpack-only" => "^4.0"]],
-        ]]);
+        Yaml::create($this->_root."/framework/resources/Yml/Package.yml", [
+            "Package"    =>  [
+                "devDependencies"    =>  [
+                    "shared-package"      =>  "^1.0",
+                    "existing-package"    =>  "^2.0"
+                ],
+                "bundlers"           =>  [
+                    "vite"       =>  [
+                        "vite-only"    =>  "^3.0"
+                    ],
+                    "webpack"    =>  [
+                        "webpack-only"    =>  "^4.0"
+                    ]
+                ],
+            ]
+        ]);
 
         # Preserve dependency constraints and metadata supplied by the application
-        Json::create("@app_root/package.json", ["devDependencies" => ["existing-package" => "^9.0"], "custom" => true]);
+        Json::create("@app_root/package.json", [
+            "devDependencies"    =>  [
+                "existing-package"    =>  "^9.0"
+            ],
+            "custom"             =>  true
+        ]);
 
         # Resolve package defaults from the isolated framework root
-        Env::set(["crazyphp_root" => $this->_root."/framework"]);
+        Env::set([
+            "crazyphp_root"    =>  $this->_root."/framework"
+        ]);
 
         # Generate only the npm manifest without running installers
-        (new Create(["application" => ["frontend" => "vite"]], $this->_runtime))->runNpm();
+        (new Create([
+            "application"    =>  [
+                "frontend"    =>  "vite"
+            ]
+        ], $this->_runtime))->runNpm();
 
         # Read the generated requirements
         $manifest = Json::open("@app_root/package.json");
@@ -346,7 +469,15 @@ class AppCreateTest extends TestCase {
     public function testDatabaseConfiguration(string $engine):void {
 
         # Generate an API with the selected database and optional OAuth dependency
-        (new Create(["application" => ["type" => "api", "database" => [$engine], "authentication" => "league/oauth2-client"]], $this->_runtime))->run();
+        (new Create([
+            "application"    =>  [
+                "type"              =>  "api",
+                "database"          =>  [
+                    $engine
+                ],
+                "authentication"    =>  "league/oauth2-client"
+            ]
+        ], $this->_runtime))->run();
 
         # Read the generated YAML directly, independent of the configuration cache
         $configuration = Yaml::open("@app_root/config/Database.yml")["Database"]["collection"][$engine];
@@ -358,7 +489,9 @@ class AppCreateTest extends TestCase {
         $this->assertSame("crazypassword", $configuration["users"][0]["password"]);
 
         # Keep the configured database name
-        $this->assertSame(["crazy_db"], $configuration["database"]);
+        $this->assertSame([
+            "crazy_db"
+        ], $configuration["database"]);
 
         # No database creation or Docker service startup is executed
         $this->assertCount(1, $this->_runtime->commands);
@@ -382,16 +515,31 @@ class AppCreateTest extends TestCase {
     public function testMultipleDatabaseConfiguration():void {
 
         # Generate an API with two selected databases, where None is ignored
-        (new Create(["application" => ["type" => "api", "database" => ["mongodb", "postgresql", "none"], "authentication" => "delight-im/auth"]], $this->_runtime))->run();
+        (new Create([
+            "application"    =>  [
+                "type"              =>  "api",
+                "database"          =>  [
+                    "mongodb",
+                    "postgresql",
+                    "none"
+                ],
+                "authentication"    =>  "delight-im/auth"
+            ]
+        ], $this->_runtime))->run();
 
         # Read the generated YAML directly, independent of the configuration cache
         $collection = Yaml::open("@app_root/config/Database.yml")["Database"]["collection"];
 
         # Configure each selected engine with the shared defaults
-        foreach(["mongodb", "postgresql"] as $engine)
+        foreach([
+            "mongodb",
+            "postgresql"
+        ] as $engine)
 
             # Keep the configured database name
-            $this->assertSame(["crazy_db"], $collection[$engine]["database"]);
+            $this->assertSame([
+                "crazy_db"
+            ], $collection[$engine]["database"]);
 
         # Get composer requirements
         $require = Json::open("@app_root/composer.json")["require"];
@@ -413,7 +561,20 @@ class AppCreateTest extends TestCase {
     public static function databaseEngines():array {
 
         # Cover each configured driver including legacy MySQL input
-        return [["mongodb"], ["mariadb"], ["mysql"], ["postgresql"]];
+        return [
+            [
+                "mongodb"
+            ],
+            [
+                "mariadb"
+            ],
+            [
+                "mysql"
+            ],
+            [
+                "postgresql"
+            ]
+        ];
 
     }
 
@@ -452,7 +613,12 @@ class AppCreateTest extends TestCase {
                 $configuration["Database"]["collection"]["mariadb"]["root"]["password"] = "updated-admin-secret";
 
                 # Add a second engine with multiple database names
-                $configuration["Database"]["collection"]["postgresql"] = array_replace(Database::CONFIG["postgresql"], ["database" => ["primary", "secondary"]]);
+                $configuration["Database"]["collection"]["postgresql"] = array_replace(Database::CONFIG["postgresql"], [
+                    "database"    =>  [
+                        "primary",
+                        "secondary"
+                    ]
+                ]);
 
                 # Save changes without updating the framework's configuration cache
                 Yaml::create("@app_root/config/Database.yml", $configuration);
@@ -477,13 +643,23 @@ class AppCreateTest extends TestCase {
         };
 
         # Run the entire wizard sequence with a database and frontend
-        (new Create(["application" => ["database" => "mariadb"]], $this->_runtime))->run();
+        (new Create([
+            "application"    =>  [
+                "database"    =>  "mariadb"
+            ]
+        ], $this->_runtime))->run();
 
         # Require a new confirmation after a negative answer
         $this->assertCount(2, $this->_runtime->questions);
 
         # Only start compilation after the affirmative answer
-        $this->assertSame(["npm", ["run", "build"]], $this->_runtime->commands[2]);
+        $this->assertSame([
+            "npm",
+            [
+                "run",
+                "build"
+            ]
+        ], $this->_runtime->commands[2]);
 
         # Preserve the user's file exactly as saved
         $this->assertSame($saved, file_get_contents($this->_root."/config/Database.yml"));
@@ -504,40 +680,103 @@ class AppCreateTest extends TestCase {
         $fields = array_column(Create::getRequiredValues(), null, "name");
 
         # Follow the diagram's prompt ordering
-        $this->assertSame(["php_version", "name", "description", "type", "database", "authentication", "router", "frontend"], array_keys($fields));
+        $this->assertSame([
+            "php_version",
+            "name",
+            "description",
+            "type",
+            "database",
+            "authentication",
+            "router",
+            "frontend"
+        ], array_keys($fields));
 
         # Libraries skip database selection
-        $this->assertFalse(Form::isVisible($fields["database"], ["type" => ["value" => "library"]]));
+        $this->assertFalse(Form::isVisible($fields["database"], [
+            "type"    =>  [
+                "value"    =>  "library"
+            ]
+        ]));
 
         # REST APIs retain their database selection
-        $this->assertTrue(Form::isVisible($fields["database"], ["type" => ["value" => "api"]]));
+        $this->assertTrue(Form::isVisible($fields["database"], [
+            "type"    =>  [
+                "value"    =>  "api"
+            ]
+        ]));
 
         # REST APIs skip frontend selection
-        $this->assertFalse(Form::isVisible($fields["frontend"], ["type" => ["value" => "api"]]));
+        $this->assertFalse(Form::isVisible($fields["frontend"], [
+            "type"    =>  [
+                "value"    =>  "api"
+            ]
+        ]));
 
         # Database None skips authentication
-        $this->assertFalse(Form::isVisible($fields["authentication"], ["database" => ["value" => "none"]]));
+        $this->assertFalse(Form::isVisible($fields["authentication"], [
+            "database"    =>  [
+                "value"    =>  "none"
+            ]
+        ]));
 
         # A multiple selection shows authentication when any engine is selected
-        $this->assertTrue(Form::isVisible($fields["authentication"], ["database" => ["value" => ["mongodb", "postgresql"]]]));
+        $this->assertTrue(Form::isVisible($fields["authentication"], [
+            "database"    =>  [
+                "value"    =>  [
+                    "mongodb",
+                    "postgresql"
+                ]
+            ]
+        ]));
 
         # An empty multiple selection skips authentication
-        $this->assertFalse(Form::isVisible($fields["authentication"], ["database" => ["value" => []]]));
+        $this->assertFalse(Form::isVisible($fields["authentication"], [
+            "database"    =>  [
+                "value"    =>  []
+            ]
+        ]));
 
         # Delight Auth is offered when the selection includes a SQL engine
-        $this->assertArrayHasKey("delight-im/auth", Create::authenticationChoices(["database" => ["value" => ["mongodb", "mariadb"]]]));
+        $this->assertArrayHasKey("delight-im/auth", Create::authenticationChoices([
+            "database"    =>  [
+                "value"    =>  [
+                    "mongodb",
+                    "mariadb"
+                ]
+            ]
+        ]));
 
         # MongoDB cannot offer the SQL-only authentication library
-        $this->assertArrayNotHasKey("delight-im/auth", Create::authenticationChoices(["database" => ["value" => "mongodb"]]));
+        $this->assertArrayNotHasKey("delight-im/auth", Create::authenticationChoices([
+            "database"    =>  [
+                "value"    =>  "mongodb"
+            ]
+        ]));
 
         # SQL projects can select Delight Auth
-        $this->assertArrayHasKey("delight-im/auth", Create::authenticationChoices(["database" => ["value" => "postgresql"]]));
+        $this->assertArrayHasKey("delight-im/auth", Create::authenticationChoices([
+            "database"    =>  [
+                "value"    =>  "postgresql"
+            ]
+        ]));
 
         # Pass answer context to the authentication provider through the actual form resolver
-        $this->assertArrayNotHasKey("delight-im/auth", Form::getChoices($fields["authentication"], ["database" => ["value" => "mongodb"]]));
+        $this->assertArrayNotHasKey("delight-im/auth", Form::getChoices($fields["authentication"], [
+            "database"    =>  [
+                "value"    =>  "mongodb"
+            ]
+        ]));
 
         # Preserve callbacks whose optional argument predates conditional form questions
-        $this->assertSame(["legacy"], Form::getChoices(["select" => static fn(bool $onlyValue = false):array => $onlyValue ? [] : ["legacy"]], ["type" => "api"]));
+        $this->assertSame([
+            "legacy"
+        ], Form::getChoices([
+            "select"    =>  static fn(bool $onlyValue = false):array => $onlyValue ? [] : [
+                "legacy"
+            ]
+        ], [
+            "type"    =>  "api"
+        ]));
 
     }
 
@@ -558,7 +797,11 @@ class AppCreateTest extends TestCase {
         try{
 
             # Run the full creation sequence
-            (new Create(["application" => ["name" => "Failure"]], $this->_runtime))->run();
+            (new Create([
+                "application"    =>  [
+                    "name"    =>  "Failure"
+                ]
+            ], $this->_runtime))->run();
 
         }finally{
 
@@ -584,7 +827,12 @@ class AppCreateTest extends TestCase {
         $this->assertSame(Create::LATEST_PHP_VERSION, Create::getRequiredValues()[0]["default"]);
 
         # Generate an API with an older supported version
-        (new Create(["application" => ["type" => "api", "php_version" => "8.4"]], $this->_runtime))->run();
+        (new Create([
+            "application"    =>  [
+                "type"           =>  "api",
+                "php_version"    =>  "8.4"
+            ]
+        ], $this->_runtime))->run();
 
         # Get composer manifest
         $manifest = Json::open("@app_root/composer.json");
@@ -609,7 +857,11 @@ class AppCreateTest extends TestCase {
         $this->expectExceptionMessage("Unsupported php_version choice");
 
         # Validate before modifying project files
-        new Create(["application" => ["php_version" => "7.4"]]);
+        new Create([
+            "application"    =>  [
+                "php_version"    =>  "7.4"
+            ]
+        ]);
 
     }
 
@@ -624,7 +876,12 @@ class AppCreateTest extends TestCase {
         $this->expectException(CrazyException::class);
 
         # Validate before modifying project files
-        new Create(["application" => ["database" => "mongodb", "authentication" => "delight-im/auth"]]);
+        new Create([
+            "application"    =>  [
+                "database"          =>  "mongodb",
+                "authentication"    =>  "delight-im/auth"
+            ]
+        ]);
 
     }
 
@@ -636,7 +893,11 @@ class AppCreateTest extends TestCase {
     public function testExistingProjectIsPreserved():void {
 
         # Create a project once
-        $create = new Create(["application" => ["type" => "library"]], $this->_runtime);
+        $create = new Create([
+            "application"    =>  [
+                "type"    =>  "library"
+            ]
+        ], $this->_runtime);
 
         # Complete its scaffold
         $create->run();
@@ -696,7 +957,10 @@ class RecordingCreateRuntime extends Runtime {
     public function execute(string $tool, array $arguments = []):void {
 
         # Record the observable tool invocation
-        $this->commands[] = [$tool, $arguments];
+        $this->commands[] = [
+            $tool,
+            $arguments
+        ];
 
         # Simulate the runtime's failure contract
         if($this->fail)
@@ -705,7 +969,10 @@ class RecordingCreateRuntime extends Runtime {
             throw new CrazyException("Simulated install failure", 500);
 
         # Provide a compiler artifact for asset registration
-        if($tool === "npm" && $arguments === ["run", "build"])
+        if($tool === "npm" && $arguments === [
+            "run",
+            "build"
+        ])
 
             # Write an isolated output file with the shared hash convention
             file_put_contents(File::path("@app_root/public/dist/index.1234abcd.js"), "/* compiled fixture */");

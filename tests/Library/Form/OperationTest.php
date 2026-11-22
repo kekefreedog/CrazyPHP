@@ -50,9 +50,9 @@ class OperationTest extends TestCase{
         # Setup env
         Env::set([
             # App root for composer class
-            "crazyphp_root"     =>  getcwd(),
-            "phpunit_test"      =>  true,
-            "config_location"   =>  "@crazyphp_root/resources/Yml"
+            "crazyphp_root"      =>  getcwd(),
+            "phpunit_test"       =>  true,
+            "config_location"    =>  "@crazyphp_root/resources/Yml"
         ]);
 
     }
@@ -104,19 +104,25 @@ class OperationTest extends TestCase{
         $instance->set($valueA);
 
         # Check operations
-        $this->assertEquals([$valueA => Operation::LIST[$valueA]], $instance->get());
+        $this->assertEquals([
+            $valueA    =>  Operation::LIST[$valueA]
+        ], $instance->get());
 
         # Set value b
-        $valueB = ["[]", "*", $valueA];
+        $valueB = [
+            "[]",
+            "*",
+            $valueA
+        ];
 
         # Update instance
         $instance->set($valueB);
 
         # Check operations
         $this->assertEquals([
-            $valueA => Operation::LIST[$valueA],
-            "[]" => Operation::LIST["[]"],
-            "*" => Operation::LIST["*"],
+            $valueA    =>  Operation::LIST[$valueA],
+            "[]"       =>  Operation::LIST["[]"],
+            "*"        =>  Operation::LIST["*"],
         ], $instance->get());
 
     }
@@ -136,8 +142,8 @@ class OperationTest extends TestCase{
 
         # Check result
         $this->assertEquals([
-            "name"  =>  "default",
-            "value" =>  ""
+            "name"     =>  "default",
+            "value"    =>  ""
         ] , $result);
 
         # Run empty

@@ -37,12 +37,12 @@ class Update extends CrazyModel implements CrazyCommand {
     public const REQUIRED_VALUES = [
         # Name
         [
-            "name"          =>  "name",
-            "description"   =>  "Name of your crazy extension",
-            "type"          =>  "ARRAY",
-            "required"      =>  true,
-            "select"        =>  "CrazyPHP\Library\Extension\Extension::getAllAvailable",
-            "multiple"      =>  true,
+            "name"           =>  "name",
+            "description"    =>  "Name of your crazy extension",
+            "type"           =>  "ARRAY",
+            "required"       =>  true,
+            "select"         =>  "CrazyPHP\Library\Extension\Extension::getAllAvailable",
+            "multiple"       =>  true,
         ],
     ];
 

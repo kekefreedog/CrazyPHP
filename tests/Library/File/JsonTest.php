@@ -51,8 +51,8 @@ class JsonTest extends TestCase {
 
         # Setup env
         Env::set([
-            "phpunit_test"      =>  true,
-            "crazyphp_root"     =>  getcwd(),
+            "phpunit_test"     =>  true,
+            "crazyphp_root"    =>  getcwd(),
         ]);
 
         # Check folder exists
@@ -104,14 +104,14 @@ class JsonTest extends TestCase {
 
         # Set data
         $data = [
-            "first"     =>  null,
-            "second"    =>  "test",
-            "third"     =>  3,
-            "fourth"    =>  true,
-            "utf8"      =>  "База данни грешка.",
-            "utf8_alt"  =>  "éè.",
-            "éè"        =>  "/\"",
-            "Conge"     =>  "Cong�s"
+            "first"       =>  null,
+            "second"      =>  "test",
+            "third"       =>  3,
+            "fourth"      =>  true,
+            "utf8"        =>  "База данни грешка.",
+            "utf8_alt"    =>  "éè.",
+            "éè"          =>  "/\"",
+            "Conge"       =>  "Cong�s"
         ];
 
         # Encode
@@ -139,7 +139,7 @@ class JsonTest extends TestCase {
             "third"     =>  3,
             "fourth"    =>  true,
             "param"     =>  [
-                "value"     =>  "deep"
+                "value"    =>  "deep"
             ]
         ];
 
@@ -192,8 +192,8 @@ class JsonTest extends TestCase {
 
         # Data 2
         $data2 = [
-            "param2"     =>  [
-                "value"     =>  "deep"
+            "param2"    =>  [
+                "value"    =>  "deep"
             ]
         ];
 
@@ -221,8 +221,8 @@ class JsonTest extends TestCase {
 
         # Data 2
         $data2 = [
-            "param2"     =>  [
-                "value"     =>  "newDeep"
+            "param2"    =>  [
+                "value"    =>  "newDeep"
             ]
         ];
 
@@ -252,7 +252,7 @@ class JsonTest extends TestCase {
             "third"     =>  3,
             "fourth"    =>  true,
             "param"     =>  [
-                "value"     =>  "deep"
+                "value"    =>  "deep"
             ]
         ];
 
@@ -260,7 +260,9 @@ class JsonTest extends TestCase {
         $path = static::TEST_PATH."JsonFile.".Json::FILE_EXT;
 
         # Data 2
-        $data2 = ["param2"];
+        $data2 = [
+            "param2"
+        ];
 
         # Create file
         Json::delete($path, $data2);

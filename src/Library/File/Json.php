@@ -116,7 +116,7 @@ class Json{
                 "Json file \"".array_pop($popValue)."\" can't be created...",
                 403,
                 [
-                    "custom_code"   =>  "json-002",
+                    "custom_code"    =>  "json-002",
                 ]
             );
 
@@ -158,7 +158,7 @@ class Json{
                 "Json \"$filename\" doesn't exists...",
                 500,
                 [
-                    "custom_code"   =>  "json-001",
+                    "custom_code"    =>  "json-001",
                 ]
             );
 
@@ -173,7 +173,7 @@ class Json{
                 "Content of  \"$filename\" isn't json...",
                 500,
                 [
-                    "custom_code"   =>  "json-001",
+                    "custom_code"    =>  "json-001",
                 ]
             );
 
@@ -372,7 +372,9 @@ class Json{
         if(!is_array($input))
 
             # Set result
-            $input = [$input];
+            $input = [
+                $input
+            ];
 
         # Encode result
         $result = $prettyPrint ? json_encode($input, JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE) : json_encode($input, JSON_UNESCAPED_UNICODE);

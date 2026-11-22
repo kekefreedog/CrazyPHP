@@ -95,7 +95,7 @@ class Shotgrid implements CrazyDriverModel {
                 "DESC",
                 null,
                 [
-                    "limit" =>  1
+                    "limit"    =>  1
                 ]
             )
         ;
@@ -124,12 +124,11 @@ class Shotgrid implements CrazyDriverModel {
 
         # Prepare options
         $options = [
-            'http' => [
-                'header'  => 
-                    "Accept: application/json\r\n".
+            'http'    =>  [
+                'header'     =>  "Accept: application/json\r\n".
                     "Content-type: application/x-www-form-urlencoded\r\n",
-                'method'  => 'POST',
-                'content' => $content,
+                'method'     =>  'POST',
+                'content'    =>  $content,
             ]
         ];
 
@@ -367,9 +366,9 @@ class Shotgrid implements CrazyDriverModel {
 
             # Prepare header
             $header = [
-                'Content-Type'  =>  'application/json',
-                'Accept'        =>  'application/json',
-                'Authorization' =>  'Bearer '.$this->_credentials["tokens"]["access_token"]
+                'Content-Type'     =>  'application/json',
+                'Accept'           =>  'application/json',
+                'Authorization'    =>  'Bearer '.$this->_credentials["tokens"]["access_token"]
             ];
 
             # Try
@@ -380,8 +379,8 @@ class Shotgrid implements CrazyDriverModel {
                     'PUT',
                     $query,
                     [
-                        'headers'   =>  $header,
-                        'json'      =>  $this->_data,
+                        'headers'    =>  $header,
+                        'json'       =>  $this->_data,
                     ]
                 );
 
@@ -408,9 +407,9 @@ class Shotgrid implements CrazyDriverModel {
 
             # Prepare header
             $header = [
-                'Content-Type'  =>  'application/json',
-                'Accept'        =>  'application/json',
-                'Authorization' =>  'Bearer '.$this->_credentials["tokens"]["access_token"]
+                'Content-Type'     =>  'application/json',
+                'Accept'           =>  'application/json',
+                'Authorization'    =>  'Bearer '.$this->_credentials["tokens"]["access_token"]
             ];
 
             # Try
@@ -421,8 +420,8 @@ class Shotgrid implements CrazyDriverModel {
                     'POST',
                     $query,
                     [
-                        'headers'   =>  $header,
-                        'json'      =>  $this->_data,
+                        'headers'    =>  $header,
+                        'json'       =>  $this->_data,
                     ]
                 );
 
@@ -449,11 +448,11 @@ class Shotgrid implements CrazyDriverModel {
 
             # Prepare header
             $header = [
-                'Content-Type'  =>    (array_key_exists("logical_operator", $this->_body["filters"] ?? []))
+                'Content-Type'     =>  (array_key_exists("logical_operator", $this->_body["filters"] ?? []))
                 ? 'application/vnd+shotgun.api3_hash+json'
                 : 'application/vnd+shotgun.api3_array+json',
-                'Accept'        =>  'application/json',
-                'Authorization' =>  'Bearer '.$this->_credentials["tokens"]["access_token"]
+                'Accept'           =>  'application/json',
+                'Authorization'    =>  'Bearer '.$this->_credentials["tokens"]["access_token"]
             ];
 
             # Try
@@ -464,8 +463,8 @@ class Shotgrid implements CrazyDriverModel {
                     'POST',
                     $query,
                     [
-                        'headers'   =>  $header,
-                        'json'      =>  $this->_body,
+                        'headers'    =>  $header,
+                        'json'       =>  $this->_body,
                     ]
                 );
 
@@ -506,11 +505,11 @@ class Shotgrid implements CrazyDriverModel {
 
                 # Prepare header
                 $header = [
-                    'Content-Type'  =>  (array_key_exists("logical_operator", $this->_body["filters"] ?? []))
+                    'Content-Type'     =>  (array_key_exists("logical_operator", $this->_body["filters"] ?? []))
                         ? 'application/vnd+shotgun.api3_hash+json'
                         : 'application/vnd+shotgun.api3_array+json',
-                    'Accept'        =>  'application/json',
-                    'Authorization' =>  'Bearer '.$this->_credentials["tokens"]["access_token"]
+                    'Accept'           =>  'application/json',
+                    'Authorization'    =>  'Bearer '.$this->_credentials["tokens"]["access_token"]
                 ];
 
                 # Try
@@ -521,8 +520,8 @@ class Shotgrid implements CrazyDriverModel {
                         'POST',
                         $query,
                         [
-                            'headers'   =>  $header,
-                            'json'      =>  $this->_body,
+                            'headers'    =>  $header,
+                            'json'       =>  $this->_body,
                         ]
                     );
 
@@ -583,8 +582,8 @@ class Shotgrid implements CrazyDriverModel {
             # Prepare header
             $header = [
                 #'Content-Type'  =>  'application/vnd+shotgun.api3_array+json',
-                'Accept'        =>  'application/json',
-                'Authorization' =>  'Bearer '.$this->_credentials["tokens"]["access_token"]
+                'Accept'           =>  'application/json',
+                'Authorization'    =>  'Bearer '.$this->_credentials["tokens"]["access_token"]
             ];
 
             # Try
@@ -595,8 +594,8 @@ class Shotgrid implements CrazyDriverModel {
                     'GET',
                     $query,
                     [
-                        'headers'   =>  $header,
-                        'json'      =>  $this->_body,
+                        'headers'    =>  $header,
+                        'json'       =>  $this->_body,
                     ]
                 );
 
@@ -645,9 +644,9 @@ class Shotgrid implements CrazyDriverModel {
 
         # Prepare header
         $header = [
-            'Content-Type'  =>  'application/vnd+shotgun.api3_array+json',
-            'Accept'        =>  'application/json',
-            'Authorization' =>  'Bearer '.$this->_credentials["tokens"]["access_token"]
+            'Content-Type'     =>  'application/vnd+shotgun.api3_array+json',
+            'Accept'           =>  'application/json',
+            'Authorization'    =>  'Bearer '.$this->_credentials["tokens"]["access_token"]
         ];
 
         # Check summary_fields
@@ -656,8 +655,8 @@ class Shotgrid implements CrazyDriverModel {
             # Set field in body
             $this->_body["summary_fields"] = [
                 [
-                    "field" =>  "id",
-                    "type"  =>  "count"
+                    "field"    =>  "id",
+                    "type"     =>  "count"
                 ]
             ];
 
@@ -675,8 +674,8 @@ class Shotgrid implements CrazyDriverModel {
                 'POST',
                 $query,
                 [
-                    'headers'   =>  $header,
-                    'json'      =>  $this->_body,
+                    'headers'    =>  $header,
+                    'json'       =>  $this->_body,
                 ]
             );
 

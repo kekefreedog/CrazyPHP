@@ -77,7 +77,9 @@ class ArrayOperation extends Operation {
         $operationInstance = new ArrayOperation($collection);
 
         # Iteration filters
-        if(!empty($filters)) foreach($filters as $key => $value) $operationInstance->run($value, ["key" =>  $key]);
+        if(!empty($filters)) foreach($filters as $key => $value) $operationInstance->run($value, [
+            "key"    =>  $key
+        ]);
 
         # Get filtered
         $result = $operationInstance->getFiltered();
@@ -298,7 +300,10 @@ class ArrayOperation extends Operation {
         if(($options["key"] ?? false))
         
             # Where
-            $this->_engine = $this->_engine->whereNotBetween($options["key"], [$valueA, $valueB]);
+            $this->_engine = $this->_engine->whereNotBetween($options["key"], [
+                $valueA,
+                $valueB
+            ]);
 
         # Return input
         return null;
@@ -331,7 +336,10 @@ class ArrayOperation extends Operation {
         if(($options["key"] ?? false))
         
             # Where
-            $this->_engine = $this->_engine->whereBetween($options["key"], [$valueA, $valueB]);
+            $this->_engine = $this->_engine->whereBetween($options["key"], [
+                $valueA,
+                $valueB
+            ]);
 
         # Return input
         return null;

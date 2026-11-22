@@ -44,19 +44,24 @@ class Create extends CrazyModel implements CrazyCommand {
     public const REQUIRED_VALUES = [
         # Name
         [
-            "name"          =>  "name",
-            "description"   =>  "Name of your crazy router type",
-            "default"       =>  "test",
-            "type"          =>  "VARCHAR",
-            "required"      =>  true,
-            "process"       =>  ['cleanPath', 'snakeToCamel', 'strtolower', 'trim']
+            "name"           =>  "name",
+            "description"    =>  "Name of your crazy router type",
+            "default"        =>  "test",
+            "type"           =>  "VARCHAR",
+            "required"       =>  true,
+            "process"        =>  [
+                'cleanPath',
+                'snakeToCamel',
+                'strtolower',
+                'trim'
+            ]
         ],
         # Methods
         [
-            "name"          =>  "regex",
-            "description"   =>  "Regex to use for catch token",
-            "default"       =>  "(.*)",
-            "type"          =>  "VARCHAR",
+            "name"           =>  "regex",
+            "description"    =>  "Regex to use for catch token",
+            "default"        =>  "(.*)",
+            "type"           =>  "VARCHAR",
         ]
     ];
 
@@ -162,7 +167,10 @@ class Create extends CrazyModel implements CrazyCommand {
         $routerTypeCollection = FileConfig::getValue("Router.type");
 
         # Clean router name
-        $routerTypeName = Process::snakeToCamel(str_replace(["/", "."], "_", $this->routerType["Name"]), true);
+        $routerTypeName = Process::snakeToCamel(str_replace([
+            "/",
+            "."
+        ], "_", $this->routerType["Name"]), true);
 
         # Check if router name alreay exists
         if(!empty(@Arrays::filterByKey($routerTypeCollection, "name", $this->routerType["name"])))
@@ -172,13 +180,13 @@ class Create extends CrazyModel implements CrazyCommand {
                 "Given name \"$routerTypeName\" already exists in router type collection",
                 500,
                 [
-                    "custom_code"   =>  "create-router-type-001",
+                    "custom_code"    =>  "create-router-type-001",
                 ]
             );
 
         # Set up env for cache driver
         Env::set([
-            "cache_driver"  =>  "Files"
+            "cache_driver"    =>  "Files"
         ]);
 
     }
@@ -231,8 +239,8 @@ class Create extends CrazyModel implements CrazyCommand {
 
         # Set value in config
         FileConfig::setValue("Router.type.".$routerTypeKey, [
-            "name"  =>  $this->routerType["Name"],
-            "class" =>  $this->routerType["Controller"]
+            "name"     =>  $this->routerType["Name"],
+            "class"    =>  $this->routerType["Controller"]
         ]);
 
     }

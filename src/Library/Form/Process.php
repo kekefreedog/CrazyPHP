@@ -47,14 +47,14 @@ class Process {
      * Dispatch of action
      */
     private array $dispatch = [
-        "INT"       =>  [
+        "INT"        =>  [
         ],
-        "DECIMAL"   =>  [
+        "DECIMAL"    =>  [
         ],
-        "SELECT"       =>  [
+        "SELECT"     =>  [
             "integer",
         ],
-        "VARCHAR"   =>  [
+        "VARCHAR"    =>  [
             "trim",
             "clean",
             "https",
@@ -68,15 +68,15 @@ class Process {
             "cleanPath",
             "strtolower"
         ],
-        "ARRAY"     =>  [
-        ], 
-        "BOOL"      =>  [
+        "ARRAY"      =>  [
+        ],
+        "BOOL"       =>  [
             "bool",
         ],
-        "FILE"      =>  [
+        "FILE"       =>  [
             "storeInLocalAndGetPath"
         ],
-        "JSON"      =>  [
+        "JSON"       =>  [
         ]
     ];
 
@@ -584,7 +584,9 @@ class Process {
         if( ( $inputs['name'] ?? false ) || ( $inputs['type'] ?? false ))
 
             # Put input in an array
-            $inputs = [$inputs];
+            $inputs = [
+                $inputs
+            ];
 
         # Iteration of input
         foreach($inputs as $input){
@@ -635,7 +637,7 @@ class Process {
                         "missing in processed inputs...",
                 500,
                 [
-                    "custom_code"   =>  "process-010",
+                    "custom_code"    =>  "process-010",
                 ]
             );
 
@@ -671,30 +673,30 @@ class Process {
 
 		# Rules
 		$rules = [
-			'/[áàâãªä]/u'       =>  'a',
-			'/[ÁÀÂÃÄ]/u'        =>  'a',
-			'/[ÍÌÎÏ]/u'         =>  'i',
-			'/[íìîï]/u'         =>  'i',
-			'/[éèêë]/u'         =>  'e',
-			'/[ÉÈÊË]/u'         =>  'e',
-			'/[óòôõºö]/u'       =>  'o',
-			'/[ÓÒÔÕÖ]/u'        =>  'o',
-			'/[úùûü]/u'         =>  'u',
-			'/[ÚÙÛÜ]/u'         =>  'u',
-			'/ç/'               =>  'c',
-			'/Ç/'               =>  'c',
-			'/ñ/'               =>  'n',
-			'/Ñ/'               =>  'n',
-			'/\s+/'             =>  '_',
-			'/–/'               =>  '-', // UTF-8 hyphen to "normal" hyphen
-			'/[’‘‹›‚]/u'        =>  ' ', // Literally a single quote
-			'/[“”«»„]/u'        =>  ' ', // Double quote
-			'/ /'               =>  ' ', // nonbreaking space (equiv. to 0x160),
-			'/[\'"“”‘’„”«»]/u'  =>  '',	
-			'/[(]/'			    =>	'',  // Round brackets
-			'/[)]/'			    =>	'',  // Round brackets
-			'/(_-_)/'		    =>	'_',
-		];
+            '/[áàâãªä]/u'         =>  'a',
+            '/[ÁÀÂÃÄ]/u'          =>  'a',
+            '/[ÍÌÎÏ]/u'           =>  'i',
+            '/[íìîï]/u'           =>  'i',
+            '/[éèêë]/u'           =>  'e',
+            '/[ÉÈÊË]/u'           =>  'e',
+            '/[óòôõºö]/u'         =>  'o',
+            '/[ÓÒÔÕÖ]/u'          =>  'o',
+            '/[úùûü]/u'           =>  'u',
+            '/[ÚÙÛÜ]/u'           =>  'u',
+            '/ç/'                 =>  'c',
+            '/Ç/'                 =>  'c',
+            '/ñ/'                 =>  'n',
+            '/Ñ/'                 =>  'n',
+            '/\s+/'               =>  '_',
+            '/–/'                 =>  '-', // UTF-8 hyphen to "normal" hyphen
+            '/[’‘‹›‚]/u'          =>  ' ', // Literally a single quote
+            '/[“”«»„]/u'          =>  ' ', // Double quote
+            '/ /'                 =>  ' ', // nonbreaking space (equiv. to 0x160),
+            '/[\'"“”‘’„”«»]/u'    =>  '',
+            '/[(]/'               =>  '',  // Round brackets
+            '/[)]/'               =>  '',  // Round brackets
+            '/(_-_)/'             =>  '_',
+        ];
 
 		# Return result value
 		return strtolower(
@@ -761,7 +763,9 @@ class Process {
         if(!is_array($env))
 
             # Convert to array
-            $env = [$env];
+            $env = [
+                $env
+            ];
 
         # Set clean env
         $cleanEnv = [];
@@ -1162,7 +1166,7 @@ class Process {
                             "The default value is missing for the requierd field \"".$value['name']."\"",
                             500,
                             [
-                                "custom_code"   =>  "process-020",
+                                "custom_code"    =>  "process-020",
                             ]
                         );
 

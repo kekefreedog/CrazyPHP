@@ -44,12 +44,37 @@ class CommandLifecycleTest extends TestCase {
         # Initialize a separate application with a custom public folder
         $this->_root = sys_get_temp_dir()."/crazy cleanup ".bin2hex(random_bytes(6));
         mkdir($this->_root."/config", 0755, true);
-        Env::set(["app_root" => $this->_root, "crazyphp_root" => dirname(__DIR__, 2)]);
+        Env::set([
+            "app_root"         =>  $this->_root,
+            "crazyphp_root"    =>  dirname(__DIR__, 2)
+        ]);
         unset($GLOBALS[Config::PREFIX]);
-        Yaml::create($this->_root."/config/App.yml", ["App" => ["public" => "web"]]);
+        Yaml::create($this->_root."/config/App.yml", [
+            "App"    =>  [
+                "public"    =>  "web"
+            ]
+        ]);
 
         # Prepare database settings including disabled entries and Docker metadata
-        Yaml::create($this->_root."/config/Database.yml", ["Database" => ["collection" => ["mysql" => false, "mongodb" => ["host" => "localhost", "port" => 27018, "root" => ["password" => "keep-secret"], "docker" => ["service" => ["name" => "mongo"]]]]]]);
+        Yaml::create($this->_root."/config/Database.yml", [
+            "Database"    =>  [
+                "collection"    =>  [
+                    "mysql"      =>  false,
+                    "mongodb"    =>  [
+                        "host"      =>  "localhost",
+                        "port"      =>  27018,
+                        "root"      =>  [
+                            "password"    =>  "keep-secret"
+                        ],
+                        "docker"    =>  [
+                            "service"    =>  [
+                                "name"    =>  "mongo"
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]);
 
         # Record Docker commands without contacting a daemon
         $this->_runtime = new CleanupRuntime($this->_root);
@@ -79,25 +104,54 @@ class CommandLifecycleTest extends TestCase {
 
         # Include generated and custom files in the same Docker directory
         $this->_docker();
-        $this->_files(["docker/custom.txt", ".env", ".database/mongo/data"]);
+        $this->_files([
+            "docker/custom.txt",
+            ".env",
+            ".database/mongo/data"
+        ]);
 
         # Exercise the complete ordered command
         (new DockerDelete([], $this->_runtime))->run();
 
         # Stop containers once, without any volume-removal flag
-        $this->assertSame([["docker", ["compose", "down"]]], $this->_runtime->commands);
+        $this->assertSame([
+            [
+                "docker",
+                [
+                    "compose",
+                    "down"
+                ]
+            ]
+        ], $this->_runtime->commands);
         $this->assertTrue($this->_runtime->configurationPresent);
 
         # Remove the current lifecycle files and marker
-        foreach(["docker-compose.yml", "config/Docker.yml", "docker/bin/Prepare", "docker/bin/SetupDatabase", "docker/config/Database.yml", "docker/php/Dockerfile"] as $path)
+        foreach([
+            "docker-compose.yml",
+            "config/Docker.yml",
+            "docker/bin/Prepare",
+            "docker/bin/SetupDatabase",
+            "docker/config/Database.yml",
+            "docker/php/Dockerfile"
+        ] as $path)
             $this->assertFileDoesNotExist($this->_root."/".$path);
 
         # Preserve custom files, host data, ports and secrets
-        foreach(["docker/custom.txt", ".env", ".database/mongo/data"] as $path)
+        foreach([
+            "docker/custom.txt",
+            ".env",
+            ".database/mongo/data"
+        ] as $path)
             $this->assertFileExists($this->_root."/".$path);
         $database = Yaml::open($this->_root."/config/Database.yml")["Database"]["collection"];
         $this->assertFalse($database["mysql"]);
-        $this->assertSame(["host" => "localhost", "port" => 27018, "root" => ["password" => "keep-secret"]], $database["mongodb"]);
+        $this->assertSame([
+            "host"    =>  "localhost",
+            "port"    =>  27018,
+            "root"    =>  [
+                "password"    =>  "keep-secret"
+            ]
+        ], $database["mongodb"]);
 
         # Repeating cleanup requires no Docker daemon after generated files are gone
         (new DockerDelete([], $this->_runtime))->run();
@@ -114,7 +168,12 @@ class CommandLifecycleTest extends TestCase {
 
         # Prepare application files that must survive a failed Docker command
         $this->_docker();
-        $this->_files(["app/Index.php", "web/index.php", "assets/keep.txt", "composer.json"]);
+        $this->_files([
+            "app/Index.php",
+            "web/index.php",
+            "assets/keep.txt",
+            "composer.json"
+        ]);
         $this->_runtime->fail = true;
         $this->expectExceptionMessage("shutdown failed");
 
@@ -126,7 +185,15 @@ class CommandLifecycleTest extends TestCase {
         }finally{
 
             # Retain all files needed to diagnose and retry the operation
-            foreach(["docker-compose.yml", "config/App.yml", "config/Docker.yml", "app/Index.php", "web/index.php", "assets/keep.txt", "composer.json"] as $path)
+            foreach([
+                "docker-compose.yml",
+                "config/App.yml",
+                "config/Docker.yml",
+                "app/Index.php",
+                "web/index.php",
+                "assets/keep.txt",
+                "composer.json"
+            ] as $path)
                 $this->assertFileExists($this->_root."/".$path);
 
         }
@@ -142,10 +209,32 @@ class CommandLifecycleTest extends TestCase {
 
         # Include both old and new frontend artifacts and preserved project data
         $this->_docker();
-        $this->_files(["app/Index.php", "assets/custom.txt", "web/index.php", "public/unrelated.txt", "vite.build.mjs", "webpack.config.js", "webpack.dev.js", "webpack.prod.js", "package.json", "package-lock.json", "node_modules/module/index.js", "composer.lock", "vendor/keep.php", ".env", ".gitignore", ".database/mongo/data", ".cache/app/stale", "config/Custom.yml"]);
+        $this->_files([
+            "app/Index.php",
+            "assets/custom.txt",
+            "web/index.php",
+            "public/unrelated.txt",
+            "vite.build.mjs",
+            "webpack.config.js",
+            "webpack.dev.js",
+            "webpack.prod.js",
+            "package.json",
+            "package-lock.json",
+            "node_modules/module/index.js",
+            "composer.lock",
+            "vendor/keep.php",
+            ".env",
+            ".gitignore",
+            ".database/mongo/data",
+            ".cache/app/stale",
+            "config/Custom.yml"
+        ]);
 
         # Restore the latest recognized backup, including the current uniqid naming format
-        $this->_files(["assets/Json/backup/composer/123-new-composer.json", "assets/Json/backup/composer/123456789abcd-composer.json"]);
+        $this->_files([
+            "assets/Json/backup/composer/123-new-composer.json",
+            "assets/Json/backup/composer/123456789abcd-composer.json"
+        ]);
         file_put_contents($this->_root."/assets/Json/backup/composer/123-new-composer.json", '{"name":"old/app"}');
         touch($this->_root."/assets/Json/backup/composer/123-new-composer.json", 100);
         file_put_contents($this->_root."/assets/Json/backup/composer/123456789abcd-composer.json", '{"name":"bootstrap/app"}');
@@ -158,14 +247,38 @@ class CommandLifecycleTest extends TestCase {
 
         # Recover the bootstrap manifest and invalidate the generated lock
         $this->assertSame('{"name":"bootstrap/app"}', file_get_contents($this->_root."/composer.json"));
-        foreach(["app", "assets", "web", "node_modules", ".cache/app", ".database"] as $path)
+        foreach([
+            "app",
+            "assets",
+            "web",
+            "node_modules",
+            ".cache/app",
+            ".database"
+        ] as $path)
             $this->assertDirectoryDoesNotExist($this->_root."/".$path);
-        foreach(["config/App.yml", "config/Database.yml", ".env", "vite.build.mjs", "webpack.config.js", "webpack.dev.js", "webpack.prod.js", "package.json", "package-lock.json", "composer.lock"] as $path)
+        foreach([
+            "config/App.yml",
+            "config/Database.yml",
+            ".env",
+            "vite.build.mjs",
+            "webpack.config.js",
+            "webpack.dev.js",
+            "webpack.prod.js",
+            "package.json",
+            "package-lock.json",
+            "composer.lock"
+        ] as $path)
             $this->assertFileDoesNotExist($this->_root."/".$path);
 
         # Keep only Composer's manifest and dependencies
         $this->assertFileExists($this->_root."/vendor/keep.php");
-        $this->assertSame(["composer.json", "vendor"], array_values(array_diff(scandir($this->_root), [".", ".."])));
+        $this->assertSame([
+            "composer.json",
+            "vendor"
+        ], array_values(array_diff(scandir($this->_root), [
+            ".",
+            ".."
+        ])));
         $this->assertTrue($this->_runtime->configurationPresent);
 
     }
@@ -229,7 +342,11 @@ class CommandLifecycleTest extends TestCase {
     public function testUnsafePublicDirectoryStopsBeforeCleanup():void {
 
         # Reject traversal stored in configuration before removing any source files
-        Yaml::create($this->_root."/config/App.yml", ["App" => ["public" => "../outside"]]);
+        Yaml::create($this->_root."/config/App.yml", [
+            "App"    =>  [
+                "public"    =>  "../outside"
+            ]
+        ]);
         $this->expectExceptionMessage("safe application document root");
         (new AppDelete([], $this->_runtime))->run();
 
@@ -243,7 +360,14 @@ class CommandLifecycleTest extends TestCase {
     private function _docker():void {
 
         # Create the files expected from the current Docker generator
-        $this->_files(["docker-compose.yml", "config/Docker.yml", "docker/bin/Prepare", "docker/bin/SetupDatabase", "docker/config/Database.yml", "docker/php/Dockerfile"]);
+        $this->_files([
+            "docker-compose.yml",
+            "config/Docker.yml",
+            "docker/bin/Prepare",
+            "docker/bin/SetupDatabase",
+            "docker/config/Database.yml",
+            "docker/php/Dockerfile"
+        ]);
 
     }
 
@@ -300,7 +424,10 @@ class CleanupRuntime extends Runtime {
     public function execute(string $tool, array $arguments = []):void {
 
         # Record the command while checking the files required by Compose still exist
-        $this->commands[] = [$tool, $arguments];
+        $this->commands[] = [
+            $tool,
+            $arguments
+        ];
         $this->configurationPresent = is_file($this->_root."/docker-compose.yml") && is_file($this->_root."/config/App.yml");
 
         # Simulate a failed shutdown without contacting a real daemon

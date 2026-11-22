@@ -106,7 +106,9 @@ class Jwt {
             # Check result
             if(count($parts) !== 3)
 
-                $result = ['error' => 'Not a valid JWT (expected 3 parts).'];
+                $result = [
+                    'error'    =>  'Not a valid JWT (expected 3 parts).'
+                ];
             
             # If valid
             else{
@@ -150,14 +152,16 @@ class Jwt {
                 if(!is_array($header) || !is_array($payload))
 
                     # Set result
-                    $result = ['error' => 'Unable to decode header or payload.'];
+                    $result = [
+                        'error'    =>  'Unable to decode header or payload.'
+                    ];
 
                 else
 
                     # Set result
                     $result = [
-                        'header'  => $header,
-                        'payload' => $payload,
+                        'header'     =>  $header,
+                        'payload'    =>  $payload,
                     ];
 
             }

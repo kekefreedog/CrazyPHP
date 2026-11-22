@@ -66,19 +66,35 @@ class PageCacheTest extends TestCase {
     public function testCacheIsScopedToTheRequestedRoute():void {
 
         # Prepare the Index route
-        Context::set(["name" => "Index", "route" => "", "parameters" => []], "routes.current");
+        Context::set([
+            "name"          =>  "Index",
+            "route"         =>  "",
+            "parameters"    =>  []
+        ], "routes.current");
 
         # Capture the initial page cache key
         $indexKey = Page::getCacheKey("browser-state");
 
         # Prepare the Home route
-        Context::set(["name" => "Home", "route" => "en", "parameters" => ["language" => "en"]], "routes.current");
+        Context::set([
+            "name"          =>  "Home",
+            "route"         =>  "en",
+            "parameters"    =>  [
+                "language"    =>  "en"
+            ]
+        ], "routes.current");
 
         # Capture the Home state key
         $homeKey = Page::getCacheKey("browser-state");
 
         # Prepare the Login route
-        Context::set(["name" => "Login", "route" => "en/login", "parameters" => ["language" => "en"]], "routes.current");
+        Context::set([
+            "name"          =>  "Login",
+            "route"         =>  "en/login",
+            "parameters"    =>  [
+                "language"    =>  "en"
+            ]
+        ], "routes.current");
 
         # Capture the Login state key
         $loginKey = Page::getCacheKey("browser-state");
@@ -100,19 +116,36 @@ class PageCacheTest extends TestCase {
     public function testCacheSeparatesRouteArgumentsAndIgnoresTransportHeaders():void {
 
         # Prepare the first project route
-        Context::set(["name" => "Project", "route" => "en/project/1", "parameters" => ["project" => "1"], "headers" => ["accept" => "text/html"]], "routes.current");
+        Context::set([
+            "name"          =>  "Project",
+            "route"         =>  "en/project/1",
+            "parameters"    =>  [
+                "project"    =>  "1"
+            ],
+            "headers"       =>  [
+                "accept"    =>  "text/html"
+            ]
+        ], "routes.current");
 
         # Capture the HTML state key
         $htmlKey = Page::getCacheKey("browser-state");
 
         # Change the state request headers
-        Context::set(["accept" => "application/json"], "routes.current.headers");
+        Context::set([
+            "accept"    =>  "application/json"
+        ], "routes.current.headers");
 
         # Preserve the state key for the corresponding JSON request
         self::assertSame($htmlKey, Page::getCacheKey("browser-state"));
 
         # Prepare a different project route
-        Context::set(["name" => "Project", "route" => "en/project/2", "parameters" => ["project" => "2"]], "routes.current");
+        Context::set([
+            "name"          =>  "Project",
+            "route"         =>  "en/project/2",
+            "parameters"    =>  [
+                "project"    =>  "2"
+            ]
+        ], "routes.current");
 
         # Reject state belonging to another project
         self::assertNotSame($htmlKey, Page::getCacheKey("browser-state"));
@@ -128,13 +161,23 @@ class PageCacheTest extends TestCase {
     public function testHtmlWriterStoresStateUnderTheRouteKey():void {
 
         # Prepare the rendered route
-        Context::set(["name" => "Login", "route" => "en/login", "parameters" => ["language" => "en"]], "routes.current");
+        Context::set([
+            "name"          =>  "Login",
+            "route"         =>  "en/login",
+            "parameters"    =>  [
+                "language"    =>  "en"
+            ]
+        ], "routes.current");
 
         # Resolve the reader's cache key
         $cacheKey = Page::getCacheKey("browser-state");
 
         # Prepare rendered page data
-        $data = ["_ui" => ["title" => "Login"]];
+        $data = [
+            "_ui"    =>  [
+                "title"    =>  "Login"
+            ]
+        ];
 
         # Create an isolated cache adapter
         $cache = $this->createMock(Cache::class);

@@ -41,105 +41,105 @@ class Composer {
 
     # Path of composer
     public const PATH = [
-        "composer.json" =>  "@app_root/composer.json",
-        "composer.lock" =>  "@app_root/composer.lock",
+        "composer.json"    =>  "@app_root/composer.json",
+        "composer.lock"    =>  "@app_root/composer.lock",
     ];
 
     # Default properties of composer
     public const DEFAULT_PROPERTIES = [
         # Name
-        "name"          =>  Create::REQUIRED_VALUES[0],
+        "name"                      =>  Create::REQUIRED_VALUES[0],
         # Description
-        "description"   =>  Create::REQUIRED_VALUES[1],
+        "description"               =>  Create::REQUIRED_VALUES[1],
         # Version
-        "version"       =>  [
-            "name"          =>  "Version",
-            "description"   =>  "Version of your crazy project",
-            "type"          =>  "VARCHAR",
+        "version"                   =>  [
+            "name"           =>  "Version",
+            "description"    =>  "Version of your crazy project",
+            "type"           =>  "VARCHAR",
         ],
         # Type
-        "type"          =>  Create::REQUIRED_VALUES[4],
+        "type"                      =>  Create::REQUIRED_VALUES[4],
         # Keywords
-        "keywords"      =>  [
-            "name"          =>  "Keywords",
-            "description"   =>  "Keywords about your app",
-            "type"          =>  "ARRAY",
+        "keywords"                  =>  [
+            "name"           =>  "Keywords",
+            "description"    =>  "Keywords about your app",
+            "type"           =>  "ARRAY",
         ],
         # Homepage
-        "homepage"      =>  Create::REQUIRED_VALUES[5],
+        "homepage"                  =>  Create::REQUIRED_VALUES[5],
         # Readme
-        "readme"        =>  [
-            "name"          =>  "Read Me",
-            "description"   =>  "Path of the read me",
-            "type"          =>  "VARCHAR",
+        "readme"                    =>  [
+            "name"           =>  "Read Me",
+            "description"    =>  "Path of the read me",
+            "type"           =>  "VARCHAR",
         ],
         # Time
-        "time"          =>  [
-            "name"          =>  "Read Me",
-            "description"   =>  "Path of the read me",
-            "type"          =>  "DATETIME",
+        "time"                      =>  [
+            "name"           =>  "Read Me",
+            "description"    =>  "Path of the read me",
+            "type"           =>  "DATETIME",
         ],
         # Licence
-        "license"       =>  [
-            "name"          =>  "Licence",
-            "description"   =>  "Licence of your app",
-            "type"          =>  "VARCHAR",
+        "license"                   =>  [
+            "name"           =>  "Licence",
+            "description"    =>  "Licence of your app",
+            "type"           =>  "VARCHAR",
         ],
         # Author name
-        "authors__name" =>  Create::REQUIRED_VALUES[2],
+        "authors__name"             =>  Create::REQUIRED_VALUES[2],
         # Author name
-        "authors__email"=>  Create::REQUIRED_VALUES[3],
+        "authors__email"            =>  Create::REQUIRED_VALUES[3],
         # Authors
-        "authors"       =>  [
-            "name"          =>  "authors",
-            "description"   =>  "Authors of your app",
-            "type"          =>  "ARRAY",
+        "authors"                   =>  [
+            "name"           =>  "authors",
+            "description"    =>  "Authors of your app",
+            "type"           =>  "ARRAY",
         ],
         # Support
-        "support"       =>  [
-            "name"          =>  "Support",
-            "description"   =>  "Support information of your app",
-            "type"          =>  "ARRAY",
+        "support"                   =>  [
+            "name"           =>  "Support",
+            "description"    =>  "Support information of your app",
+            "type"           =>  "ARRAY",
         ],
         # Funding
-        "funding"       =>  [
-            "name"          =>  "Funding",
-            "description"   =>  "Funding information of your app",
-            "type"          =>  "ARRAY",
+        "funding"                   =>  [
+            "name"           =>  "Funding",
+            "description"    =>  "Funding information of your app",
+            "type"           =>  "ARRAY",
         ],
         # Autoload
-        "autoload_psr-4_App\\_0" => [
-            "name"          =>  "autoload_psr-4_App\\_0",
-            "description"   =>  "Autoload following PSR-4 rules.",
-            "type"          =>  "VARCHAR",
-            "default"       =>  "app\/",
-            "required"      =>  true
+        "autoload_psr-4_App\\_0"    =>  [
+            "name"           =>  "autoload_psr-4_App\\_0",
+            "description"    =>  "Autoload following PSR-4 rules.",
+            "type"           =>  "VARCHAR",
+            "default"        =>  "app\/",
+            "required"       =>  true
         ]
     ];
 
     # Default value
     const DEFAULT_VALUE = [
-        "require"   =>  [
-            "kzarshenas/crazyphp"   =>  "@dev"
+        "require"    =>  [
+            "kzarshenas/crazyphp"    =>  "@dev"
         ]
     ];
 
     /** @var array COMMAND_SUPPORTED supported command */
     public const COMMAND_SUPPORTED = [
-        "install"   =>  [
-            "command"   =>  "i"
+        "install"    =>  [
+            "command"    =>  "i"
         ],
-        "update"   =>  [
-            "command"   =>  "u"
+        "update"     =>  [
+            "command"    =>  "u"
         ],
-        "require"   =>  [
-            "command"   =>  "r"
+        "require"    =>  [
+            "command"    =>  "r"
         ],
-        "remove"    =>  [
-            "command"   =>  "remove"
+        "remove"     =>  [
+            "command"    =>  "remove"
         ],
-        "search"    =>  [
-            "command"   =>  "search"
+        "search"     =>  [
+            "command"    =>  "search"
         ],
     ];
 
@@ -263,7 +263,7 @@ class Composer {
                 "No config file found for \"".$keys[0]."\".", 
                 500,
                 [
-                    "custom_code"   =>  "package-001",
+                    "custom_code"    =>  "package-001",
                 ]
             );
 
@@ -278,7 +278,7 @@ class Composer {
                 "package.json isn't valid... Array awaited !", 
                 500,
                 [
-                    "custom_code"   =>  "package-011",
+                    "custom_code"    =>  "package-011",
                 ]
             );
 
@@ -369,7 +369,10 @@ class Composer {
             return $result;
 
         # List delimiter
-        $delimiters = ["/", "."];
+        $delimiters = [
+            "/",
+            "."
+        ];
 
         # Iteration of delimiter
         foreach($delimiters as $delimiter)
@@ -384,7 +387,9 @@ class Composer {
         if(empty($explodedInput))
 
             # Set explodedInput
-            $explodedInput = [$input];
+            $explodedInput = [
+                $input
+            ];
 
         # Get reel path
         $file = self::_readPath($file);
@@ -500,7 +505,7 @@ class Composer {
                 "Config \"".$keys[0]."\" isn't valid... Array waited !", 
                 500,
                 [
-                    "custom_code"   =>  "composer-011",
+                    "custom_code"    =>  "composer-011",
                 ]
             );
 
@@ -595,7 +600,7 @@ class Composer {
                 "Command \"$commandName\” isn't supported with Composer", 
                 500,
                 [
-                    "custom_code"   =>  "composer-002",
+                    "custom_code"    =>  "composer-002",
                 ]
             );
 
@@ -622,7 +627,7 @@ class Composer {
                 "Composer ".$argument." failed".(is_array($result["output"]) ? " : ".json_encode($result["output"]) : ""),
                 500,
                 [
-                    "custom_code"   =>  "composer-003",
+                    "custom_code"    =>  "composer-003",
                 ]
             );
 
@@ -651,7 +656,7 @@ class Composer {
                 "Composer package name \"$package\” you want require looks strange, please respect \"vendor/package\" format !", 
                 500,
                 [
-                    "custom_code"   =>  "composer-004",
+                    "custom_code"    =>  "composer-004",
                 ]
             );
         
@@ -663,13 +668,13 @@ class Composer {
                 "Package  \"$package\” doesn't exit on composer db.", 
                 500,
                 [
-                    "custom_code"   =>  "composer-005",
+                    "custom_code"    =>  "composer-005",
                 ]
             );
 
         # Array to merge
         $arrayToMerge = [
-            "require"   =>  [
+            "require"    =>  [
                 $package    =>  "*"
             ]
         ];
@@ -712,7 +717,7 @@ class Composer {
                 "Composer package name \"$package\” you want require looks strange, please respect \"vendor/package\" format !", 
                 500,
                 [
-                    "custom_code"   =>  "composer-004",
+                    "custom_code"    =>  "composer-004",
                 ]
             );
         
@@ -724,13 +729,13 @@ class Composer {
                 "Package  \"$package\” doesn't exit on composer db.", 
                 500,
                 [
-                    "custom_code"   =>  "composer-005",
+                    "custom_code"    =>  "composer-005",
                 ]
             );
 
         # Array to merge
         $arrayToMerge = [
-            "require"   =>  [
+            "require"    =>  [
                 $package    =>  $version
             ]
         ];
@@ -766,7 +771,7 @@ class Composer {
                 "Composer package name \"".(is_string($package) ? $package : json_encode($package))."\” you want require looks strange, please respect \"vendor/package\" format !", 
                 500,
                 [
-                    "custom_code"   =>  "composer-004",
+                    "custom_code"    =>  "composer-004",
                 ]
             );
 
@@ -777,7 +782,9 @@ class Composer {
         if(is_string($package))
 
             # Set package
-            $package = [$package];
+            $package = [
+                $package
+            ];
 
         # Iteration of package
         foreach($package as $v)
@@ -846,7 +853,10 @@ class Composer {
         $manifest = is_file($path) ? (json_decode((string) file_get_contents($path), true) ?: []) : [];
 
         # Iteration of the platform setting then the requirement
-        foreach([$manifest["config"]["platform"]["php"] ?? null, $manifest["require"]["php"] ?? null] as $value)
+        foreach([
+            $manifest["config"]["platform"]["php"] ?? null,
+            $manifest["require"]["php"] ?? null
+        ] as $value)
 
             # Check the value contains a major and minor version
             if(is_string($value) && preg_match('/(\d+)\.(\d+)/', $value, $matches))
@@ -886,7 +896,7 @@ class Composer {
                 "Path of composer file is empty and not valid !", 
                 500,
                 [
-                    "custom_code"   =>  "composer-001",
+                    "custom_code"    =>  "composer-001",
                 ]
             );
 
@@ -949,14 +959,16 @@ class Composer {
 
                     # Push into result
                     $dependencies[] = [
-                        'name'        => $package['name'] ?? '',
-                        'version'     => $package['version'] ?? '',
-                        'description' => $package['description'] ?? '',
-                        'url'         => $package['homepage'] ?? $package['source']['url'] ?? '',
-                        'license'     => isset($package['license']) && $package['license'] ? (is_array($package['license']) ? $package['license'] : [$package['license']]) : [],
-                        'type'        => $package['type'] ?? '',
-                        'authors'     => $package['authors'] ?? [], // Optional, often helpful
-                        'source'      => $package['source'] ?? [],
+                        'name'           =>  $package['name'] ?? '',
+                        'version'        =>  $package['version'] ?? '',
+                        'description'    =>  $package['description'] ?? '',
+                        'url'            =>  $package['homepage'] ?? $package['source']['url'] ?? '',
+                        'license'        =>  isset($package['license']) && $package['license'] ? (is_array($package['license']) ? $package['license'] : [
+                            $package['license']
+                        ]) : [],
+                        'type'           =>  $package['type'] ?? '',
+                        'authors'        =>  $package['authors'] ?? [], // Optional, often helpful
+                        'source'         =>  $package['source'] ?? [],
                     ];
 
                 # Set Cache
@@ -1021,7 +1033,10 @@ class Composer {
      */
 
     /** @var array */
-    public const SEPARATOR = [".", "___"];
+    public const SEPARATOR = [
+        ".",
+        "___"
+    ];
 
     /** @var string DEFAULT_PHP_VERSION Minimum PHP version supported by CrazyPHP */
     public const DEFAULT_PHP_VERSION = "8.3";
@@ -1032,13 +1047,19 @@ class Composer {
      */
     public const NON_COMMERCIAL_LICENSE = [
         # Copyleft licenses
-        'AGPL', 'GPL', 'LGPL', 'EPL',
+        'AGPL',
+        'GPL',
+        'LGPL',
+        'EPL',
         # Creative Commons Non-Commercial
-        'CC-BY-NC', 'CC-BY-NC-SA',
+        'CC-BY-NC',
+        'CC-BY-NC-SA',
         # Business Source / Proprietary
-        'BUSL', 'Proprietary',
+        'BUSL',
+        'Proprietary',
         # Generic mentions
-        'Non-Commercial', 'NonCommercial',
+        'Non-Commercial',
+        'NonCommercial',
     ];
 
 }

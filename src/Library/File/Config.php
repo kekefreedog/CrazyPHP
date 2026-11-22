@@ -60,7 +60,9 @@ class Config{
         if(!is_array($inputs))
 
             # Transform input to array
-            $inputs = [$inputs];
+            $inputs = [
+                $inputs
+            ];
 
         # Iteration of input
         foreach($inputs as $input){
@@ -93,7 +95,10 @@ class Config{
                     # Search files
                     $finder
                         ->files()
-                        ->name(["$configFolder.*", $configFolder])
+                        ->name([
+                            "$configFolder.*",
+                            $configFolder
+                        ])
                         ->in(File::path(self::FOLDER_PATH))
                     ;
 
@@ -105,7 +110,7 @@ class Config{
                             "No config file found for \"$configFolder\".", 
                             500,
                             [
-                                "custom_code"   =>  "config-001",
+                                "custom_code"    =>  "config-001",
                             ]
                         );
 
@@ -117,7 +122,7 @@ class Config{
                             "Conflict of config file with the same name for \"$configFolder\".", 
                             500,
                             [
-                                "custom_code"   =>  "config-002",
+                                "custom_code"    =>  "config-002",
                             ]
                         );
 
@@ -223,7 +228,10 @@ class Config{
                 # Search files
                 $finder
                     ->files()
-                    ->name(["$configFolder.*", $configFolder])
+                    ->name([
+                        "$configFolder.*",
+                        $configFolder
+                    ])
                     ->in(File::path($location))
                 ;
 
@@ -235,7 +243,7 @@ class Config{
                         "No config file found for \"$configFolder\".", 
                         500,
                         [
-                            "custom_code"   =>  "config-003",
+                            "custom_code"    =>  "config-003",
                         ]
                     );
 
@@ -247,7 +255,7 @@ class Config{
                         "Conflict of config file with the same name for \"$configFolder\".", 
                         500,
                         [
-                            "custom_code"   =>  "config-004",
+                            "custom_code"    =>  "config-004",
                         ]
                     );
 
@@ -328,7 +336,10 @@ class Config{
         # Search files
         $finder
             ->files()
-            ->name(["$configFolder.*", $configFolder])
+            ->name([
+                "$configFolder.*",
+                $configFolder
+            ])
             ->in(File::path($location))
         ;
 
@@ -340,7 +351,7 @@ class Config{
                 "No config file found for \"$configFolder\".", 
                 500,
                 [
-                    "custom_code"   =>  "config-003",
+                    "custom_code"    =>  "config-003",
                 ]
             );
 
@@ -431,7 +442,10 @@ class Config{
             # Search files
             $finder
                 ->files()
-                ->name(["$configFolder.*", $configFolder])
+                ->name([
+                    "$configFolder.*",
+                    $configFolder
+                ])
                 ->in(File::path($location))
             ;
 
@@ -443,7 +457,7 @@ class Config{
                     "No config file found for \"$configFolder\".", 
                     500,
                     [
-                        "custom_code"   =>  "config-005",
+                        "custom_code"    =>  "config-005",
                     ]
                 );
 
@@ -455,7 +469,7 @@ class Config{
                     "Conflict of config file with the same name for \"$configFolder\".", 
                     500,
                     [
-                        "custom_code"   =>  "config-006",
+                        "custom_code"    =>  "config-006",
                     ]
                 );
 
@@ -532,7 +546,10 @@ class Config{
         # Search files
         $finder
             ->files()
-            ->name(["$configFolder.*", $configFolder])
+            ->name([
+                "$configFolder.*",
+                $configFolder
+            ])
             ->in(File::path(self::FOLDER_PATH))
         ;
 
@@ -544,7 +561,7 @@ class Config{
                 "No config file found for \"$configFolder\".", 
                 500,
                 [
-                    "custom_code"   =>  "config-007",
+                    "custom_code"    =>  "config-007",
                 ]
             );
 
@@ -556,7 +573,7 @@ class Config{
                 "Conflict of config file with the same name for \"$configFolder\".", 
                 500,
                 [
-                    "custom_code"   =>  "config-008",
+                    "custom_code"    =>  "config-008",
                 ]
             );
 
@@ -627,7 +644,10 @@ class Config{
         # Search files
         $finder
             ->files()
-            ->name([$keys[0].".*", $keys[0]])
+            ->name([
+                $keys[0].".*",
+                $keys[0]
+            ])
             ->in($path)
         ;
 
@@ -639,7 +659,7 @@ class Config{
                 "No config file found for \"".$keys[0]."\".", 
                 500,
                 [
-                    "custom_code"   =>  "config-009",
+                    "custom_code"    =>  "config-009",
                 ]
             );
 
@@ -651,7 +671,7 @@ class Config{
                 "Conflict of config file with the same name for \"".$keys[0]."\".", 
                 500,
                 [
-                    "custom_code"   =>  "config-010",
+                    "custom_code"    =>  "config-010",
                 ]
             );
 
@@ -683,7 +703,7 @@ class Config{
                 "Config \"".$keys[0]."\" isn't valid... Array awaited !", 
                 500,
                 [
-                    "custom_code"   =>  "config-011",
+                    "custom_code"    =>  "config-011",
                 ]
             );
 
@@ -792,7 +812,10 @@ class Config{
         # Search files
         $finder
             ->files()
-            ->name([$keys[0].".*", $keys[0]])
+            ->name([
+                $keys[0].".*",
+                $keys[0]
+            ])
             ->in($path)
         ;
 
@@ -804,7 +827,7 @@ class Config{
                 "No config file found for \"".$keys[0]."\".", 
                 500,
                 [
-                    "custom_code"   =>  "config-009",
+                    "custom_code"    =>  "config-009",
                 ]
             );
 
@@ -816,7 +839,7 @@ class Config{
                 "Conflict of config file with the same name for \"".$keys[0]."\".", 
                 500,
                 [
-                    "custom_code"   =>  "config-010",
+                    "custom_code"    =>  "config-010",
                 ]
             );
 
@@ -849,7 +872,7 @@ class Config{
                 "Config \"".$keys[0]."\" isn't valid... Array waited !", 
                 500,
                 [
-                    "custom_code"   =>  "config-011",
+                    "custom_code"    =>  "config-011",
                 ]
             );
 
@@ -1022,7 +1045,16 @@ class Config{
             $result = $input;
 
         # Replace {}()/\@: by dot
-        $result = str_replace(["{", "}", "(", ")", "/", "\\", "@", ":"], ".", $prefix.$result);
+        $result = str_replace([
+            "{",
+            "}",
+            "(",
+            ")",
+            "/",
+            "\\",
+            "@",
+            ":"
+        ], ".", $prefix.$result);
 
         # Return result
         return $result;
@@ -1037,7 +1069,11 @@ class Config{
     public const FOLDER_PATH = "@app_root/config";
 
     /** @var array */
-    public const SEPARATOR = ["/", ".", "___"];
+    public const SEPARATOR = [
+        "/",
+        ".",
+        "___"
+    ];
 
     /** @var string PREFIX */
     public const PREFIX = "__CRAZY_CONFIG";

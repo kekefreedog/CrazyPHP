@@ -65,7 +65,9 @@ class SqlFilterIntegrationTest extends TestCase {
             getenv("CRAZY_SQL_TEST_DSN"),
             getenv("CRAZY_SQL_TEST_USER") ?: "root",
             getenv("CRAZY_SQL_TEST_PASSWORD") ?: "",
-            [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+            [
+                PDO::ATTR_ERRMODE    =>  PDO::ERRMODE_EXCEPTION
+            ]
         );
 
         # Generate a database name unrelated to application databases
@@ -91,9 +93,9 @@ class SqlFilterIntegrationTest extends TestCase {
 
         # Restrict model lookups to framework fixture declarations
         Env::set([
-            "phpunit_test" => true,
-            "crazyphp_root" => dirname(__DIR__, 3),
-            "config_location" => "@crazyphp_root/resources/Yml",
+            "phpunit_test"       =>  true,
+            "crazyphp_root"      =>  dirname(__DIR__, 3),
+            "config_location"    =>  "@crazyphp_root/resources/Yml",
         ]);
 
     }
@@ -146,44 +148,246 @@ class SqlFilterIntegrationTest extends TestCase {
         $driver->client = $this->_client;
 
         # Supply only the disposable database name
-        $driver->config = ["database" => [$this->_database]];
+        $driver->config = [
+            "database"    =>  [
+                $this->_database
+            ]
+        ];
 
         # Define supported query behavior
         $cases = [
-            [["name" => "Alpha"], [1]],
-            [["score" => ">=20"], [2, 3]],
-            [["score" => "<=20"], [1, 2]],
-            [["score" => "<20"], [1]],
-            [["score" => ">20"], [3]],
-            [["score" => "[10:20]"], [1, 2]],
-            [["score" => "![10:20]"], [3]],
-            [["name" => "[A:Bz]"], [1, 2]],
-            [["name" => "*Al"], [1]],
-            [["name" => "ma*"], [3]],
-            [["name" => "*et*"], [2]],
-            [["name" => "=other"], [1, 3]],
-            [["name" => "!=other"], [2]],
-            [["id" => [1, 3]], [1, 3]],
-            [["id" => [2]], [2]],
-            [["id" => []], []],
-            [["score" => 0], []],
-            [["score" => "0"], []],
-            [["score" => false], []],
-            [["name" => ""], []],
-            [["nullable" => null], [1]],
-            [["id" => 1, "||name" => "Beta"], [1, 2]],
-            [["id" => 1, "!!name" => "Beta"], [1, 2]],
-            [["<>id" => "Router@name:linked"], [1]],
-            [["@@id" => "Router@name:linked"], [1]],
-            [["><id" => "Router@name:linked"], [2, 3]],
-            [["<>router_id" => "Router@name:linked"], [1]],
+            [
+                [
+                    "name"    =>  "Alpha"
+                ],
+                [
+                    1
+                ]
+            ],
+            [
+                [
+                    "score"    =>  ">=20"
+                ],
+                [
+                    2,
+                    3
+                ]
+            ],
+            [
+                [
+                    "score"    =>  "<=20"
+                ],
+                [
+                    1,
+                    2
+                ]
+            ],
+            [
+                [
+                    "score"    =>  "<20"
+                ],
+                [
+                    1
+                ]
+            ],
+            [
+                [
+                    "score"    =>  ">20"
+                ],
+                [
+                    3
+                ]
+            ],
+            [
+                [
+                    "score"    =>  "[10:20]"
+                ],
+                [
+                    1,
+                    2
+                ]
+            ],
+            [
+                [
+                    "score"    =>  "![10:20]"
+                ],
+                [
+                    3
+                ]
+            ],
+            [
+                [
+                    "name"    =>  "[A:Bz]"
+                ],
+                [
+                    1,
+                    2
+                ]
+            ],
+            [
+                [
+                    "name"    =>  "*Al"
+                ],
+                [
+                    1
+                ]
+            ],
+            [
+                [
+                    "name"    =>  "ma*"
+                ],
+                [
+                    3
+                ]
+            ],
+            [
+                [
+                    "name"    =>  "*et*"
+                ],
+                [
+                    2
+                ]
+            ],
+            [
+                [
+                    "name"    =>  "=other"
+                ],
+                [
+                    1,
+                    3
+                ]
+            ],
+            [
+                [
+                    "name"    =>  "!=other"
+                ],
+                [
+                    2
+                ]
+            ],
+            [
+                [
+                    "id"    =>  [
+                        1,
+                        3
+                    ]
+                ],
+                [
+                    1,
+                    3
+                ]
+            ],
+            [
+                [
+                    "id"    =>  [
+                        2
+                    ]
+                ],
+                [
+                    2
+                ]
+            ],
+            [
+                [
+                    "id"    =>  []
+                ],
+                []
+            ],
+            [
+                [
+                    "score"    =>  0
+                ],
+                []
+            ],
+            [
+                [
+                    "score"    =>  "0"
+                ],
+                []
+            ],
+            [
+                [
+                    "score"    =>  false
+                ],
+                []
+            ],
+            [
+                [
+                    "name"    =>  ""
+                ],
+                []
+            ],
+            [
+                [
+                    "nullable"    =>  null
+                ],
+                [
+                    1
+                ]
+            ],
+            [
+                [
+                    "id"        =>  1,
+                    "||name"    =>  "Beta"
+                ],
+                [
+                    1,
+                    2
+                ]
+            ],
+            [
+                [
+                    "id"        =>  1,
+                    "!!name"    =>  "Beta"
+                ],
+                [
+                    1,
+                    2
+                ]
+            ],
+            [
+                [
+                    "<>id"    =>  "Router@name:linked"
+                ],
+                [
+                    1
+                ]
+            ],
+            [
+                [
+                    "@@id"    =>  "Router@name:linked"
+                ],
+                [
+                    1
+                ]
+            ],
+            [
+                [
+                    "><id"    =>  "Router@name:linked"
+                ],
+                [
+                    2,
+                    3
+                ]
+            ],
+            [
+                [
+                    "<>router_id"    =>  "Router@name:linked"
+                ],
+                [
+                    1
+                ]
+            ],
         ];
 
         # Check the supported filter contract on real rows
         foreach($cases as [$filters, $expected]){
 
             # Execute the production database driver
-            $rows = $driver->find("Fixture", "", ["filters" => $filters, "sort" => "asc"]);
+            $rows = $driver->find("Fixture", "", [
+                "filters"    =>  $filters,
+                "sort"       =>  "asc"
+            ]);
 
             # Verify exact matching records
             $this->assertSame($expected, array_map("intval", array_column($rows, "id")), json_encode($filters));
@@ -191,15 +395,37 @@ class SqlFilterIntegrationTest extends TestCase {
         }
 
         # Verify filtered pagination and descending sorting
-        $this->assertSame([2], array_map("intval", array_column($driver->find("Fixture", "", [
-            "filters" => ["score" => ">0"], "sort" => ["-id"], "limit" => 1, "page" => 2,
+        $this->assertSame([
+            2
+        ], array_map("intval", array_column($driver->find("Fixture", "", [
+            "filters"    =>  [
+                "score"    =>  ">0"
+            ],
+            "sort"       =>  [
+                "-id"
+            ],
+            "limit"      =>  1,
+            "page"       =>  2,
         ]), "id")));
 
         # Verify the formerly separate unfiltered sorting path
-        $this->assertSame([3, 2, 1], array_map("intval", array_column($driver->find("Fixture", "", ["sort" => "desc"]), "id")));
+        $this->assertSame([
+            3,
+            2,
+            1
+        ], array_map("intval", array_column($driver->find("Fixture", "", [
+            "sort"    =>  "desc"
+        ]), "id")));
 
         # Prepare payloads containing quotes, comments, multiple statements and binary characters
-        $payloads = ["x\" OR 1=1 -- ", "x' OR 1=1 -- ", "x\\\" OR 1=1 #", "x'; DROP TABLE Fixture; -- ", "été 💡 ' \\\" ?", "x\0'\""];
+        $payloads = [
+            "x\" OR 1=1 -- ",
+            "x' OR 1=1 -- ",
+            "x\\\" OR 1=1 #",
+            "x'; DROP TABLE Fixture; -- ",
+            "été 💡 ' \\\" ?",
+            "x\0'\""
+        ];
 
         # Treat every payload as a real stored value
         foreach($payloads as $index => $payload){
@@ -208,28 +434,51 @@ class SqlFilterIntegrationTest extends TestCase {
             $insert = $this->_client->prepare("INSERT INTO Fixture VALUES (?, ?, 'fixture', 42, 'x', 1)");
 
             # Store the exact payload as data
-            $insert->execute([100 + $index, $payload]);
+            $insert->execute([
+                100 + $index,
+                $payload
+            ]);
 
             # Check scalar equality, IN lists and textual ranges
-            foreach([$payload, [$payload], "[".$payload.":".$payload."]"] as $value){
+            foreach([
+                $payload,
+                [
+                    $payload
+                ],
+                "[".$payload.":".$payload."]"
+            ] as $value){
 
                 # Execute the actual prepared filter query
-                $rows = $driver->find("Fixture", "", ["filters" => ["name" => $value]]);
+                $rows = $driver->find("Fixture", "", [
+                    "filters"    =>  [
+                        "name"    =>  $value
+                    ]
+                ]);
 
                 # Match only the row containing the payload
-                $this->assertSame([100 + $index], array_map("intval", array_column($rows, "id")));
+                $this->assertSame([
+                    100 + $index
+                ], array_map("intval", array_column($rows, "id")));
 
             }
 
             # Verify LIKE payloads also remain bound data
-            $this->assertSame([100 + $index], array_map("intval", array_column($driver->find("Fixture", "", [
-                "filters" => ["name" => "*".str_replace("\\", "\\\\", $payload)."*"],
+            $this->assertSame([
+                100 + $index
+            ], array_map("intval", array_column($driver->find("Fixture", "", [
+                "filters"    =>  [
+                    "name"    =>  "*".str_replace("\\", "\\\\", $payload)."*"
+                ],
             ]), "id")));
 
         }
 
         # Verify relation values cannot bypass the linked-field comparison
-        $this->assertSame([], $driver->find("Fixture", "", ["filters" => ["<>id" => "Router@name:x' OR 1=1 -- "]]));
+        $this->assertSame([], $driver->find("Fixture", "", [
+            "filters"    =>  [
+                "<>id"    =>  "Router@name:x' OR 1=1 -- "
+            ]
+        ]));
 
         # Ensure all seeded rows survived the multiple-statement payload
         $this->assertCount(9, $driver->find("Fixture"));
@@ -241,7 +490,11 @@ class SqlFilterIntegrationTest extends TestCase {
         $this->expectExceptionCode(400);
 
         # Exercise the additional relation field validation
-        $driver->find("Fixture", "", ["filters" => ["<>id" => "Router@name) OR 1=1 -- :x"]]);
+        $driver->find("Fixture", "", [
+            "filters"    =>  [
+                "<>id"    =>  "Router@name) OR 1=1 -- :x"
+            ]
+        ]);
 
     }
 
@@ -259,16 +512,32 @@ class SqlFilterIntegrationTest extends TestCase {
         $database->client = $this->_client;
 
         # Inject the isolated database name
-        $database->config = ["database" => [$this->_database]];
+        $database->config = [
+            "database"    =>  [
+                $this->_database
+            ]
+        ];
 
         # Exercise both existing SQL model entrypoints
-        foreach([MariadbModel::class, SqlModel::class] as $class){
+        foreach([
+            MariadbModel::class,
+            SqlModel::class
+        ] as $class){
 
             # Prepare a driver with its real defaults and an isolated database
             $model = $this->_model($class, $database);
 
             # Parse URL query-string filters using the production parser
-            parse_str(http_build_query(["filter" => ["score" => ">=20"], "sorting" => "-id", "options" => ["limit" => 1, "page" => 2]]), $_GET);
+            parse_str(http_build_query([
+                "filter"     =>  [
+                    "score"    =>  ">=20"
+                ],
+                "sorting"    =>  "-id",
+                "options"    =>  [
+                    "limit"    =>  1,
+                    "page"     =>  2
+                ]
+            ]), $_GET);
 
             # Read the actual API query aliases
             [$filters, $sort, $group, $options] = Query::getForFilters();
@@ -277,10 +546,17 @@ class SqlFilterIntegrationTest extends TestCase {
             $rows = $model->parseFilter($filters, $options)->parseSort($sort, $options)->parseGroup($group, $options)->run();
 
             # Verify sorting and pagination survived model parsing
-            $this->assertSame([2], array_map("intval", array_column($rows, "id")));
+            $this->assertSame([
+                2
+            ], array_map("intval", array_column($rows, "id")));
 
             # Exercise batch-style query argument parsing
-            [$filters, $sort] = Query::getForFiltersFromArray(["filters" => ["name" => "x\" OR 1=1 -- "], "sort" => "asc"]);
+            [$filters, $sort] = Query::getForFiltersFromArray([
+                "filters"    =>  [
+                    "name"    =>  "x\" OR 1=1 -- "
+                ],
+                "sort"       =>  "asc"
+            ]);
 
             # Create an unpaginated model for the injection probe
             $model = $this->_model($class, $database);
@@ -292,16 +568,25 @@ class SqlFilterIntegrationTest extends TestCase {
             $model = $this->_model($class, $database);
 
             # Keep HTTP query options separate from the trusted parseSql API
-            $this->assertSame([1], array_map("intval", array_column($model->parseFilter(
-                ["id" => 1],
-                ["query" => "SELECT * FROM Fixture", "rawQuery" => "SELECT * FROM Fixture"]
+            $this->assertSame([
+                1
+            ], array_map("intval", array_column($model->parseFilter(
+                [
+                    "id"    =>  1
+                ],
+                [
+                    "query"       =>  "SELECT * FROM Fixture",
+                    "rawQuery"    =>  "SELECT * FROM Fixture"
+                ]
             )->run(), "id")));
 
             # Create an ID-read model
             $model = $this->_model($class, $database);
 
             # Verify internal read-by-ID no longer relies on a raw SQL fragment
-            $this->assertSame([2], array_map("intval", array_column($model->parseId(2)->run(), "id")));
+            $this->assertSame([
+                2
+            ], array_map("intval", array_column($model->parseId(2)->run(), "id")));
 
         }
 
@@ -309,7 +594,12 @@ class SqlFilterIntegrationTest extends TestCase {
         $model = $this->_model(MariadbModel::class, $database);
 
         # Execute the metadata total query through the same bound filters
-        $rows = $model->parseFilter(["score" => ">=20"], ["pageStateProcess" => true, "limit" => 1])->run();
+        $rows = $model->parseFilter([
+            "score"    =>  ">=20"
+        ], [
+            "pageStateProcess"    =>  true,
+            "limit"               =>  1
+        ])->run();
 
         # Verify the total count respects the active filter
         $this->assertSame(2, $rows["_metadata"]["records_total"]);
@@ -333,24 +623,76 @@ class SqlFilterIntegrationTest extends TestCase {
         $database->client = $this->_client;
 
         # Inject the fixture database
-        $database->config = ["database" => [$this->_database]];
+        $database->config = [
+            "database"    =>  [
+                $this->_database
+            ]
+        ];
 
         # Prepare fields, sort expressions and malformed relations
         $inputs = [
-            ["filters" => ["id OR 1=1 -- " => 1]],
-            ["filters" => ["name" => "=other` OR 1=1 -- "]],
-            ["filters" => ["name" => ["sql" => "OR 1=1", "parameters" => []]]],
-            ["filters" => ["<>id" => "UnknownFixtureModel"]],
-            ["filters" => ["<>id" => "Router@name"]],
-            ["filters" => ["<>id" => "Router@name) OR 1=1 -- :x"]],
-            ["sort" => ["id, (SELECT SLEEP(1))"]],
-            ["sort" => [["id"]]],
-            ["sort" => [1]],
-            ["sort" => [""]],
+            [
+                "filters"    =>  [
+                    "id OR 1=1 -- "    =>  1
+                ]
+            ],
+            [
+                "filters"    =>  [
+                    "name"    =>  "=other` OR 1=1 -- "
+                ]
+            ],
+            [
+                "filters"    =>  [
+                    "name"    =>  [
+                        "sql"           =>  "OR 1=1",
+                        "parameters"    =>  []
+                    ]
+                ]
+            ],
+            [
+                "filters"    =>  [
+                    "<>id"    =>  "UnknownFixtureModel"
+                ]
+            ],
+            [
+                "filters"    =>  [
+                    "<>id"    =>  "Router@name"
+                ]
+            ],
+            [
+                "filters"    =>  [
+                    "<>id"    =>  "Router@name) OR 1=1 -- :x"
+                ]
+            ],
+            [
+                "sort"    =>  [
+                    "id, (SELECT SLEEP(1))"
+                ]
+            ],
+            [
+                "sort"    =>  [
+                    [
+                        "id"
+                    ]
+                ]
+            ],
+            [
+                "sort"    =>  [
+                    1
+                ]
+            ],
+            [
+                "sort"    =>  [
+                    ""
+                ]
+            ],
         ];
 
         # Check both model driver entrypoints
-        foreach([MariadbModel::class, SqlModel::class] as $class){
+        foreach([
+            MariadbModel::class,
+            SqlModel::class
+        ] as $class){
 
             # Run each malformed request independently
             foreach($inputs as $input){
@@ -397,16 +739,29 @@ class SqlFilterIntegrationTest extends TestCase {
         $result = [];
 
         # Exercise both database implementations
-        foreach([Mariadb::class, Mysql::class] as $driver){
+        foreach([
+            Mariadb::class,
+            Mysql::class
+        ] as $driver){
 
             # Exercise PDO native and emulated prepares
-            foreach([false, true] as $emulated){
+            foreach([
+                false,
+                true
+            ] as $emulated){
 
                 # Exercise default and strict quoting modes
-                foreach(["", "ANSI_QUOTES,NO_BACKSLASH_ESCAPES"] as $mode){
+                foreach([
+                    "",
+                    "ANSI_QUOTES,NO_BACKSLASH_ESCAPES"
+                ] as $mode){
 
                     # Add an independent matrix case
-                    $result[] = [$driver, $emulated, $mode];
+                    $result[] = [
+                        $driver,
+                        $emulated,
+                        $mode
+                    ];
 
                 }
 
@@ -439,7 +794,9 @@ class SqlFilterIntegrationTest extends TestCase {
         $result->mariadb = $database;
 
         # Supply the normal model arguments with a fixture table
-        (new ReflectionClass($class))->getProperty("arguments")->setValue($result, array_replace($class::ARGUMENTS, ["table" => "Fixture"]));
+        (new ReflectionClass($class))->getProperty("arguments")->setValue($result, array_replace($class::ARGUMENTS, [
+            "table"    =>  "Fixture"
+        ]));
 
         # Return result
         return $result;

@@ -233,7 +233,9 @@ class Api {
                     ? []
                     : ( is_array($this->options["config"])
                             ? $this->options["config"] 
-                            :[$this->options["config"]]
+                            :[
+                                $this->options["config"]
+                            ]
                     )
             );
 
@@ -300,11 +302,11 @@ class Api {
 
     public const DEFAULT_OPTIONS = [
         // Have context
-        "context"   =>  false,
+        "context"    =>  false,
         // Cookie
-        "cookie"    =>  false,
+        "cookie"     =>  false,
         // Config => ["app", "router"...]
-        "config"    =>  false
+        "config"     =>  false
     ];
 
 }

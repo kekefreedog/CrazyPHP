@@ -75,7 +75,10 @@ class FastRoute extends Adapter {
         $result = $matcher->dispatch($method, $path);
 
         # Return the matched identifier and parameters, or no match
-        return $result[0] === Dispatcher::FOUND ? ["id" => $result[1], "parameters" => $result[2]] : null;
+        return $result[0] === Dispatcher::FOUND ? [
+            "id"            =>  $result[1],
+            "parameters"    =>  $result[2]
+        ] : null;
 
     }
 

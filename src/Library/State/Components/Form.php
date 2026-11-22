@@ -66,23 +66,23 @@ class Form {
 
     /** @var array $_item_schema Schema of an item */
     private array $_item_schema = [
-        "name"          =>  "",
-        "type"          =>  "",
-        "label"         =>  "",
-        "readonly"      =>  "",
-        "post"          =>  "",
-        "disabled"      =>  "",
-        "required"      =>  "",
-        "placeholder"   =>  "",
-        "select"        =>  [],
-        "default"       =>  null,
-        "multiple"      =>  false,
-        "depends"       =>  null,
-        "persist"       =>  false,
-        "valuePrefix"   =>  "",
-        "valueSuffix"   =>  "",
-        "extra"         =>  [],
-        "_style"        =>  [],
+        "name"           =>  "",
+        "type"           =>  "",
+        "label"          =>  "",
+        "readonly"       =>  "",
+        "post"           =>  "",
+        "disabled"       =>  "",
+        "required"       =>  "",
+        "placeholder"    =>  "",
+        "select"         =>  [],
+        "default"        =>  null,
+        "multiple"       =>  false,
+        "depends"        =>  null,
+        "persist"        =>  false,
+        "valuePrefix"    =>  "",
+        "valueSuffix"    =>  "",
+        "extra"          =>  [],
+        "_style"         =>  [],
     ];
 
     /**
@@ -553,7 +553,10 @@ class Form {
             if(is_string($option) || is_int($option) || is_float($option))
 
                 # Set value
-                $value[$index] = ["value" => $option, "label" => (string)$option];
+                $value[$index] = [
+                    "value"    =>  $option,
+                    "label"    =>  (string)$option
+                ];
 
         # Return value
         return $value;
@@ -581,7 +584,9 @@ class Form {
             if(!is_array($value))
 
                 # Convert to array
-                $reset = [strval($value)];
+                $reset = [
+                    strval($value)
+                ];
 
         }
 
@@ -650,13 +655,13 @@ class Form {
 
             # Set result
             $result = [
-                0   =>  [
-                    "value" =>  (is_numeric($firstItem["value"] ?? false))
+                0    =>  [
+                    "value"    =>  (is_numeric($firstItem["value"] ?? false))
                         ? intval($firstItem["value"])
                         : 0
                 ],
-                1   =>  [
-                    "value" =>  (is_numeric($secondItem["value"] ?? false))
+                1    =>  [
+                    "value"    =>  (is_numeric($secondItem["value"] ?? false))
                         ? intval($secondItem["value"])
                         : 100
                 ]
@@ -703,13 +708,13 @@ class Form {
 
             # Set result
             $result = [
-                0   =>  [
-                    "value" =>  (is_numeric($firstItem["value"] ?? false))
+                0    =>  [
+                    "value"    =>  (is_numeric($firstItem["value"] ?? false))
                         ? intval($firstItem["value"])
                         : 0
                 ],
-                1   =>  [
-                    "value" =>  (is_numeric($secondItem["value"] ?? false))
+                1    =>  [
+                    "value"    =>  (is_numeric($secondItem["value"] ?? false))
                         ? intval($secondItem["value"])
                         : 100
                 ]
@@ -753,7 +758,7 @@ class Form {
 
             # Push error
             $itemTemp["error"][] = [
-                "message"   =>  "Default number given \"$value\" is not a valid number",
+                "message"    =>  "Default number given \"$value\" is not a valid number",
             ];
 
         }
@@ -791,7 +796,10 @@ class Form {
             ;
 
             # Resolve each endpoint before validating the interval.
-            $dates = array_map([self::class, "_parseTodayYesterdayTomorrow"], $dates);
+            $dates = array_map([
+                self::class,
+                "_parseTodayYesterdayTomorrow"
+            ], $dates);
 
             # Check dates
             if(
@@ -820,7 +828,7 @@ class Form {
 
                 # Push error
                 $itemTemp["error"][] = [
-                    "message"   =>  "Default date given \"$value\" is not matching pattern \"Y-m-d\""
+                    "message"    =>  "Default date given \"$value\" is not matching pattern \"Y-m-d\""
                 ];
 
         }
@@ -861,11 +869,11 @@ class Form {
 
                 # Set result
                 $result = [
-                    0   =>  [
-                        "value" =>  $firstItem
+                    0    =>  [
+                        "value"    =>  $firstItem
                     ],
-                    1   =>  [
-                        "value" =>  $secondItem
+                    1    =>  [
+                        "value"    =>  $secondItem
                     ]
                 ];
 
@@ -874,7 +882,7 @@ class Form {
 
                 # Push error
                 $itemTemp["error"][] = [
-                    "message"   =>  "Range from \"$firstItem\" to \"$secondItem\" is not valid"
+                    "message"    =>  "Range from \"$firstItem\" to \"$secondItem\" is not valid"
                 ];
 
             # Compare first and second value
@@ -898,8 +906,8 @@ class Form {
 
                     # Set result
                     $result = [
-                        0   =>  [
-                            "value" =>  $firstItem
+                        0    =>  [
+                            "value"    =>  $firstItem
                         ],
                     ];
 
@@ -918,8 +926,8 @@ class Form {
 
                     # Set result
                     $result = [
-                        1   =>  [
-                            "value" =>  $secondItem
+                        1    =>  [
+                            "value"    =>  $secondItem
                         ]
                     ];
 

@@ -47,9 +47,9 @@ class Create extends CrazyModel implements CrazyCommand {
 
     /** @var array PHP_VERSIONS Supported PHP versions, latest first */
     public const PHP_VERSIONS = [
-        "8.5"   => "PHP 8.5 (latest)",
-        "8.4"   => "PHP 8.4",
-        "8.3"   => "PHP 8.3",
+        "8.5"    =>  "PHP 8.5 (latest)",
+        "8.4"    =>  "PHP 8.4",
+        "8.3"    =>  "PHP 8.3",
     ];
 
     /** @var string LATEST_PHP_VERSION Version proposed by default */
@@ -59,120 +59,162 @@ class Create extends CrazyModel implements CrazyCommand {
     public const REQUIRED_VALUES = [
         # Name
         [
-            "name"          =>  "name",
-            "description"   =>  "Name of your crazy project",
-            "type"          =>  "VARCHAR",
-            "default"       =>  "CrazyPHP\Model\App\Create::defaultAppName",
-            "required"      =>  true,
-            "process"       =>  ['trim']
+            "name"           =>  "name",
+            "description"    =>  "Name of your crazy project",
+            "type"           =>  "VARCHAR",
+            "default"        =>  "CrazyPHP\Model\App\Create::defaultAppName",
+            "required"       =>  true,
+            "process"        =>  [
+                'trim'
+            ]
         ],
         # Description
         [
-            "name"          =>  "description",
-            "description"   =>  "Description of your crazy project",
-            "type"          =>  "VARCHAR",
-            "default"       =>  "My Crazy Web Application",
-            "process"       =>  ['trim']
+            "name"           =>  "description",
+            "description"    =>  "Description of your crazy project",
+            "type"           =>  "VARCHAR",
+            "default"        =>  "My Crazy Web Application",
+            "process"        =>  [
+                'trim'
+            ]
         ],
         # Author Name
         [
-            "name"          =>  "authors__name",
-            "description"   =>  "Author of this crazy project",
-            "type"          =>  "VARCHAR",
-            "default"       =>  "CrazyPerson",
-            "required"      =>  true,
-            "process"       =>  ['trim'],
+            "name"           =>  "authors__name",
+            "description"    =>  "Author of this crazy project",
+            "type"           =>  "VARCHAR",
+            "default"        =>  "CrazyPerson",
+            "required"       =>  true,
+            "process"        =>  [
+                'trim'
+            ],
         ],
         # Author Email
         [
-            "name"          =>  "authors__email",
-            "description"   =>  "Email of the crazy author",
-            "type"          =>  "VARCHAR",
-            "default"       =>  "crazy@person.com",
-            "required"      =>  true,
-            "process"       =>  ['trim'],
-            "validate"      =>  ['email'],
+            "name"           =>  "authors__email",
+            "description"    =>  "Email of the crazy author",
+            "type"           =>  "VARCHAR",
+            "default"        =>  "crazy@person.com",
+            "required"       =>  true,
+            "process"        =>  [
+                'trim'
+            ],
+            "validate"       =>  [
+                'email'
+            ],
         ],
         # Type
         [
-            "name"          =>  "type",
-            "description"   =>  "Type of your crazy project",
-            "type"          =>  "VARCHAR",
-            "default"       =>  "application",
-            "select"        =>  [
-                "application"   =>  "Application",
-                "website"       =>  "Website",
-                "api"           =>  "REST API",
-                "library"       =>  "PHP Library",
-                "other"         =>  "Undefined",
+            "name"           =>  "type",
+            "description"    =>  "Type of your crazy project",
+            "type"           =>  "VARCHAR",
+            "default"        =>  "application",
+            "select"         =>  [
+                "application"    =>  "Application",
+                "website"        =>  "Website",
+                "api"            =>  "REST API",
+                "library"        =>  "PHP Library",
+                "other"          =>  "Undefined",
             ]
         ],
         # Homepage
         [
-            "name"          =>  "homepage",
-            "description"   =>  "Home page of your crazy project",
-            "type"          =>  "VARCHAR",
-            "default"       =>  "https://github.com/kekefreedog/CrazyPHP/",
-            "validate"      =>  ['http'],
+            "name"           =>  "homepage",
+            "description"    =>  "Home page of your crazy project",
+            "type"           =>  "VARCHAR",
+            "default"        =>  "https://github.com/kekefreedog/CrazyPHP/",
+            "validate"       =>  [
+                'http'
+            ],
         ],
         # Database
         [
-            "name"          => "database",
-            "description"   => "Database engines (select none to skip)",
-            "type"          => "ARRAY",
-            "default"       => "",
-            "multiple"      => true,
-            "when"          => ["type" => ["application", "website", "api"]],
-            "select"        => [
-                "mongodb"       => "MongoDB",
-                "mariadb"       => "MariaDB (MySQL)",
-                "postgresql"    => "PostgreSQL",
+            "name"           =>  "database",
+            "description"    =>  "Database engines (select none to skip)",
+            "type"           =>  "ARRAY",
+            "default"        =>  "",
+            "multiple"       =>  true,
+            "when"           =>  [
+                "type"    =>  [
+                    "application",
+                    "website",
+                    "api"
+                ]
+            ],
+            "select"         =>  [
+                "mongodb"       =>  "MongoDB",
+                "mariadb"       =>  "MariaDB (MySQL)",
+                "postgresql"    =>  "PostgreSQL",
             ],
         ],
         # Authentication
         [
-            "name"          => "authentication",
-            "description"   => "Authentication library",
-            "type"          => "VARCHAR",
-            "default"       => "none",
-            "required"      => true,
-            "when"          => ["database" => ["mongodb", "mariadb", "mysql", "postgresql"]],
-            "select"        => [self::class, "authenticationChoices"],
-            "selectWithAnswers" => true,
+            "name"                 =>  "authentication",
+            "description"          =>  "Authentication library",
+            "type"                 =>  "VARCHAR",
+            "default"              =>  "none",
+            "required"             =>  true,
+            "when"                 =>  [
+                "database"    =>  [
+                    "mongodb",
+                    "mariadb",
+                    "mysql",
+                    "postgresql"
+                ]
+            ],
+            "select"               =>  [
+                self::class,
+                "authenticationChoices"
+            ],
+            "selectWithAnswers"    =>  true,
         ],
         # Router
         [
-            "name"          => "router",
-            "description"   => "Router vendor",
-            "type"          => "VARCHAR",
-            "default"       => "mezon",
-            "required"      => true,
-            "when"          => ["type" => ["application", "website", "api"]],
-            "select"        => [
-                "mezon"         => "Mezon",
-                "fast-route"    => "FastRoute",
-                "league"        => "LeagueRoute",
-                "symfony"       => "Symfony",
+            "name"           =>  "router",
+            "description"    =>  "Router vendor",
+            "type"           =>  "VARCHAR",
+            "default"        =>  "mezon",
+            "required"       =>  true,
+            "when"           =>  [
+                "type"    =>  [
+                    "application",
+                    "website",
+                    "api"
+                ]
+            ],
+            "select"         =>  [
+                "mezon"         =>  "Mezon",
+                "fast-route"    =>  "FastRoute",
+                "league"        =>  "LeagueRoute",
+                "symfony"       =>  "Symfony",
             ],
         ],
         # Frontend
         [
-            "name"          => "frontend",
-            "description"   => "Frontend bundler",
-            "type"          => "VARCHAR",
-            "default"       => "vite",
-            "required"      => true,
-            "when"          => ["type" => ["application", "website"]],
-            "select"        => ["vite" => "Vite", "webpack" => "Webpack"],
+            "name"           =>  "frontend",
+            "description"    =>  "Frontend bundler",
+            "type"           =>  "VARCHAR",
+            "default"        =>  "vite",
+            "required"       =>  true,
+            "when"           =>  [
+                "type"    =>  [
+                    "application",
+                    "website"
+                ]
+            ],
+            "select"         =>  [
+                "vite"       =>  "Vite",
+                "webpack"    =>  "Webpack"
+            ],
         ],
         # PHP Version
         [
-            "name"          => "php_version",
-            "description"   => "PHP version",
-            "type"          => "VARCHAR",
-            "default"       => self::LATEST_PHP_VERSION,
-            "required"      => true,
-            "select"        => self::PHP_VERSIONS,
+            "name"           =>  "php_version",
+            "description"    =>  "PHP version",
+            "type"           =>  "VARCHAR",
+            "default"        =>  self::LATEST_PHP_VERSION,
+            "required"       =>  true,
+            "select"         =>  self::PHP_VERSIONS,
         ],
     ];
 
@@ -211,11 +253,18 @@ class Create extends CrazyModel implements CrazyCommand {
 
         # Start with defaults for callers using the original input format
         $options = [
-            "name" => self::defaultAppName(), "description" => "My Crazy Web Application",
-            "type" => "application", "database" => [], "authentication" => "none",
-            "router" => "mezon", "frontend" => "vite", "php_version" => self::LATEST_PHP_VERSION,
-            "database_host" => "localhost", "database_name" => "crazy_db",
-            "database_user" => "crazyuser", "database_password" => "crazypassword",
+            "name"                 =>  self::defaultAppName(),
+            "description"          =>  "My Crazy Web Application",
+            "type"                 =>  "application",
+            "database"             =>  [],
+            "authentication"       =>  "none",
+            "router"               =>  "mezon",
+            "frontend"             =>  "vite",
+            "php_version"          =>  self::LATEST_PHP_VERSION,
+            "database_host"        =>  "localhost",
+            "database_name"        =>  "crazy_db",
+            "database_user"        =>  "crazyuser",
+            "database_password"    =>  "crazypassword",
         ];
 
         # Accept both form records and explicit options
@@ -237,7 +286,10 @@ class Create extends CrazyModel implements CrazyCommand {
         # Accept a checkbox selection or a single named engine, where None means no database
         $options["database"] = array_values(array_unique(array_diff(
             array_map("strval", (array) $options["database"]),
-            ["none", ""]
+            [
+                "none",
+                ""
+            ]
         )));
 
         # Validate project type before applying its branch
@@ -247,7 +299,10 @@ class Create extends CrazyModel implements CrazyCommand {
             throw new CrazyException("Unknown project type.", 400);
 
         # Libraries and undefined projects skip the server feature questions
-        if(in_array($options["type"], ["library", "other"], true)){
+        if(in_array($options["type"], [
+            "library",
+            "other"
+        ], true)){
 
             # Disable skipped database setup
             $options["database"] = [];
@@ -261,7 +316,10 @@ class Create extends CrazyModel implements CrazyCommand {
         }
 
         # Only applications and websites have a frontend
-        if(!in_array($options["type"], ["application", "website"], true))
+        if(!in_array($options["type"], [
+            "application",
+            "website"
+        ], true))
 
             # Ignore legacy frontend defaults for backend projects
             $options["frontend"] = "none";
@@ -286,10 +344,22 @@ class Create extends CrazyModel implements CrazyCommand {
 
         # Validate selected engines before writing files
         foreach([
-            "php_version" => array_map("strval", array_keys(self::PHP_VERSIONS)),
-            "router" => ["none", "mezon", "fast-route", "league", "symfony"],
-            "frontend" => ["none", "webpack", "vite"],
-            "authentication" => array_keys(self::authenticationChoices(["database" => $options["database"]])),
+            "php_version"       =>  array_map("strval", array_keys(self::PHP_VERSIONS)),
+            "router"            =>  [
+                "none",
+                "mezon",
+                "fast-route",
+                "league",
+                "symfony"
+            ],
+            "frontend"          =>  [
+                "none",
+                "webpack",
+                "vite"
+            ],
+            "authentication"    =>  array_keys(self::authenticationChoices([
+                "database"    =>  $options["database"]
+            ])),
         ] as $name => $accepted)
 
             # Reject unsupported combinations, including SQL authentication on MongoDB
@@ -318,10 +388,21 @@ class Create extends CrazyModel implements CrazyCommand {
     public static function getRequiredValues():array {
 
         # Start with the PHP version, then follow the graph's name, description, type and database sequence
-        $fields = [self::REQUIRED_VALUES[10], self::REQUIRED_VALUES[0], self::REQUIRED_VALUES[1], self::REQUIRED_VALUES[4], self::REQUIRED_VALUES[6]];
+        $fields = [
+            self::REQUIRED_VALUES[10],
+            self::REQUIRED_VALUES[0],
+            self::REQUIRED_VALUES[1],
+            self::REQUIRED_VALUES[4],
+            self::REQUIRED_VALUES[6]
+        ];
 
         # Finish with authentication, router and conditional frontend choices
-        return [...$fields, self::REQUIRED_VALUES[7], self::REQUIRED_VALUES[8], self::REQUIRED_VALUES[9]];
+        return [
+            ...$fields,
+            self::REQUIRED_VALUES[7],
+            self::REQUIRED_VALUES[8],
+            self::REQUIRED_VALUES[9]
+        ];
 
     }
 
@@ -337,16 +418,24 @@ class Create extends CrazyModel implements CrazyCommand {
         $databases = (array) ($answers["database"]["value"] ?? $answers["database"] ?? []);
 
         # Offer the OAuth client for projects with a database
-        $choices = ["league/oauth2-client" => "league/oauth2-client"];
+        $choices = [
+            "league/oauth2-client"    =>  "league/oauth2-client"
+        ];
 
         # Delight Auth requires at least one SQL database
-        if(array_intersect($databases, ["mariadb", "mysql", "postgresql"]))
+        if(array_intersect($databases, [
+            "mariadb",
+            "mysql",
+            "postgresql"
+        ]))
 
             # Include password authentication only for compatible engines
             $choices["delight-im/auth"] = "delight-im/auth";
 
         # Always allow authentication to be omitted
-        return $choices + ["none" => "None"];
+        return $choices + [
+            "none"    =>  "None"
+        ];
 
     }
 
@@ -434,7 +523,10 @@ class Create extends CrazyModel implements CrazyCommand {
         $manifest["autoload"]["psr-4"]["App\\"] = "app/";
 
         # Preserve optional metadata supplied by existing programmatic callers
-        foreach(["homepage", "authors"] as $key)
+        foreach([
+            "homepage",
+            "authors"
+        ] as $key)
 
             # Only write explicitly supplied values
             if(isset($this->_options[$key]))
@@ -443,7 +535,10 @@ class Create extends CrazyModel implements CrazyCommand {
                 $manifest[$key] = $this->_options[$key];
 
         # Preserve author fields from the original CLI record format
-        foreach(["name", "email"] as $field)
+        foreach([
+            "name",
+            "email"
+        ] as $field)
 
             # Update only metadata explicitly supplied by the caller
             if(isset($this->_options["authors__".$field]))
@@ -515,9 +610,9 @@ class Create extends CrazyModel implements CrazyCommand {
 
         # Select scripts matching the chosen compiler
         $manifest["scripts"] = array_replace($manifest["scripts"] ?? [], $this->_options["frontend"] === "vite" ? [
-            "build" => "node vite.build.mjs",
-            "dev" => "node vite.build.mjs --mode development",
-            "watch" => "node vite.build.mjs --mode development --watch",
+            "build"    =>  "node vite.build.mjs",
+            "dev"      =>  "node vite.build.mjs --mode development",
+            "watch"    =>  "node vite.build.mjs --mode development --watch",
         ] : Package::DEFAULT_SCRIPTS);
 
         # Create the manifest before generating the remaining structure
@@ -556,17 +651,24 @@ class Create extends CrazyModel implements CrazyCommand {
         }
 
         # Libraries and undefined projects do not need the HTTP application shell
-        if(in_array($this->_options["type"], ["library", "other"], true)){
+        if(in_array($this->_options["type"], [
+            "library",
+            "other"
+        ], true)){
 
             # Keep a small PHP project layout
             $root["folders"] = [
-                "app" => null,
-                "config" => ["files" => [
-                    "App.yml" => null,
-                    "Front.yml" => ["source" => "@crazyphp_root/resources/Yml/Front.yml"],
-                ]],
-                "tests" => null,
-                "docs" => null,
+                "app"       =>  null,
+                "config"    =>  [
+                    "files"    =>  [
+                        "App.yml"      =>  null,
+                        "Front.yml"    =>  [
+                            "source"    =>  "@crazyphp_root/resources/Yml/Front.yml"
+                        ],
+                    ]
+                ],
+                "tests"     =>  null,
+                "docs"      =>  null,
             ];
 
         }
@@ -578,7 +680,9 @@ class Create extends CrazyModel implements CrazyCommand {
             unset($root["files"]["webpack.config.js"]);
 
             # Install the maintained Vite build entrypoint
-            $root["files"]["vite.build.mjs"] = ["source" => "@crazyphp_root/resources/Vite/vite.build.mjs"];
+            $root["files"]["vite.build.mjs"] = [
+                "source"    =>  "@crazyphp_root/resources/Vite/vite.build.mjs"
+            ];
 
         }
 
@@ -607,7 +711,9 @@ class Create extends CrazyModel implements CrazyCommand {
         if(!File::exists("@app_root/config/Router.yml"))
 
             # Record router settings without copying application routes
-            Yaml::create("@app_root/config/Router.yml", ["Router" => []]);
+            Yaml::create("@app_root/config/Router.yml", [
+                "Router"    =>  []
+            ]);
 
         # Store adapter selection alongside the route collections
         FileConfig::setValue("Router.vendor", $this->_options["router"]);
@@ -650,7 +756,10 @@ class Create extends CrazyModel implements CrazyCommand {
     public function runComposerUpdate():self {
 
         # Resolve the bootstrap manifest plus selected optional dependencies
-        $this->_runtime->execute("composer", ["update", "--no-interaction"]);
+        $this->_runtime->execute("composer", [
+            "update",
+            "--no-interaction"
+        ]);
 
         # Return the generator
         return $this;
@@ -676,10 +785,17 @@ class Create extends CrazyModel implements CrazyCommand {
             $configuration["host"] = $this->_options["database_host"];
 
             # Register the requested database name
-            $configuration["database"] = [$this->_options["database_name"]];
+            $configuration["database"] = [
+                $this->_options["database_name"]
+            ];
 
             # Store the application user's connection information
-            $configuration["users"] = [["login" => $this->_options["database_user"], "password" => $this->_options["database_password"]]];
+            $configuration["users"] = [
+                [
+                    "login"       =>  $this->_options["database_user"],
+                    "password"    =>  $this->_options["database_password"]
+                ]
+            ];
 
             # Persist only configuration; provisioning remains an explicit separate action
             FileConfig::setValue("Database.collection.$engine", $configuration);
@@ -756,7 +872,11 @@ class Create extends CrazyModel implements CrazyCommand {
         if($this->_options["frontend"] !== "none")
 
             # Make the existing CrazyFront command discover the generated scripts
-            FileConfig::setValue("Front.scripts", ["build", "dev", "watch"]);
+            FileConfig::setValue("Front.scripts", [
+                "build",
+                "dev",
+                "watch"
+            ]);
 
         # Return the generator
         return $this;
@@ -776,7 +896,9 @@ class Create extends CrazyModel implements CrazyCommand {
         if($this->_options["frontend"] !== "none")
 
             # Prefer local npm and otherwise use the shared Docker runtime
-            $this->_runtime->execute("npm", ["install"]);
+            $this->_runtime->execute("npm", [
+                "install"
+            ]);
 
         # Return the generator
         return $this;
@@ -810,7 +932,10 @@ class Create extends CrazyModel implements CrazyCommand {
             return $this;
 
         # Compile once with the selected frontend scripts
-        $this->_runtime->execute("npm", ["run", "build"]);
+        $this->_runtime->execute("npm", [
+            "run",
+            "build"
+        ]);
 
         # Register the shared hashed asset layout used by both compilers
         Front::getHash();
@@ -863,9 +988,18 @@ class Create extends CrazyModel implements CrazyCommand {
 
             # Merge engine dependencies
             $result += match($engine){
-                "mongodb" => ["ext-mongodb" => "^1.21", "mongodb/mongodb" => "^1.21", "phpfastcache/mongodb-extension" => "^9.2"],
-                "mariadb", "mysql" => ["ext-pdo_mysql" => "*", "envms/fluentpdo" => "^2.2"],
-                "postgresql" => ["ext-pdo_pgsql" => "*"],
+                "mongodb" => [
+                    "ext-mongodb"                       =>  "^1.21",
+                    "mongodb/mongodb"                   =>  "^1.21",
+                    "phpfastcache/mongodb-extension"    =>  "^9.2"
+                ],
+                "mariadb", "mysql" => [
+                    "ext-pdo_mysql"      =>  "*",
+                    "envms/fluentpdo"    =>  "^2.2"
+                ],
+                "postgresql" => [
+                    "ext-pdo_pgsql"    =>  "*"
+                ],
                 default => [],
             };
 

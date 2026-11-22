@@ -30,15 +30,20 @@ use CrazyPHP\Model\App\Create;
 use CrazyPHP\Model\Env;
 
 # Read arguments
-[, $step, $root, $json] = $argv + [null, null, null, "{}"];
+[, $step, $root, $json] = $argv + [
+    null,
+    null,
+    null,
+    "{}"
+];
 
 # Run tools from the application directory, like the CLI
 chdir($root);
 
 # Define env constants like the CLI entrypoints
 Env::set([
-    "app_root"      =>  getcwd(),
-    "crazyphp_root" =>  getcwd()."/vendor/kzarshenas/crazyphp",
+    "app_root"         =>  getcwd(),
+    "crazyphp_root"    =>  getcwd()."/vendor/kzarshenas/crazyphp",
 ]);
 
 # Use the same confirmation bypass as the CLI's --yes option
@@ -50,7 +55,9 @@ $options = json_decode($json, true, flags: JSON_THROW_ON_ERROR);
 
 # Build the generator
 $instance = match($step){
-    "create"    => new Create(["application" => $options], $runtime),
+    "create"    => new Create([
+        "application"    =>  $options
+    ], $runtime),
     "docker"    => new Install($options, $runtime),
     default     => throw new InvalidArgumentException("Unknown step \"$step\"."),
 };

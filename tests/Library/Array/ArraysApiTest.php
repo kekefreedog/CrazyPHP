@@ -39,11 +39,11 @@ class ArraysApiTest extends TestCase{
 
         # Set map
         $map = [
-            'version'   =>  [
+            'version'     =>  [
                 'getType'           =>  "version type",
                 'getPackageName'    =>  "package name",
             ],
-            'delivery'  =>  [
+            'delivery'    =>  [
                 'getType'           =>  "delivery type",
                 'getPackageName'    =>  "delivery name",
             ],
@@ -69,16 +69,16 @@ class ArraysApiTest extends TestCase{
 
         # Set map
         $map = [
-            'version'   =>  [
-                'getType'           => "version type",
+            'version'     =>  [
+                'getType'           =>  "version type",
                 'getPackageName'    =>  "package name",
             ],
-            'delivery'  =>  [
-                'getType' => "delivery type",
+            'delivery'    =>  [
+                'getType'           =>  "delivery type",
                 'getPackageName'    =>  "delivery name",
             ],
-            'method'    =>  [
-                'getTest'           =>  "test"
+            'method'      =>  [
+                'getTest'    =>  "test"
             ]
         ];
 
@@ -111,16 +111,16 @@ class ArraysApiTest extends TestCase{
 
         # Set map
         $map = [
-            'version'   =>  [
-                'getType'           => "version type",
+            'version'     =>  [
+                'getType'           =>  "version type",
                 'getPackageName'    =>  "package name",
             ],
-            'delivery'  =>  [
-                'getType' => "delivery type",
+            'delivery'    =>  [
+                'getType'           =>  "delivery type",
                 'getPackageName'    =>  "delivery name",
             ],
-            'method'    =>  [
-                'getTest'           =>  "test"
+            'method'      =>  [
+                'getTest'    =>  "test"
             ]
         ];
 
@@ -134,7 +134,9 @@ class ArraysApiTest extends TestCase{
         file_put_contents($tmpFile, $json);
 
         # New api
-        $api = new Api($tmpFile, ["Tests\\Library\\Array\\Test"]);
+        $api = new Api($tmpFile, [
+            "Tests\\Library\\Array\\Test"
+        ]);
         
         # Check result 1
         $this->assertEquals($api->method->getTest(), Test::test());

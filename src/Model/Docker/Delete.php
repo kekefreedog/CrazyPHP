@@ -28,7 +28,12 @@ use CrazyPHP\Library\File\Yaml;
 class Delete extends CrazyModel implements CrazyCommand {
 
     /** @var array STORYLINE Shared CLI and direct-call execution order */
-    public const STORYLINE = ["runCheck", "runDockerComposeDown", "runUpdateDatabaseConfig", "runStructureFolder"];
+    public const STORYLINE = [
+        "runCheck",
+        "runDockerComposeDown",
+        "runUpdateDatabaseConfig",
+        "runStructureFolder"
+    ];
 
     /** @var Runtime $_runtime Checked Docker execution */
     private Runtime $_runtime;
@@ -96,7 +101,13 @@ class Delete extends CrazyModel implements CrazyCommand {
             throw new CrazyException("No config/Docker.yml found; this Compose project is not identified as a CrazyPHP Docker environment.", 400);
 
         # Refuse linked configuration rather than modifying files outside this project
-        foreach(["docker", "config", "docker-compose.yml", "config/Docker.yml", "config/Database.yml"] as $path)
+        foreach([
+            "docker",
+            "config",
+            "docker-compose.yml",
+            "config/Docker.yml",
+            "config/Database.yml"
+        ] as $path)
             if(is_link($this->_root."/".$path))
                 throw new CrazyException("Docker cleanup requires local configuration: $path is a symlink.", 400);
 
@@ -117,7 +128,10 @@ class Delete extends CrazyModel implements CrazyCommand {
 
         # Allow cleanup of a partial installation without requiring a Docker daemon
         if(is_file($this->_root."/docker-compose.yml"))
-            $this->_runtime->execute("docker", ["compose", "down"]);
+            $this->_runtime->execute("docker", [
+                "compose",
+                "down"
+            ]);
 
         # Preserve named volumes and stop immediately if Compose fails
         return $this;

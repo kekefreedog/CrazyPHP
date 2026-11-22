@@ -39,19 +39,19 @@ class HttpStatusCodeTest extends TestCase{
      * Root path of the test
      */
     public const DEFAULT = [
-        "code"      =>  null,
-        'type'      =>  null,
-        "detail"    =>  null,
-        "_status_code"  =>  [
-            "title"         =>  "Error",
-            "style"         =>  [
-                "color"         =>  [
-                    "text"          =>  "white",
-                    "fill"          =>  "grey darken-1"
+        "code"            =>  null,
+        'type'            =>  null,
+        "detail"          =>  null,
+        "_status_code"    =>  [
+            "title"    =>  "Error",
+            "style"    =>  [
+                "color"    =>  [
+                    "text"    =>  "white",
+                    "fill"    =>  "grey darken-1"
                 ],
-                "icon"          =>  [
-                    "class"         =>  "material-icons",
-                    "text"          =>  "error"
+                "icon"     =>  [
+                    "class"    =>  "material-icons",
+                    "text"     =>  "error"
                 ]
             ]
         ]
@@ -61,19 +61,19 @@ class HttpStatusCodeTest extends TestCase{
      * Toot path of the test 001
      */
     public const OUTPUT_1 = [
-        "code"          =>  1,
-        "type"          =>  "Warning",
-        "detail"        =>  "Detail",
-        "_status_code"  =>  [
-            "title"         =>  "Test",
-            "style"         =>  [
-                "color"         =>  [
-                    "text"          =>  "red",
-                    "fill"          =>  "red darken-1"
+        "code"            =>  1,
+        "type"            =>  "Warning",
+        "detail"          =>  "Detail",
+        "_status_code"    =>  [
+            "title"    =>  "Test",
+            "style"    =>  [
+                "color"    =>  [
+                    "text"    =>  "red",
+                    "fill"    =>  "red darken-1"
                 ],
-                "icon"          =>  [
-                    "class"         =>  "material-icons",
-                    "text"          =>  "add"
+                "icon"     =>  [
+                    "class"    =>  "material-icons",
+                    "text"     =>  "add"
                 ],
             ]
         ]
@@ -94,8 +94,8 @@ class HttpStatusCodeTest extends TestCase{
 
         # Setup env
         Env::set([
-            "crazyphp_root" =>  getcwd(),
-            "phpunit_test"  =>  true,
+            "crazyphp_root"    =>  getcwd(),
+            "phpunit_test"     =>  true,
         ]);
 
     }

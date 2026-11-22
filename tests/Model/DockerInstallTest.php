@@ -54,13 +54,25 @@ class DockerInstallTest extends TestCase {
         mkdir($this->_root."/config", 0755, true);
 
         # Point framework paths at this fixture only
-        Env::set(["app_root" => $this->_root, "crazyphp_root" => dirname(__DIR__, 2), "phpunit_test" => true]);
+        Env::set([
+            "app_root"         =>  $this->_root,
+            "crazyphp_root"    =>  dirname(__DIR__, 2),
+            "phpunit_test"     =>  true
+        ]);
 
         # Clear state cached by earlier tests
         unset($GLOBALS[Config::PREFIX]);
 
         # Preserve the project's existing server and document-root settings
-        Yaml::create("@app_root/config/App.yml", ["App" => ["name" => "example/app", "public" => "public", "server" => ["name" => "example.test"]]]);
+        Yaml::create("@app_root/config/App.yml", [
+            "App"    =>  [
+                "name"      =>  "example/app",
+                "public"    =>  "public",
+                "server"    =>  [
+                    "name"    =>  "example.test"
+                ]
+            ]
+        ]);
 
         # Record checked subprocesses without contacting a daemon
         $this->_runtime = new DockerInstallRuntime();
@@ -96,13 +108,34 @@ class DockerInstallTest extends TestCase {
         $branches = [];
 
         # Combine the three HTTP servers with the three security strategies
-        foreach(["nginx", "apache", "frankenphp"] as $type)
+        foreach([
+            "nginx",
+            "apache",
+            "frankenphp"
+        ] as $type)
 
             # HTTPS has both existing-proxy and managed-certificate branches
-            foreach([["http", "no"], ["https", "yes"], ["https", "no"]] as [$security, $proxy])
+            foreach([
+                [
+                    "http",
+                    "no"
+                ],
+                [
+                    "https",
+                    "yes"
+                ],
+                [
+                    "https",
+                    "no"
+                ]
+            ] as [$security, $proxy])
 
                 # Name each case for useful failure reports
-                $branches["$type-$security-$proxy"] = [$type, $security, $proxy];
+                $branches["$type-$security-$proxy"] = [
+                    $type,
+                    $security,
+                    $proxy
+                ];
 
         # Return the complete graph matrix
         return $branches;
@@ -145,7 +178,9 @@ class DockerInstallTest extends TestCase {
         if($proxy === "yes"){
 
             # Avoid exposing an HTTP bypass for the existing HTTPS proxy
-            $this->assertSame(["127.0.0.1:\${CRAZY_HTTP_PORT:-8080}:80"], $compose["services"]["webserver"]["ports"]);
+            $this->assertSame([
+                "127.0.0.1:\${CRAZY_HTTP_PORT:-8080}:80"
+            ], $compose["services"]["webserver"]["ports"]);
 
             # Provide both requested reverse-proxy examples
             $this->assertStringContainsString("proxy_set_header X-Forwarded-Proto", $install->describe());
@@ -188,7 +223,14 @@ class DockerInstallTest extends TestCase {
             $this->assertStringContainsString($managed ? "example.test {" : ":80 {", $configuration);
 
             # The image must load our mounted file even when its default path changes
-            $this->assertSame(["frankenphp", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"], $compose["services"]["webserver"]["command"]);
+            $this->assertSame([
+                "frankenphp",
+                "run",
+                "--config",
+                "/etc/caddy/Caddyfile",
+                "--adapter",
+                "caddyfile"
+            ], $compose["services"]["webserver"]["command"]);
 
         }
 
@@ -212,8 +254,8 @@ class DockerInstallTest extends TestCase {
 
         # Keep HTTP cache writes compatible with files created by local commands
         $this->assertSame([
-            "CRAZY_UID" => '${CRAZY_UID:-1000}',
-            "CRAZY_GID" => '${CRAZY_GID:-1000}',
+            "CRAZY_UID"    =>  '${CRAZY_UID:-1000}',
+            "CRAZY_GID"    =>  '${CRAZY_GID:-1000}',
         ], $compose["services"][$runtime]["build"]["args"]);
 
         # Preparation and HTTP must build the same worker identity
@@ -227,7 +269,10 @@ class DockerInstallTest extends TestCase {
         $this->assertSame("service_completed_successfully", $compose["services"][$runtime]["depends_on"]["prepare"]["condition"]);
 
         # Run dependency installation through a portable shell entrypoint
-        $this->assertSame(["/bin/sh", "docker/bin/Prepare"], $compose["services"]["prepare"]["entrypoint"]);
+        $this->assertSame([
+            "/bin/sh",
+            "docker/bin/Prepare"
+        ], $compose["services"]["prepare"]["entrypoint"]);
 
         # Read container settings without rewriting the user's local configuration
         $this->assertFileExists($this->_root."/docker/config/Database.yml");
@@ -243,10 +288,36 @@ class DockerInstallTest extends TestCase {
 
         # Check the daemon and Compose before validating and building, without starting services
         $this->assertSame([
-            ["docker", ["info", "--format", "{{.ServerVersion}}"]],
-            ["docker", ["compose", "version"]],
-            ["docker", ["compose", "config", "--quiet"]],
-            ["docker", ["compose", "build"]],
+            [
+                "docker",
+                [
+                    "info",
+                    "--format",
+                    "{{.ServerVersion}}"
+                ]
+            ],
+            [
+                "docker",
+                [
+                    "compose",
+                    "version"
+                ]
+            ],
+            [
+                "docker",
+                [
+                    "compose",
+                    "config",
+                    "--quiet"
+                ]
+            ],
+            [
+                "docker",
+                [
+                    "compose",
+                    "build"
+                ]
+            ],
         ], $this->_runtime->commands);
 
     }
@@ -259,7 +330,26 @@ class DockerInstallTest extends TestCase {
     public function testUnsupportedMysqlRootPasswordStopsBeforeGeneration():void {
 
         # Exercise characters the official image cannot safely initialize as its root password
-        Yaml::create("@app_root/config/Database.yml", ["Database" => ["collection" => ["mysql" => ["database" => ["app"], "root" => ["password" => "quote'"], "users" => [["login" => "app", "password" => "app-password"]]]]]]);
+        Yaml::create("@app_root/config/Database.yml", [
+            "Database"    =>  [
+                "collection"    =>  [
+                    "mysql"    =>  [
+                        "database"    =>  [
+                            "app"
+                        ],
+                        "root"        =>  [
+                            "password"    =>  "quote'"
+                        ],
+                        "users"       =>  [
+                            [
+                                "login"       =>  "app",
+                                "password"    =>  "app-password"
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]);
 
         # Explain the image constraint without printing the secret
         $this->expectExceptionMessage("root password without quotes");
@@ -293,13 +383,39 @@ class DockerInstallTest extends TestCase {
         $collection = [];
 
         # Give every supported engine a distinct database but identical fixture credentials
-        foreach(["mongodb", "mysql", "mariadb", "postgresql"] as $engine)
+        foreach([
+            "mongodb",
+            "mysql",
+            "mariadb",
+            "postgresql"
+        ] as $engine)
 
             # Preserve local hosts and extra configured databases
-            $collection[$engine] = ["host" => "127.0.0.1", "port" => 12345, "database" => ["first", "second"], "root" => ["login" => "root", "password" => $engine === "mysql" ? 'root ${PASSWORD} $cash' : $password], "users" => [["login" => "app", "password" => $password]]];
+            $collection[$engine] = [
+                "host"        =>  "127.0.0.1",
+                "port"        =>  12345,
+                "database"    =>  [
+                    "first",
+                    "second"
+                ],
+                "root"        =>  [
+                    "login"       =>  "root",
+                    "password"    =>  $engine === "mysql" ? 'root ${PASSWORD} $cash' : $password
+                ],
+                "users"       =>  [
+                    [
+                        "login"       =>  "app",
+                        "password"    =>  $password
+                    ]
+                ]
+            ];
 
         # Write the application's source configuration
-        Yaml::create("@app_root/config/Database.yml", ["Database" => ["collection" => $collection]]);
+        Yaml::create("@app_root/config/Database.yml", [
+            "Database"    =>  [
+                "collection"    =>  $collection
+            ]
+        ]);
 
         # Generate every enabled service
         (new Install([], $this->_runtime))->run();
@@ -339,7 +455,12 @@ class DockerInstallTest extends TestCase {
         $overlay = Yaml::open("@app_root/docker/config/Database.yml")["Database"]["collection"];
 
         # Cover every generated engine and its stable Compose hostname
-        foreach(["mongodb" => "mongo", "mysql" => "mysql", "mariadb" => "mariadb", "postgresql" => "postgresql"] as $engine => $service){
+        foreach([
+            "mongodb"       =>  "mongo",
+            "mysql"         =>  "mysql",
+            "mariadb"       =>  "mariadb",
+            "postgresql"    =>  "postgresql"
+        ] as $engine => $service){
 
             # Wait for actual database readiness before preparation
             $this->assertSame("service_healthy", $compose["services"]["prepare"]["depends_on"][$service]["condition"]);
@@ -398,10 +519,19 @@ class DockerInstallTest extends TestCase {
     public function testUsedPortsAreReplacedByFreeProposals():void {
 
         # Simulate standard and first fallback ports already used
-        $this->_runtime->busyPorts = [80, 443, 8080];
+        $this->_runtime->busyPorts = [
+            80,
+            443,
+            8080
+        ];
 
         # Generate a managed HTTPS stack without choosing ports
-        $install = new Install(["type" => "nginx", "security" => "https", "proxy" => "no", "hostname" => "localhost"], $this->_runtime);
+        $install = new Install([
+            "type"        =>  "nginx",
+            "security"    =>  "https",
+            "proxy"       =>  "no",
+            "hostname"    =>  "localhost"
+        ], $this->_runtime);
         $install->run();
 
         # Get .env
@@ -429,8 +559,14 @@ class DockerInstallTest extends TestCase {
         file_put_contents($this->_root."/.env", "CRAZY_HTTP_PORT=49123\n");
 
         # Choose another port, even one reported as used
-        $this->_runtime->busyPorts = [9000];
-        $install = new Install(["type" => "apache", "security" => "http", "http_port" => "9000"], $this->_runtime);
+        $this->_runtime->busyPorts = [
+            9000
+        ];
+        $install = new Install([
+            "type"         =>  "apache",
+            "security"     =>  "http",
+            "http_port"    =>  "9000"
+        ], $this->_runtime);
         $install->run();
 
         # Replace the saved port with the chosen one
@@ -456,7 +592,10 @@ class DockerInstallTest extends TestCase {
         $this->expectExceptionMessage($message);
 
         # Validate options
-        new Install(["type" => "nginx", "hostname" => "localhost"] + $options, $this->_runtime);
+        new Install([
+            "type"        =>  "nginx",
+            "hostname"    =>  "localhost"
+        ] + $options, $this->_runtime);
 
     }
 
@@ -469,9 +608,27 @@ class DockerInstallTest extends TestCase {
 
         # Return invalid port choices
         return [
-            "not a number"  => [["http_port" => "web"], "between 1 and 65535"],
-            "out of range"  => [["http_port" => "70000"], "between 1 and 65535"],
-            "same port"     => [["security" => "https", "proxy" => "no", "http_port" => "8443", "https_port" => "8443"], "must be different"],
+            "not a number"    =>  [
+                [
+                    "http_port"    =>  "web"
+                ],
+                "between 1 and 65535"
+            ],
+            "out of range"    =>  [
+                [
+                    "http_port"    =>  "70000"
+                ],
+                "between 1 and 65535"
+            ],
+            "same port"       =>  [
+                [
+                    "security"      =>  "https",
+                    "proxy"         =>  "no",
+                    "http_port"     =>  "8443",
+                    "https_port"    =>  "8443"
+                ],
+                "must be different"
+            ],
         ];
 
     }
@@ -484,10 +641,22 @@ class DockerInstallTest extends TestCase {
     public function testImagesFollowProjectPhpVersion():void {
 
         # Choose PHP 8.5 in the project manifest
-        file_put_contents($this->_root."/composer.json", json_encode(["require" => ["php" => "^8.5"], "config" => ["platform" => ["php" => "8.5.0"]]]));
+        file_put_contents($this->_root."/composer.json", json_encode([
+            "require"    =>  [
+                "php"    =>  "^8.5"
+            ],
+            "config"     =>  [
+                "platform"    =>  [
+                    "php"    =>  "8.5.0"
+                ]
+            ]
+        ]));
 
         # Generate a FrankenPHP stack
-        $install = new Install(["type" => "frankenphp", "security" => "http"], $this->_runtime);
+        $install = new Install([
+            "type"        =>  "frankenphp",
+            "security"    =>  "http"
+        ], $this->_runtime);
         $install->run();
 
         # Build the server image for that version
@@ -600,8 +769,10 @@ class DockerInstallTest extends TestCase {
 
             # Pick the first choice, or the question default
             $result[] = $question + [
-                "value" => isset($question["select"])
-                    ? (($question["multiple"] ?? false) ? [array_key_first($question["select"])] : array_key_first($question["select"]))
+                "value"    =>  isset($question["select"])
+                    ? (($question["multiple"] ?? false) ? [
+                        array_key_first($question["select"])
+                    ] : array_key_first($question["select"]))
                     : ($question["type"] === "INT" ? $question["default"]([], $this->_runtime) : "localhost")
             ];
 
@@ -624,13 +795,32 @@ class DockerInstallTest extends TestCase {
         $question = Install::getRequiredValues()[2];
 
         # Plain HTTP skips the HTTPS proxy question
-        $this->assertFalse(Form::isVisible($question, ["security" => ["value" => "http"]]));
+        $this->assertFalse(Form::isVisible($question, [
+            "security"    =>  [
+                "value"    =>  "http"
+            ]
+        ]));
 
         # HTTPS requires choosing who manages TLS
-        $this->assertTrue(Form::isVisible($question, ["security" => ["value" => "https"]]));
+        $this->assertTrue(Form::isVisible($question, [
+            "security"    =>  [
+                "value"    =>  "https"
+            ]
+        ]));
 
         # Normalize the same form records passed by CrazyDocker new
-        $install = new Install(["input" => [["name" => "type", "value" => "apache"], ["name" => "security", "value" => "http"]]], $this->_runtime);
+        $install = new Install([
+            "input"    =>  [
+                [
+                    "name"     =>  "type",
+                    "value"    =>  "apache"
+                ],
+                [
+                    "name"     =>  "security",
+                    "value"    =>  "http"
+                ]
+            ]
+        ], $this->_runtime);
 
         # Ensure direct and CLI execution share the declared storyline
         $this->assertSame(Install::STORYLINE, $install->getStoryline());
@@ -654,7 +844,10 @@ class DockerInstallTest extends TestCase {
         $this->expectExceptionMessage("Enter a hostname");
 
         # Newlines and braces must never enter a generated Caddyfile through input
-        new Install(["security" => "https", "hostname" => "example.com {\n respond hacked\n}"], $this->_runtime);
+        new Install([
+            "security"    =>  "https",
+            "hostname"    =>  "example.com {\n respond hacked\n}"
+        ], $this->_runtime);
 
     }
 
@@ -699,7 +892,10 @@ class DockerInstallRuntime extends Runtime {
     public function execute(string $tool, array $arguments = []):void {
 
         # Record each command in execution order
-        $this->commands[] = [$tool, $arguments];
+        $this->commands[] = [
+            $tool,
+            $arguments
+        ];
 
         # Simulate failures without changing the host environment
         if(count($this->commands) === $this->failAt)

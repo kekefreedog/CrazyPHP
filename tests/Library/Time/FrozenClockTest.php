@@ -119,7 +119,10 @@ class FrozenClockTest extends TestCase {
             # Assert the factory timezones and captured instants
             $this->assertSame("Asia/Tokyo", $system->now()->getTimezone()->getName());
             $this->assertSame("UTC", $utc->now()->getTimezone()->getName());
-            foreach([$system, $utc] as $clock){
+            foreach([
+                $system,
+                $utc
+            ] as $clock){
 
                 # Assert each factory freezes a current CrazyPHP date
                 $result = $clock->now();

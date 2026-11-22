@@ -59,7 +59,7 @@ class MongodbConnection implements CrazySingleton {
      * @return array [Client, Manager]
      */
     public static function getInstance(array $options = [
-        "user"  =>  0
+        "user"    =>  0
     ]):array {
 
         # Set user
@@ -87,7 +87,7 @@ class MongodbConnection implements CrazySingleton {
      * @return void 
      */
     public static function connect(array $options = [
-        "user"  =>  0
+        "user"    =>  0
     ]):void {
 
         # Cache Instance
@@ -137,7 +137,7 @@ class MongodbConnection implements CrazySingleton {
                     "User \"$user\" can't be found...",
                     500,
                     [
-                        "custom_code"   =>  "mongodb-001",
+                        "custom_code"    =>  "mongodb-001",
                     ]
                 );
 
@@ -158,7 +158,7 @@ class MongodbConnection implements CrazySingleton {
                     "User \"$user\" don't exists...",
                     500,
                     [
-                        "custom_code"   =>  "mongodb-002",
+                        "custom_code"    =>  "mongodb-002",
                     ]
                 );
 
@@ -207,7 +207,7 @@ class MongodbConnection implements CrazySingleton {
                 $e->getMessage(),
                 500,
                 [
-                    "custom_code"   =>  "mongodb-010",
+                    "custom_code"    =>  "mongodb-010",
                 ]
             );
         
@@ -224,7 +224,7 @@ class MongodbConnection implements CrazySingleton {
      * @return void
      */
     public static function disconnect(array $options = [
-        "user"  =>  0
+        "user"    =>  0
     ]):void {
 
         # Set user

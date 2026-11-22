@@ -42,12 +42,17 @@ class Create extends CrazyModel implements CrazyCommand {
     public const REQUIRED_VALUES = [
         # Name
         [
-            "name"          =>  "name",
-            "description"   =>  "Name of your crazy template partial",
-            "type"          =>  "VARCHAR",
-            "default"       =>  "partial",
-            "required"      =>  true,
-            "process"       =>  ['cleanPath', 'snakeToCamel', 'ucfirst', 'trim']
+            "name"           =>  "name",
+            "description"    =>  "Name of your crazy template partial",
+            "type"           =>  "VARCHAR",
+            "default"        =>  "partial",
+            "required"       =>  true,
+            "process"        =>  [
+                'cleanPath',
+                'snakeToCamel',
+                'ucfirst',
+                'trim'
+            ]
         ],
     ];
 
@@ -180,7 +185,10 @@ class Create extends CrazyModel implements CrazyCommand {
         $this->partial = Process::getResultSummary($this->inputs["partial"]);
 
         # Clean router name
-        $partialName = $this->partial["Name"] = Process::snakeToCamel(str_replace(["/", "."], "_", $this->partial["Name"]), true);
+        $partialName = $this->partial["Name"] = Process::snakeToCamel(str_replace([
+            "/",
+            "."
+        ], "_", $this->partial["Name"]), true);
 
         # Check file already exists
         if(File::exists("@app_root/app/Environment/Partials/$partialName.ts"))
@@ -190,7 +198,7 @@ class Create extends CrazyModel implements CrazyCommand {
                 "Given name \"$partialName\" already exists as partial",
                 500,
                 [
-                    "custom_code"   =>  "create-partial-001",
+                    "custom_code"    =>  "create-partial-001",
                 ]
             );
 
@@ -199,7 +207,7 @@ class Create extends CrazyModel implements CrazyCommand {
 
         # Set up env for cache driver
         Env::set([
-            "cache_driver"  =>  "Files"
+            "cache_driver"    =>  "Files"
         ]);
 
     }
@@ -215,8 +223,8 @@ class Create extends CrazyModel implements CrazyCommand {
 
         # Create template instance
         $template = new Handlebars([
-            "template"  =>  Handlebars::PERFORMANCE_PRESET,
-            "helpers"   =>  false
+            "template"    =>  Handlebars::PERFORMANCE_PRESET,
+            "helpers"     =>  false
         ]);
 
         # Load template
@@ -224,7 +232,7 @@ class Create extends CrazyModel implements CrazyCommand {
 
         # Render template with current partial value
         $result = $template->render($this->partial + [
-            "file"  =>  $this->file
+            "file"    =>  $this->file
         ]);
 
         # Set file path
@@ -246,8 +254,8 @@ class Create extends CrazyModel implements CrazyCommand {
 
         # Create template instance
         $template = new Handlebars([
-            "template"      =>  Handlebars::PERFORMANCE_PRESET,
-            "helpers"       =>  false
+            "template"    =>  Handlebars::PERFORMANCE_PRESET,
+            "helpers"     =>  false
         ]);
 
         # Load template
@@ -255,7 +263,7 @@ class Create extends CrazyModel implements CrazyCommand {
 
         # Render template with current router value
         $result = $template->render($this->partial + [
-            "file"  =>  $this->file
+            "file"    =>  $this->file
         ]);
 
         # Set file path
@@ -277,8 +285,8 @@ class Create extends CrazyModel implements CrazyCommand {
 
         # Create template instance
         $template = new Handlebars([
-            "template"      =>  Handlebars::PERFORMANCE_PRESET,
-            "helpers"       =>  false,
+            "template"    =>  Handlebars::PERFORMANCE_PRESET,
+            "helpers"     =>  false,
         ]);
 
         # Load template
@@ -286,14 +294,17 @@ class Create extends CrazyModel implements CrazyCommand {
 
         # Render template with current router value
         $result = $template->render($this->partial + [
-            "file"  =>  $this->file
+            "file"    =>  $this->file
         ]);
 
         # Set file path
         $filePath = static::PARTIAL_TEMPLATE_DIR.$this->file.".hbs";
 
         # Iteration "[[" and "]]" to "{{" and "}}"
-        foreach(["[[" => "{{", "]]" => "}}"] as $prev => $current) 
+        foreach([
+            "[["    =>  "{{",
+            "]]"    =>  "}}"
+        ] as $prev => $current)
         
             # Switch
             $result = str_replace($prev, $current, $result);
@@ -500,7 +511,9 @@ class Create extends CrazyModel implements CrazyCommand {
             $newLines = array_merge(
                 array_slice($lines, 0, $partialStart),
                 $partialImports,
-                [""],
+                [
+                    ""
+                ],
                 array_slice($lines, $partialEnd)
             );
         

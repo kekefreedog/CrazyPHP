@@ -48,11 +48,15 @@ class StructureTest extends TestCase{
 
     /** @var array TEST_SCHEMA File-copy fixture independent of generated Docker variants */
     public const TEST_SCHEMA = [
-        "Structure" => [
-            "@app_root" => [
-                "folders" => [
-                    "nested" => [
-                        "files" => ["Dockerfile" => ["source" => "@crazyphp_root/resources/Docker/server/php/Dockerfile"]],
+        "Structure"    =>  [
+            "@app_root"    =>  [
+                "folders"    =>  [
+                    "nested"    =>  [
+                        "files"    =>  [
+                            "Dockerfile"    =>  [
+                                "source"    =>  "@crazyphp_root/resources/Docker/server/php/Dockerfile"
+                            ]
+                        ],
                     ],
                 ],
             ],
@@ -74,9 +78,9 @@ class StructureTest extends TestCase{
 
         # Setup env
         Env::set([
-            "app_root"      =>  self::RELATIVE_ROOT_PATH,
-            "crazyphp_root" =>  getcwd(),
-            "phpunit_test"  =>  true,
+            "app_root"         =>  self::RELATIVE_ROOT_PATH,
+            "crazyphp_root"    =>  getcwd(),
+            "phpunit_test"     =>  true,
         ]);
             
         if(File::exists(self::RELATIVE_ROOT_PATH))
@@ -181,7 +185,10 @@ class StructureTest extends TestCase{
         $result = scandir(self::RELATIVE_ROOT_PATH);
 
         # Remove dots
-        $result = array_filter($result, fn($e) => !in_array($e, [".", ".."]));
+        $result = array_filter($result, fn($e) => !in_array($e, [
+            ".",
+            ".."
+        ]));
 
         # Check folder is empty
         $this->assertEmpty($result);
@@ -250,7 +257,10 @@ class StructureTest extends TestCase{
         $result = scandir(self::RELATIVE_ROOT_PATH);
 
         # Remove dots
-        $result = array_filter($result, fn($e) => !in_array($e, [".", ".."]));
+        $result = array_filter($result, fn($e) => !in_array($e, [
+            ".",
+            ".."
+        ]));
 
         # Assert
         $this->assertEmpty($result);

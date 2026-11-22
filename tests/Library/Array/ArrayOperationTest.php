@@ -45,7 +45,7 @@ class ArrayOperationTest extends TestCase {
 
         # Setup env
         Env::set([
-            "phpunit_test"      =>  true,
+            "phpunit_test"    =>  true,
         ]);
 
     }
@@ -83,40 +83,42 @@ class ArrayOperationTest extends TestCase {
             [
                 "first"     =>  "toto",
                 "second"    =>  [
-                    "third"     =>  "titi",
-                    "four"      =>  [
-                        "five"      =>  "tonton"
-                    ]  
+                    "third"    =>  "titi",
+                    "four"     =>  [
+                        "five"    =>  "tonton"
+                    ]
                 ],
-                "six"   =>  12,
-                "seven" =>  null,
-                "height"=>  true
+                "six"       =>  12,
+                "seven"     =>  null,
+                "height"    =>  true
             ],
             # Item 2
             [
                 "first"     =>  "tata",
                 "second"    =>  [
-                    "third"     =>  "tutu",
-                    "four"      =>  [
-                        "five"      =>  "tictac"
-                    ]  
+                    "third"    =>  "tutu",
+                    "four"     =>  [
+                        "five"    =>  "tictac"
+                    ]
                 ],
-                "six"   =>  0,
-                "seven" =>  null,
-                "height"=>  false
+                "six"       =>  0,
+                "seven"     =>  null,
+                "height"    =>  false
             ],
         ];
 
         # Set filter
         $filter = [
-            "first" =>  "=toto"
+            "first"    =>  "=toto"
         ];
 
         # New ope
         $filtered = ArrayOperation::filter($input, $filter);
 
         # Check
-        $this->assertEquals([0 => $input[0]], $filtered);
+        $this->assertEquals([
+            0    =>  $input[0]
+        ], $filtered);
 
     }
 
@@ -135,40 +137,42 @@ class ArrayOperationTest extends TestCase {
             [
                 "first"     =>  "toto",
                 "second"    =>  [
-                    "third"     =>  "titi",
-                    "four"      =>  [
-                        "five"      =>  "tonton"
-                    ]  
+                    "third"    =>  "titi",
+                    "four"     =>  [
+                        "five"    =>  "tonton"
+                    ]
                 ],
-                "six"   =>  12,
-                "seven" =>  null,
-                "height"=>  true
+                "six"       =>  12,
+                "seven"     =>  null,
+                "height"    =>  true
             ],
             # Item 2
             [
                 "first"     =>  "tata",
                 "second"    =>  [
-                    "third"     =>  "tutu",
-                    "four"      =>  [
-                        "five"      =>  "tictac"
-                    ]  
+                    "third"    =>  "tutu",
+                    "four"     =>  [
+                        "five"    =>  "tictac"
+                    ]
                 ],
-                "six"   =>  0,
-                "seven" =>  null,
-                "height"=>  false
+                "six"       =>  0,
+                "seven"     =>  null,
+                "height"    =>  false
             ],
         ];
 
         # Set filter
         $filter = [
-            "second.third" =>  "=tutu"
+            "second.third"    =>  "=tutu"
         ];
 
         # New ope
         $filtered = ArrayOperation::filter($input, $filter);
 
         # Check
-        $this->assertEquals([1 => $input[1]], $filtered);
+        $this->assertEquals([
+            1    =>  $input[1]
+        ], $filtered);
 
     }
 
@@ -187,40 +191,42 @@ class ArrayOperationTest extends TestCase {
             [
                 "first"     =>  "toto",
                 "second"    =>  [
-                    "third"     =>  "titi",
-                    "four"      =>  [
-                        "five"      =>  "tonton"
-                    ]  
+                    "third"    =>  "titi",
+                    "four"     =>  [
+                        "five"    =>  "tonton"
+                    ]
                 ],
-                "six"   =>  12,
-                "seven" =>  null,
-                "height"=>  true
+                "six"       =>  12,
+                "seven"     =>  null,
+                "height"    =>  true
             ],
             # Item 2
             [
                 "first"     =>  "tata",
                 "second"    =>  [
-                    "third"     =>  "tutu",
-                    "four"      =>  [
-                        "five"      =>  "tictac"
-                    ]  
+                    "third"    =>  "tutu",
+                    "four"     =>  [
+                        "five"    =>  "tictac"
+                    ]
                 ],
-                "six"   =>  0,
-                "seven" =>  null,
-                "height"=>  false
+                "six"       =>  0,
+                "seven"     =>  null,
+                "height"    =>  false
             ],
         ];
 
         # Set filter
         $filter = [
-            "first" =>  "!=toto"
+            "first"    =>  "!=toto"
         ];
 
         # New ope
         $filtered = ArrayOperation::filter($input, $filter);
 
         # Check
-        $this->assertEquals([1 => $input[1]], $filtered);
+        $this->assertEquals([
+            1    =>  $input[1]
+        ], $filtered);
 
     }
 
@@ -239,40 +245,42 @@ class ArrayOperationTest extends TestCase {
             [
                 "first"     =>  "toto",
                 "second"    =>  [
-                    "third"     =>  "titi",
-                    "four"      =>  [
-                        "five"      =>  "tonton"
-                    ]  
+                    "third"    =>  "titi",
+                    "four"     =>  [
+                        "five"    =>  "tonton"
+                    ]
                 ],
-                "six"   =>  12,
-                "seven" =>  null,
-                "height"=>  true
+                "six"       =>  12,
+                "seven"     =>  null,
+                "height"    =>  true
             ],
             # Item 2
             [
                 "first"     =>  "tata",
                 "second"    =>  [
-                    "third"     =>  "tutu",
-                    "four"      =>  [
-                        "five"      =>  "tictac"
-                    ]  
+                    "third"    =>  "tutu",
+                    "four"     =>  [
+                        "five"    =>  "tictac"
+                    ]
                 ],
-                "six"   =>  0,
-                "seven" =>  null,
-                "height"=>  false
+                "six"       =>  0,
+                "seven"     =>  null,
+                "height"    =>  false
             ],
         ];
 
         # Set filter
         $filter = [
-            "six" =>  "<=6"
+            "six"    =>  "<=6"
         ];
 
         # New ope
         $filtered = ArrayOperation::filter($input, $filter);
 
         # Check
-        $this->assertEquals([1 => $input[1]], $filtered);
+        $this->assertEquals([
+            1    =>  $input[1]
+        ], $filtered);
 
     }
 
@@ -291,40 +299,42 @@ class ArrayOperationTest extends TestCase {
             [
                 "first"     =>  "toto",
                 "second"    =>  [
-                    "third"     =>  "titi",
-                    "four"      =>  [
-                        "five"      =>  "tonton"
-                    ]  
+                    "third"    =>  "titi",
+                    "four"     =>  [
+                        "five"    =>  "tonton"
+                    ]
                 ],
-                "six"   =>  12,
-                "seven" =>  null,
-                "height"=>  true
+                "six"       =>  12,
+                "seven"     =>  null,
+                "height"    =>  true
             ],
             # Item 2
             [
                 "first"     =>  "tata",
                 "second"    =>  [
-                    "third"     =>  "tutu",
-                    "four"      =>  [
-                        "five"      =>  "tictac"
-                    ]  
+                    "third"    =>  "tutu",
+                    "four"     =>  [
+                        "five"    =>  "tictac"
+                    ]
                 ],
-                "six"   =>  0,
-                "seven" =>  null,
-                "height"=>  false
+                "six"       =>  0,
+                "seven"     =>  null,
+                "height"    =>  false
             ],
         ];
 
         # Set filter
         $filter = [
-            "six" =>  ">=6"
+            "six"    =>  ">=6"
         ];
 
         # New ope
         $filtered = ArrayOperation::filter($input, $filter);
 
         # Check
-        $this->assertEquals([0 => $input[0]], $filtered);
+        $this->assertEquals([
+            0    =>  $input[0]
+        ], $filtered);
 
     }
 
@@ -343,40 +353,42 @@ class ArrayOperationTest extends TestCase {
             [
                 "first"     =>  "toto",
                 "second"    =>  [
-                    "third"     =>  "titi",
-                    "four"      =>  [
-                        "five"      =>  "tonton"
-                    ]  
+                    "third"    =>  "titi",
+                    "four"     =>  [
+                        "five"    =>  "tonton"
+                    ]
                 ],
-                "six"   =>  12,
-                "seven" =>  null,
-                "height"=>  true
+                "six"       =>  12,
+                "seven"     =>  null,
+                "height"    =>  true
             ],
             # Item 2
             [
                 "first"     =>  "tata",
                 "second"    =>  [
-                    "third"     =>  "tutu",
-                    "four"      =>  [
-                        "five"      =>  "tictac"
-                    ]  
+                    "third"    =>  "tutu",
+                    "four"     =>  [
+                        "five"    =>  "tictac"
+                    ]
                 ],
-                "six"   =>  0,
-                "seven" =>  null,
-                "height"=>  false
+                "six"       =>  0,
+                "seven"     =>  null,
+                "height"    =>  false
             ],
         ];
 
         # Set filter
         $filter = [
-            "six" =>  "<12"
+            "six"    =>  "<12"
         ];
 
         # New ope
         $filtered = ArrayOperation::filter($input, $filter);
 
         # Check
-        $this->assertEquals([1 => $input[1]], $filtered);
+        $this->assertEquals([
+            1    =>  $input[1]
+        ], $filtered);
 
     }
 
@@ -395,40 +407,42 @@ class ArrayOperationTest extends TestCase {
             [
                 "first"     =>  "toto",
                 "second"    =>  [
-                    "third"     =>  "titi",
-                    "four"      =>  [
-                        "five"      =>  "tonton"
-                    ]  
+                    "third"    =>  "titi",
+                    "four"     =>  [
+                        "five"    =>  "tonton"
+                    ]
                 ],
-                "six"   =>  12,
-                "seven" =>  null,
-                "height"=>  true
+                "six"       =>  12,
+                "seven"     =>  null,
+                "height"    =>  true
             ],
             # Item 2
             [
                 "first"     =>  "tata",
                 "second"    =>  [
-                    "third"     =>  "tutu",
-                    "four"      =>  [
-                        "five"      =>  "tictac"
-                    ]  
+                    "third"    =>  "tutu",
+                    "four"     =>  [
+                        "five"    =>  "tictac"
+                    ]
                 ],
-                "six"   =>  0,
-                "seven" =>  null,
-                "height"=>  false
+                "six"       =>  0,
+                "seven"     =>  null,
+                "height"    =>  false
             ],
         ];
 
         # Set filter
         $filter = [
-            "six" =>  ">0"
+            "six"    =>  ">0"
         ];
 
         # New ope
         $filtered = ArrayOperation::filter($input, $filter);
 
         # Check
-        $this->assertEquals([0 => $input[0]], $filtered);
+        $this->assertEquals([
+            0    =>  $input[0]
+        ], $filtered);
 
     }
 
@@ -447,40 +461,42 @@ class ArrayOperationTest extends TestCase {
             [
                 "first"     =>  "toto",
                 "second"    =>  [
-                    "third"     =>  "titi",
-                    "four"      =>  [
-                        "five"      =>  "tonton"
-                    ]  
+                    "third"    =>  "titi",
+                    "four"     =>  [
+                        "five"    =>  "tonton"
+                    ]
                 ],
-                "six"   =>  12,
-                "seven" =>  null,
-                "height"=>  true
+                "six"       =>  12,
+                "seven"     =>  null,
+                "height"    =>  true
             ],
             # Item 2
             [
                 "first"     =>  "tata",
                 "second"    =>  [
-                    "third"     =>  "tutu",
-                    "four"      =>  [
-                        "five"      =>  "tictac"
-                    ]  
+                    "third"    =>  "tutu",
+                    "four"     =>  [
+                        "five"    =>  "tictac"
+                    ]
                 ],
-                "six"   =>  0,
-                "seven" =>  null,
-                "height"=>  false
+                "six"       =>  0,
+                "seven"     =>  null,
+                "height"    =>  false
             ],
         ];
 
         # Set filter
         $filter = [
-            "six" =>  "[5:20]"
+            "six"    =>  "[5:20]"
         ];
 
         # New ope
         $filtered = ArrayOperation::filter($input, $filter);
 
         # Check
-        $this->assertEquals([0=>$input[0]], $filtered);
+        $this->assertEquals([
+            0    =>  $input[0]
+        ], $filtered);
 
     }
 
@@ -499,40 +515,42 @@ class ArrayOperationTest extends TestCase {
             [
                 "first"     =>  "toto",
                 "second"    =>  [
-                    "third"     =>  "titi",
-                    "four"      =>  [
-                        "five"      =>  "tonton"
-                    ]  
+                    "third"    =>  "titi",
+                    "four"     =>  [
+                        "five"    =>  "tonton"
+                    ]
                 ],
-                "six"   =>  12,
-                "seven" =>  null,
-                "height"=>  true
+                "six"       =>  12,
+                "seven"     =>  null,
+                "height"    =>  true
             ],
             # Item 2
             [
                 "first"     =>  "tata",
                 "second"    =>  [
-                    "third"     =>  "tutu",
-                    "four"      =>  [
-                        "five"      =>  "tictac"
-                    ]  
+                    "third"    =>  "tutu",
+                    "four"     =>  [
+                        "five"    =>  "tictac"
+                    ]
                 ],
-                "six"   =>  0,
-                "seven" =>  null,
-                "height"=>  false
+                "six"       =>  0,
+                "seven"     =>  null,
+                "height"    =>  false
             ],
         ];
 
         # Set filter
         $filter = [
-            "first" =>  "*at*"
+            "first"    =>  "*at*"
         ];
 
         # New ope
         $filtered = ArrayOperation::filter($input, $filter);
 
         # Check
-        $this->assertEquals([1=>$input[1]], $filtered);
+        $this->assertEquals([
+            1    =>  $input[1]
+        ], $filtered);
 
     }
 
@@ -551,40 +569,42 @@ class ArrayOperationTest extends TestCase {
             [
                 "debug"     =>  "toto",
                 "second"    =>  [
-                    "third"     =>  "titi",
-                    "four"      =>  [
-                        "five"      =>  "tonton"
-                    ]  
+                    "third"    =>  "titi",
+                    "four"     =>  [
+                        "five"    =>  "tonton"
+                    ]
                 ],
-                "six"   =>  12,
-                "seven" =>  null,
-                "height"=>  true
+                "six"       =>  12,
+                "seven"     =>  null,
+                "height"    =>  true
             ],
             # Item 2
             [
                 "debug"     =>  "tata",
                 "second"    =>  [
-                    "third"     =>  "tutu",
-                    "four"      =>  [
-                        "five"      =>  "tictac"
-                    ]  
+                    "third"    =>  "tutu",
+                    "four"     =>  [
+                        "five"    =>  "tictac"
+                    ]
                 ],
-                "six"   =>  0,
-                "seven" =>  null,
-                "height"=>  false
+                "six"       =>  0,
+                "seven"     =>  null,
+                "height"    =>  false
             ],
         ];
 
         # Set filter
         $filter = [
-            "debug" =>  "tot*"
+            "debug"    =>  "tot*"
         ];
 
         # New ope
         $filtered = ArrayOperation::filter($input, $filter);
 
         # Check
-        $this->assertEquals([0=>$input[0]], $filtered);
+        $this->assertEquals([
+            0    =>  $input[0]
+        ], $filtered);
 
     }
 
@@ -603,40 +623,42 @@ class ArrayOperationTest extends TestCase {
             [
                 "debug"     =>  "toto",
                 "second"    =>  [
-                    "third"     =>  "titi",
-                    "four"      =>  [
-                        "five"      =>  "tonton"
-                    ]  
+                    "third"    =>  "titi",
+                    "four"     =>  [
+                        "five"    =>  "tonton"
+                    ]
                 ],
-                "six"   =>  12,
-                "seven" =>  null,
-                "height"=>  true
+                "six"       =>  12,
+                "seven"     =>  null,
+                "height"    =>  true
             ],
             # Item 2
             [
                 "debug"     =>  "tata",
                 "second"    =>  [
-                    "third"     =>  "tutu",
-                    "four"      =>  [
-                        "five"      =>  "tictac"
-                    ]  
+                    "third"    =>  "tutu",
+                    "four"     =>  [
+                        "five"    =>  "tictac"
+                    ]
                 ],
-                "six"   =>  0,
-                "seven" =>  null,
-                "height"=>  false
+                "six"       =>  0,
+                "seven"     =>  null,
+                "height"    =>  false
             ],
         ];
 
         # Set filter
         $filter = [
-            "debug" =>  "*ta"
+            "debug"    =>  "*ta"
         ];
 
         # New ope
         $filtered = ArrayOperation::filter($input, $filter);
 
         # Check
-        $this->assertEquals([1=>$input[1]], $filtered);
+        $this->assertEquals([
+            1    =>  $input[1]
+        ], $filtered);
 
     }
 

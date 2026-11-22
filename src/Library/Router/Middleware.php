@@ -64,8 +64,8 @@ class Middleware {
 
                     # Push to result
                     $result[] = [
-                        "class" =>  $staticMethod->class,
-                        "name"  =>  $staticMethod->name
+                        "class"    =>  $staticMethod->class,
+                        "name"     =>  $staticMethod->name
                     ];
 
         # Return result
@@ -108,7 +108,11 @@ class Middleware {
         if(is_array($routerConfig))
 
             # Iteration router config
-            foreach(["app", "api", "asset"] as $type)
+            foreach([
+                "app",
+                "api",
+                "asset"
+            ] as $type)
 
                 # Check if type isset and not empty
                 if(array_key_exists($type, $routerConfig) && is_array($routerConfig[$type]) && !empty($routerConfig[$type])){
@@ -131,7 +135,9 @@ class Middleware {
                             if(is_string($router["middleware"]))
 
                                 # Convert to array
-                                $router["middleware"] = [$router["middleware"]];
+                                $router["middleware"] = [
+                                    $router["middleware"]
+                                ];
 
                             # Set $middleware
                             $middlewares = $router["middleware"];
@@ -148,7 +154,9 @@ class Middleware {
                         if(!is_array($router["patterns"])) 
 
                             # Convert it to array
-                            $router["patterns"] = [$router["patterns"]];
+                            $router["patterns"] = [
+                                $router["patterns"]
+                            ];
 
                         # Iteration of patterns
                         foreach($router["patterns"] as $pattern){
@@ -225,7 +233,9 @@ class Middleware {
         if(is_array($routerConfig))
 
             # Iteration router config
-            foreach(["v2"] as $version)
+            foreach([
+                "v2"
+            ] as $version)
 
                 # Check if type isset and not empty
                 if(array_key_exists($version, $routerConfig) && is_array($routerConfig[$version]["routers"] ?? false) && !empty($routerConfig[$version]["routers"]) && ($routerConfig[$version]["enable"] ?? false)){
@@ -248,7 +258,9 @@ class Middleware {
                             if(is_string($router["middleware"]))
 
                                 # Convert to array
-                                $router["middleware"] = [$router["middleware"]];
+                                $router["middleware"] = [
+                                    $router["middleware"]
+                                ];
 
                             # Set $middleware
                             $middlewares = $router["middleware"];
@@ -265,7 +277,9 @@ class Middleware {
                         if(!is_array($router["patterns"])) 
 
                             # Convert it to array
-                            $router["patterns"] = [$router["patterns"]];
+                            $router["patterns"] = [
+                                $router["patterns"]
+                            ];
 
                         # Iteration of patterns
                         foreach($router["patterns"] as $pattern){
@@ -373,7 +387,9 @@ class Middleware {
         if(is_string($middlewares)){
 
             # Normalize a single middleware name
-            $middlewares = [$middlewares];
+            $middlewares = [
+                $middlewares
+            ];
 
         }
 

@@ -117,7 +117,10 @@ class Server {
         if(!empty($_SERVER['HTTP_SEC_FETCH_MODE']) && $_SERVER['HTTP_SEC_FETCH_MODE'] === 'navigate')
 
             # Additional heuristic using Sec-Fetch-Site
-            if(!empty($_SERVER['HTTP_SEC_FETCH_SITE']) && in_array($_SERVER['HTTP_SEC_FETCH_SITE'], ['cross-site','same-site']))
+            if(!empty($_SERVER['HTTP_SEC_FETCH_SITE']) && in_array($_SERVER['HTTP_SEC_FETCH_SITE'], [
+                'cross-site',
+                'same-site'
+            ]))
 
                 # Set result
                 $result = true;
@@ -252,7 +255,10 @@ class Server {
      */
 
     /** @var array CONTENT_TYPE_KEYS */
-    public const CONTENT_TYPE_KEYS = ["HTTP_CONTENT_TYPE", "CONTENT_TYPE"];
+    public const CONTENT_TYPE_KEYS = [
+        "HTTP_CONTENT_TYPE",
+        "CONTENT_TYPE"
+    ];
 
 
 }

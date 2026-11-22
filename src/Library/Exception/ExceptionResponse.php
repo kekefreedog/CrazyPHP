@@ -68,7 +68,9 @@ class ExceptionResponse {
         $this->pushToLog();
 
         # Keep error-page caching independent from unavailable application cache services
-        Env::set(["cache_driver" => "Files"]);
+        Env::set([
+            "cache_driver"    =>  "Files"
+        ]);
 
         # Build only public error data
         $this->prepareData();
@@ -195,7 +197,11 @@ class ExceptionResponse {
     private function prepareData():void {
 
         # Keep diagnostic fields out of the response envelope
-        $this->data = ["errors" => [Error::fromException($this->exception)]];
+        $this->data = [
+            "errors"    =>  [
+                Error::fromException($this->exception)
+            ]
+        ];
 
     }
 
@@ -232,17 +238,23 @@ class ExceptionResponse {
 
         # Retain call locations without arguments, request objects or previous exception objects
         $trace = array_map(
-            static fn(array $frame):array => array_intersect_key($frame, array_flip(["file", "line", "class", "type", "function"])),
+            static fn(array $frame):array => array_intersect_key($frame, array_flip([
+                "file",
+                "line",
+                "class",
+                "type",
+                "function"
+            ])),
             array_slice($this->exception->getTrace(), 0, 40)
         );
 
         # Write one JSON log entry without allowing embedded line breaks to forge separate entries
         error_log(json_encode([
-            "exception" => $this->exception::class,
-            "message" => $this->exception->getMessage(),
-            "file" => $this->exception->getFile(),
-            "line" => $this->exception->getLine(),
-            "trace" => $trace,
+            "exception"    =>  $this->exception::class,
+            "message"      =>  $this->exception->getMessage(),
+            "file"         =>  $this->exception->getFile(),
+            "line"         =>  $this->exception->getLine(),
+            "trace"        =>  $trace,
         ], JSON_INVALID_UTF8_SUBSTITUTE | JSON_UNESCAPED_SLASHES));
 
     }

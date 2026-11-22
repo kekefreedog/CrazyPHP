@@ -228,7 +228,7 @@ class Router implements CrazyRouter {
                 "No page is declared in your router collection",
                 500,
                 [
-                    "custom_code"   =>  "router-002",
+                    "custom_code"    =>  "router-002",
                 ]
             );
 
@@ -249,7 +249,7 @@ class Router implements CrazyRouter {
                 "Collection of router is empty... Check your router config file.",
                 500,
                 [
-                    "custom_code"   =>  "router-001",
+                    "custom_code"    =>  "router-001",
                 ]
             );
 
@@ -412,7 +412,7 @@ class Router implements CrazyRouter {
                 "Key of the cache isn't valid for create router cache.",
                 500,
                 [
-                    "custom_code"   =>  "router-003",
+                    "custom_code"    =>  "router-003",
                 ]
             );
 
@@ -454,7 +454,7 @@ class Router implements CrazyRouter {
                 "Key of the cache isn't valid for load router cache.",
                 500,
                 [
-                    "custom_code"   =>  "router-004",
+                    "custom_code"    =>  "router-004",
                 ]
             );
 
@@ -469,7 +469,7 @@ class Router implements CrazyRouter {
                 "Oups... Cached router collection is empty and can't be load...",
                 500,
                 [
-                    "custom_code"   =>  "router-005",
+                    "custom_code"    =>  "router-005",
                 ]
             );
 
@@ -778,8 +778,8 @@ class Router implements CrazyRouter {
                 (new Response())
                     ->setStatusCode(302)
                     ->addHeader("Location", ModelConfig::getRouterPath([
-                        "name"      =>  $routerName,
-                        "arguments" =>  $arguments
+                        "name"         =>  $routerName,
+                        "arguments"    =>  $arguments
                     ]).$queryString)
                     ->send()
                 ;
@@ -793,10 +793,10 @@ class Router implements CrazyRouter {
                     ->pushContent("_events", [
                         # Redirect
                         [
-                            "type"      =>  "redirect",
-                            "name"      =>  $routerName,
-                            "arguments" =>  $arguments,
-                            "query"     =>  $query
+                            "type"         =>  "redirect",
+                            "name"         =>  $routerName,
+                            "arguments"    =>  $arguments,
+                            "query"        =>  $query
                         ]
                     ])
                     ->send();

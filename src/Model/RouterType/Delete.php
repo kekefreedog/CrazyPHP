@@ -43,12 +43,12 @@ class Delete extends CrazyModel implements CrazyCommand {
     public const REQUIRED_VALUES = [
         # Type
         [
-            "name"          =>  "routers",
-            "description"   =>  "Routers to delete",
-            "type"          =>  "ARRAY",
-            "required"      =>  true,
-            "multiple"      =>  true,
-            "select"        =>  "CrazyPHP\Library\Router\Router::getRouterTypeSummary"
+            "name"           =>  "routers",
+            "description"    =>  "Routers to delete",
+            "type"           =>  "ARRAY",
+            "required"       =>  true,
+            "multiple"       =>  true,
+            "select"         =>  "CrazyPHP\Library\Router\Router::getRouterTypeSummary"
         ],
     ];
 
@@ -161,7 +161,7 @@ class Delete extends CrazyModel implements CrazyCommand {
                 "None router selected.",
                 500,
                 [
-                    "custom_code"   =>  "create-router-001",
+                    "custom_code"    =>  "create-router-001",
                 ]
             );
 
@@ -170,7 +170,7 @@ class Delete extends CrazyModel implements CrazyCommand {
 
             # Push in inputs
             $this->routerType[] = [
-                "name"  =>  $router,
+                "name"    =>  $router,
             ];
 
         }
@@ -208,7 +208,7 @@ class Delete extends CrazyModel implements CrazyCommand {
                     Trash::sendAnObject(
                         [
                             "Router"    =>  [
-                                "type" =>  $search
+                                "type"    =>  $search
                             ]
                         ],
                         "config",

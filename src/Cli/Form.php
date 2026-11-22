@@ -84,7 +84,7 @@ class Form {
                             "No items found",
                             500,
                             [
-                                "custom_code"   =>  "form-001"
+                                "custom_code"    =>  "form-001"
                             ]
                         );
 
@@ -231,7 +231,7 @@ class Form {
                                         "Empty value for ".($value["label"] ?? $value["name"]),
                                         500,
                                         [
-                                            "custom_code"   =>  "form-002"
+                                            "custom_code"    =>  "form-002"
                                         ]
                                     );
 
@@ -256,7 +256,7 @@ class Form {
                                         "Empty value for ".($value["label"] ?? $value["name"]),
                                         500,
                                         [
-                                            "custom_code"   =>  "form-003"
+                                            "custom_code"    =>  "form-003"
                                         ]
                                     );
 
@@ -278,7 +278,7 @@ class Form {
                         $this->result[$value['name']] = array_merge(
                             $value,
                             [
-                                "value" =>  $valueFromInput
+                                "value"    =>  $valueFromInput
                             ]
                         );
                     
@@ -295,7 +295,7 @@ class Form {
                             $this->result[$value['name']] = array_merge(
                                 $value,
                                 [
-                                    "value" =>  $input->prompt()
+                                    "value"    =>  $input->prompt()
                                 ]
                             );
 
@@ -309,7 +309,7 @@ class Form {
                             $this->result[$value['name']] = array_merge(
                                 $value,
                                 [
-                                    "value" =>  $input->prompt()
+                                    "value"    =>  $input->prompt()
                                 ]
                             );
 
@@ -335,7 +335,7 @@ class Form {
                     $this->result[$value['name']] = array_merge(
                         $value,
                         [
-                            "value" =>  $input->prompt()
+                            "value"    =>  $input->prompt()
                         ]
                     );
 

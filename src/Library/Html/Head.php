@@ -52,7 +52,9 @@ class Head {
      * @param array $options Options
      * @return self
      */
-    public function __construct(array $options = ["config"=>"main"]){
+    public function __construct(array $options = [
+        "config"    =>  "main"
+    ]){
 
         # Get config name
         $configName = $options["config"] ?? "main";
@@ -136,7 +138,7 @@ class Head {
                 "Head config \"$name\" doesn't exists...",
                 500,
                 [
-                    "custom_code"   =>  "head-001",
+                    "custom_code"    =>  "head-001",
                 ]
             );
 

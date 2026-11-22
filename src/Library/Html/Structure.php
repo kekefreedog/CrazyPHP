@@ -49,8 +49,8 @@ class Structure {
 
     /** @var array $response */
     private $response = [
-        "doctype"   =>  self::HTML_VERSIONS["HTML5"],
-        "elements"  =>  []
+        "doctype"     =>  self::HTML_VERSIONS["HTML5"],
+        "elements"    =>  []
     ];
 
     /** @var array $instance */
@@ -108,8 +108,8 @@ class Structure {
 
         # New template
         $this->instance["Handlebars"] = new Handlebars([
-            "template"  =>  Handlebars::HTML_STRUCTURE,
-            "partials"  =>  self::PARTIAL_BLOCK
+            "template"    =>  Handlebars::HTML_STRUCTURE,
+            "partials"    =>  self::PARTIAL_BLOCK
         ]);
 
         # Load template
@@ -209,14 +209,16 @@ class Structure {
             $parent = strtolower($parent);
 
             # Check if str start by html
-            if(!in_array(substr($parent, 0, 4), ["html"]))
+            if(!in_array(substr($parent, 0, 4), [
+                "html"
+            ]))
                     
                 # New error
                 throw new CrazyException(
                     "You can only create element in \"html\” element, \"$parent\" isn't valid.", 
                     500,
                     [
-                        "custom_code"   =>  "structure-001",
+                        "custom_code"    =>  "structure-001",
                     ]
                 );
 
@@ -225,7 +227,10 @@ class Structure {
         ## Prepare tag in result
 
         # Prepare parent
-        $parent = str_replace([".", "/"], "___", $parent);
+        $parent = str_replace([
+            ".",
+            "/"
+        ], "___", $parent);
 
         # Explode parents
         $keys = explode("___", $parent);
@@ -303,7 +308,9 @@ class Structure {
 
                 # Set attributes
                 $element["attributes"] = is_string($attributesOrContent) ? 
-                    [$attributesOrContent => null] :
+                    [
+                        $attributesOrContent    =>  null
+                    ] :
                         $attributesOrContent;
 
                 # Check if bool in attributes
@@ -356,7 +363,7 @@ class Structure {
                 "Version of html \"$version\" isn't supported.",
                 500,
                 [
-                    "custom_code"   =>  "structure-002",
+                    "custom_code"    =>  "structure-002",
                 ]
             );
 
@@ -380,7 +387,10 @@ class Structure {
      * 
      * @param ?string $language Local language
      */
-    public function setLanguage(?string $language = null, array $keys = ["LANG", "LANGUAGE"]):self {
+    public function setLanguage(?string $language = null, array $keys = [
+        "LANG",
+        "LANGUAGE"
+    ]):self {
 
         # Check language
         if(!$language){
@@ -586,8 +596,8 @@ class Structure {
 
             # Prepare option
             $option = [
-                'template'  =>  $preset,
-                'partials'  =>  Handlebars::loadAppPartials()
+                'template'    =>  $preset,
+                'partials'    =>  Handlebars::loadAppPartials()
             ];
 
         # Else
@@ -595,7 +605,7 @@ class Structure {
 
             # Set option
             $option = [
-                'partials'  =>  Handlebars::loadAppPartials()
+                'partials'    =>  Handlebars::loadAppPartials()
             ];
 
         # Check instance
@@ -657,8 +667,8 @@ class Structure {
 
             # Prepare option
             $option = [
-                'template'  =>  $preset,
-                'partials'  =>  Handlebars::loadAppPartials()
+                'template'    =>  $preset,
+                'partials'    =>  Handlebars::loadAppPartials()
             ];
 
         # Else
@@ -666,7 +676,7 @@ class Structure {
 
             # Set option
             $option = [
-                'partials'  =>  Handlebars::loadAppPartials()
+                'partials'    =>  Handlebars::loadAppPartials()
             ];
 
         # Check instance
@@ -744,7 +754,9 @@ class Structure {
                 throw new CrazyException(
                     "It looks generation of js files with watch mode enable failed...",
                     500,
-                    ["custom_code" => "structure-003"]
+                    [
+                        "custom_code"    =>  "structure-003"
+                    ]
                 );
 
             ## Search current page js files
@@ -774,7 +786,7 @@ class Structure {
                         "It looks generation of js files with watch mode enable failed... Impossible to found script for \"$routesCurrentName\”", 
                         500,
                         [
-                            "custom_code"   =>  "structure-003",
+                            "custom_code"    =>  "structure-003",
                         ]
                     );
 
@@ -807,7 +819,7 @@ class Structure {
                             "It looks generation of js files with watch mode enable failed... Impossible to found script for \"$routesCurrentName\”", 
                             500,
                             [
-                                "custom_code"   =>  "structure-003",
+                                "custom_code"    =>  "structure-003",
                             ]
                         );
     
@@ -820,7 +832,7 @@ class Structure {
                         "It looks generation of js files with watch mode enable failed... Sorry", 
                         500,
                         [
-                            "custom_code"   =>  "structure-003",
+                            "custom_code"    =>  "structure-003",
                         ]
                     );
 
@@ -857,7 +869,7 @@ class Structure {
                     "Please check that you are correctly build Js Files with this command : `php vendor/kzarshenas/crazyphp/bin/CrazyFront run build`", 
                     500,
                     [
-                        "custom_code"   =>  "structure-004",
+                        "custom_code"    =>  "structure-004",
                     ]
                 );
 
@@ -867,7 +879,9 @@ class Structure {
         foreach($configFront as $file){
 
             # Add in the body
-            $this->setElement("html.body", ["src" => "/dist/$file"], "script");
+            $this->setElement("html.body", [
+                "src"    =>  "/dist/$file"
+            ], "script");
 
         }
 
@@ -1024,16 +1038,16 @@ class Structure {
     /** @var array HTML_VERSIONS */
     public const HTML_VERSIONS = [
         # HTML 4
-        "HTML4.01"  =>  "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">",
+        "HTML4.01"    =>  "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">",
         # XHTML 1.1
-        "XHTML1.1"  =>  "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">",
+        "XHTML1.1"    =>  "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">",
         # HTML5
-        "HTML5"     =>  "<!DOCTYPE html>"
+        "HTML5"       =>  "<!DOCTYPE html>"
     ];
 
     /** @var array */
     public const TEMPLATES = [
-        "index" =>  "@crazyphp_root/resources/Hbs/App/index.hbs"
+        "index"    =>  "@crazyphp_root/resources/Hbs/App/index.hbs"
     ];
 
     /** @var array PARTIAL_BLOCK for Handlbars Js engine */
@@ -1051,7 +1065,7 @@ class Structure {
                                     "{{/each}}".
                                 "{{/if}}",
         # Generate attribute, need `element` object
-        "htmlAttribute"     =>  "{{#if element.attributes}}{{#each element.attributes}} {{@key}}{{#if this}}=\"{{this}}\"{{/if}}{{/each}}{{/if}}",
+        "htmlAttribute"    =>  "{{#if element.attributes}}{{#each element.attributes}} {{@key}}{{#if this}}=\"{{this}}\"{{/if}}{{/each}}{{/if}}",
     ];
 
 }

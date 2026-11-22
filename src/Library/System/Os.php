@@ -200,7 +200,7 @@ class Os {
                 "Hosts file `".$hostsFile."` is not readable.",
                 500,
                 [
-                    "custom_code"   =>  "os-010",
+                    "custom_code"    =>  "os-010",
                 ]
             );
     

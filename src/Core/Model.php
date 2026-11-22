@@ -453,7 +453,7 @@ class Model implements CrazyModel {
                 "No modal schema found for \"".$this->name."\"", 
                 404,
                 [
-                    "custom_code"   =>  "model-001",
+                    "custom_code"    =>  "model-001",
                 ]
             );
 
@@ -479,7 +479,7 @@ class Model implements CrazyModel {
                 "No attributes found in current \"".$this->current["name"]."\" modal schema", 
                 404,
                 [
-                    "custom_code"   =>  "model-002",
+                    "custom_code"    =>  "model-002",
                 ]
             );
 
@@ -535,7 +535,7 @@ class Model implements CrazyModel {
                     "No driver found",
                     500,
                     [
-                        "custom_code"   =>  "Model-030"
+                        "custom_code"    =>  "Model-030"
                     ]
                 );
 
@@ -686,7 +686,7 @@ class Model implements CrazyModel {
                 "Entity is missing in attribues...", 
                 500,
                 [
-                    "custom_code"   =>  "model-003",
+                    "custom_code"    =>  "model-003",
                 ]
             );
 
@@ -710,7 +710,7 @@ class Model implements CrazyModel {
                 "\"$parameterEntity\" isn't supported by the current api", 
                 500,
                 [
-                    "custom_code"   =>  "model-004",
+                    "custom_code"    =>  "model-004",
                 ]
             );
 
@@ -725,7 +725,7 @@ class Model implements CrazyModel {
                     "Script associated to \"$parameterEntity\" doesn't exists...", 
                     500,
                     [
-                        "custom_code"   =>  "model-004",
+                        "custom_code"    =>  "model-004",
                     ]
                 );
 

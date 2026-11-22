@@ -68,7 +68,11 @@ class ResponseTest extends TestCase {
     protected function setUp():void {
 
         # Preserve framework state without reading a real application's configuration
-        foreach([Env::PREFIX, Config::PREFIX, Context::PREFIX] as $key){
+        foreach([
+            Env::PREFIX,
+            Config::PREFIX,
+            Context::PREFIX
+        ] as $key){
 
             # Snapshot state from other tests
             $this->_globals[$key] = $GLOBALS[$key] ?? null;
@@ -98,13 +102,17 @@ class ResponseTest extends TestCase {
 
         # Resolve framework paths against the fixture
         Env::set([
-            "app_root"        => $this->_root,
-            "crazyphp_root"   => dirname(__DIR__, 2),
-            "config_location" => $this->_root."/config",
+            "app_root"           =>  $this->_root,
+            "crazyphp_root"      =>  dirname(__DIR__, 2),
+            "config_location"    =>  $this->_root."/config",
         ]);
 
         # Supply route context without termination callbacks
-        $GLOBALS[Context::PREFIX] = ["ROUTES" => ["CURRENT" => []]];
+        $GLOBALS[Context::PREFIX] = [
+            "ROUTES"    =>  [
+                "CURRENT"    =>  []
+            ]
+        ];
 
         # Turn PHP deprecations into failures instead of allowing them to pollute HTTP output
         set_error_handler(static function(int $severity, string $message, string $file, int $line):bool {
@@ -164,6 +172,90 @@ class ResponseTest extends TestCase {
     /** Public Methods | Tests
      ******************************************************
      */
+
+    /**
+     * Test Status Code Preserves The Fluent Type Contract
+     *
+     * Static analysis must retain the concrete response after setting its status.
+     *
+     * @return void
+     */
+    public function testStatusCodePreservesFluentTypeContract():void {
+
+        # Inspect the public return contract used to resolve subsequent chained methods
+        $method = new \ReflectionMethod(Response::class, "setStatusCode");
+
+        # Prevent inherited setters from widening an API response to the base class
+        $this->assertSame("static", (string) $method->getReturnType());
+
+        # Keep ordinary non-API responses on their existing mutable instance
+        $response = new Response();
+
+        # Retain the original argument name and object identity
+        $this->assertSame($response, $response->setStatusCode(statutCode: 201));
+
+        # Preserve the status passed to the PSR response
+        $response->prepare();
+
+        # Confirm that the emitted HTTP status still comes from the requested value
+        $this->assertSame(201, $response->response->getStatusCode());
+
+        # Preserve the default status and fluent identity for calls without an argument
+        $this->assertSame($response, $response->setStatusCode());
+
+        # Keep the existing successful response default
+        $this->assertSame(200, $response->statutCode);
+
+    }
+
+    /**
+     * Test Status Code Supports API Content Chaining
+     *
+     * Preserve subclass dispatch and the existing results envelope in both API formats.
+     *
+     * @return void
+     */
+    public function testStatusCodeSupportsApiContentChaining():void {
+
+        # Cover development JSON and production MessagePack responses
+        foreach([
+            "json",
+            "msgpack"
+        ] as $format){
+
+            # Construct the API subclass using the isolated application configuration
+            $response = new ApiResponse();
+
+            # Select the real encoder before exercising the reported chain
+            $response->setContentType($format);
+
+            # Call the API-specific method immediately after the inherited setter
+            $result = $response
+                ->setStatusCode(200)
+                ->pushContent("results", [
+                    "revoked"    =>  true
+                ])
+            ;
+
+            # Keep the original API instance throughout the fluent calls
+            $this->assertSame($response, $result);
+
+            # Preserve the established successful HTTP status
+            $this->assertSame(200, $response->statutCode);
+
+            # Verify dispatch reached the subclass rather than the base placeholder
+            $this->assertSame([
+                "results"    =>  [
+                    "revoked"    =>  true
+                ]
+            ], $response->apiContent);
+
+            # Retain the selected response encoder
+            $this->assertSame($format === "json" ? Json::class : MessagePack::class, $response->engineInstance);
+
+        }
+
+    }
 
     /**
      * Test API Content Types
@@ -294,28 +386,43 @@ class ResponseTest extends TestCase {
         # Exercise HTTP date formatting before emission
         $response->addLastModified(new DateTime("2026-07-12 12:30:00", new DateTimeZone("Europe/Paris")));
 
-        # Set the expected JSON body
-        $response->setContent(["results" => ["ok" => true]]);
-
-        # Emit the response through Laminas
-        $response->send();
+        # Emit the original API envelope through the inherited status setter and Laminas
+        $response
+            ->setStatusCode(200)
+            ->pushContent("results", ["ok" => true])
+            ->send()
+        ;
         PHP;
 
         # Display diagnostics exactly as a development HTTP runtime would
         $process = proc_open(
             [
                 PHP_BINARY,
-                "-d", "error_reporting=-1",
-                "-d", "display_errors=1",
-                "-d", "log_errors=0",
-                "-r", $script,
+                "-d",
+                "error_reporting=-1",
+                "-d",
+                "display_errors=1",
+                "-d",
+                "log_errors=0",
+                "-r",
+                $script,
                 dirname(__DIR__, 2),
                 $this->_root,
             ],
             [
-                0 => ["file", "/dev/null", "r"],
-                1 => ["pipe", "w"],
-                2 => ["pipe", "w"],
+                0    =>  [
+                    "file",
+                    "/dev/null",
+                    "r"
+                ],
+                1    =>  [
+                    "pipe",
+                    "w"
+                ],
+                2    =>  [
+                    "pipe",
+                    "w"
+                ],
             ],
             $pipes
         );
@@ -362,13 +469,41 @@ class ResponseTest extends TestCase {
 
         # Cover both extension lookup and direct MIME lookup for every API encoder
         return [
-            "JSON extension"        => ["json", "application/json", Json::class],
-            "JSON MIME"             => ["application/json", "application/json", Json::class],
-            "YAML extension"        => ["yaml", "text/yaml", Yaml::class],
-            "YML extension"         => ["yml", "text/yaml", Yaml::class],
-            "YAML MIME"             => ["text/yaml", "text/yaml", Yaml::class],
-            "MessagePack extension" => ["msgpack", "application/msgpack", MessagePack::class],
-            "MessagePack MIME"      => ["application/msgpack", "application/msgpack", MessagePack::class],
+            "JSON extension"           =>  [
+                "json",
+                "application/json",
+                Json::class
+            ],
+            "JSON MIME"                =>  [
+                "application/json",
+                "application/json",
+                Json::class
+            ],
+            "YAML extension"           =>  [
+                "yaml",
+                "text/yaml",
+                Yaml::class
+            ],
+            "YML extension"            =>  [
+                "yml",
+                "text/yaml",
+                Yaml::class
+            ],
+            "YAML MIME"                =>  [
+                "text/yaml",
+                "text/yaml",
+                Yaml::class
+            ],
+            "MessagePack extension"    =>  [
+                "msgpack",
+                "application/msgpack",
+                MessagePack::class
+            ],
+            "MessagePack MIME"         =>  [
+                "application/msgpack",
+                "application/msgpack",
+                MessagePack::class
+            ],
         ];
 
     }
@@ -384,13 +519,24 @@ class ResponseTest extends TestCase {
         $cases = [];
 
         # Cover both supported date types
-        foreach([DateTime::class, FrameworkDateTime::class] as $class)
+        foreach([
+            DateTime::class,
+            FrameworkDateTime::class
+        ] as $class)
 
             # Check positive and negative timezone offsets
-            foreach(["UTC" => "12", "Europe/Paris" => "10", "America/New_York" => "16"] as $timezone => $hour)
+            foreach([
+                "UTC"                 =>  "12",
+                "Europe/Paris"        =>  "10",
+                "America/New_York"    =>  "16"
+            ] as $timezone => $hour)
 
                 # Preserve the timezone and expected GMT value in each named case
-                $cases["$class $timezone"] = [$class, $timezone, "Sun, 12 Jul 2026 $hour:30:00 GMT"];
+                $cases["$class $timezone"] = [
+                    $class,
+                    $timezone,
+                    "Sun, 12 Jul 2026 $hour:30:00 GMT"
+                ];
 
         # Return independently named cases for useful regression failures
         return $cases;

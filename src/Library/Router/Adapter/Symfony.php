@@ -51,10 +51,14 @@ class Symfony extends Adapter {
                 $route["path"],
                 [],
                 $route["requirements"],
-                ["utf8" => true],
+                [
+                    "utf8"    =>  true
+                ],
                 "",
                 [],
-                [$route["method"]]
+                [
+                    $route["method"]
+                ]
             ));
 
         # Return Symfony's compiled matching tables for caching
@@ -91,7 +95,10 @@ class Symfony extends Adapter {
             $result = $matcher->match(str_replace("%", "%25", $path));
 
             # Return the original route identifier and matched parameter values
-            return ["id" => (int)$result["_route"], "parameters" => $result];
+            return [
+                "id"            =>  (int)$result["_route"],
+                "parameters"    =>  $result
+            ];
 
         }catch(ResourceNotFoundException|MethodNotAllowedException){
 

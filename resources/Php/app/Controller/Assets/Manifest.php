@@ -53,23 +53,23 @@ class manifest extends Controller {
 
         # Set data
         $data = [
-            "name"              =>  $appName,
-            "short_name"        =>  $appName,
-            "icons"             =>  [
+            "name"                =>  $appName,
+            "short_name"          =>  $appName,
+            "icons"               =>  [
                 [
-                    "src"   =>  "asset/favicon/android-chrome-192x192.png",
-                    "sizes" =>  "192x192",
-                    "type"  =>  "image/png"
+                    "src"      =>  "asset/favicon/android-chrome-192x192.png",
+                    "sizes"    =>  "192x192",
+                    "type"     =>  "image/png"
                 ],
                 [
-                    "src"   =>  "asset/favicon/android-chrome-512x512.png",
-                    "sizes" =>  "512x512",
-                    "type"  =>  "image/png"
+                    "src"      =>  "asset/favicon/android-chrome-512x512.png",
+                    "sizes"    =>  "512x512",
+                    "type"     =>  "image/png"
                 ]
             ],
-            "theme_color"       =>  $themeSource ? $themeSource : "#ffffff",
-            "background_color"  =>  $themeSource ? $themeSource : "#ffffff",
-            "display"           =>  "standalone",
+            "theme_color"         =>  $themeSource ? $themeSource : "#ffffff",
+            "background_color"    =>  $themeSource ? $themeSource : "#ffffff",
+            "display"             =>  "standalone",
         ];
 
         # Set response

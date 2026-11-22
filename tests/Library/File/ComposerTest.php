@@ -47,9 +47,9 @@ class ComposerTest extends TestCase{
 
         # Setup env
         Env::set([
-            "phpunit_test"      =>  true,
-            "crazyphp_root"     =>  getcwd(),
-            "app_root"          =>  getcwd(),
+            "phpunit_test"     =>  true,
+            "crazyphp_root"    =>  getcwd(),
+            "app_root"         =>  getcwd(),
         ]);
 
         # Check folder exists

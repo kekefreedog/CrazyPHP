@@ -37,12 +37,25 @@ class ConfigTest extends TestCase {
         # Create an application with a previous build of four files
         $this->_root = sys_get_temp_dir()."/crazy config ".bin2hex(random_bytes(6));
         mkdir($this->_root."/config", 0755, true);
-        Env::set(["app_root" => $this->_root, "crazyphp_root" => dirname(__DIR__, 3)]);
+        Env::set([
+            "app_root"         =>  $this->_root,
+            "crazyphp_root"    =>  dirname(__DIR__, 3)
+        ]);
         unset($GLOBALS[Config::PREFIX]);
-        Yaml::create($this->_root."/config/Front.yml", ["Front" => ["bundler" => "webpack", "lastBuild" => [
-            "files" => ["runtime.old.js", "vendors.old.js", "151.old.js", "index.old.js"],
-            "hash" => "old",
-        ]]]);
+        Yaml::create($this->_root."/config/Front.yml", [
+            "Front"    =>  [
+                "bundler"      =>  "webpack",
+                "lastBuild"    =>  [
+                    "files"    =>  [
+                        "runtime.old.js",
+                        "vendors.old.js",
+                        "151.old.js",
+                        "index.old.js"
+                    ],
+                    "hash"     =>  "old",
+                ]
+            ]
+        ]);
 
     }
 
@@ -68,13 +81,20 @@ class ConfigTest extends TestCase {
     public function testSetValueReplacesShorterList():void {
 
         # Record a build with fewer files than the previous one
-        Config::setValue("Front.lastBuild", ["files" => ["index.new.js"], "hash" => "new"]);
+        Config::setValue("Front.lastBuild", [
+            "files"    =>  [
+                "index.new.js"
+            ],
+            "hash"     =>  "new"
+        ]);
 
         # Read the file written on disk
         $front = Yaml::open($this->_root."/config/Front.yml")["Front"];
 
         # Old trailing files must not survive the shorter list
-        $this->assertSame(["index.new.js"], $front["lastBuild"]["files"]);
+        $this->assertSame([
+            "index.new.js"
+        ], $front["lastBuild"]["files"]);
         $this->assertSame("new", $front["lastBuild"]["hash"]);
 
         # Sibling keys outside the updated key are kept
@@ -90,13 +110,17 @@ class ConfigTest extends TestCase {
     public function testSetValueReplacesNestedKeys():void {
 
         # Set a scope without the previous hash key
-        Config::setValue("Front.lastBuild", ["files" => []]);
+        Config::setValue("Front.lastBuild", [
+            "files"    =>  []
+        ]);
 
         # Read the file written on disk
         $front = Yaml::open($this->_root."/config/Front.yml")["Front"];
 
         # The value set is the value stored
-        $this->assertSame(["files" => []], $front["lastBuild"]);
+        $this->assertSame([
+            "files"    =>  []
+        ], $front["lastBuild"]);
 
     }
 

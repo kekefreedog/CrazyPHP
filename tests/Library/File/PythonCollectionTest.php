@@ -45,9 +45,9 @@ class PythonCollectionTest extends TestCase {
 
         # Setup env
         Env::set([
-            "phpunit_test"      =>  true,
-            "crazyphp_root"     =>  getcwd(),
-            "app_root"          =>  getcwd(),
+            "phpunit_test"     =>  true,
+            "crazyphp_root"    =>  getcwd(),
+            "app_root"         =>  getcwd(),
         ]);
 
     }
@@ -110,15 +110,19 @@ class PythonCollectionTest extends TestCase {
 
     /** @var array OUTPUT */
     public const OUTPUT = [
-        "key1" => "O'Reilly",
-        "key2" => 'He said, "Hello!"',
-        "key3" => "Backslash: \\ test",
-        "key4" => true,
-        "key5" => null,
-        "key6" => [1, "Two", "Three's"],
-        "key7" => [
-            "nestedKey1" => "Line with 'quotes'",
-            "nestedKey2" => "Backslash \\ and quotes '\""
+        "key1"    =>  "O'Reilly",
+        "key2"    =>  'He said, "Hello!"',
+        "key3"    =>  "Backslash: \\ test",
+        "key4"    =>  true,
+        "key5"    =>  null,
+        "key6"    =>  [
+            1,
+            "Two",
+            "Three's"
+        ],
+        "key7"    =>  [
+            "nestedKey1"    =>  "Line with 'quotes'",
+            "nestedKey2"    =>  "Backslash \\ and quotes '\""
         ]
     ];
     

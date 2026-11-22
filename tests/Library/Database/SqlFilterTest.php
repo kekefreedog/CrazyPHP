@@ -44,13 +44,16 @@ class SqlFilterTest extends TestCase {
 
         # Compile literal, list and empty-value filters together
         $result = SqlFilter::where([
-            "name" => $payload,
-            "id" => [1, $payload],
-            "active" => false,
-            "score" => 0,
-            "nullable" => null,
-            "empty" => "",
-            "zero" => "0",
+            "name"        =>  $payload,
+            "id"          =>  [
+                1,
+                $payload
+            ],
+            "active"      =>  false,
+            "score"       =>  0,
+            "nullable"    =>  null,
+            "empty"       =>  "",
+            "zero"        =>  "0",
         ], "Fixture");
 
         # Verify the SQL contains only placeholders and validated fields
@@ -61,10 +64,23 @@ class SqlFilterTest extends TestCase {
         );
 
         # Verify all literal values remain separate and unchanged
-        $this->assertSame([$payload, 1, $payload, false, 0, "", "0"], $result["parameters"]);
+        $this->assertSame([
+            $payload,
+            1,
+            $payload,
+            false,
+            0,
+            "",
+            "0"
+        ], $result["parameters"]);
 
         # Ensure an empty IN list cannot broaden the read
-        $this->assertSame(["sql" => " WHERE 0 = 1", "parameters" => []], SqlFilter::where(["id" => []], "Fixture"));
+        $this->assertSame([
+            "sql"           =>  " WHERE 0 = 1",
+            "parameters"    =>  []
+        ], SqlFilter::where([
+            "id"    =>  []
+        ], "Fixture"));
 
     }
 
@@ -79,17 +95,27 @@ class SqlFilterTest extends TestCase {
         $payload = "x' OR 1=1 -- ";
 
         # Compile a wildcard and a range
-        $result = SqlFilter::where(["name" => "*".$payload."*", "other" => "[".$payload.":Z]"], "Fixture");
+        $result = SqlFilter::where([
+            "name"     =>  "*".$payload."*",
+            "other"    =>  "[".$payload.":Z]"
+        ], "Fixture");
 
         # Verify neither operand appears in the SQL
         $this->assertSame(" WHERE `a`.`name` LIKE ? AND `a`.`other` BETWEEN ? AND ?", $result["sql"]);
 
         # Preserve the caller's values in parameters
-        $this->assertSame(["%".$payload."%", $payload, "Z"], $result["parameters"]);
+        $this->assertSame([
+            "%".$payload."%",
+            $payload,
+            "Z"
+        ], $result["parameters"]);
 
         # Preserve qualified column comparisons
         $this->assertSame(
-            ["sql" => "= `Fixture`.`name`", "parameters" => []],
+            [
+                "sql"           =>  "= `Fixture`.`name`",
+                "parameters"    =>  []
+            ],
             (new SqlOperation("@all", "Fixture"))->run("=name")
         );
 
@@ -124,21 +150,90 @@ class SqlFilterTest extends TestCase {
 
         # Prepare malicious syntax and unsupported structures
         $result = [
-            "field injection" => [["id OR 1=1 -- " => 1]],
-            "quoted field" => [["name` = 1 -- " => "x"]],
-            "qualified filter" => [["a.name" => "x"]],
-            "OR field" => [["||id) OR 1=1 -- " => 1]],
-            "column reference" => [["name" => "=name` OR 1=1 -- "]],
-            "negated reference" => [["name" => "!=name` OR 1=1 -- "]],
-            "comparison" => [["score" => ">0 OR 1=1"]],
-            "nonfinite comparison" => [["score" => ">1e999"]],
-            "nonfinite literal" => [["score" => INF]],
-            "nested list" => [["id" => [["x"]]]],
-            "forged fragment" => [["name" => ["sql" => "OR 1=1", "parameters" => []]]],
-            "positional field" => [["value"]],
-            "relation field" => [["<>id) OR 1=1" => "Router"]],
-            "relation table" => [["<>id" => "Router WHERE 1=1 -- "]],
-            "relation list" => [["<>id" => ["Router"]]],
+            "field injection"         =>  [
+                [
+                    "id OR 1=1 -- "    =>  1
+                ]
+            ],
+            "quoted field"            =>  [
+                [
+                    "name` = 1 -- "    =>  "x"
+                ]
+            ],
+            "qualified filter"        =>  [
+                [
+                    "a.name"    =>  "x"
+                ]
+            ],
+            "OR field"                =>  [
+                [
+                    "||id) OR 1=1 -- "    =>  1
+                ]
+            ],
+            "column reference"        =>  [
+                [
+                    "name"    =>  "=name` OR 1=1 -- "
+                ]
+            ],
+            "negated reference"       =>  [
+                [
+                    "name"    =>  "!=name` OR 1=1 -- "
+                ]
+            ],
+            "comparison"              =>  [
+                [
+                    "score"    =>  ">0 OR 1=1"
+                ]
+            ],
+            "nonfinite comparison"    =>  [
+                [
+                    "score"    =>  ">1e999"
+                ]
+            ],
+            "nonfinite literal"       =>  [
+                [
+                    "score"    =>  INF
+                ]
+            ],
+            "nested list"             =>  [
+                [
+                    "id"    =>  [
+                        [
+                            "x"
+                        ]
+                    ]
+                ]
+            ],
+            "forged fragment"         =>  [
+                [
+                    "name"    =>  [
+                        "sql"           =>  "OR 1=1",
+                        "parameters"    =>  []
+                    ]
+                ]
+            ],
+            "positional field"        =>  [
+                [
+                    "value"
+                ]
+            ],
+            "relation field"          =>  [
+                [
+                    "<>id) OR 1=1"    =>  "Router"
+                ]
+            ],
+            "relation table"          =>  [
+                [
+                    "<>id"    =>  "Router WHERE 1=1 -- "
+                ]
+            ],
+            "relation list"           =>  [
+                [
+                    "<>id"    =>  [
+                        "Router"
+                    ]
+                ]
+            ],
         ];
 
         # Return result
@@ -175,15 +270,53 @@ class SqlFilterTest extends TestCase {
 
         # Prepare sort expressions that must never become SQL
         $result = [
-            "expression" => [["id, (SELECT SLEEP(1))"]],
-            "comment" => [["id -- "]],
-            "direction" => [["id DESC"]],
-            "qualified field" => [["a.id"]],
-            "quoted field" => [["`id`"]],
-            "double prefix" => [["--id"]],
-            "nested field" => [[["id"]]],
-            "numeric field" => [[1]],
-            "empty field" => [[""]],
+            "expression"         =>  [
+                [
+                    "id, (SELECT SLEEP(1))"
+                ]
+            ],
+            "comment"            =>  [
+                [
+                    "id -- "
+                ]
+            ],
+            "direction"          =>  [
+                [
+                    "id DESC"
+                ]
+            ],
+            "qualified field"    =>  [
+                [
+                    "a.id"
+                ]
+            ],
+            "quoted field"       =>  [
+                [
+                    "`id`"
+                ]
+            ],
+            "double prefix"      =>  [
+                [
+                    "--id"
+                ]
+            ],
+            "nested field"       =>  [
+                [
+                    [
+                        "id"
+                    ]
+                ]
+            ],
+            "numeric field"      =>  [
+                [
+                    1
+                ]
+            ],
+            "empty field"        =>  [
+                [
+                    ""
+                ]
+            ],
         ];
 
         # Return result

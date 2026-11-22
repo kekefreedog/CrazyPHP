@@ -57,9 +57,9 @@ class HandlebarsHelpersTest extends TestCase {
         # Setup env
         Env::set([
             # Set the framework root for test resources
-            "crazyphp_root" => dirname(__DIR__, 3),
+            "crazyphp_root"    =>  dirname(__DIR__, 3),
             # Enable test mode
-            "phpunit_test" => true,
+            "phpunit_test"     =>  true,
         ]);
 
         # Save the original timezone
@@ -102,23 +102,37 @@ class HandlebarsHelpersTest extends TestCase {
 
         # Assert shorthand and numeric endpoint normalization
         $this->assertFalse(Helpers::numberFilterBounds([])["enabled"]);
-        $this->assertSame(">=0", Helpers::numberFilterBounds(["min" => 0])["value"]);
-        $this->assertSame("<=50", Helpers::numberFilterBounds(["max" => 50])["value"]);
-        $this->assertSame("=[-2.5:50]", Helpers::numberFilterBounds(["min" => -2.5, "max" => ["value" => 50]])["value"]);
+        $this->assertSame(">=0", Helpers::numberFilterBounds([
+            "min"    =>  0
+        ])["value"]);
+        $this->assertSame("<=50", Helpers::numberFilterBounds([
+            "max"    =>  50
+        ])["value"]);
+        $this->assertSame("=[-2.5:50]", Helpers::numberFilterBounds([
+            "min"    =>  -2.5,
+            "max"    =>  [
+                "value"    =>  50
+            ]
+        ])["value"]);
 
         # Normalize explicit nulls and labels alongside legacy aliases
         $result = Helpers::numberFilterBounds([
-            "min"   => null,
-            "start" => 10,
-            "max" => ["label" => "At most"],
-            "end" => 50,
+            "min"      =>  null,
+            "start"    =>  10,
+            "max"      =>  [
+                "label"    =>  "At most"
+            ],
+            "end"      =>  50,
         ]);
 
         # Assert explicit bounds take precedence over legacy aliases
         $this->assertTrue($result["enabled"]);
         $this->assertSame("", $result["value"]);
         $this->assertSame("At most", $result["max"]["label"]);
-        $this->assertSame("=[10:50]", Helpers::numberFilterBounds(["start" => 10, "end" => 50])["value"]);
+        $this->assertSame("=[10:50]", Helpers::numberFilterBounds([
+            "start"    =>  10,
+            "end"      =>  50
+        ])["value"]);
 
     }
 
@@ -173,10 +187,15 @@ class HandlebarsHelpersTest extends TestCase {
     public function testHttpStatusCode():void {
 
         # Assert the title for a known status
-        $this->assertSame("Not Found", $this->httpStatusCode(["code" => 404], "title"));
+        $this->assertSame("Not Found", $this->httpStatusCode([
+            "code"    =>  404
+        ], "title"));
 
         # Render the complete status collection with custom detail
-        $result = $this->httpStatusCode(["code" => 404, "detail" => "Missing shot"], "*");
+        $result = $this->httpStatusCode([
+            "code"      =>  404,
+            "detail"    =>  "Missing shot"
+        ], "*");
 
         # Assert the requested status code is preserved
         $this->assertSame(404, $result["code"]);
@@ -197,7 +216,9 @@ class HandlebarsHelpersTest extends TestCase {
         $this->assertSame("orange", $result["secondary-color"]);
 
         # Assert the server error title
-        $this->assertSame("Internal Server Error", $this->httpStatusCode(["code" => 500], "title"));
+        $this->assertSame("Internal Server Error", $this->httpStatusCode([
+            "code"    =>  500
+        ], "title"));
 
     }
 
@@ -215,7 +236,9 @@ class HandlebarsHelpersTest extends TestCase {
         $this->expectExceptionCode(500);
 
         # Invoke the helper with the invalid request
-        $this->httpStatusCode(["code" => 999], "title");
+        $this->httpStatusCode([
+            "code"    =>  999
+        ], "title");
 
     }
 
@@ -233,7 +256,9 @@ class HandlebarsHelpersTest extends TestCase {
         $this->expectExceptionCode(500);
 
         # Invoke the helper with the invalid request
-        $this->httpStatusCode(["code" => 404], "missing");
+        $this->httpStatusCode([
+            "code"    =>  404
+        ], "missing");
 
     }
 
@@ -281,7 +306,10 @@ class HandlebarsHelpersTest extends TestCase {
     public function testExpandColorFill():void {
 
         # Assert fill colors for light and dark modes
-        $this->assertSame("light-mode-blue dark-mode-red ", Helpers::expandColorFill(["fill" => "blue", "text" => "red"]));
+        $this->assertSame("light-mode-blue dark-mode-red ", Helpers::expandColorFill([
+            "fill"    =>  "blue",
+            "text"    =>  "red"
+        ]));
 
         # Assert null input produces no classes
         $this->assertSame("", Helpers::expandColorFill(null));
@@ -296,7 +324,10 @@ class HandlebarsHelpersTest extends TestCase {
     public function testExpandColorText():void {
 
         # Assert text colors for light and dark modes
-        $this->assertSame("light-mode-red dark-mode-blue ", Helpers::expandColorText(["fill" => "blue", "text" => "red"]));
+        $this->assertSame("light-mode-red dark-mode-blue ", Helpers::expandColorText([
+            "fill"    =>  "blue",
+            "text"    =>  "red"
+        ]));
 
         # Assert null input produces no classes
         $this->assertSame("", Helpers::expandColorText(null));
@@ -311,10 +342,16 @@ class HandlebarsHelpersTest extends TestCase {
     public function testExpandColor():void {
 
         # Assert the default fill and text classes
-        $this->assertSame("light-mode-blue-text light-mode-red dark-mode-blue dark-mode-red-text ", Helpers::expandColor(["fill" => "blue", "text" => "red"]));
+        $this->assertSame("light-mode-blue-text light-mode-red dark-mode-blue dark-mode-red-text ", Helpers::expandColor([
+            "fill"    =>  "blue",
+            "text"    =>  "red"
+        ]));
 
         # Assert inverse mode swaps fill and text classes
-        $this->assertSame("light-mode-blue light-mode-red-text dark-mode-blue-text dark-mode-red ", Helpers::expandColor(["fill" => "blue", "text" => "red"], true));
+        $this->assertSame("light-mode-blue light-mode-red-text dark-mode-blue-text dark-mode-red ", Helpers::expandColor([
+            "fill"    =>  "blue",
+            "text"    =>  "red"
+        ], true));
 
         # Assert null input produces no classes
         $this->assertSame("", Helpers::expandColor(null));
@@ -353,7 +390,9 @@ class HandlebarsHelpersTest extends TestCase {
         $this->assertSame("no", Helpers::is(1, 2, $this->blockOptions()));
 
         # Assert exact comparison distinguishes integers and strings
-        $this->assertSame("no", Helpers::is(2, "2", $this->blockOptions(["exact" => true])));
+        $this->assertSame("no", Helpers::is(2, "2", $this->blockOptions([
+            "exact"    =>  true
+        ])));
 
     }
 
@@ -371,7 +410,9 @@ class HandlebarsHelpersTest extends TestCase {
         $this->assertSame("no", Helpers::isnt(2, "2", $this->blockOptions()));
 
         # Assert exact comparison distinguishes integers and strings
-        $this->assertSame("yes", Helpers::isnt(2, "2", $this->blockOptions(["exact" => true])));
+        $this->assertSame("yes", Helpers::isnt(2, "2", $this->blockOptions([
+            "exact"    =>  true
+        ])));
 
     }
 
@@ -473,7 +514,10 @@ class HandlebarsHelpersTest extends TestCase {
     public function testJSONstringify():void {
 
         # Assert array values are encoded as JSON
-        $this->assertSame('{"name":"Ada","active":true}', Helpers::JSONstringify(["name" => "Ada", "active" => true]));
+        $this->assertSame('{"name":"Ada","active":true}', Helpers::JSONstringify([
+            "name"      =>  "Ada",
+            "active"    =>  true
+        ]));
 
         # Assert null is encoded as JSON null
         $this->assertSame("null", Helpers::JSONstringify(null));
@@ -506,10 +550,15 @@ class HandlebarsHelpersTest extends TestCase {
     public function testInArray():void {
 
         # Assert a matching value renders the block
-        $this->assertSame("yes", Helpers::inArray(["a", "b"], "b", $this->blockOptions()));
+        $this->assertSame("yes", Helpers::inArray([
+            "a",
+            "b"
+        ], "b", $this->blockOptions()));
 
         # Assert a missing value renders the inverse block
-        $this->assertSame("no", Helpers::inArray(["a"], "b", $this->blockOptions()));
+        $this->assertSame("no", Helpers::inArray([
+            "a"
+        ], "b", $this->blockOptions()));
 
         # Assert invalid collection input renders the inverse block
         $this->assertSame("no", Helpers::inArray(null, "b", $this->blockOptions()));
@@ -527,7 +576,10 @@ class HandlebarsHelpersTest extends TestCase {
         $this->assertSame(3, Helpers::length("abc"));
 
         # Assert array length
-        $this->assertSame(2, Helpers::length([1, 2]));
+        $this->assertSame(2, Helpers::length([
+            1,
+            2
+        ]));
 
         # Assert null input has zero length
         $this->assertSame(0, Helpers::length(null));
@@ -542,7 +594,14 @@ class HandlebarsHelpersTest extends TestCase {
     public function testFirst():void {
 
         # Assert the first requested items are returned
-        $this->assertSame([1, 2], Helpers::first([1, 2, 3], 2));
+        $this->assertSame([
+            1,
+            2
+        ], Helpers::first([
+            1,
+            2,
+            3
+        ], 2));
 
         # Assert an empty list stays empty
         $this->assertSame([], Helpers::first([], 2));
@@ -560,7 +619,14 @@ class HandlebarsHelpersTest extends TestCase {
     public function testLast():void {
 
         # Assert the last requested items are returned
-        $this->assertSame([2, 3], Helpers::last([1, 2, 3], 2));
+        $this->assertSame([
+            2,
+            3
+        ], Helpers::last([
+            1,
+            2,
+            3
+        ], 2));
 
         # Assert an empty list stays empty
         $this->assertSame([], Helpers::last([], 2));
@@ -641,7 +707,13 @@ class HandlebarsHelpersTest extends TestCase {
         $this->assertSame("ÉCOLE", Helpers::uppercase("école"));
 
         # Assert only string items in an array are converted
-        $this->assertSame(["ADA", 7], Helpers::uppercase(["Ada", 7]));
+        $this->assertSame([
+            "ADA",
+            7
+        ], Helpers::uppercase([
+            "Ada",
+            7
+        ]));
 
         # Assert null input is preserved
         $this->assertNull(Helpers::uppercase(null));
@@ -659,7 +731,13 @@ class HandlebarsHelpersTest extends TestCase {
         $this->assertSame("école", Helpers::lowercase("ÉCOLE"));
 
         # Assert only string items in an array are converted
-        $this->assertSame(["ada", 7], Helpers::lowercase(["ADA", 7]));
+        $this->assertSame([
+            "ada",
+            7
+        ], Helpers::lowercase([
+            "ADA",
+            7
+        ]));
 
         # Assert null input is preserved
         $this->assertNull(Helpers::lowercase(null));
@@ -689,13 +767,22 @@ class HandlebarsHelpersTest extends TestCase {
     public function testJoin():void {
 
         # Assert the default separator
-        $this->assertSame("a, b", Helpers::join(["a", "b"]));
+        $this->assertSame("a, b", Helpers::join([
+            "a",
+            "b"
+        ]));
 
         # Assert a custom separator
-        $this->assertSame("a-b", Helpers::join(["a", "b"], "-"));
+        $this->assertSame("a-b", Helpers::join([
+            "a",
+            "b"
+        ], "-"));
 
         # Assert an invalid separator uses the default
-        $this->assertSame("a, b", Helpers::join(["a", "b"], null));
+        $this->assertSame("a, b", Helpers::join([
+            "a",
+            "b"
+        ], null));
 
         # Assert string input is preserved
         $this->assertSame("a", Helpers::join("a"));
@@ -728,7 +815,10 @@ class HandlebarsHelpersTest extends TestCase {
     public function testSplit():void {
 
         # Assert a string splits into items
-        $this->assertSame(["a", "b"], Helpers::split("a,b", ",", []));
+        $this->assertSame([
+            "a",
+            "b"
+        ], Helpers::split("a,b", ",", []));
 
         # Assert an empty string is preserved
         $this->assertSame("", Helpers::split("", ",", []));
@@ -800,10 +890,16 @@ class HandlebarsHelpersTest extends TestCase {
     public function testIsLast():void {
 
         # Assert the final index renders the block
-        $this->assertSame("yes", Helpers::isLast(1, ["a", "b"], $this->blockOptions()));
+        $this->assertSame("yes", Helpers::isLast(1, [
+            "a",
+            "b"
+        ], $this->blockOptions()));
 
         # Assert an earlier index renders the inverse block
-        $this->assertSame("no", Helpers::isLast(0, ["a", "b"], $this->blockOptions()));
+        $this->assertSame("no", Helpers::isLast(0, [
+            "a",
+            "b"
+        ], $this->blockOptions()));
 
         # Assert invalid list input renders the inverse block
         $this->assertSame("no", Helpers::isLast(0, null, $this->blockOptions()));
@@ -903,13 +999,18 @@ class HandlebarsHelpersTest extends TestCase {
     public function testIsArray():void {
 
         # Assert a sequential array renders the block
-        $this->assertSame("yes", Helpers::isArray([1, 2], $this->blockOptions()));
+        $this->assertSame("yes", Helpers::isArray([
+            1,
+            2
+        ], $this->blockOptions()));
 
         # Assert an empty array renders the block
         $this->assertSame("yes", Helpers::isArray([], $this->blockOptions()));
 
         # Assert an associative array renders the inverse block
-        $this->assertSame("no", Helpers::isArray(["name" => "Ada"], $this->blockOptions()));
+        $this->assertSame("no", Helpers::isArray([
+            "name"    =>  "Ada"
+        ], $this->blockOptions()));
 
         # Assert null input renders the inverse block
         $this->assertSame("no", Helpers::isArray(null, $this->blockOptions()));
@@ -924,13 +1025,20 @@ class HandlebarsHelpersTest extends TestCase {
     public function testIsObject():void {
 
         # Assert an object renders the block
-        $this->assertSame("yes", Helpers::isObject((object)["name" => "Ada"], $this->blockOptions()));
+        $this->assertSame("yes", Helpers::isObject((object)[
+            "name"    =>  "Ada"
+        ], $this->blockOptions()));
 
         # Assert an associative array renders the block
-        $this->assertSame("yes", Helpers::isObject(["name" => "Ada"], $this->blockOptions()));
+        $this->assertSame("yes", Helpers::isObject([
+            "name"    =>  "Ada"
+        ], $this->blockOptions()));
 
         # Assert a sequential array renders the inverse block
-        $this->assertSame("no", Helpers::isObject([1, 2], $this->blockOptions()));
+        $this->assertSame("no", Helpers::isObject([
+            1,
+            2
+        ], $this->blockOptions()));
 
         # Assert null input renders the inverse block
         $this->assertSame("no", Helpers::isObject(null, $this->blockOptions()));
@@ -1092,13 +1200,25 @@ class HandlebarsHelpersTest extends TestCase {
         $this->assertSame("", Helpers::backgroundGradient(null, []));
 
         # Assert one color produces a solid background
-        $this->assertSame("background: rgb(255,0,0);", Helpers::backgroundGradient(["255,0,0"], []));
+        $this->assertSame("background: rgb(255,0,0);", Helpers::backgroundGradient([
+            "255,0,0"
+        ], []));
 
         # Assert multiple colors produce distinct bands
-        $this->assertSame("background: linear-gradient(to bottom, rgba(255,0,0,1) 0%, rgba(255,0,0,1) 50%, rgba(0,0,255,1) 50%, rgba(0,0,255,1) 100%);", Helpers::backgroundGradient(["255,0,0,1", "0,0,255,1"], []));
+        $this->assertSame("background: linear-gradient(to bottom, rgba(255,0,0,1) 0%, rgba(255,0,0,1) 50%, rgba(0,0,255,1) 50%, rgba(0,0,255,1) 100%);", Helpers::backgroundGradient([
+            "255,0,0,1",
+            "0,0,255,1"
+        ], []));
 
         # Assert smooth mode distributes color stops
-        $this->assertSame("background: linear-gradient(to bottom, rgba(255,0,0,1) 0%, rgba(0,0,255,1) 100%);", Helpers::backgroundGradient(["255,0,0,1", "0,0,255,1"], ["hash" => ["smooth" => true]]));
+        $this->assertSame("background: linear-gradient(to bottom, rgba(255,0,0,1) 0%, rgba(0,0,255,1) 100%);", Helpers::backgroundGradient([
+            "255,0,0,1",
+            "0,0,255,1"
+        ], [
+            "hash"    =>  [
+                "smooth"    =>  true
+            ]
+        ]));
 
     }
 
@@ -1113,7 +1233,13 @@ class HandlebarsHelpersTest extends TestCase {
         $this->assertSame("hello_world", Helpers::normalize("  Hello   World! "));
 
         # Assert only string items in an array are normalized
-        $this->assertSame(["hello_world", 7], Helpers::normalize(["Hello World!", 7]));
+        $this->assertSame([
+            "hello_world",
+            7
+        ], Helpers::normalize([
+            "Hello World!",
+            7
+        ]));
 
         # Assert null input is preserved
         $this->assertNull(Helpers::normalize(null));
@@ -1131,14 +1257,16 @@ class HandlebarsHelpersTest extends TestCase {
         $rows = [];
 
         # Prepare the callback used by each iteration
-        $options = ["fn" => function(array $row) use (&$rows):string {
+        $options = [
+            "fn"    =>  function(array $row) use (&$rows):string {
 
             # Capture the current iteration context
             $rows[] = $row;
 
             # Return the current iteration value
             return (string)$row["i"];
-        }];
+        }
+        ];
 
         # Assert default iteration starts at one
         $this->assertSame("123", Helpers::iterateUntil(3, $options));
@@ -1146,11 +1274,26 @@ class HandlebarsHelpersTest extends TestCase {
         # Assert each iteration receives its index and boundary flags
         $this->assertSame([
             # Expect the first iteration to set the first flag
-            ["i" => 1, "@index" => 0, "@first" => true, "@last" => false],
+            [
+                "i"         =>  1,
+                "@index"    =>  0,
+                "@first"    =>  true,
+                "@last"     =>  false
+            ],
             # Expect the middle iteration to clear both boundary flags
-            ["i" => 2, "@index" => 1, "@first" => false, "@last" => false],
+            [
+                "i"         =>  2,
+                "@index"    =>  1,
+                "@first"    =>  false,
+                "@last"     =>  false
+            ],
             # Expect the final iteration to set the last flag
-            ["i" => 3, "@index" => 2, "@first" => false, "@last" => true],
+            [
+                "i"         =>  3,
+                "@index"    =>  2,
+                "@first"    =>  false,
+                "@last"     =>  true
+            ],
         ], $rows);
 
         # Enable zero-based iteration
@@ -1163,7 +1306,10 @@ class HandlebarsHelpersTest extends TestCase {
         unset($options["hash"]);
 
         # Assert an array determines the iteration count
-        $this->assertSame("12", Helpers::iterateUntil(["a", "b"], $options));
+        $this->assertSame("12", Helpers::iterateUntil([
+            "a",
+            "b"
+        ], $options));
 
         # Assert a string length determines the iteration count
         $this->assertSame("12", Helpers::iterateUntil("ab", $options));
@@ -1236,7 +1382,10 @@ class HandlebarsHelpersTest extends TestCase {
             # Combine inline helpers with a conditional block
             '{{uppercase name}}|{{join values "-"}}|{{#is value expected}}yes{{else}}no{{/is}}',
             # Register the helpers and enable Handlebars-compatible compilation
-            ["helpers" => Helpers::listArray(), "flags" => LightnCandy::FLAG_HANDLEBARSJS]
+            [
+                "helpers"    =>  Helpers::listArray(),
+                "flags"      =>  LightnCandy::FLAG_HANDLEBARSJS
+            ]
         );
 
         # Assert compilation produces PHP source
@@ -1249,10 +1398,26 @@ class HandlebarsHelpersTest extends TestCase {
         $this->assertIsCallable($render);
 
         # Assert inline helpers and the matching block render together
-        $this->assertSame("ADA|a-b|yes", $render(["name" => "Ada", "values" => ["a", "b"], "value" => 2, "expected" => 2]));
+        $this->assertSame("ADA|a-b|yes", $render([
+            "name"        =>  "Ada",
+            "values"      =>  [
+                "a",
+                "b"
+            ],
+            "value"       =>  2,
+            "expected"    =>  2
+        ]));
 
         # Assert the inverse block renders when values differ
-        $this->assertSame("ADA|a-b|no", $render(["name" => "Ada", "values" => ["a", "b"], "value" => 1, "expected" => 2]));
+        $this->assertSame("ADA|a-b|no", $render([
+            "name"        =>  "Ada",
+            "values"      =>  [
+                "a",
+                "b"
+            ],
+            "value"       =>  1,
+            "expected"    =>  2
+        ]));
 
     }
 
@@ -1273,11 +1438,11 @@ class HandlebarsHelpersTest extends TestCase {
         # Return block callbacks
         return [
             # Pass named helper options to the callback
-            "hash" => $hash,
+            "hash"       =>  $hash,
             # Return the marker for the matching block
-            "fn" => fn(mixed ...$inputs):string => "yes",
+            "fn"         =>  fn(mixed ...$inputs):string => "yes",
             # Return the marker for the inverse block
-            "inverse" => fn(mixed ...$inputs):string => "no",
+            "inverse"    =>  fn(mixed ...$inputs):string => "no",
         ];
 
     }
@@ -1340,7 +1505,9 @@ class HandlebarsHelpersTest extends TestCase {
             chdir($root."/public");
 
             # Return the selected field or complete status context
-            return Helpers::httpStatusCode($error, $what, ["fn" => fn(mixed $value):mixed => $value]);
+            return Helpers::httpStatusCode($error, $what, [
+                "fn"    =>  fn(mixed $value):mixed => $value
+            ]);
 
         }finally{
 

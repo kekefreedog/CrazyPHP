@@ -105,7 +105,9 @@ class Core extends CLI {
                 if(!is_array($option['command']))
 
                     # Convert command to array if not array
-                    $option["command"] = [$option["command"]];
+                    $option["command"] = [
+                        $option["command"]
+                    ];
 
                 # Check command
                 if(!empty($option["command"]))
@@ -149,9 +151,9 @@ class Core extends CLI {
 
                 # Set input
                 $input = [
-                    "args" => $options->getArgs(),
-                    "cmd"  => $options->getCmd(),
-                    "opt"  => $options->getOpt()
+                    "args"    =>  $options->getArgs(),
+                    "cmd"     =>  $options->getCmd(),
+                    "opt"     =>  $options->getOpt()
                 ];
 
                 # Try
@@ -1076,7 +1078,7 @@ class Core extends CLI {
                 "No migration action found",
                 200,
                 [
-                    "custom_code"   =>  "core-003"
+                    "custom_code"    =>  "core-003"
                 ]
             );
 
@@ -1492,20 +1494,62 @@ class Core extends CLI {
 
         # Preserve each script's existing title and background color
         [$color, $title] = match($this->scriptName." ".$inputs["cmd"]){
-            "CrazyCommand new"     => ["backgroundBlue", "🚀 Run new ".$entity],
-            "CrazyCommand update"  => ["backgroundGreen", "🍿 Run update ".$entity],
-            "CrazyCommand delete"  => ["backgroundRed", "🚀 Run delete ".$entity],
-            "CrazyDocker new"      => ["backgroundBlue", "🚀 Run new Docker"],
-            "CrazyDocker delete"   => ["backgroundRed", "🚀 Run delete Docker"],
-            "CrazyAsset register"  => ["backgroundBlue", "🚀 Run Register Config Asset"],
-            "CrazyFront run"       => ["backgroundBlue", "🚀 Run Frontend Build"],
-            "CrazyMigration check" => ["backgroundBlue", "🚀 Run check migration"],
-            "CrazyMigration run"   => ["backgroundBlue", "🚀 Run migration"],
-            "CrazyWebsocket run"   => ["backgroundBlue", "🚀 Run Websocket Server"],
-            "CrazyWebsocket stop"  => ["backgroundOrange", "🚀 Stop Websocket Server"],
-            "CrazyWorkers run"     => ["backgroundBlue", "🚀 Run Workers Server"],
-            "CrazyWorkers stop"    => ["backgroundOrange", "🚀 Stop Workers Server"],
-            default                => ["backgroundBlue", "🚀 Run ".$inputs["cmd"]],
+            "CrazyCommand new"     => [
+                "backgroundBlue",
+                "🚀 Run new ".$entity
+            ],
+            "CrazyCommand update"  => [
+                "backgroundGreen",
+                "🍿 Run update ".$entity
+            ],
+            "CrazyCommand delete"  => [
+                "backgroundRed",
+                "🚀 Run delete ".$entity
+            ],
+            "CrazyDocker new"      => [
+                "backgroundBlue",
+                "🚀 Run new Docker"
+            ],
+            "CrazyDocker delete"   => [
+                "backgroundRed",
+                "🚀 Run delete Docker"
+            ],
+            "CrazyAsset register"  => [
+                "backgroundBlue",
+                "🚀 Run Register Config Asset"
+            ],
+            "CrazyFront run"       => [
+                "backgroundBlue",
+                "🚀 Run Frontend Build"
+            ],
+            "CrazyMigration check" => [
+                "backgroundBlue",
+                "🚀 Run check migration"
+            ],
+            "CrazyMigration run"   => [
+                "backgroundBlue",
+                "🚀 Run migration"
+            ],
+            "CrazyWebsocket run"   => [
+                "backgroundBlue",
+                "🚀 Run Websocket Server"
+            ],
+            "CrazyWebsocket stop"  => [
+                "backgroundOrange",
+                "🚀 Stop Websocket Server"
+            ],
+            "CrazyWorkers run"     => [
+                "backgroundBlue",
+                "🚀 Run Workers Server"
+            ],
+            "CrazyWorkers stop"    => [
+                "backgroundOrange",
+                "🚀 Stop Workers Server"
+            ],
+            default                => [
+                "backgroundBlue",
+                "🚀 Run ".$inputs["cmd"]
+            ],
         };
 
         # Print the header once, before any prompt or action
@@ -1547,7 +1591,7 @@ class Core extends CLI {
                 "Please fill a valid command and valid arguments",
                 500,
                 [
-                    "custom_code"   =>  "core-004",
+                    "custom_code"    =>  "core-004",
                 ]
             );
 
@@ -1565,7 +1609,7 @@ class Core extends CLI {
                 "Please write a valid command and valid arguments",
                 500,
                 [
-                    "custom_code"   =>  "core-005",
+                    "custom_code"    =>  "core-005",
                 ]
             );
 
@@ -1633,7 +1677,7 @@ class Core extends CLI {
                 "Can't open routers config for CLI commands, please check the file \"".str_replace("@crazyphp_root", "", static::ROUTERS_PATH)."\"",
                 500,
                 [
-                    "custom_code"   =>  "core-006",
+                    "custom_code"    =>  "core-006",
                 ]
             );
 
@@ -1650,7 +1694,7 @@ class Core extends CLI {
      * Ascii art collection
      */
     public const ASCII_ART = [
-        "crazyphp"  =>  "vendor/kzarshenas/crazyphp/resources/Ascii"
+        "crazyphp"    =>  "vendor/kzarshenas/crazyphp/resources/Ascii"
     ];
 
     /**

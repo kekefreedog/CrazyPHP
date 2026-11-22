@@ -103,7 +103,13 @@ class PythonCollection {
         if(is_string($input)){
 
             // Escape single quotes and backslashes within strings
-            $escapedStr = str_replace(['\\', '\''], ['\\\\', '\\\''], $input);
+            $escapedStr = str_replace([
+                '\\',
+                '\''
+            ], [
+                '\\\\',
+                '\\\''
+            ], $input);
 
             # Set result
             $result = "'$escapedStr'";
@@ -113,7 +119,10 @@ class PythonCollection {
         if(is_array($input) && Arrays::areAllKeysNumeric($input)){
 
             # Set element
-            $elements = array_map([self::class, 'encode'], $input);
+            $elements = array_map([
+                self::class,
+                'encode'
+            ], $input);
 
             # Set result
             $result = '[' . implode(', ', $elements) . ']';
@@ -129,7 +138,13 @@ class PythonCollection {
             foreach($input as $key => $value) {
 
                 # Ensure keys are properly formatted and escaped
-                $escapedKey = str_replace(['\\', '\''], ['\\\\', '\\\''], (string)$key);
+                $escapedKey = str_replace([
+                    '\\',
+                    '\''
+                ], [
+                    '\\\\',
+                    '\\\''
+                ], (string)$key);
                 $pythonKey = "'$escapedKey'";
 
                 # Get python value
@@ -192,8 +207,16 @@ class PythonCollection {
 
             // Handle Python None, True, and False values
             $jsonString = str_replace(
-                ['None', 'True', 'False'],
-                ['null', 'true', 'false'],
+                [
+                    'None',
+                    'True',
+                    'False'
+                ],
+                [
+                    'null',
+                    'true',
+                    'false'
+                ],
                 $jsonString
             );
 

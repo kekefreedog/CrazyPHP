@@ -82,7 +82,7 @@ class Mangodb implements CrazyDatabaseDriver {
 
         # Set client and manager
         list($this->client, $this->manager) = MongodbConnection::getInstance([
-            "user"  =>  $user
+            "user"    =>  $user
         ]);
 
         # Return self
@@ -115,7 +115,7 @@ class Mangodb implements CrazyDatabaseDriver {
                 "Please execute \"newClient\" method before \"".__METHOD__."\" method...",
                 500,
                 [
-                    "custom_code"   =>  "mongodb-003",
+                    "custom_code"    =>  "mongodb-003",
                 ]
             );
 
@@ -127,7 +127,7 @@ class Mangodb implements CrazyDatabaseDriver {
                 "User parameter is empty...",
                 500,
                 [
-                    "custom_code"   =>  "mongodb-004",
+                    "custom_code"    =>  "mongodb-004",
                 ]
             );
 
@@ -135,19 +135,25 @@ class Mangodb implements CrazyDatabaseDriver {
         if(empty($databases))
 
             # Set databases
-            $databases = $this->config["database"] ?? ["admin"];
+            $databases = $this->config["database"] ?? [
+                "admin"
+            ];
 
         # Check is not array
         elseif(!is_array($databases))
 
             # Convert to array
-            $databases = [$databases];
+            $databases = [
+                $databases
+            ];
 
         # Prepare command
         $command = [
             "createUser"    =>  $user,
             "pwd"           =>  $password,
-            "roles"         =>  $options["roles"] ?? ["readWrite"],
+            "roles"         =>  $options["roles"] ?? [
+                "readWrite"
+            ],
         ];
 
         # Iteration of databases
@@ -179,7 +185,7 @@ class Mangodb implements CrazyDatabaseDriver {
                     "Error when creating user in MongoDB \"$result\"",
                     500,
                     [
-                        "custom_code"   =>  "mongodb-005",
+                        "custom_code"    =>  "mongodb-005",
                     ]
                 );
 
@@ -207,7 +213,7 @@ class Mangodb implements CrazyDatabaseDriver {
                 "Please execute \"newClient\" method before \"".__METHOD__."\" method...",
                 500,
                 [
-                    "custom_code"   =>  "mongodb-006",
+                    "custom_code"    =>  "mongodb-006",
                 ]
             );
 
@@ -462,11 +468,13 @@ class Mangodb implements CrazyDatabaseDriver {
 
         # Prepare id
         /** @disregard P1009 */
-        $criteria = ['_id' => new ObjectId($id)];
+        $criteria = [
+            '_id'    =>  new ObjectId($id)
+        ];
 
         # Prepare value to set
         $valueToSet = [
-            '$set'  =>  $value
+            '$set'    =>  $value
         ];
 
         # Result
@@ -476,16 +484,16 @@ class Mangodb implements CrazyDatabaseDriver {
 
             # Set result
             $result = [
-                "code"      =>  200,
-                "message"   =>  "Item updated"
+                "code"       =>  200,
+                "message"    =>  "Item updated"
             ];
 
         else
 
             # Set result
             $result = [
-                "code"      =>  500,
-                "message"   =>  "Item not updated"
+                "code"       =>  500,
+                "message"    =>  "Item not updated"
             ];
 
         # Return result
@@ -521,7 +529,9 @@ class Mangodb implements CrazyDatabaseDriver {
 
         # Prepare id
         /** @disregard P1009 */
-        $criteria = ['_id' => new ObjectId($id)];
+        $criteria = [
+            '_id'    =>  new ObjectId($id)
+        ];
 
         # Result
         $result = $collection->deleteOne($criteria);
@@ -530,16 +540,16 @@ class Mangodb implements CrazyDatabaseDriver {
 
             # Set result
             $result = [
-                "code"      =>  200,
-                "message"   =>  "Item deleted"
+                "code"       =>  200,
+                "message"    =>  "Item deleted"
             ];
 
         else
 
             # Set result
             $result = [
-                "code"      =>  500,
-                "message"   =>  "Item not deleted"
+                "code"       =>  500,
+                "message"    =>  "Item not deleted"
             ];
 
         # Return result
@@ -640,7 +650,9 @@ class Mangodb implements CrazyDatabaseDriver {
                 $filter = new ObjectId($filter);
 
         # Last result
-        $result = [$collection->findOne($filters, $options)];
+        $result = [
+            $collection->findOne($filters, $options)
+        ];
 
         # Return result
         return $result === null ? [] : $result;
@@ -674,7 +686,9 @@ class Mangodb implements CrazyDatabaseDriver {
 
         # Last result
         $result = $collection->findOne([], [
-            'sort' => ['_id' => -1],
+            'sort'    =>  [
+                '_id'    =>  -1
+            ],
         ]);
 
         # Return result
@@ -763,8 +777,8 @@ class Mangodb implements CrazyDatabaseDriver {
 
         # Declare result
         $result = [
-            "validator" =>  [
-                '$jsonSchema'   =>  static::_recursiveMongoSchemaConvertor($schema)
+            "validator"    =>  [
+                '$jsonSchema'    =>  static::_recursiveMongoSchemaConvertor($schema)
             ]
         ];
 
@@ -815,7 +829,7 @@ class Mangodb implements CrazyDatabaseDriver {
 
         # Set result
         $result = [
-            "bsonType"      =>  "object",
+            "bsonType"    =>  "object",
         ];
 
         # Declare required

@@ -59,7 +59,11 @@ class ApiV2Batch extends Controller {
                 !is_array($item) ||
                 !is_string($item["entity"] ?? null) ||
                 $item["entity"] === "" ||
-                !in_array($item["type"] ?? null, ["create", "update", "delete"], true) ||
+                !in_array($item["type"] ?? null, [
+                    "create",
+                    "update",
+                    "delete"
+                ], true) ||
                 ($item["type"] !== "delete" && !is_array($item["body"] ?? null)) ||
                 ($item["type"] !== "create" && !is_string($item["id"] ?? null) && !is_int($item["id"] ?? null))
             ){
@@ -71,7 +75,11 @@ class ApiV2Batch extends Controller {
 
             # Represent the item's individual CRUD request for model middleware
             $itemRequest = $request
-                ->withMethod(["create" => "POST", "update" => "PUT", "delete" => "DELETE"][$item["type"]])
+                ->withMethod([
+                    "create"    =>  "POST",
+                    "update"    =>  "PUT",
+                    "delete"    =>  "DELETE"
+                ][$item["type"]])
                 ->withParsedBody($item["body"] ?? [])
                 ->withAttribute("model.operation", $item["type"])
                 ->withAttribute("model.id", $item["id"] ?? null)
@@ -102,7 +110,9 @@ class ApiV2Batch extends Controller {
                 };
 
                 # Preserve the entity-keyed batch response
-                $state->pushResults([$key => $content], $item["entity"]);
+                $state->pushResults([
+                    $key    =>  $content
+                ], $item["entity"]);
 
             }catch(Exception $exception){
 

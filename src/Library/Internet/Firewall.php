@@ -182,7 +182,7 @@ class Firewall {
 
         # New error
         throw new CrazyException("Request forbidden", 403, [
-            "custom_code"   =>  "firewall-010"
+            "custom_code"    =>  "firewall-010"
         ]);
 
     }

@@ -62,14 +62,14 @@ class Structure{
      * Template to use for app creation
      */
     private $conditions = [
-        "fileTypeAccepted"  =>  [
-            "text/yaml"         =>  "_parseYaml",
-            "application/json"  =>  "_parseJson",
-            "text/php"          =>  "_parsePhp",
+        "fileTypeAccepted"    =>  [
+            "text/yaml"           =>  "_parseYaml",
+            "application/json"    =>  "_parseJson",
+            "text/php"            =>  "_parsePhp",
         ],
-        "actionsAccepted"   =>  [
-            'create', 
-            'update', 
+        "actionsAccepted"     =>  [
+            'create',
+            'update',
             'delete',
         ],
     ];
@@ -122,7 +122,7 @@ class Structure{
                 "Root directory \”$root\” doesn't exists...",
                 500,
                 [
-                    "custom_code"   =>  "structure-001",
+                    "custom_code"    =>  "structure-001",
                 ]
             );
 
@@ -134,7 +134,7 @@ class Structure{
                 "Root directory \”$root\” isn't writable. Please check folder permission...",
                 403,
                 [
-                    "custom_code"   =>  "structure-002",
+                    "custom_code"    =>  "structure-002",
                 ]
             );
         
@@ -183,7 +183,7 @@ class Structure{
                 "Template \”$template\” doesn't exists...",
                 500,
                 [
-                    "custom_code"   =>  "structure-003",
+                    "custom_code"    =>  "structure-003",
                 ]
             );
 
@@ -229,7 +229,7 @@ class Structure{
                 "Action given \”$action\” isn't valid...",
                 500,
                 [
-                    "custom_code"   =>  "structure-008",
+                    "custom_code"    =>  "structure-008",
                 ]
             );
 
@@ -286,8 +286,8 @@ class Structure{
                 "Template Mime type \”$type\” is unknown...",
                 500,
                 [
-                    "custom_code"           =>  "structure-004",
-                    "new_feature_request"   =>  true
+                    "custom_code"            =>  "structure-004",
+                    "new_feature_request"    =>  true
                 ]
             );
 
@@ -341,7 +341,10 @@ class Structure{
                 $currentPath = rtrim($currentPath, '/').'/';
 
             # Create folder of the root folder if not exist
-            if(in_array($action, ['create', 'update'])){
+            if(in_array($action, [
+                'create',
+                'update'
+            ])){
     
                 # check path exist
                 if(!is_dir($currentPath))
@@ -486,7 +489,10 @@ class Structure{
                     foreach($notDeclared as $item){
 
                         # Check not dot
-                        if(in_array($item, ['.', ".."]))
+                        if(in_array($item, [
+                            '.',
+                            ".."
+                        ]))
 
                             # Continue iteration
                             continue;
@@ -501,7 +507,9 @@ class Structure{
                         if(is_dir("$currentPath/$item"))
 
                             # Delete content of folders
-                            self::treeFolderDeletion([$item => []], "$currentPath", true);
+                            self::treeFolderDeletion([
+                                $item    =>  []
+                            ], "$currentPath", true);
 
                 }
 
@@ -561,7 +569,10 @@ class Structure{
         foreach($folders as $folderName => $folderContent)
 
             # Create folder of the root folder if not exist
-            if(in_array($action, ['create', 'update'])){
+            if(in_array($action, [
+                'create',
+                'update'
+            ])){
 
                 # Push folder in result
                 $result[$folderName] = null;
@@ -754,7 +765,7 @@ class Structure{
                 "Schema content isn't valid...",
                 500,
                 [
-                    "custom_code"   =>  "structure-012",
+                    "custom_code"    =>  "structure-012",
                 ]
             );
 
@@ -853,7 +864,9 @@ class Structure{
 
         # Execute loop
         $result = static::_loopInsideSchema(
-            ["folders" => $collection["Structure"]],
+            [
+                "folders"    =>  $collection["Structure"]
+            ],
             $folder,
             $file,
             $preview
@@ -888,7 +901,7 @@ class Structure{
                 "Schema content isn't valid...",
                 500,
                 [
-                    "custom_code"   =>  "structure-013",
+                    "custom_code"    =>  "structure-013",
                 ]
             );
 
@@ -930,7 +943,9 @@ class Structure{
 
         # Execute loop
         static::_loopInsideSchema(
-            ["folders" => $collection["Structure"]],
+            [
+                "folders"    =>  $collection["Structure"]
+            ],
             $folder,
             $file,
             true
@@ -962,7 +977,7 @@ class Structure{
                 "Schema content isn't valid...",
                 500,
                 [
-                    "custom_code"   =>  "structure-013",
+                    "custom_code"    =>  "structure-013",
                 ]
             );
 
@@ -985,7 +1000,9 @@ class Structure{
             if(File::exists($path)){
 
                 # Set path collection
-                $pathCollection = [$path];
+                $pathCollection = [
+                    $path
+                ];
 
                 # Decompose path
                 $pathCollection += Url::decompose($path);
@@ -1050,7 +1067,9 @@ class Structure{
 
         # Execute loop
         static::_loopInsideSchema(
-            ["folders" => $collection["Structure"]],
+            [
+                "folders"    =>  $collection["Structure"]
+            ],
             $folder,
             $file,
             false
@@ -1091,7 +1110,7 @@ class Structure{
                 "Schema given isn't valid...",
                 500,
                 [
-                    "custom_code"   =>  "structure-009",
+                    "custom_code"    =>  "structure-009",
                 ]
             );
 
@@ -1114,7 +1133,7 @@ class Structure{
                     "Path of the schema given isn't valid...",
                     500,
                     [
-                        "custom_code"   =>  "structure-010",
+                        "custom_code"    =>  "structure-010",
                     ]
                 );
 
@@ -1148,7 +1167,7 @@ class Structure{
                     "File type of schema is unknown \"".$mimeType."\"",
                     500,
                     [
-                        "custom_code"   =>  "structure-011",
+                        "custom_code"    =>  "structure-011",
                     ]
                 );
 
@@ -1197,7 +1216,9 @@ class Structure{
                 $result = Arrays::mergeMultidimensionalArrays(
                     true,
                     $result, 
-                    Arrays::stretch([$currentPath], "/")
+                    Arrays::stretch([
+                        $currentPath
+                    ], "/")
                 );
 
                 # Execute file
@@ -1230,7 +1251,9 @@ class Structure{
                 $result = Arrays::mergeMultidimensionalArrays(
                     true,
                     $result, 
-                    Arrays::stretch([$currentPath], "/")
+                    Arrays::stretch([
+                        $currentPath
+                    ], "/")
                 );
 
                 # Execute file
@@ -1271,7 +1294,7 @@ class Structure{
                 "Yaml template file \”$this->template\” is not valid...",
                 500,
                 [
-                    "custom_code"   =>  "structure-005",
+                    "custom_code"    =>  "structure-005",
                 ]
             );
 
@@ -1301,7 +1324,7 @@ class Structure{
                 "Json template file \”$this->template\” is not valid...",
                 500,
                 [
-                    "custom_code"   =>  "structure-006",
+                    "custom_code"    =>  "structure-006",
                 ]
             );
 
@@ -1332,7 +1355,7 @@ class Structure{
                 "Php file \”$this->template\” is not valid...",
                 500,
                 [
-                    "custom_code"   =>  "structure-007",
+                    "custom_code"    =>  "structure-007",
                 ]
             );
 

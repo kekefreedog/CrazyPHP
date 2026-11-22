@@ -37,114 +37,119 @@ class MongodbTest extends TestCase {
     /** @var array SCHEMA */
     public const SCHEMA = [
         [
-            'name'  => 'type',
-            'label' => 'Entity type',
-            'type' => 'VARCHAR',
-            'required' => true,
+            'name'        =>  'type',
+            'label'       =>  'Entity type',
+            'type'        =>  'VARCHAR',
+            'required'    =>  true,
         ],
         [
-            'name' => 'id',
-            'label' => 'SG ID of the project',
-            'type' => 'INT',
+            'name'     =>  'id',
+            'label'    =>  'SG ID of the project',
+            'type'     =>  'INT',
         ],
         [
-            'name' => 'attributes.name',
-            'label' => 'Name of the project',
-            'type' => 'VARCHAR',
-            'required' => true,
+            'name'        =>  'attributes.name',
+            'label'       =>  'Name of the project',
+            'type'        =>  'VARCHAR',
+            'required'    =>  true,
         ],
         [
-            'name' => 'attributes.sg_release_title',
-            'label' => 'Release title of the project',
-            'type' => 'VARCHAR',
+            'name'     =>  'attributes.sg_release_title',
+            'label'    =>  'Release title of the project',
+            'type'     =>  'VARCHAR',
         ],
         [
-            'name' => 'attributes.image',
-            'label' => 'Image of the show',
-            'type' => 'STRING',
+            'name'     =>  'attributes.image',
+            'label'    =>  'Image of the show',
+            'type'     =>  'STRING',
         ],
         [
-            'name' => 'links.self',
-            'label' => 'Links to Api of ShotGrid',
-            'type' => 'VARCHAR',
+            'name'     =>  'links.self',
+            'label'    =>  'Links to Api of ShotGrid',
+            'type'     =>  'VARCHAR',
         ],
     ];
 
     /** @var array SCHEMA */
     public const SCHEMA_BIS = [
         [
-            'name'  => 'attributes.sg_department_1.Department.sg_division',
-            'label' => 'Entity type',
-            'type' => 'VARCHAR',
+            'name'     =>  'attributes.sg_department_1.Department.sg_division',
+            'label'    =>  'Entity type',
+            'type'     =>  'VARCHAR',
             # 'required' => true,
         ],
     ];
 
     /** @cont array EXPECTED */
     public const EXPECTED = [
-        'validator' => [
-            '$jsonSchema' => [
-                'bsonType' => 'object',
-                'properties' => [
-                    'type' => [
-                        'bsonType' => 'string',
-                        'description' => 'Entity type must be a "string"',
+        'validator'    =>  [
+            '$jsonSchema'    =>  [
+                'bsonType'      =>  'object',
+                'properties'    =>  [
+                    'type'          =>  [
+                        'bsonType'       =>  'string',
+                        'description'    =>  'Entity type must be a "string"',
                     ],
-                    'id' => [
-                        'bsonType' => 'int',
-                        'description' => 'SG ID of the project must be a "int"',
+                    'id'            =>  [
+                        'bsonType'       =>  'int',
+                        'description'    =>  'SG ID of the project must be a "int"',
                     ],
-                    'attributes' => [
-                        'bsonType' => 'object',
-                        'properties' => [
-                            'name' => [
-                                'bsonType' => 'string',
-                                'description' => 'Name of the project must be a "string"',
+                    'attributes'    =>  [
+                        'bsonType'      =>  'object',
+                        'properties'    =>  [
+                            'name'                =>  [
+                                'bsonType'       =>  'string',
+                                'description'    =>  'Name of the project must be a "string"',
                             ],
-                            'sg_release_title' => [
-                                'bsonType' => 'string',
-                                'description' => 'Release title of the project must be a "string"',
+                            'sg_release_title'    =>  [
+                                'bsonType'       =>  'string',
+                                'description'    =>  'Release title of the project must be a "string"',
                             ],
-                            'image' => [
-                                'bsonType' => 'string',
-                                'description' => 'Image of the show should be a "string"',
+                            'image'               =>  [
+                                'bsonType'       =>  'string',
+                                'description'    =>  'Image of the show should be a "string"',
                             ],
                         ],
-                        'required' => ['name'],
+                        'required'      =>  [
+                            'name'
+                        ],
                     ],
-                    'links' => [
-                        'bsonType' => 'object',
-                        'properties' => [
-                            'self' => [
-                                'bsonType' => 'string',
-                                'description' => 'Links to Api of ShotGrid must be a "string"',
+                    'links'         =>  [
+                        'bsonType'      =>  'object',
+                        'properties'    =>  [
+                            'self'    =>  [
+                                'bsonType'       =>  'string',
+                                'description'    =>  'Links to Api of ShotGrid must be a "string"',
                             ],
                         ],
                     ],
                 ],
-                'required' => ['type', 'attributes'],
+                'required'      =>  [
+                    'type',
+                    'attributes'
+                ],
             ],
         ],
     ];
 
     /** @cont array EXPECTED */
     public const EXPECTED_BIS = [
-        'validator' => [
-            '$jsonSchema' => [
-                'bsonType' => 'object',
-                'properties' => [
-                    'attributes' => [
-                        'bsonType' => 'object',
-                        'properties' => [
-                            'sg_department_1' => [
-                                'bsonType' => 'object',
-                                'properties' => [
-                                    'Department' => [
-                                        'bsonType' => 'object',
-                                        'properties' => [
-                                            'sg_division' => [
-                                                'bsonType' => 'string',
-                                                'description' => 'Entity type must be a "string"',
+        'validator'    =>  [
+            '$jsonSchema'    =>  [
+                'bsonType'      =>  'object',
+                'properties'    =>  [
+                    'attributes'    =>  [
+                        'bsonType'      =>  'object',
+                        'properties'    =>  [
+                            'sg_department_1'    =>  [
+                                'bsonType'      =>  'object',
+                                'properties'    =>  [
+                                    'Department'    =>  [
+                                        'bsonType'      =>  'object',
+                                        'properties'    =>  [
+                                            'sg_division'    =>  [
+                                                'bsonType'       =>  'string',
+                                                'description'    =>  'Entity type must be a "string"',
                                             ],
                                         ],
                                     ],
@@ -174,9 +179,9 @@ class MongodbTest extends TestCase {
         # Setup env
         Env::set([
             # App root for composer class
-            "crazyphp_root"     =>  getcwd(),
-            "phpunit_test"      =>  true,
-            "config_location"   =>  "@crazyphp_root/resources/Yml"
+            "crazyphp_root"      =>  getcwd(),
+            "phpunit_test"       =>  true,
+            "config_location"    =>  "@crazyphp_root/resources/Yml"
         ]);
 
     }

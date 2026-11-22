@@ -38,69 +38,69 @@ class ArraysTest extends TestCase{
 
         # Test set
         $array11 = [
-            'alpha' =>  'alpha',
-            'beta'  =>  'beta',
-            'hello'	=>	[
+            'alpha'    =>  'alpha',
+            'beta'     =>  'beta',
+            'hello'    =>  [
             ]
         ];
         $array12 = [
-            'beta'  =>  'tera',
-            'tera'  =>  'quad',
-            'hello'	=>	[
-            	"woow"	=>	true	
+            'beta'     =>  'tera',
+            'tera'     =>  'quad',
+            'hello'    =>  [
+                "woow"    =>  true
             ]
         ];
         $array13 = [
-        	'one'	=>	[
-        		'two'	=>	[
-        			'three'
-    			]	
-        	]
+            'one'    =>  [
+                'two'    =>  [
+                    'three'
+                ]
+            ]
         ];
         $array14 = [
 
         ];
         $result1 = [
-            'alpha' =>  'alpha',
-            'beta'  =>  'tera',
-            'hello'	=>	[
-            	"woow"	=>	true	
+            'alpha'    =>  'alpha',
+            'beta'     =>  'tera',
+            'hello'    =>  [
+                "woow"    =>  true
             ],
-            'tera'  =>  'quad',
-        	'one'	=>	[
-        		'two'	=>	[
-        			'three'
-    			]	
-        	]
+            'tera'     =>  'quad',
+            'one'      =>  [
+                'two'    =>  [
+                    'three'
+                ]
+            ]
         ];
         $mergedArrays = Arrays::mergeMultidimensionalArrays(true, $array11, $array12, $array13, $array14);
         $this->assertEquals($mergedArrays, $result1);
 
         # Test update
         $array21 = [
-            'alpha' =>  'alpha',
-            'beta'  =>  'beta',
-            'hello'	=>	[
+            'alpha'    =>  'alpha',
+            'beta'     =>  'beta',
+            'hello'    =>  [
             ]
         ];
         $array22 = [
-            'beta'  =>  'tera',
-            'tera'  =>  'quad',
-            'hello'	=>	[
-            	"woow"	=>	true	
+            'beta'     =>  'tera',
+            'tera'     =>  'quad',
+            'hello'    =>  [
+                "woow"    =>  true
             ]
         ];
         $array23 = [
-        	'one'	=>	[
-        		'two'	=>	[
-        			'three'
-    			]	
-        	]
+            'one'    =>  [
+                'two'    =>  [
+                    'three'
+                ]
+            ]
         ];
         $result2 = [
-            'alpha' =>  'alpha',
-            'beta'  =>  'tera',
-            'hello'	=>	[
+            'alpha'    =>  'alpha',
+            'beta'     =>  'tera',
+            'hello'    =>  [
             ]
         ];
         $mergedArrays = Arrays::mergeMultidimensionalArrays(false, $array21, $array22, $array23);
@@ -133,28 +133,26 @@ class ArraysTest extends TestCase{
 
         # Declare input
         $input = [
-            'name' => 'Crazy Project',
-            'description' => 'My Crazy Web Application',
-            'authors__name' => 'CrazyPerson',
-            'authors__email' => 'crazy@person.com',
-            'type' => 'library',
-            'homepage' => 'https://github.com/kekefreedog/CrazyPHP/',
+            'name'              =>  'Crazy Project',
+            'description'       =>  'My Crazy Web Application',
+            'authors__name'     =>  'CrazyPerson',
+            'authors__email'    =>  'crazy@person.com',
+            'type'              =>  'library',
+            'homepage'          =>  'https://github.com/kekefreedog/CrazyPHP/',
         ];
 
         # Declare await result
         $awaitResult = array (
-            'name' => 'Crazy Project',
-            'description' => 'My Crazy Web Application',
-            'authors' => 
-            array (
-              0 => 
-              array (
-                'name' => 'CrazyPerson',
-                'email' => 'crazy@person.com',
-              ),
+            'name'           =>  'Crazy Project',
+            'description'    =>  'My Crazy Web Application',
+            'authors'        =>  array (
+                0    =>  array (
+                    'name'     =>  'CrazyPerson',
+                    'email'    =>  'crazy@person.com',
+                ),
             ),
-            'type' => 'library',
-            'homepage' => 'https://github.com/kekefreedog/CrazyPHP/',
+            'type'           =>  'library',
+            'homepage'       =>  'https://github.com/kekefreedog/CrazyPHP/',
         );
 
         # Result
@@ -176,9 +174,9 @@ class ArraysTest extends TestCase{
 
         # Array
         $array = [
-            "first" =>	[
-                "second"    =>	[
-                    "third"     =>  "Youpi"
+            "first"    =>  [
+                "second"    =>  [
+                    "third"    =>  "Youpi"
                 ]
             ]
         ];
@@ -222,26 +220,32 @@ class ArraysTest extends TestCase{
 
         # Array
         $array = [
-            "first" =>	[
-                "second"    =>	[
+            "first"    =>  [
+                "second"    =>  [
                     "third"     =>  "Youpi",
                     "fourth"    =>  "Woow"
                 ]
             ],
-            "other" =>  [
-                "lola"  =>  [ 1, 2 ]
+            "other"    =>  [
+                "lola"    =>  [
+                    1,
+                    2
+                ]
             ]
         ];
 
         # Result waited
         $resultWaited = [
-            "first" =>	[
-                "second"    =>	[
-                    "third"     =>  "Youpi",
+            "first"    =>  [
+                "second"    =>  [
+                    "third"    =>  "Youpi",
                 ]
             ],
-            "other" =>  [
-                "lola"  =>  [ 1, 2 ]
+            "other"    =>  [
+                "lola"    =>  [
+                    1,
+                    2
+                ]
             ]
         ];
 
@@ -273,15 +277,15 @@ class ArraysTest extends TestCase{
 
         # Set array A
         $arrayA = [
-            "toto"  => [
-                "titi"  => "value"
+            "toto"    =>  [
+                "titi"    =>  "value"
             ]
         ];
 
         # Set array B
         $arrayB = [
-            "toto"  => [
-                "tutu"  => "value"
+            "toto"    =>  [
+                "tutu"    =>  "value"
             ]
         ];
 
@@ -305,15 +309,15 @@ class ArraysTest extends TestCase{
 
         # Set array A
         $arrayA = [
-            "toto"  => [
-                "titi"  => "value"
+            "toto"    =>  [
+                "titi"    =>  "value"
             ]
         ];
 
         # Set array B
         $arrayB = [
-            "toto"  => [
-                "tutu"  => "value"
+            "toto"    =>  [
+                "tutu"    =>  "value"
             ]
         ];
 
@@ -337,8 +341,8 @@ class ArraysTest extends TestCase{
 
         # Set array A
         $arrayA = [
-            "toto"  => [
-                "titi"  => "value"
+            "toto"    =>  [
+                "titi"    =>  "value"
             ]
         ];
 
@@ -363,8 +367,8 @@ class ArraysTest extends TestCase{
 
         # Set array A
         $result = [
-            "toto"  => [
-                "titi"  => "value"
+            "toto"    =>  [
+                "titi"    =>  "value"
             ]
         ];
 
@@ -398,27 +402,27 @@ class ArraysTest extends TestCase{
 
         # Input
         $input = [
-            'type'          =>  'Project',
-            'attributes'    =>  [
-                'name'              =>  'test',
-                'image'             =>  "",
-                'sg_release_title'  =>  'test2',
+            'type'             =>  'Project',
+            'attributes'       =>  [
+                'name'                =>  'test',
+                'image'               =>  "",
+                'sg_release_title'    =>  'test2',
             ],
-            'relationships' =>  [],
-            'id'            =>  1111,
-            'links'         =>  [
-                'self'              =>  '/api/v1/entity/projects/1111',
+            'relationships'    =>  [],
+            'id'               =>  1111,
+            'links'            =>  [
+                'self'    =>  '/api/v1/entity/projects/1111',
             ],
         ];
 
         # Output
         $output = [
-            "type"                          =>  "Project",
-            "attributes.name"               =>  "test",
-            "attributes.image"              =>  "",
-            "attributes.sg_release_title"   =>  "test2",
-            "id"                            =>  "1111",
-            "links.self"                    =>  "/api/v1/entity/projects/1111",
+            "type"                           =>  "Project",
+            "attributes.name"                =>  "test",
+            "attributes.image"               =>  "",
+            "attributes.sg_release_title"    =>  "test2",
+            "id"                             =>  "1111",
+            "links.self"                     =>  "/api/v1/entity/projects/1111",
         ];
 
         # Flatten
@@ -438,25 +442,25 @@ class ArraysTest extends TestCase{
 
         # Input
         $input = [
-            'type'                          =>  'Project',
-            'attributes.name'               =>  'test',
-            'attributes.image'              =>  '',
-            'attributes.sg_release_title'   =>  'test2',
-            'id'                            =>  1111,
-            'links.self'                    =>  '/api/v1/entity/projects/1111',
+            'type'                           =>  'Project',
+            'attributes.name'                =>  'test',
+            'attributes.image'               =>  '',
+            'attributes.sg_release_title'    =>  'test2',
+            'id'                             =>  1111,
+            'links.self'                     =>  '/api/v1/entity/projects/1111',
         ];
 
         # Output
         $output = [
             'type'          =>  'Project',
             'attributes'    =>  [
-                'name'              =>  'test',
-                'image'             =>  "",
-                'sg_release_title'  =>  'test2',
+                'name'                =>  'test',
+                'image'               =>  "",
+                'sg_release_title'    =>  'test2',
             ],
             'id'            =>  1111,
             'links'         =>  [
-                'self'              =>  '/api/v1/entity/projects/1111',
+                'self'    =>  '/api/v1/entity/projects/1111',
             ],
         ];
 
@@ -477,15 +481,30 @@ class ArraysTest extends TestCase{
 
         # Set input
         $input = [
-            ['id' => 1, 'name' => 'Alice'],
-            ['id' => 2, 'name' => 'Bob'],
-            ['id' => 3, 'name' => 'Charlie'],
+            [
+                'id'      =>  1,
+                'name'    =>  'Alice'
+            ],
+            [
+                'id'      =>  2,
+                'name'    =>  'Bob'
+            ],
+            [
+                'id'      =>  3,
+                'name'    =>  'Charlie'
+            ],
         ];
 
         # Set output
         $output = [
-            ['id' => 1, 'name' => 'Alice'],
-            ['id' => 3, 'name' => 'Charlie'],
+            [
+                'id'      =>  1,
+                'name'    =>  'Alice'
+            ],
+            [
+                'id'      =>  3,
+                'name'    =>  'Charlie'
+            ],
         ];
 
         # Assert one
@@ -502,23 +521,32 @@ class ArraysTest extends TestCase{
 
         # Set input a
         $input_a = [
-            ['id' => 1, 'name' => 'Alice'],
-            ['id' => 2, 'name' => 'Bob'],
-            ['id' => 3, 'name' => 'Charlie'],
+            [
+                'id'      =>  1,
+                'name'    =>  'Alice'
+            ],
+            [
+                'id'      =>  2,
+                'name'    =>  'Bob'
+            ],
+            [
+                'id'      =>  3,
+                'name'    =>  'Charlie'
+            ],
         ];
 
         # Set input b
         $input_b = [
-            0 =>    "toto",
-            1 =>    "titi",
-            6 =>    "tata"
+            0    =>  "toto",
+            1    =>  "titi",
+            6    =>  "tata"
         ];
 
         # Set input b
         $input_c = [
-            10      =>    "toto",
-            "toto"  =>    "titi",
-            6       =>    "tata"
+            10        =>  "toto",
+            "toto"    =>  "titi",
+            6         =>  "tata"
         ];
 
         # Check if true
@@ -539,29 +567,29 @@ class ArraysTest extends TestCase{
 
         # Set input
         $input = [
-            "toto"  =>  "toto",
-            "one"   =>  1,
-            "bool"  =>  false,
-            "null"  =>  null,
-            "array" =>  [],
+            "toto"     =>  "toto",
+            "one"      =>  1,
+            "bool"     =>  false,
+            "null"     =>  null,
+            "array"    =>  [],
         ];
 
         # Set output
         $outputA = [
-            "prefix*toto"  =>  "toto",
-            "prefix*one"   =>  1,
-            "prefix*bool"  =>  false,
-            "prefix*null"  =>  null,
-            "prefix*array" =>  [],
+            "prefix*toto"     =>  "toto",
+            "prefix*one"      =>  1,
+            "prefix*bool"     =>  false,
+            "prefix*null"     =>  null,
+            "prefix*array"    =>  [],
         ];
 
         # Set output
         $outputB = [
-            "prefix_toto"  =>  "toto",
-            "prefix_one"   =>  1,
-            "prefix_bool"  =>  false,
-            "prefix_null"  =>  null,
-            "prefix_array" =>  [],
+            "prefix_toto"     =>  "toto",
+            "prefix_one"      =>  1,
+            "prefix_bool"     =>  false,
+            "prefix_null"     =>  null,
+            "prefix_array"    =>  [],
         ];
 
         # Set prefix
@@ -587,48 +615,54 @@ class ArraysTest extends TestCase{
 
         # Set input
         $inputA = [
-            "user*toto"  =>  "toto",
-            "titi*one"   =>  1,
-            "bool"  =>  false,
-            "null"  =>  null,
-            "array" =>  [],
+            "user*toto"    =>  "toto",
+            "titi*one"     =>  1,
+            "bool"         =>  false,
+            "null"         =>  null,
+            "array"        =>  [],
         ];
 
         # Set input
         $inputB = [
-            "user_toto"  =>  "toto",
-            "titi_one"   =>  1,
-            "bool"  =>  false,
-            "null"  =>  null,
-            "array" =>  [],
+            "user_toto"    =>  "toto",
+            "titi_one"     =>  1,
+            "bool"         =>  false,
+            "null"         =>  null,
+            "array"        =>  [],
         ];
 
         # Set output
         $outputA = [
-            "user*toto"  =>  "toto",
-            "titi*one"   =>  1,
-            "prefix*bool"  =>  false,
-            "prefix*null"  =>  null,
-            "prefix*array" =>  [],
+            "user*toto"       =>  "toto",
+            "titi*one"        =>  1,
+            "prefix*bool"     =>  false,
+            "prefix*null"     =>  null,
+            "prefix*array"    =>  [],
         ];
 
         # Set output
         $outputB = [
-            "user_toto"  =>  "toto",
-            "titi_one"   =>  1,
-            "prefix_bool"  =>  false,
-            "prefix_null"  =>  null,
-            "prefix_array" =>  [],
+            "user_toto"       =>  "toto",
+            "titi_one"        =>  1,
+            "prefix_bool"     =>  false,
+            "prefix_null"     =>  null,
+            "prefix_array"    =>  [],
         ];
 
         # Set prefix
         $prefix = "prefix";
 
         # Assert 1
-        $this->assertEquals($outputA, Arrays::addPrefixToKeysWithException($inputA, $prefix, ["user", "titi"], false, "*"));
+        $this->assertEquals($outputA, Arrays::addPrefixToKeysWithException($inputA, $prefix, [
+            "user",
+            "titi"
+        ], false, "*"));
 
         # Assert 1
-        $this->assertEquals($outputB, Arrays::addPrefixToKeysWithException($inputB, $prefix, ["user", "titi"]));
+        $this->assertEquals($outputB, Arrays::addPrefixToKeysWithException($inputB, $prefix, [
+            "user",
+            "titi"
+        ]));
 
     }
 
@@ -641,14 +675,34 @@ class ArraysTest extends TestCase{
 
         # Set input
         $input = [
-            ["user" => ["id" => 1, "name" => "Alice"]],
-            ["user" => ["id" => 2, "name" => "Bob"]],
-            ["user" => ["id" => 3, "name" => "Charlie"]],
+            [
+                "user"    =>  [
+                    "id"      =>  1,
+                    "name"    =>  "Alice"
+                ]
+            ],
+            [
+                "user"    =>  [
+                    "id"      =>  2,
+                    "name"    =>  "Bob"
+                ]
+            ],
+            [
+                "user"    =>  [
+                    "id"      =>  3,
+                    "name"    =>  "Charlie"
+                ]
+            ],
         ];
 
         # Set ouput
         $output = [
-            1 => ["user" => ["id" => 2, "name" => "Bob"]],
+            1    =>  [
+                "user"    =>  [
+                    "id"      =>  2,
+                    "name"    =>  "Bob"
+                ]
+            ],
         ];
         
         # Filter where "user.id" is 2
@@ -668,10 +722,13 @@ class ArraysTest extends TestCase{
 
         # Set data
         $data = [
-            "nom" => "JosÃ©",
-            "infos" => [
-                "ville" => "ParÃ­s",
-                "tags" => ["clichÃ©", "cafÃ©"]
+            "nom"      =>  "JosÃ©",
+            "infos"    =>  [
+                "ville"    =>  "ParÃ­s",
+                "tags"     =>  [
+                    "clichÃ©",
+                    "cafÃ©"
+                ]
             ]
         ];
 
@@ -680,10 +737,10 @@ class ArraysTest extends TestCase{
 
         # Set result
         $result = [
-            "nom"   =>  "José",
-            "infos" => [
-                "ville" => "París",
-                "tags"  => [
+            "nom"      =>  "José",
+            "infos"    =>  [
+                "ville"    =>  "París",
+                "tags"     =>  [
                     "cliché",
                     "café",
                 ]

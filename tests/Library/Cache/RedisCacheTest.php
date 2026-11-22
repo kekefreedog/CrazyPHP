@@ -51,7 +51,10 @@ class RedisCacheTest extends TestCase {
         $this->_configuration = $GLOBALS[Config::PREFIX] ?? null;
 
         # Isolate Redis environment settings from the invoking runtime
-        foreach(["REDIS_HOST", "REDIS_PORT"] as $name){
+        foreach([
+            "REDIS_HOST",
+            "REDIS_PORT"
+        ] as $name){
 
             # Preserve each original value including unset variables
             $this->_redisEnvironment[$name] = getenv($name);
@@ -71,7 +74,12 @@ class RedisCacheTest extends TestCase {
         unset($GLOBALS[Config::PREFIX]);
 
         # Use the fixture without forcing the Redis tests onto Files
-        Env::set(["app_root" => $this->_root, "crazyphp_root" => dirname(__DIR__, 3), "phpunit_test" => false, "cache_driver" => ""]);
+        Env::set([
+            "app_root"         =>  $this->_root,
+            "crazyphp_root"    =>  dirname(__DIR__, 3),
+            "phpunit_test"     =>  false,
+            "cache_driver"     =>  ""
+        ]);
 
         # Inspect configuration without connecting to a server
         $this->_reader = (new ReflectionClass(Cache::class))->newInstanceWithoutConstructor();
@@ -115,7 +123,17 @@ class RedisCacheTest extends TestCase {
     public function testRedisEnvironmentConfiguration():void {
 
         # Keep conflicting legacy settings to verify they are ignored
-        Yaml::create($this->_root."/config/Database.yml", ["Database" => ["collection" => ["mongodb" => false, "redis" => ["host" => "ignored.fixture", "port" => 6390]]]]);
+        Yaml::create($this->_root."/config/Database.yml", [
+            "Database"    =>  [
+                "collection"    =>  [
+                    "mongodb"    =>  false,
+                    "redis"      =>  [
+                        "host"    =>  "ignored.fixture",
+                        "port"    =>  6390
+                    ]
+                ]
+            ]
+        ]);
 
         # Set the host through the process environment
         putenv("REDIS_HOST=redis.fixture");
@@ -165,7 +183,10 @@ class RedisCacheTest extends TestCase {
         putenv("REDIS_PORT=invalid");
 
         # Prepare explicit connection settings
-        $explicit = new RedisConfig(["host" => "explicit.fixture", "port" => 6381]);
+        $explicit = new RedisConfig([
+            "host"    =>  "explicit.fixture",
+            "port"    =>  6381
+        ]);
 
         # Preserve the caller's configuration object
         $this->assertSame($explicit, $this->_reader->getConfiguration("Redis", $explicit)["options"]);
@@ -179,19 +200,30 @@ class RedisCacheTest extends TestCase {
     public function testForcedFilesRemainUsable():void {
 
         # Force the existing offline backend
-        Env::set(["cache_driver" => "Files"]);
+        Env::set([
+            "cache_driver"    =>  "Files"
+        ]);
 
         # Construct without requiring the Redis extension or a connection
-        $cache = new Cache("Redis", new RedisConfig(["host" => "unused.fixture"]));
+        $cache = new Cache("Redis", new RedisConfig([
+            "host"    =>  "unused.fixture"
+        ]));
 
         # Exercise the fallback rather than checking configuration alone
-        $this->assertTrue($cache->set("redis-override", ["value" => 42], 60));
+        $this->assertTrue($cache->set("redis-override", [
+            "value"    =>  42
+        ], 60));
 
         # Read the stored fixture through the unchanged cache interface
-        $this->assertSame(["value" => 42], $cache->get("redis-override"));
+        $this->assertSame([
+            "value"    =>  42
+        ], $cache->get("redis-override"));
 
         # Restore default driver selection and enable the existing test override
-        Env::set(["cache_driver" => "", "phpunit_test" => true]);
+        Env::set([
+            "cache_driver"    =>  "",
+            "phpunit_test"    =>  true
+        ]);
 
         # Require unit-test mode to continue using Files
         $this->assertSame("Files", $this->_reader->getConfiguration("Redis")["driver"]);
@@ -216,7 +248,12 @@ class RedisCacheTest extends TestCase {
     public function testRejectsMalformedRedisPort():void {
 
         # Exercise invalid strings and both boundaries of the TCP port range
-        foreach(["invalid", "0", "65536", "6379.5"] as $port){
+        foreach([
+            "invalid",
+            "0",
+            "65536",
+            "6379.5"
+        ] as $port){
 
             # Supply this invalid port through the environment
             putenv("REDIS_PORT=".$port);
@@ -290,10 +327,14 @@ class RedisCacheTest extends TestCase {
         try{
 
             # Store a representative response for twenty-four hours
-            $this->assertTrue($cache->set($key, ["id" => 42], 86400));
+            $this->assertTrue($cache->set($key, [
+                "id"    =>  42
+            ], 86400));
 
             # Read the stored response through the environment-selected connection
-            $this->assertSame(["id" => 42], $cache->get($key));
+            $this->assertSame([
+                "id"    =>  42
+            ], $cache->get($key));
 
         }finally{
 
@@ -325,7 +366,13 @@ class RedisCacheTest extends TestCase {
         $prefix = "crazy-test-".bin2hex(random_bytes(6)).".";
 
         # Configure a nondefault database with fresh reads
-        $configuration = new RedisConfig(["host" => $host, "password" => $password, "database" => 13, "optPrefix" => $prefix, "useStaticItemCaching" => false]);
+        $configuration = new RedisConfig([
+            "host"                    =>  $host,
+            "password"                =>  $password,
+            "database"                =>  13,
+            "optPrefix"               =>  $prefix,
+            "useStaticItemCaching"    =>  false
+        ]);
 
         # Connect through the production wrapper
         $cache = new Cache("Redis", $configuration);
@@ -351,10 +398,22 @@ class RedisCacheTest extends TestCase {
         try{
 
             # Store a representative project response for twenty-four hours
-            $this->assertTrue($cache->set("project", ["data" => [["id" => 42]]], 86400));
+            $this->assertTrue($cache->set("project", [
+                "data"    =>  [
+                    [
+                        "id"    =>  42
+                    ]
+                ]
+            ], 86400));
 
             # Verify array serialization through a Redis read
-            $this->assertSame(["data" => [["id" => 42]]], $cache->get("project"));
+            $this->assertSame([
+                "data"    =>  [
+                    [
+                        "id"    =>  42
+                    ]
+                ]
+            ], $cache->get("project"));
 
             # Read the actual expiry from the Redis server
             $ttl = $observer->ttl($prefix."project");
@@ -366,10 +425,22 @@ class RedisCacheTest extends TestCase {
             $this->assertLessThanOrEqual(86400, $ttl);
 
             # Replace the same key as Project::get(force: true) does
-            $this->assertTrue($cache->set("project", ["data" => [["id" => 43]]], 86400));
+            $this->assertTrue($cache->set("project", [
+                "data"    =>  [
+                    [
+                        "id"    =>  43
+                    ]
+                ]
+            ], 86400));
 
             # Require the replacement value to be visible
-            $this->assertSame(["data" => [["id" => 43]]], $cache->get("project"));
+            $this->assertSame([
+                "data"    =>  [
+                    [
+                        "id"    =>  43
+                    ]
+                ]
+            ], $cache->get("project"));
 
             # Expire the fixture immediately without a wall-clock delay
             $observer->expire($prefix."project", 0);

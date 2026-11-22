@@ -63,11 +63,13 @@ class Api {
 
             # New error
             throw new CrazyException("Invalid map array given", 500, [
-                "custom_code"   =>  "api_010"
+                "custom_code"    =>  "api_010"
             ]);
 
         # Set aliasClass
-        $aliasClass && ($this->_aliasClass = is_array($aliasClass) ? $aliasClass : [$aliasClass] );
+        $aliasClass && ($this->_aliasClass = is_array($aliasClass) ? $aliasClass : [
+            $aliasClass
+        ] );
 
     }
 
@@ -83,7 +85,7 @@ class Api {
 
             # New error
             throw new CrazyException("Module '$name' not found", 500, [
-                "custom_code"   =>  "api_020"
+                "custom_code"    =>  "api_020"
             ]);
 
         # Set result

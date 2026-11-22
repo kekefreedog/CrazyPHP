@@ -36,21 +36,21 @@ class ProcessTest extends TestCase{
 
     /** @var array INPUT */
     public const INPUT = [
-        "toto"  =>  [
-            "toto"  =>  [
-                "value" =>  "@env_value"
+        "toto"    =>  [
+            "toto"    =>  [
+                "value"    =>  "@env_value"
             ],
-            "toto"  =>  "{{Test.process}}"
+            "toto"    =>  "{{Test.process}}"
         ]
     ];
 
     /** @var array RESULT */
     public const RESULT = [
-        "toto"  =>  [
-            "toto"  =>  [
-                "value" =>  "env_result"
+        "toto"    =>  [
+            "toto"    =>  [
+                "value"    =>  "env_result"
             ],
-            "toto"  =>  "process_result"
+            "toto"    =>  "process_result"
         ]
     ];
 
@@ -70,10 +70,10 @@ class ProcessTest extends TestCase{
         # Setup env
         Env::set([
             # App root for composer class
-            "crazyphp_root"     =>  getcwd(),
-            "phpunit_test"      =>  true,
-            "env_value"         =>  "env_result",
-            "config_location"   =>  "@crazyphp_root/resources/Yml"
+            "crazyphp_root"      =>  getcwd(),
+            "phpunit_test"       =>  true,
+            "env_value"          =>  "env_result",
+            "config_location"    =>  "@crazyphp_root/resources/Yml"
         ]);
 
     }

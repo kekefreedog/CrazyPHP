@@ -37,7 +37,9 @@ class MangodbOperation extends Operation {
      * @param string|array $operations Exemple ["=", "[]"] or ["contains", "between"] or "@>" or "contains" or "*" (for all operations)
      * @return self
      */
-    public function __construct(string|array $operations = ["*"]){
+    public function __construct(string|array $operations = [
+        "*"
+    ]){
 
         # Parent
         parent::__construct($operations);

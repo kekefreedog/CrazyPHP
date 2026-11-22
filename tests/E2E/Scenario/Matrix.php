@@ -37,7 +37,12 @@ class Matrix {
      */
 
     /** @var array STRATEGIES Supported selections, smallest first */
-    public const STRATEGIES = ["default", "each", "pairwise", "full"];
+    public const STRATEGIES = [
+        "default",
+        "each",
+        "pairwise",
+        "full"
+    ];
 
     /** Public Static Methods
      ******************************************************
@@ -119,7 +124,9 @@ class Matrix {
         if(empty($fields))
 
             # Return the completed answer set
-            return [$answers];
+            return [
+                $answers
+            ];
 
         # Take the next question
         $field = array_shift($fields);
@@ -137,7 +144,9 @@ class Matrix {
         foreach(self::_answers($field, $answers) as $value)
 
             # Continue the walk with this answer
-            array_push($result, ...self::branches($fields, [$field["name"] => $value] + $answers));
+            array_push($result, ...self::branches($fields, [
+                $field["name"]    =>  $value
+            ] + $answers));
 
         # Return result
         return $result;
@@ -161,7 +170,9 @@ class Matrix {
         if(!isset($field["select"]))
 
             # Single unanswered branch, without calling default providers such as port probes
-            return [null];
+            return [
+                null
+            ];
 
         # Read the static default used to order choices
         $default = $field["default"] ?? null;
@@ -173,7 +184,9 @@ class Matrix {
         if($field["multiple"] ?? false){
 
             # Start with the empty subset
-            $subsets = [[]];
+            $subsets = [
+                []
+            ];
 
             # Iteration of choices
             foreach($choices as $choice)
@@ -182,7 +195,10 @@ class Matrix {
                 foreach($subsets as $subset)
 
                     # Add the choice, keeping subsets in choice order
-                    $subsets[] = [...$subset, $choice];
+                    $subsets[] = [
+                        ...$subset,
+                        $choice
+                    ];
 
             # Return subsets
             return $subsets;
@@ -267,7 +283,9 @@ class Matrix {
         }
 
         # Always start with the default project
-        $selected = [0 => $all[0]];
+        $selected = [
+            0    =>  $all[0]
+        ];
 
         # Iteration of its combinations
         foreach($tuples[0] as $tuple)

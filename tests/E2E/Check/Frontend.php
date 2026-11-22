@@ -37,8 +37,8 @@ class Frontend implements Check {
 
     /** @var array CONFIG_FILES Build configuration owned by each bundler */
     public const CONFIG_FILES = [
-        "vite"      => "vite.build.mjs",
-        "webpack"   => "webpack.config.js",
+        "vite"       =>  "vite.build.mjs",
+        "webpack"    =>  "webpack.config.js",
     ];
 
     /** Public Methods
@@ -124,7 +124,11 @@ class Frontend implements Check {
         $package = $workspace->json("package.json");
 
         # Iteration of scripts
-        foreach(["build", "dev", "watch"] as $script){
+        foreach([
+            "build",
+            "dev",
+            "watch"
+        ] as $script){
 
             # Assert declared and registered
             Assert::assertArrayHasKey($script, $package["scripts"] ?? [], "package.json script $script");

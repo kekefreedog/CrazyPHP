@@ -52,7 +52,11 @@ class Delete extends CrazyModel implements CrazyCommand {
     ];
 
     /** @var array KEEP Root entries kept so Composer and the crazy command still work */
-    public const KEEP = ["composer.json", "vendor", ".git"];
+    public const KEEP = [
+        "composer.json",
+        "vendor",
+        ".git"
+    ];
 
     /** Private Parameters
      ******************************************************
@@ -149,7 +153,14 @@ class Delete extends CrazyModel implements CrazyCommand {
         # Require a relative public directory outside preserved project data and dependencies
         if(
             !preg_match('/^[a-zA-Z0-9_-]+(?:\/[a-zA-Z0-9_-]+)*$/D', $this->_public) ||
-            in_array(explode("/", $this->_public)[0], ["vendor", "config", "docker", "node_modules", "assets", "app"], true)
+            in_array(explode("/", $this->_public)[0], [
+                "vendor",
+                "config",
+                "docker",
+                "node_modules",
+                "assets",
+                "app"
+            ], true)
         )
 
             # New Exception
@@ -297,7 +308,12 @@ class Delete extends CrazyModel implements CrazyCommand {
         File::removeStructure($this->_root, $structure);
 
         # Remove application-owned source, assets, database data and environment while preserving linked targets
-        foreach(["app", "assets", ".database", ".env"] as $path)
+        foreach([
+            "app",
+            "assets",
+            ".database",
+            ".env"
+        ] as $path)
 
             # Remove path
             File::removeWithin($this->_root, $path);
@@ -351,7 +367,11 @@ class Delete extends CrazyModel implements CrazyCommand {
         foreach(scandir($this->_root) as $entry){
 
             # Check entry is not kept
-            if(in_array($entry, [".", "..", ...self::KEEP], true))
+            if(in_array($entry, [
+                ".",
+                "..",
+                ...self::KEEP
+            ], true))
 
                 # Continue
                 continue;

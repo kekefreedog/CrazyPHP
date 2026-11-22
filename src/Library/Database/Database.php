@@ -69,74 +69,74 @@ class Database {
     /** @var array CONFIG */
     public const CONFIG = [
         # MongoDB
-        "mongodb"   =>  [
-            "engine"    =>  "CrazyPHP\Library\Database\Driver\Mangodb",
-            "host"      =>  "localhost",
-            "database"  =>  [
+        "mongodb"       =>  [
+            "engine"      =>  "CrazyPHP\Library\Database\Driver\Mangodb",
+            "host"        =>  "localhost",
+            "database"    =>  [
                 "crazy_db"
             ],
-            "port"      =>  27017,
-            "root"      =>  [
-                "login"     =>  "admin",
-                "password"  =>  "password",
+            "port"        =>  27017,
+            "root"        =>  [
+                "login"       =>  "admin",
+                "password"    =>  "password",
             ],
-            "users"     =>  [
+            "users"       =>  [
                 [
-                    "login"     =>  "crazyuser",
-                    "password"  =>  "crazypassword",
+                    "login"       =>  "crazyuser",
+                    "password"    =>  "crazypassword",
                 ]
             ]
         ],
         # MariaDB
-        "mariadb"   =>  [
-            "engine"    =>  "CrazyPHP\Library\Database\Driver\Mariadb",
-            "host"      =>  "localhost",
-            "port"      =>  3306,
-            "database"  =>  [
+        "mariadb"       =>  [
+            "engine"      =>  "CrazyPHP\Library\Database\Driver\Mariadb",
+            "host"        =>  "localhost",
+            "port"        =>  3306,
+            "database"    =>  [
                 "crazy_db"
             ],
-            "root"      =>  [
-                "login"     =>  "root",
-                "password"  =>  "password",
+            "root"        =>  [
+                "login"       =>  "root",
+                "password"    =>  "password",
             ],
-            "users"     =>  [
+            "users"       =>  [
                 [
-                    "login"     =>  "crazyuser",
-                    "password"  =>  "crazypassword",
+                    "login"       =>  "crazyuser",
+                    "password"    =>  "crazypassword",
                 ]
             ]
         ],
         # MySQL
-        "mysql"     =>  [
-            "engine"    =>  "CrazyPHP\Library\Database\Driver\Mysql",
-            "host"      =>  "localhost",
-            "port"      =>  3306,
-            "database"  =>  [
+        "mysql"         =>  [
+            "engine"      =>  "CrazyPHP\Library\Database\Driver\Mysql",
+            "host"        =>  "localhost",
+            "port"        =>  3306,
+            "database"    =>  [
                 "crazy_db"
             ],
-            "root"      =>  [
-                "login"     =>  "root",
-                "password"  =>  "password",
+            "root"        =>  [
+                "login"       =>  "root",
+                "password"    =>  "password",
             ],
-            "users"     =>  [
+            "users"       =>  [
                 [
-                    "login"     =>  "crazyuser",
-                    "password"  =>  "crazypassword",
+                    "login"       =>  "crazyuser",
+                    "password"    =>  "crazypassword",
                 ]
             ]
         ],
         # PostgreSQL
-        "postgresql"=>  [
-            "engine"    =>  "CrazyPHP\Library\Database\Driver\Postgresql",
-            "host"      =>  "localhost",
-            "port"      =>  5432,
-            "database"  =>  [
+        "postgresql"    =>  [
+            "engine"      =>  "CrazyPHP\Library\Database\Driver\Postgresql",
+            "host"        =>  "localhost",
+            "port"        =>  5432,
+            "database"    =>  [
                 "crazy_db"
             ],
-            "users"     =>  [
+            "users"       =>  [
                 [
-                    "login"     =>  "crazyuser",
-                    "password"  =>  "crazypassword",
+                    "login"       =>  "crazyuser",
+                    "password"    =>  "crazypassword",
                 ]
             ]
         ]

@@ -46,48 +46,53 @@ class Create extends CrazyModel implements CrazyCommand {
     public const REQUIRED_VALUES = [
         # Type
         [
-            "name"          =>  "type",
-            "description"   =>  "Type of your crazy router",
-            "type"          =>  "VARCHAR",
-            "default"       =>  "app",
-            "select"        =>  [
-                "app"           =>  "App",
-                "api"           =>  "Api",
-                "asset"         =>  "Asset",
+            "name"           =>  "type",
+            "description"    =>  "Type of your crazy router",
+            "type"           =>  "VARCHAR",
+            "default"        =>  "app",
+            "select"         =>  [
+                "app"      =>  "App",
+                "api"      =>  "Api",
+                "asset"    =>  "Asset",
             ]
         ],
         # Name
         [
-            "name"          =>  "name",
-            "description"   =>  "Name of your crazy router",
-            "type"          =>  "VARCHAR",
-            "default"       =>  "router",
-            "required"      =>  true,
-            "process"       =>  ['cleanPath', 'snakeToCamel', 'ucfirst', 'trim']
+            "name"           =>  "name",
+            "description"    =>  "Name of your crazy router",
+            "type"           =>  "VARCHAR",
+            "default"        =>  "router",
+            "required"       =>  true,
+            "process"        =>  [
+                'cleanPath',
+                'snakeToCamel',
+                'ucfirst',
+                'trim'
+            ]
         ],
         # Methods
         [
-            "name"          =>  "methods",
-            "description"   =>  "Methods allowed by your crazy router",
-            "type"          =>  "ARRAY",
-            "default"       =>  "get",
-            "required"      =>  true,
-            "multiple"      =>  true,
-            "select"        =>  [
-                "get"           =>  "Get",
-                "post"          =>  "Post",
-                "put"           =>  "Put",
-                "delete"        =>  "Delete",
-                "option"        =>  "Option",
-                "patch"         =>  "Patch",
+            "name"           =>  "methods",
+            "description"    =>  "Methods allowed by your crazy router",
+            "type"           =>  "ARRAY",
+            "default"        =>  "get",
+            "required"       =>  true,
+            "multiple"       =>  true,
+            "select"         =>  [
+                "get"       =>  "Get",
+                "post"      =>  "Post",
+                "put"       =>  "Put",
+                "delete"    =>  "Delete",
+                "option"    =>  "Option",
+                "patch"     =>  "Patch",
             ],
         ],
         # Prefix
         [
-            "name"          =>  "prefix",
-            "description"   =>  "Prefix of your crazy router",
-            "type"          =>  "STRING",
-            "default"       =>  false,
+            "name"           =>  "prefix",
+            "description"    =>  "Prefix of your crazy router",
+            "type"           =>  "STRING",
+            "default"        =>  false,
         ],
     ];
 
@@ -219,7 +224,10 @@ class Create extends CrazyModel implements CrazyCommand {
         $routers = FileConfig::getValue("Router.".$this->router["Type"]);
 
         # Clean router name
-        $routerName = $this->router["Name"] = Process::snakeToCamel(str_replace(["/", "."], "_", $this->router["Name"]), true);
+        $routerName = $this->router["Name"] = Process::snakeToCamel(str_replace([
+            "/",
+            "."
+        ], "_", $this->router["Name"]), true);
 
         # Check if router name alreay exists
         if(!empty(Arrays::filterByKey($routers, "name", $routerName)))
@@ -229,7 +237,7 @@ class Create extends CrazyModel implements CrazyCommand {
                 "Given name \"$routerName\" already exists in \"".$this->router["Type"]."\" routers collection",
                 500,
                 [
-                    "custom_code"   =>  "create-router-001",
+                    "custom_code"    =>  "create-router-001",
                 ]
             );
 
@@ -248,7 +256,9 @@ class Create extends CrazyModel implements CrazyCommand {
         if(is_string($this->router["Methods"]))
 
             # Convert to string
-            $this->router["Methods"] = [$this->router["Methods"]];
+            $this->router["Methods"] = [
+                $this->router["Methods"]
+            ];
 
         # Set patterns
         $this->router["patterns"] = [
@@ -271,7 +281,7 @@ class Create extends CrazyModel implements CrazyCommand {
 
         # Set up env for cache driver
         Env::set([
-            "cache_driver"  =>  "Files"
+            "cache_driver"    =>  "Files"
         ]);
 
     }
@@ -290,8 +300,8 @@ class Create extends CrazyModel implements CrazyCommand {
 
             # Create template instance
             $template = new Handlebars([
-                "template"  =>  Handlebars::PERFORMANCE_PRESET,
-                "helpers"   =>  false
+                "template"    =>  Handlebars::PERFORMANCE_PRESET,
+                "helpers"     =>  false
             ]);
 
             # Load template
@@ -324,8 +334,8 @@ class Create extends CrazyModel implements CrazyCommand {
 
             # Create template instance
             $template = new Handlebars([
-                "template"  =>  Handlebars::PERFORMANCE_PRESET,
-                "helpers"   =>  false
+                "template"    =>  Handlebars::PERFORMANCE_PRESET,
+                "helpers"     =>  false
             ]);
 
             # Load template
@@ -380,9 +390,9 @@ class Create extends CrazyModel implements CrazyCommand {
     
             # Set additionnal data
             $additionnal = [
-                "Namespace"             =>  Strings::removeLastString($this->router["Controller"], "\\"),
-                "Class"                 =>  Strings::getLastString($this->router["Controller"], "\\"),
-                "materialDynamicColors" =>  FileConfig::getValue("Style.materialDynamicColors")
+                "Namespace"                =>  Strings::removeLastString($this->router["Controller"], "\\"),
+                "Class"                    =>  Strings::getLastString($this->router["Controller"], "\\"),
+                "materialDynamicColors"    =>  FileConfig::getValue("Style.materialDynamicColors")
             ];
 
             # Create template instance
@@ -409,8 +419,8 @@ class Create extends CrazyModel implements CrazyCommand {
     
             # Set additionnal data
             $additionnal = [
-                "Namespace"     =>  Strings::removeLastString($this->router["Controller"], "\\"),
-                "Class"         =>  Strings::getLastString($this->router["Controller"], "\\"),
+                "Namespace"    =>  Strings::removeLastString($this->router["Controller"], "\\"),
+                "Class"        =>  Strings::getLastString($this->router["Controller"], "\\"),
             ];
 
             # Create template instance
@@ -437,14 +447,14 @@ class Create extends CrazyModel implements CrazyCommand {
     
             # Set additionnal data
             $additionnal = [
-                "Namespace"     =>  Strings::removeLastString($this->router["Controller"], "\\"),
-                "Class"         =>  Strings::getLastString($this->router["Controller"], "\\"),
+                "Namespace"    =>  Strings::removeLastString($this->router["Controller"], "\\"),
+                "Class"        =>  Strings::getLastString($this->router["Controller"], "\\"),
             ];
 
             # Create template instance
             $template = new Handlebars([
-                "template"  =>  Handlebars::PERFORMANCE_PRESET,
-                "helpers"   =>  false
+                "template"    =>  Handlebars::PERFORMANCE_PRESET,
+                "helpers"     =>  false
             ]);
 
             # Load template

@@ -113,7 +113,9 @@ class Arrays{
 					$result[$explode[0]] = self::mergeMultidimensionalArrays(
 						true,
 						$result[$explode[0]],
-						self::stretch([$explode[1]=>$v], $separator)
+						self::stretch([
+                            $explode[1]    =>  $v
+                        ], $separator)
 					);
 				
 				}else
@@ -334,7 +336,10 @@ class Arrays{
 	 * @param string|array $separators
 	 * @return mixed
 	 */
-	public static function parseKey(string $key = "", array $array = [], string|array $separators = [".", "/"]):mixed {
+	public static function parseKey(string $key = "", array $array = [], string|array $separators = [
+        ".",
+        "/"
+    ]):mixed {
 
 		# Set result
 		$result = null;
@@ -390,7 +395,10 @@ class Arrays{
 	 * @param string|array $separators Separator for key
 	 * @return void
 	 */
-	public static function fill(array &$array = [], string $key = "", $value = null,  string|array $separators = [".", "/"]):void {
+	public static function fill(array &$array = [], string $key = "", $value = null,  string|array $separators = [
+        ".",
+        "/"
+    ]):void {
 
 		# Check key, array, separator
 		if(empty($key))
@@ -438,7 +446,10 @@ class Arrays{
 	public static function changeKeyCaseRecursively(array $array = [], int $case = CASE_LOWER):array {
 
 		# Set case
-		$case = in_array($case, [CASE_UPPER, CASE_LOWER]) 
+		$case = in_array($case, [
+            CASE_UPPER,
+            CASE_LOWER
+        ])
 			? $case 
 			: 1
 		; 
@@ -501,7 +512,10 @@ class Arrays{
 	 * @param string|array $separators Separator for key
 	 * @return mixed
 	 */
-	public static function getKey(array $array = [], string $key = "", string|array $separators = [".", "/"]):mixed {
+	public static function getKey(array $array = [], string $key = "", string|array $separators = [
+        ".",
+        "/"
+    ]):mixed {
 
 		# Set result
 		$result = $array;
@@ -561,7 +575,10 @@ class Arrays{
 	 * @param string|array $separators Separator for key
 	 * @return bool
 	 */
-	public static function hasKey(array $array = [], string $key = "", string|array $separators = [".", "/"]):bool {
+	public static function hasKey(array $array = [], string $key = "", string|array $separators = [
+        ".",
+        "/"
+    ]):bool {
 
 		# Set result
 		$result = false;
@@ -626,7 +643,10 @@ class Arrays{
 	 * @param string|array $separators Separator for key
 	 * @return bool
 	 */
-	public static function setKey(array &$array, string $key, mixed $value, bool $createIfNotExists = true, string|array $separators = [".", "/"]):bool {
+	public static function setKey(array &$array, string $key, mixed $value, bool $createIfNotExists = true, string|array $separators = [
+        ".",
+        "/"
+    ]):bool {
 
 		# Set result
 		$result = false;
@@ -730,7 +750,9 @@ class Arrays{
 		if(is_string($search)) 
 
 			# Convert to array
-			$search = [$search];
+			$search = [
+                $search
+            ];
 
 		# Iteration subject
 		foreach($subject as &$value){
@@ -945,7 +967,9 @@ class Arrays{
 	 */
 	public static function addPrefixToKeysWithException(array $array, string $prefix = "", $exception = [], bool $ucfirst = false, string $separator = "_"): array {
 		// Ensure $exception is an array for uniform handling
-		$exceptions = is_array($exception) ? $exception : [$exception];
+		$exceptions = is_array($exception) ? $exception : [
+            $exception
+        ];
 	
 		// Return result
 		return array_combine(
@@ -1059,6 +1083,10 @@ class Arrays{
      */
 
     /** @var array */
-    public const SEPARATOR = ["/", ".", "___"];
+    public const SEPARATOR = [
+        "/",
+        ".",
+        "___"
+    ];
 
 }

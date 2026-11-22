@@ -44,8 +44,8 @@ class Package{
     public const PATH = [
         # "package.json" =>  __DIR__."/../../../package.json",
         # "package-lock.json" =>  __DIR__."/../../../package-lock.json",
-        "package.json" =>  "@app_root/package.json",
-        "package-lock.json" =>  "@app_root/package-lock.json",
+        "package.json"         =>  "@app_root/package.json",
+        "package-lock.json"    =>  "@app_root/package-lock.json",
     ];
 
     # Crazy PHP package value default
@@ -54,67 +54,76 @@ class Package{
     # Default properties of composer
     public const DEFAULT_PROPERTIES = [
         # Name
-        "name"          =>  Create::REQUIRED_VALUES[0],
+        "name"               =>  Create::REQUIRED_VALUES[0],
         # Description
-        "description"   =>  Create::REQUIRED_VALUES[1],
+        "description"        =>  Create::REQUIRED_VALUES[1],
         # Version
-        "version"       =>  [
-            "name"          =>  "version",
-            "description"   =>  "Version of your crazy project",
-            "type"          =>  "VARCHAR",
+        "version"            =>  [
+            "name"           =>  "version",
+            "description"    =>  "Version of your crazy project",
+            "type"           =>  "VARCHAR",
         ],
         # Keywords
-        "keywords"      =>  [
-            "name"          =>  "keywords",
-            "description"   =>  "Keywords about your app",
-            "type"          =>  "ARRAY",
+        "keywords"           =>  [
+            "name"           =>  "keywords",
+            "description"    =>  "Keywords about your app",
+            "type"           =>  "ARRAY",
         ],
         # Homepage
-        "homepage"      =>  Create::REQUIRED_VALUES[5],
+        "homepage"           =>  Create::REQUIRED_VALUES[5],
         # Licence
-        "license"       =>  [
-            "name"          =>  "licence",
-            "description"   =>  "Licence of your app",
-            "type"          =>  "VARCHAR",
+        "license"            =>  [
+            "name"           =>  "licence",
+            "description"    =>  "Licence of your app",
+            "type"           =>  "VARCHAR",
         ],
         # Author name
-        "authors_name" =>  [
-            "name"          =>  "authors_name",
-            "description"   =>  "Author of this crazy project",
-            "type"          =>  "VARCHAR",
-            "default"       =>  "CrazyPerson",
-            "required"      =>  true,
-            "process"       =>  ['trim'],
+        "authors_name"       =>  [
+            "name"           =>  "authors_name",
+            "description"    =>  "Author of this crazy project",
+            "type"           =>  "VARCHAR",
+            "default"        =>  "CrazyPerson",
+            "required"       =>  true,
+            "process"        =>  [
+                'trim'
+            ],
         ],
         # Author name
-        "authors_email"=>  [
-            "name"          =>  "authors_email",
-            "description"   =>  "Email of the crazy author",
-            "type"          =>  "VARCHAR",
-            "default"       =>  "crazy@person.com",
-            "required"      =>  true,
-            "process"       =>  ['trim'],
-            "validate"      =>  ['email'],
+        "authors_email"      =>  [
+            "name"           =>  "authors_email",
+            "description"    =>  "Email of the crazy author",
+            "type"           =>  "VARCHAR",
+            "default"        =>  "crazy@person.com",
+            "required"       =>  true,
+            "process"        =>  [
+                'trim'
+            ],
+            "validate"       =>  [
+                'email'
+            ],
         ],
         # Authors
-        "authors"       =>  [
-            "name"          =>  "authors",
-            "description"   =>  "Authors of your app",
-            "type"          =>  "ARRAY",
+        "authors"            =>  [
+            "name"           =>  "authors",
+            "description"    =>  "Authors of your app",
+            "type"           =>  "ARRAY",
         ],
         # Funding
-        "funding"       =>  [
-            "name"          =>  "funding",
-            "description"   =>  "Funding information of your app",
-            "type"          =>  "ARRAY",
+        "funding"            =>  [
+            "name"           =>  "funding",
+            "description"    =>  "Funding information of your app",
+            "type"           =>  "ARRAY",
         ],
         # Dependencies
-        "devDependencies"  =>  [
-            "name"          =>  "devDependencies",
-            "description"   =>  "Dev Dependencies of your app",
-            "type"          =>  "ARRAY",
-            "default"       =>  [self::class, "getDefaultDevDependencies"],
-            "required"      =>  true,
+        "devDependencies"    =>  [
+            "name"           =>  "devDependencies",
+            "description"    =>  "Dev Dependencies of your app",
+            "type"           =>  "ARRAY",
+            "default"        =>  [
+                self::class,
+                "getDefaultDevDependencies"
+            ],
+            "required"       =>  true,
         ]
     ];
 
@@ -127,30 +136,30 @@ class Package{
 
     /** @var array DEFAULT_SCRIPTS */
     public const DEFAULT_SCRIPTS = [
-        "build" =>  "webpack --mode production",
-        "dev"   =>  "webpack --mode development",
-        "watch" =>  "webpack --watch --mode development"
+        "build"    =>  "webpack --mode production",
+        "dev"      =>  "webpack --mode development",
+        "watch"    =>  "webpack --watch --mode development"
     ];
 
     /** @var array COMMAND_SUPPORTED supported command */
     public const COMMAND_SUPPORTED = [
-        "install"   =>  [
-            "command"   =>  "i"
+        "install"      =>  [
+            "command"    =>  "i"
         ],
-        "update"   =>  [
-            "command"   =>  "up"
+        "update"       =>  [
+            "command"    =>  "up"
         ],
         "uninstall"    =>  [
-            "command"   =>  "r"
+            "command"    =>  "r"
         ],
-        "search"    =>  [
-            "command"   =>  "s"
+        "search"       =>  [
+            "command"    =>  "s"
         ],
-        "start"     =>  [
-            "command"   =>  "start"
+        "start"        =>  [
+            "command"    =>  "start"
         ],
-        "run"       =>  [
-            "command"   =>  "run"
+        "run"          =>  [
+            "command"    =>  "run"
         ],
     ];
 
@@ -316,7 +325,7 @@ class Package{
                 "No config file found for \"".$keys[0]."\".", 
                 500,
                 [
-                    "custom_code"   =>  "package-001",
+                    "custom_code"    =>  "package-001",
                 ]
             );
 
@@ -331,7 +340,7 @@ class Package{
                 "package.json isn't valid... Array awaited !", 
                 500,
                 [
-                    "custom_code"   =>  "package-011",
+                    "custom_code"    =>  "package-011",
                 ]
             );
 
@@ -488,7 +497,7 @@ class Package{
                 "\"$commandName\” isn't supported with Npm (package)", 
                 500,
                 [
-                    "custom_code"   =>  "package-001",
+                    "custom_code"    =>  "package-001",
                 ]
             );
 
@@ -527,7 +536,7 @@ class Package{
                 "Npm (package) ".$argument." failed".(is_array($result["output"]) ? " : ".json_encode($result["output"]) : ""),
                 500,
                 [
-                    "custom_code"   =>  "package-002",
+                    "custom_code"    =>  "package-002",
                 ]
             );
 
@@ -730,7 +739,9 @@ class Package{
 
         # Set default config into package
         static::set(
-            ["scripts"   =>  self::DEFAULT_SCRIPTS],
+            [
+                "scripts"    =>  self::DEFAULT_SCRIPTS
+            ],
             "@app_root/package.json"
         );
 
@@ -767,7 +778,7 @@ class Package{
 
         # Set package in package.json
         static::update([
-            "devDependencies"   =>  [
+            "devDependencies"    =>  [
 
             ]
         ]);
@@ -821,17 +832,23 @@ class Package{
 
                     # Push into result 
                     $dependencies[] = [
-                        'name'        => ltrim($name, 'node_modules/'),
-                        'version'     => $data['version'] ?? '',
-                        'description' => $data['description'] ?? '',
-                        'url'         => isset($data['funding']['url']) ? str_replace(["?sponsor=1"], "", $data['funding']['url']) : (isset($data['funding'][0]['url']) ? str_replace(["?sponsor=1"], "", $data['funding'][0]['url']) : ''),
-                        'license'     => isset($data['license']) && $data['license'] ? (is_array($data['license']) ? $data['license'] : [$data['license']]) : [],
-                        'type'        => 'npm',
-                        'authors'     => [],
-                        'source'      => [
-                            'type'      => 'npm',
-                            'url'       => $data['resolved'] ?? '',
-                            'integrity' => $data['integrity'] ?? '',
+                        'name'           =>  ltrim($name, 'node_modules/'),
+                        'version'        =>  $data['version'] ?? '',
+                        'description'    =>  $data['description'] ?? '',
+                        'url'            =>  isset($data['funding']['url']) ? str_replace([
+                            "?sponsor=1"
+                        ], "", $data['funding']['url']) : (isset($data['funding'][0]['url']) ? str_replace([
+                            "?sponsor=1"
+                        ], "", $data['funding'][0]['url']) : ''),
+                        'license'        =>  isset($data['license']) && $data['license'] ? (is_array($data['license']) ? $data['license'] : [
+                            $data['license']
+                        ]) : [],
+                        'type'           =>  'npm',
+                        'authors'        =>  [],
+                        'source'         =>  [
+                            'type'         =>  'npm',
+                            'url'          =>  $data['resolved'] ?? '',
+                            'integrity'    =>  $data['integrity'] ?? '',
                         ],
                     ];
                 
@@ -873,7 +890,9 @@ class Package{
             # Set licences
             $licenses = is_array($dep['license']) 
                 ? $dep['license'] 
-                : [$dep['license']]
+                : [
+                    $dep['license']
+                ]
             ;
 
             # Iteration licence

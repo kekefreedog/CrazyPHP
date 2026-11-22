@@ -74,7 +74,10 @@ class DockerFiles implements Check {
         $services = $workspace->yaml("docker-compose.yml")["services"] ?? [];
 
         # Set runtime services
-        $expected = ["prepare", "webserver"];
+        $expected = [
+            "prepare",
+            "webserver"
+        ];
 
         # Check nginx
         if($server === "nginx")
@@ -105,7 +108,10 @@ class DockerFiles implements Check {
         $dockerfile = (string) @file_get_contents($workspace->path("docker/php/Dockerfile"));
         Assert::assertStringContainsString(
             "php".$scenario->get("php_version"),
-            str_replace([":", "-"], "", strtolower($dockerfile)),
+            str_replace([
+                ":",
+                "-"
+            ], "", strtolower($dockerfile)),
             "docker/php/Dockerfile uses PHP ".$scenario->get("php_version")
         );
 

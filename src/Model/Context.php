@@ -233,7 +233,7 @@ class Context {
                 "Current route hasn't been defined in context yet", 
                 500,
                 [
-                    "custom_code"   =>  "context-001",
+                    "custom_code"    =>  "context-001",
                 ]
             );
 
@@ -277,7 +277,10 @@ class Context {
             foreach($attributes as $attribute)
 
                 # Set attribute
-                $result[str_replace([".", "/"], "___", $attribute)] = self::get("routes.current.$attribute");
+                $result[str_replace([
+                    ".",
+                    "/"
+                ], "___", $attribute)] = self::get("routes.current.$attribute");
 
             # Expand result
             $result = Arrays::stretch($result, "___");
@@ -372,6 +375,9 @@ class Context {
     public const PREFIX = "__CRAZY_CONTEXT";
 
     /** @var array */
-    public const SEPARATOR = ["/", "."];
+    public const SEPARATOR = [
+        "/",
+        "."
+    ];
 
 }

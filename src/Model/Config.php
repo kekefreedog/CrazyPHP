@@ -52,10 +52,10 @@ class Config {
      * Default Config files
      */
     public const DEFAULT_CONFIG_FILES = [
-        "App"       =>  [
-            "path_source"   =>  "@app_root/composer.json",
-            "path_target"   =>  self::DEFAULT_PATH."/App.yml",
-            "action_set"    =>  "_setAppConfig",
+        "App"    =>  [
+            "path_source"    =>  "@app_root/composer.json",
+            "path_target"    =>  self::DEFAULT_PATH."/App.yml",
+            "action_set"     =>  "_setAppConfig",
         ],
         /* "Template"  =>  [
             "path_source"   =>  "@crazyphp_root"."/resources/Yml/Template.yml",
@@ -106,7 +106,9 @@ class Config {
         if(is_string($configs))
 
             # Convert string to array
-            $configs = [$configs];
+            $configs = [
+                $configs
+            ];
 
         # Check configs
         if(empty($configs))
@@ -156,7 +158,9 @@ class Config {
         if(is_string($configs))
 
             # Convert string to array
-            $configs = [$configs];
+            $configs = [
+                $configs
+            ];
 
         # Check configs
         if(empty($configs))
@@ -207,7 +211,10 @@ class Config {
         $finder = new Finder();
 
         # Prepare finder
-        $finder->files()->name(["$config.*", $config])->in($folderPath);
+        $finder->files()->name([
+            "$config.*",
+            $config
+        ])->in($folderPath);
 
         # Check finder result
         if($finder->hasResults())
@@ -252,7 +259,7 @@ class Config {
                 "Folder \"$folder\" given isn't valid", 
                 500,
                 [
-                    "custom_code"   =>  "config-002",
+                    "custom_code"    =>  "config-002",
                 ]
             );
 
@@ -264,7 +271,7 @@ class Config {
                 "Name \"$name\" given isn't valid", 
                 500,
                 [
-                    "custom_code"   =>  "config-003",
+                    "custom_code"    =>  "config-003",
                 ]
             );
 
@@ -276,7 +283,7 @@ class Config {
                 "Config \"$name.$format\" already exists", 
                 500,
                 [
-                    "custom_code"   =>  "config-004",
+                    "custom_code"    =>  "config-004",
                 ]
             );
 
@@ -291,12 +298,14 @@ class Config {
                 "Format \"$format\" isn't valid", 
                 500,
                 [
-                    "custom_code"   =>  "config-005",
+                    "custom_code"    =>  "config-005",
                 ]
             );
 
         # Create file
-        $formatInstance::create($targetPath, [$name => $data], Header::get($format));
+        $formatInstance::create($targetPath, [
+            $name    =>  $data
+        ], Header::get($format));
 
         # Set content
         $GLOBALS[self::PREFIX][$name] = $data;
@@ -340,7 +349,7 @@ class Config {
                 "composer.json is not valid or is maybe missing", 
                 500,
                 [
-                    "custom_code"   =>  "config-001",
+                    "custom_code"    =>  "config-001",
                 ]
             );
 
@@ -352,7 +361,7 @@ class Config {
 
             # Set framework content
             $frameworkContent = [
-                "path"      =>  Process::reducePath(File::path("@crazyphp_root"))
+                "path"    =>  Process::reducePath(File::path("@crazyphp_root"))
             ];
 
         else
@@ -364,13 +373,13 @@ class Config {
             true,
             $composerContent,
             [
-                "root"          =>  Process::reducePath(File::path("@app_root")),
+                "root"            =>  Process::reducePath(File::path("@app_root")),
                 # To delete for production
-                "framework"     =>  $frameworkContent,
-                "public"        =>  "public",
-                "dependencies"  =>  [
-                    "php"   =>  [
-                        "packages"   =>  [
+                "framework"       =>  $frameworkContent,
+                "public"          =>  "public",
+                "dependencies"    =>  [
+                    "php"    =>  [
+                        "packages"    =>  [
                             "git"
                         ]
                     ]
@@ -379,7 +388,9 @@ class Config {
         );
 
         # Create yaml
-        Yaml::create($config['path_target'], ["App" => $composerContent], Header::get("yml"));
+        Yaml::create($config['path_target'], [
+            "App"    =>  $composerContent
+        ], Header::get("yml"));
 
         # Set content in cache
         $GLOBALS[self::PREFIX]["App"] = $composerContent;

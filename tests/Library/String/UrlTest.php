@@ -45,7 +45,7 @@ class UrlTest extends TestCase{
 
         # Setup env
         Env::set([
-            "phpunit_test"      =>  true,
+            "phpunit_test"    =>  true,
         ]);
 
     }
@@ -86,7 +86,9 @@ class UrlTest extends TestCase{
             0,
             123,
             [],
-            ["url"],
+            [
+                "url"
+            ],
             new \stdClass(),
             "",
         ];
@@ -118,7 +120,9 @@ class UrlTest extends TestCase{
             0,
             123,
             [],
-            ["url"],
+            [
+                "url"
+            ],
             new \stdClass(),
             "",
         ];

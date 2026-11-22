@@ -195,7 +195,9 @@ class Asset{
        if(!is_array($inputs))
 
            # Convert inpits to array
-           $inputs = [$inputs];
+           $inputs = [
+               $inputs
+           ];
 
         # Key of collection
         $keyCollection = Cache::getKeyWithCacheName(__CLASS__, "Collection");
@@ -217,7 +219,7 @@ class Asset{
                 "Please register asset before use them", 
                 500,
                 [
-                    "custom_code"   =>  "core-001",
+                    "custom_code"    =>  "core-001",
                 ]
             );
 
@@ -305,7 +307,7 @@ class Asset{
                 "Please search media before open it", 
                 500,
                 [
-                    "custom_code"   =>  "asset-001",
+                    "custom_code"    =>  "asset-001",
                 ]
             );
 
@@ -318,7 +320,7 @@ class Asset{
                 "Searched asset not found in result of your get", 
                 500,
                 [
-                    "custom_code"   =>  "asset-002",
+                    "custom_code"    =>  "asset-002",
                 ]
             );
 
@@ -343,7 +345,7 @@ class Asset{
                 "Asset your are looking for don't exists", 
                 500,
                 [
-                    "custom_code"   =>  "asset-003",
+                    "custom_code"    =>  "asset-003",
                 ]
             );
 
@@ -373,7 +375,7 @@ class Asset{
                 "Please search media before open it", 
                 500,
                 [
-                    "custom_code"   =>  "asset-001",
+                    "custom_code"    =>  "asset-001",
                 ]
             );
 
@@ -386,7 +388,7 @@ class Asset{
                 "Searched asset not found in result of your get", 
                 500,
                 [
-                    "custom_code"   =>  "asset-002",
+                    "custom_code"    =>  "asset-002",
                 ]
             );
 
@@ -411,7 +413,7 @@ class Asset{
                 "Asset your are looking for don't exists", 
                 500,
                 [
-                    "custom_code"   =>  "asset-003",
+                    "custom_code"    =>  "asset-003",
                 ]
             );
 
@@ -441,7 +443,7 @@ class Asset{
                 "Please search media before open it", 
                 500,
                 [
-                    "custom_code"   =>  "asset-001",
+                    "custom_code"    =>  "asset-001",
                 ]
             );
 
@@ -454,7 +456,7 @@ class Asset{
                 "Searched asset not found in result of your get", 
                 500,
                 [
-                    "custom_code"   =>  "asset-002",
+                    "custom_code"    =>  "asset-002",
                 ]
             );
 
@@ -479,7 +481,7 @@ class Asset{
                 "Asset your are looking for don't exists", 
                 500,
                 [
-                    "custom_code"   =>  "asset-003",
+                    "custom_code"    =>  "asset-003",
                 ]
             );
 
@@ -544,11 +546,11 @@ class Asset{
 
                     # Update input
                     $input = [
-                        "path"      =>  $input,
-                        "extension" =>  File::getFileExtension($realPath),
-                        "mimeType"  =>  File::guessMime($realPath),
-                        "exists"    =>  File::exists($realPath),
-                        "modified"  =>  File::getLastModifiedDate($realPath)
+                        "path"         =>  $input,
+                        "extension"    =>  File::getFileExtension($realPath),
+                        "mimeType"     =>  File::guessMime($realPath),
+                        "exists"       =>  File::exists($realPath),
+                        "modified"     =>  File::getLastModifiedDate($realPath)
                     ];
 
                 }else
@@ -607,7 +609,10 @@ class Asset{
     public const PATH = "@app_root/config/Asset.yml";
 
     /** @var array SEPARATOR */
-    public const SEPARATOR = ["/", "."];
+    public const SEPARATOR = [
+        "/",
+        "."
+    ];
 
     /** Private constants
      ******************************************************

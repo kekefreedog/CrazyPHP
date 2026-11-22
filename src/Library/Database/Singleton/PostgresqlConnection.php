@@ -55,7 +55,7 @@ class PostgresqlConnection implements CrazySingleton {
      * @return PDO
      */
     public static function getInstance(array $options = [
-        "user"  =>  0
+        "user"    =>  0
     ]):PDO {
 
         # Set user
@@ -83,7 +83,7 @@ class PostgresqlConnection implements CrazySingleton {
      * @return void
      */
     public static function connect(array $options = [
-        "user"  =>  0
+        "user"    =>  0
     ]):void {
 
         # Cache Instance
@@ -133,7 +133,7 @@ class PostgresqlConnection implements CrazySingleton {
                     "User \"$user\" can't be found...",
                     500,
                     [
-                        "custom_code"   =>  "postgresqlconnection-001",
+                        "custom_code"    =>  "postgresqlconnection-001",
                     ]
                 );
 
@@ -154,7 +154,7 @@ class PostgresqlConnection implements CrazySingleton {
                     "User \"$user\" don't exists...",
                     500,
                     [
-                        "custom_code"   =>  "postgresqlconnection-002",
+                        "custom_code"    =>  "postgresqlconnection-002",
                     ]
                 );
 
@@ -194,7 +194,7 @@ class PostgresqlConnection implements CrazySingleton {
                 $e->getMessage(),
                 500,
                 [
-                    "custom_code"   =>  "postgresqlconnection-010",
+                    "custom_code"    =>  "postgresqlconnection-010",
                 ]
             );
         
@@ -211,7 +211,7 @@ class PostgresqlConnection implements CrazySingleton {
      * @return void
      */
     public static function disconnect(array $options = [
-        "user"  =>  0
+        "user"    =>  0
     ]):void {
 
         # Set user

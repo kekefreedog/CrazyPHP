@@ -124,7 +124,7 @@ class Yaml{
                 "Yaml file \"".array_pop($explode)."\" can't be created...",
                 403,
                 [
-                    "custom_code"   =>  "yaml-002",
+                    "custom_code"    =>  "yaml-002",
                 ]
             );
 
@@ -166,7 +166,7 @@ class Yaml{
                 "Yaml \"$filename\" doesn't exists...",
                 500,
                 [
-                    "custom_code"   =>  "yaml-001",
+                    "custom_code"    =>  "yaml-001",
                 ]
             );
 
@@ -189,7 +189,7 @@ class Yaml{
                 "Content of  \"$filename\" isn't yaml...",
                 500,
                 [
-                    "custom_code"   =>  "yaml-001",
+                    "custom_code"    =>  "yaml-001",
                 ]
             );
 
@@ -401,7 +401,9 @@ class Yaml{
         if(!is_array($input))
 
             # Set result
-            $input = [$input];
+            $input = [
+                $input
+            ];
 
         # Encode result
         $result = YamlS::dump($input, 10);

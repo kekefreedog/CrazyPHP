@@ -40,7 +40,10 @@ class SqlFilter {
     public static function where(array $filters, string $table, string $alias = "a"):array {
 
         # Prepare result
-        $result = ["sql" => "", "parameters" => []];
+        $result = [
+            "sql"           =>  "",
+            "parameters"    =>  []
+        ];
 
         # Validate the source table
         SqlOperation::identifier($table);
@@ -63,7 +66,10 @@ class SqlFilter {
             $conjunction = "AND";
 
             # Preserve the existing OR field prefixes
-            if(in_array(substr($key, 0, 2), ["||", "!!"], true)){
+            if(in_array(substr($key, 0, 2), [
+                "||",
+                "!!"
+            ], true)){
 
                 # Remove the conjunction prefix
                 $key = substr($key, 2);
@@ -77,7 +83,11 @@ class SqlFilter {
             $relation = substr($key, 0, 2);
 
             # Compile supported relation predicates
-            if(in_array($relation, ["<>", "@@", "><"], true)){
+            if(in_array($relation, [
+                "<>",
+                "@@",
+                "><"
+            ], true)){
 
                 # Compile the relation and its extra parameters
                 $condition = self::_relation(substr($key, 2), $value, $table, $alias, $relation === "><");
@@ -111,8 +121,8 @@ class SqlFilter {
 
                     # Make empty IN lists match no records
                     $condition = [
-                        "sql" => $value ? $column." IN (".implode(", ", array_fill(0, count($value), "?")).")" : "0 = 1",
-                        "parameters" => $value,
+                        "sql"           =>  $value ? $column." IN (".implode(", ", array_fill(0, count($value), "?")).")" : "0 = 1",
+                        "parameters"    =>  $value,
                     ];
 
                 }else{
@@ -161,7 +171,9 @@ class SqlFilter {
         $fields = [];
 
         # Normalize sort input
-        $sort = is_string($sort) ? [$sort] : ($sort ?? []);
+        $sort = is_string($sort) ? [
+            $sort
+        ] : ($sort ?? []);
 
         # Quote the optional alias
         $prefix = $alias === "" ? "" : SqlOperation::identifier($alias).".";
@@ -220,7 +232,10 @@ class SqlFilter {
     private static function _relation(string $key, mixed $value, string $table, string $alias, bool $exclude):array {
 
         # Prepare result
-        $result = ["sql" => "", "parameters" => []];
+        $result = [
+            "sql"           =>  "",
+            "parameters"    =>  []
+        ];
 
         # Validate the linked field
         SqlOperation::identifier($key);

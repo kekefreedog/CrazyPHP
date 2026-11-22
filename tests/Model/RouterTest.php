@@ -107,11 +107,11 @@ class RouterTest extends TestCase {
 
         # Setup env
         Env::set([
-            "phpunit_test"              =>  true,
-            "crazyphp_root"             =>  getcwd(),
-            "app_root"                  =>  getcwd()."/tests/.cache/router",
-            "config_location"           =>  "@crazyphp_root/resources/Yml",
-            "trash_disable"             =>  true,
+            "phpunit_test"       =>  true,
+            "crazyphp_root"      =>  getcwd(),
+            "app_root"           =>  getcwd()."/tests/.cache/router",
+            "config_location"    =>  "@crazyphp_root/resources/Yml",
+            "trash_disable"      =>  true,
         ]);
 
         # Check app root
@@ -165,56 +165,56 @@ class RouterTest extends TestCase {
         $input = [
             "router"    =>  [
                 [
-                    "name"          =>  "type",
-                    "description"   =>  "Type of your crazy router",
-                    "type"          =>  "VARCHAR",
-                    "default"       =>  "app",
-                    "select"        =>  [
-                        "app"   =>  "App",
-                        "api"   =>  "Api",
-                        "asset" =>  "Asset",
+                    "name"           =>  "type",
+                    "description"    =>  "Type of your crazy router",
+                    "type"           =>  "VARCHAR",
+                    "default"        =>  "app",
+                    "select"         =>  [
+                        "app"      =>  "App",
+                        "api"      =>  "Api",
+                        "asset"    =>  "Asset",
                     ],
-                    "value"         =>  "app"
+                    "value"          =>  "app"
                 ],
                 [
-                    "name"          =>  "name",
-                    "description"   =>  "Name of your crazy router",
-                    "type"          =>  "VARCHAR",
-                    "default"       =>  "router",
-                    "required"      =>  1,
-                    "process"       => [
+                    "name"           =>  "name",
+                    "description"    =>  "Name of your crazy router",
+                    "type"           =>  "VARCHAR",
+                    "default"        =>  "router",
+                    "required"       =>  1,
+                    "process"        =>  [
                         "cleanPath",
                         "snakeToCamel",
                         "ucfirst",
                         "trim"
                     ],
-                    "value"         =>  "Router"
+                    "value"          =>  "Router"
                 ],
                 [
-                    "name"          =>  "methods",
-                    "description"   =>  "Methods allowed by your crazy router",
-                    "type"          =>  "ARRAY",
-                    "default"       =>  "get",
-                    "required"      =>  1,
-                    "multiple"      =>  1,
-                    "select"        =>  [
-                        "get"           =>  "Get",
-                        "post"          =>  "Post",
-                        "put"           =>  "Put",
-                        "delete"        =>  "Delete",
-                        "option"        =>  "Option",
-                        "patch"         =>  "Patch"
+                    "name"           =>  "methods",
+                    "description"    =>  "Methods allowed by your crazy router",
+                    "type"           =>  "ARRAY",
+                    "default"        =>  "get",
+                    "required"       =>  1,
+                    "multiple"       =>  1,
+                    "select"         =>  [
+                        "get"       =>  "Get",
+                        "post"      =>  "Post",
+                        "put"       =>  "Put",
+                        "delete"    =>  "Delete",
+                        "option"    =>  "Option",
+                        "patch"     =>  "Patch"
                     ],
-                    "value"         =>  [
+                    "value"          =>  [
                         "get"
                     ]
                 ],
                 [
-                    "name"          =>  "prefix",
-                    "description"   =>  "Prefix of your crazy router",
-                    "type"          =>  "STRING",
-                    "default"       =>  "",
-                    "value"         =>  ""
+                    "name"           =>  "prefix",
+                    "description"    =>  "Prefix of your crazy router",
+                    "type"           =>  "STRING",
+                    "default"        =>  "",
+                    "value"          =>  ""
                 ]
             ]
         ];
@@ -256,58 +256,58 @@ class RouterTest extends TestCase {
 
         # Set input
         $input = [
-            "router" => [
+            "router"    =>  [
                 [
-                    "name" => "type",
-                    "description" => "Type of your crazy router",
-                    "type" => "VARCHAR",
-                    "default" => "app",
-                    "select" => [
-                        "app" => "App",
-                        "api" => "Api",
-                        "asset" => "Asset"
+                    "name"           =>  "type",
+                    "description"    =>  "Type of your crazy router",
+                    "type"           =>  "VARCHAR",
+                    "default"        =>  "app",
+                    "select"         =>  [
+                        "app"      =>  "App",
+                        "api"      =>  "Api",
+                        "asset"    =>  "Asset"
                     ],
-                    "value" => "app"
+                    "value"          =>  "app"
                 ],
                 [
-                    "name" => "name",
-                    "description" => "Name of your crazy router",
-                    "type" => "VARCHAR",
-                    "default" => "router",
-                    "required" => true,
-                    "process" => [
+                    "name"           =>  "name",
+                    "description"    =>  "Name of your crazy router",
+                    "type"           =>  "VARCHAR",
+                    "default"        =>  "router",
+                    "required"       =>  true,
+                    "process"        =>  [
                         "cleanPath",
                         "snakeToCamel",
                         "ucfirst",
                         "trim"
                     ],
-                    "value" => "Very.Complex.Page"
+                    "value"          =>  "Very.Complex.Page"
                 ],
                 [
-                    "name" => "methods",
-                    "description" => "Methods allowed by your crazy router",
-                    "type" => "ARRAY",
-                    "default" => "get",
-                    "required" => true,
-                    "multiple" => true,
-                    "select" => [
-                        "get" => "Get",
-                        "post" => "Post",
-                        "put" => "Put",
-                        "delete" => "Delete",
-                        "option" => "Option",
-                        "patch" => "Patch"
+                    "name"           =>  "methods",
+                    "description"    =>  "Methods allowed by your crazy router",
+                    "type"           =>  "ARRAY",
+                    "default"        =>  "get",
+                    "required"       =>  true,
+                    "multiple"       =>  true,
+                    "select"         =>  [
+                        "get"       =>  "Get",
+                        "post"      =>  "Post",
+                        "put"       =>  "Put",
+                        "delete"    =>  "Delete",
+                        "option"    =>  "Option",
+                        "patch"     =>  "Patch"
                     ],
-                    "value" => [
+                    "value"          =>  [
                         "get"
                     ]
                 ],
                 [
-                    "name" => "prefix",
-                    "description" => "Prefix of your crazy router",
-                    "type" => "STRING",
-                    "default" => false,
-                    "value" => ""
+                    "name"           =>  "prefix",
+                    "description"    =>  "Prefix of your crazy router",
+                    "type"           =>  "STRING",
+                    "default"        =>  false,
+                    "value"          =>  ""
                 ]
             ]
         ];
@@ -349,22 +349,22 @@ class RouterTest extends TestCase {
 
         # Set input
         $input = [
-            "routers"   =>  [
+            "routers"    =>  [
                 [
-                    "name"          =>  "routers",
-                    "description"   =>  "Routers to delete",
-                    "type"          =>  "ARRAY",
-                    "required"      =>  1,
-                    "multiple"      =>  1,
-                    "select"        =>  [
-                        "app.Index"     =>  "(App) Index",
-                        "app.Home"      =>  "(App) Home",
-                        "app.Router"    =>  "(App) Router",
-                        "api.Config"    =>  "(Api) Config",
-                        "asset.Favicon" =>  "(Asset) Favicon",
-                        "asset.Manifest"=>  "(Asset) Manifest"
+                    "name"           =>  "routers",
+                    "description"    =>  "Routers to delete",
+                    "type"           =>  "ARRAY",
+                    "required"       =>  1,
+                    "multiple"       =>  1,
+                    "select"         =>  [
+                        "app.Index"         =>  "(App) Index",
+                        "app.Home"          =>  "(App) Home",
+                        "app.Router"        =>  "(App) Router",
+                        "api.Config"        =>  "(Api) Config",
+                        "asset.Favicon"     =>  "(Asset) Favicon",
+                        "asset.Manifest"    =>  "(Asset) Manifest"
                     ],
-                    "value"         =>  [
+                    "value"          =>  [
                         "app.Router"
                     ]
                 ]
@@ -408,22 +408,22 @@ class RouterTest extends TestCase {
 
         # Set input
         $input = [
-            "routers"   =>  [
+            "routers"    =>  [
                 [
-                    "name"          =>  "routers",
-                    "description"   =>  "Routers to delete",
-                    "type"          =>  "ARRAY",
-                    "required"      =>  1,
-                    "multiple"      =>  1,
-                    "select"        =>  [
-                        "app.Index"     =>  "(App) Index",
-                        "app.Home"      =>  "(App) Home",
-                        "app.Router"    =>  "(App) Router",
-                        "api.Config"    =>  "(Api) Config",
-                        "asset.Favicon" =>  "(Asset) Favicon",
-                        "asset.Manifest"=>  "(Asset) Manifest"
+                    "name"           =>  "routers",
+                    "description"    =>  "Routers to delete",
+                    "type"           =>  "ARRAY",
+                    "required"       =>  1,
+                    "multiple"       =>  1,
+                    "select"         =>  [
+                        "app.Index"         =>  "(App) Index",
+                        "app.Home"          =>  "(App) Home",
+                        "app.Router"        =>  "(App) Router",
+                        "api.Config"        =>  "(Api) Config",
+                        "asset.Favicon"     =>  "(Asset) Favicon",
+                        "asset.Manifest"    =>  "(Asset) Manifest"
                     ],
-                    "value"         =>  [
+                    "value"          =>  [
                         "app.VeryComplexPage"
                     ]
                 ]
@@ -463,10 +463,18 @@ class RouterTest extends TestCase {
     public static function routerAdapters():array {
 
         return [
-            "Mezon" => [Mezon::class],
-            "FastRoute" => [FastRoute::class],
-            "LeagueRoute" => [LeagueRoute::class],
-            "Symfony" => [Symfony::class],
+            "Mezon"          =>  [
+                Mezon::class
+            ],
+            "FastRoute"      =>  [
+                FastRoute::class
+            ],
+            "LeagueRoute"    =>  [
+                LeagueRoute::class
+            ],
+            "Symfony"        =>  [
+                Symfony::class
+            ],
         ];
 
     }
@@ -487,25 +495,34 @@ class RouterTest extends TestCase {
         $router = new CoreRouter(new $adapterClass());
         $callback = static fn(string $route, array $parameters):array => $parameters;
         $router->addRoute("/health", static fn():string => "healthy", "GET", "health");
-        $router->addRoute("/projects/[i:id]", $callback, ["GET", "POST"], "project");
+        $router->addRoute("/projects/[i:id]", $callback, [
+            "GET",
+            "POST"
+        ], "project");
 
         # Assert the facade exposes the framework contract and preserves named routes
         $this->assertInstanceOf(CrazyRouter::class, $router);
         $this->assertSame("healthy", $router->callRoute("/health"));
         $this->assertSame($callback, $router->getCallback("/projects/42"));
-        $this->assertSame(["id" => "42"], $router->callRoute("/projects/42"));
+        $this->assertSame([
+            "id"    =>  "42"
+        ], $router->callRoute("/projects/42"));
         $this->assertSame("42", $router->getParam("id"));
         $this->assertTrue($router->hasParam("id"));
         $this->assertFalse($router->hasParam("missing"));
         $this->assertTrue($router->routeExists("/projects/[i:id]"));
         $this->assertSame("projects/[i:id]", $router->getRouteByName("project"));
         $this->assertSame("projects/[i:id]", $router->getCalledRoute());
-        $this->assertSame("projects/42", $router->reverse("project", ["id" => 42]));
+        $this->assertSame("projects/42", $router->reverse("project", [
+            "id"    =>  42
+        ]));
         $this->assertSame("health", $router->reverse("health"));
 
         # Assert the same route can be dispatched for another configured method
         $_SERVER["REQUEST_METHOD"] = "POST";
-        $this->assertSame(["id" => "73"], $router->callRoute("/projects/73"));
+        $this->assertSame([
+            "id"    =>  "73"
+        ], $router->callRoute("/projects/73"));
 
         # Assert a custom missing-route handler receives unmatched requests
         $missing = [];
@@ -515,7 +532,9 @@ class RouterTest extends TestCase {
 
         });
         $this->assertNull($router->callRoute("/health"));
-        $this->assertSame(["health"], $missing);
+        $this->assertSame([
+            "health"
+        ], $missing);
 
         # Assert clearing the adapter removes its routes
         $router->clear();
@@ -559,7 +578,11 @@ class RouterTest extends TestCase {
 
         # Assert middleware order and the controller's result are preserved
         $this->assertSame("42", $router->callRoute("/projects/42"));
-        $this->assertSame(["global", "route", "controller"], $events);
+        $this->assertSame([
+            "global",
+            "route",
+            "controller"
+        ], $events);
 
     }
 
@@ -578,10 +601,18 @@ class RouterTest extends TestCase {
         $router->addRoute("/projects/[il:ids]/items", static fn():string => "items", "GET", "items");
 
         # Assert multi-character types match and generate URLs
-        $this->assertSame(["name" => "project-one"], $router->callRoute("/projects/project-one"));
-        $this->assertSame("projects/project-one", $router->reverse("project", ["name" => "project-one"]));
-        $this->assertSame("projects/release$1", $router->reverse("project", ["name" => "release$1"]));
-        $this->assertSame("projects/1,2/items", $router->reverse("items", ["ids" => "1,2"]));
+        $this->assertSame([
+            "name"    =>  "project-one"
+        ], $router->callRoute("/projects/project-one"));
+        $this->assertSame("projects/project-one", $router->reverse("project", [
+            "name"    =>  "project-one"
+        ]));
+        $this->assertSame("projects/release$1", $router->reverse("project", [
+            "name"    =>  "release$1"
+        ]));
+        $this->assertSame("projects/1,2/items", $router->reverse("items", [
+            "ids"    =>  "1,2"
+        ]));
         $this->assertSame(CrazyRouterType::PARAMETER_NAME_REGEX, CoreRouter::PARAMETER_NAME_REGEX);
 
     }
@@ -638,10 +669,22 @@ class RouterTest extends TestCase {
         try{
 
             # Exercise each configured vendor and the legacy default without a vendor
-            foreach(["mezon" => Mezon::class, "fast-route" => FastRoute::class, "league" => LeagueRoute::class, "symfony" => Symfony::class, "" => Mezon::class] as $vendor => $adapterClass){
+            foreach([
+                "mezon"         =>  Mezon::class,
+                "fast-route"    =>  FastRoute::class,
+                "league"        =>  LeagueRoute::class,
+                "symfony"       =>  Symfony::class,
+                ""              =>  Mezon::class
+            ] as $vendor => $adapterClass){
 
                 # Supply only router configuration, without application metadata
-                $GLOBALS[Config::PREFIX] = ["Router" => ["Router" => $vendor === "" ? [] : ["vendor" => $vendor]]];
+                $GLOBALS[Config::PREFIX] = [
+                    "Router"    =>  [
+                        "Router"    =>  $vendor === "" ? [] : [
+                            "vendor"    =>  $vendor
+                        ]
+                    ]
+                ];
 
                 # Resolve the implementation used by the normal framework entrypoint
                 $router = new CoreRouter();
@@ -652,7 +695,13 @@ class RouterTest extends TestCase {
             }
 
             # An explicit implementation takes priority even over invalid configuration
-            $GLOBALS[Config::PREFIX] = ["Router" => ["Router" => ["vendor" => "unknown"]]];
+            $GLOBALS[Config::PREFIX] = [
+                "Router"    =>  [
+                    "Router"    =>  [
+                        "vendor"    =>  "unknown"
+                    ]
+                ]
+            ];
 
             # Supply a valid implementation directly
             $adapter = new Mezon();
@@ -692,7 +741,10 @@ class RouterTest extends TestCase {
             # Compile the custom parameter route with the selected adapter
             $router = new CoreRouter(new $adapterClass());
             $router->addType("slug", RouterTestParameterType::class);
-            $router->addRoute("/projects/[slug:name]", [RouterTestParameterType::class, "handle"], "GET", "project");
+            $router->addRoute("/projects/[slug:name]", [
+                RouterTestParameterType::class,
+                "handle"
+            ], "GET", "project");
             $router->warmCache();
             $router->dumpOnDisk($path);
 
@@ -705,29 +757,57 @@ class RouterTest extends TestCase {
             $restored->loadFromDisk($path);
 
             # Assert matching, dispatch and URL generation survive serialization
-            $this->assertSame(["name" => "project-one"], $restored->callRoute("/projects/project-one"));
-            $this->assertSame("projects/project-one", $restored->reverse("project", ["name" => "project-one"]));
+            $this->assertSame([
+                "name"    =>  "project-one"
+            ], $restored->callRoute("/projects/project-one"));
+            $this->assertSame("projects/project-one", $restored->reverse("project", [
+                "name"    =>  "project-one"
+            ]));
             $this->assertSame(0, RouterTestParameterType::$parserCalls);
 
             # Runtime middleware can be registered after cache restoration
-            $restored->registerMiddleware("*", static fn(string $route, string $name):array => [$route, ["name" => strtoupper($name)]]);
-            $this->assertSame(["name" => "PROJECT-ONE"], $restored->callRoute("/projects/project-one"));
+            $restored->registerMiddleware("*", static fn(string $route, string $name):array => [
+                $route,
+                [
+                    "name"    =>  strtoupper($name)
+                ]
+            ]);
+            $this->assertSame([
+                "name"    =>  "PROJECT-ONE"
+            ], $restored->callRoute("/projects/project-one"));
 
             # New registrations invalidate loaded tables and are included in the next dump
-            $restored->addRoute("/projects/[slug:name]/[i:id]", [RouterTestParameterType::class, "handle"], "GET", "detail");
-            $this->assertSame([RouterTestParameterType::class, "handle"], $restored->getCallback("/projects/project-one/42"));
+            $restored->addRoute("/projects/[slug:name]/[i:id]", [
+                RouterTestParameterType::class,
+                "handle"
+            ], "GET", "detail");
+            $this->assertSame([
+                RouterTestParameterType::class,
+                "handle"
+            ], $restored->getCallback("/projects/project-one/42"));
             $this->assertSame("42", $restored->getParam("id"));
-            $this->assertSame(["name" => "PROJECT-ONE"], $restored->callRoute("/projects/project-one"));
-            $restored->addRoute("/archive/[slug:name]", [RouterTestParameterType::class, "handle"], "POST", "archive");
+            $this->assertSame([
+                "name"    =>  "PROJECT-ONE"
+            ], $restored->callRoute("/projects/project-one"));
+            $restored->addRoute("/archive/[slug:name]", [
+                RouterTestParameterType::class,
+                "handle"
+            ], "POST", "archive");
             $_SERVER["REQUEST_METHOD"] = "POST";
-            $this->assertSame(["name" => "PROJECT-TWO"], $restored->callRoute("/archive/project-two"));
+            $this->assertSame([
+                "name"    =>  "PROJECT-TWO"
+            ], $restored->callRoute("/archive/project-two"));
             $this->assertGreaterThan(0, RouterTestParameterType::$parserCalls);
             $restored->dumpOnDisk($path);
             $reloaded = new CoreRouter(new $adapterClass());
             $reloaded->addType("slug", RouterTestParameterType::class);
             $reloaded->loadFromDisk($path);
-            $this->assertSame(["name" => "project-two"], $reloaded->callRoute("/archive/project-two"));
-            $this->assertSame("archive/project-two", $reloaded->reverse("archive", ["name" => "project-two"]));
+            $this->assertSame([
+                "name"    =>  "project-two"
+            ], $reloaded->callRoute("/archive/project-two"));
+            $this->assertSame("archive/project-two", $reloaded->reverse("archive", [
+                "name"    =>  "project-two"
+            ]));
 
         }finally{
 
@@ -762,7 +842,10 @@ class RouterTest extends TestCase {
         $this->assertSame("App\\Controller\\Api\\v1\\Config::get", $router->getCallback("/api/v1/config/Router/name"));
         $this->assertSame("Router", $router->getParam("name"));
         $this->assertSame("name", $router->getParam("parameter"));
-        $this->assertSame("api/v1/config/Router/name", $router->reverse("Config", ["name" => "Router", "parameter" => "name"]));
+        $this->assertSame("api/v1/config/Router/name", $router->reverse("Config", [
+            "name"         =>  "Router",
+            "parameter"    =>  "name"
+        ]));
         $this->assertSame($original, file_get_contents($path));
 
     }
@@ -780,20 +863,33 @@ class RouterTest extends TestCase {
         $path = File::path("@app_root/config/Router.yml");
         $yaml = file_get_contents($path);
         $collection = File::open($path);
-        $collection["Router"]["type"] = [["name" => "slug", "class" => RouterTestParameterType::class]];
+        $collection["Router"]["type"] = [
+            [
+                "name"     =>  "slug",
+                "class"    =>  RouterTestParameterType::class
+            ]
+        ];
         $collection["Router"]["app"][] = [
-            "name"       => "ProjectAdapterTest",
-            "controller" => RouterTestParameterType::class,
-            "patterns"   => ["/projects/[slug:name]"],
-            "methods"    => ["get"],
-            "prefix"     => false,
+            "name"          =>  "ProjectAdapterTest",
+            "controller"    =>  RouterTestParameterType::class,
+            "patterns"      =>  [
+                "/projects/[slug:name]"
+            ],
+            "methods"       =>  [
+                "get"
+            ],
+            "prefix"        =>  false,
         ];
 
         # Capture compiled route data in memory while exercising real adapter serialization
         $compiled = [];
         $cache = $this->getMockBuilder(Cache::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(["hasUpToDate", "get", "set"])
+            ->onlyMethods([
+                "hasUpToDate",
+                "get",
+                "set"
+            ])
             ->getMock()
         ;
         $cache->method("hasUpToDate")->willReturnCallback(static function(string $key) use (&$compiled):bool {
@@ -820,7 +916,9 @@ class RouterTest extends TestCase {
             $router = new CoreRouter(new $adapterClass());
             $router->cache = $cache;
             $router->pushCollection();
-            $this->assertSame("projects/project-one", $router->reverse("ProjectAdapterTest", ["name" => "project-one"]));
+            $this->assertSame("projects/project-one", $router->reverse("ProjectAdapterTest", [
+                "name"    =>  "project-one"
+            ]));
 
             # Reload cached routes in a new adapter
             $restored = new CoreRouter(new $adapterClass());
@@ -828,7 +926,9 @@ class RouterTest extends TestCase {
             $restored->pushCollection();
             $this->assertSame(RouterTestParameterType::class."::get", $restored->getCallback("/projects/project-one"));
             $this->assertSame("project-one", $restored->getParam("name"));
-            $this->assertSame("projects/project-one", $restored->reverse("ProjectAdapterTest", ["name" => "project-one"]));
+            $this->assertSame("projects/project-one", $restored->reverse("ProjectAdapterTest", [
+                "name"    =>  "project-one"
+            ]));
             $this->assertCount(1, $compiled);
             $this->assertSame($yaml, file_get_contents($path));
 
@@ -873,7 +973,10 @@ class RouterTest extends TestCase {
         # Model an existing compiled cache without persistent storage
         $cache = $this->getMockBuilder(Cache::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(["hasUpToDate", "get"])
+            ->onlyMethods([
+                "hasUpToDate",
+                "get"
+            ])
             ->getMock()
         ;
         $cache->method("hasUpToDate")->willReturn(true);
@@ -882,7 +985,16 @@ class RouterTest extends TestCase {
         try{
 
             # Load the adapter without creating a new type or configuration file
-            $GLOBALS[Config::PREFIX]["Router"] = ["Router" => ["type" => [["name" => "slug", "class" => RouterTestParameterType::class]]]];
+            $GLOBALS[Config::PREFIX]["Router"] = [
+                "Router"    =>  [
+                    "type"    =>  [
+                        [
+                            "name"     =>  "slug",
+                            "class"    =>  RouterTestParameterType::class
+                        ]
+                    ]
+                ]
+            ];
             $router = new CoreRouter($adapter);
             $router->cache = $cache;
             $router->pushCollection();
@@ -913,7 +1025,10 @@ class RouterTest extends TestCase {
         $router->addRoute("/", "index", "GET", "index");
         $router->addRoute("/numbers/[il:ids]/[fp:value]", "numbers", "POST", "numbers");
         $router->addRoute("/alternate", "alternate", "GET", "project");
-        $router->addRoute("*", "fallback", ["GET", "POST"]);
+        $router->addRoute("*", "fallback", [
+            "GET",
+            "POST"
+        ]);
         $router->warmCache();
 
         # Assert static priority, legacy root normalization and original parameter names
@@ -925,7 +1040,10 @@ class RouterTest extends TestCase {
         $this->assertSame("file%2Fname", $router->getParam("project"));
         $this->assertSame("detail", $router->getCallback("/en/project/example/42"));
         $this->assertSame("42", $router->getParam("item-id"));
-        $this->assertSame("alternate", $router->reverse("project", ["language" => "en", "project" => "example"]));
+        $this->assertSame("alternate", $router->reverse("project", [
+            "language"    =>  "en",
+            "project"     =>  "example"
+        ]));
         $this->assertSame("fallback", $router->getCallback("/not/a/page"));
 
         # Assert another method can use the fallback for an otherwise registered path
@@ -936,7 +1054,14 @@ class RouterTest extends TestCase {
         $this->assertSame("12.34", $router->getParam("value"));
 
         # Assert all methods from the existing YAML schema remain supported
-        foreach(["GET", "POST", "PUT", "DELETE", "OPTION", "PATCH"] as $method){
+        foreach([
+            "GET",
+            "POST",
+            "PUT",
+            "DELETE",
+            "OPTION",
+            "PATCH"
+        ] as $method){
 
             $router->addRoute("/method", $method, $method);
             $_SERVER["REQUEST_METHOD"] = $method;
@@ -945,7 +1070,9 @@ class RouterTest extends TestCase {
         }
 
         # Assert middleware and old routes are removed when the router is cleared
-        $router->registerMiddleware("*", static fn():array => ["unexpected"]);
+        $router->registerMiddleware("*", static fn():array => [
+            "unexpected"
+        ]);
         $router->clear();
         $router->addRoute("/fresh", static fn(string $route, array $parameters):string => $route, "PATCH");
         $this->assertSame("fresh", $router->callRoute("/fresh"));
@@ -966,7 +1093,11 @@ class RouterTest extends TestCase {
         $writes = 0;
         $cache = $this->getMockBuilder(Cache::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(["hasUpToDate", "get", "set"])
+            ->onlyMethods([
+                "hasUpToDate",
+                "get",
+                "set"
+            ])
             ->getMock()
         ;
         $cache->method("hasUpToDate")->willReturnCallback(static function(string $key, DateTime $date) use (&$compiled, &$modified, &$requestedDate):bool {
@@ -991,11 +1122,16 @@ class RouterTest extends TestCase {
 
         # Use deterministic metadata without touching application configuration files
         $dates = [
-            "_lastModifiedDateRouter" => new DateTime("2025-01-01"),
-            "_lastModifiedDateApi" => new DateTime("2025-01-01"),
-            "_lastModifiedDateMiddleware" => new DateTime("2025-01-01"),
+            "_lastModifiedDateRouter"        =>  new DateTime("2025-01-01"),
+            "_lastModifiedDateApi"           =>  new DateTime("2025-01-01"),
+            "_lastModifiedDateMiddleware"    =>  new DateTime("2025-01-01"),
         ];
-        foreach([null, "_lastModifiedDateRouter", "_lastModifiedDateApi", "_lastModifiedDateMiddleware"] as $step => $changed){
+        foreach([
+            null,
+            "_lastModifiedDateRouter",
+            "_lastModifiedDateApi",
+            "_lastModifiedDateMiddleware"
+        ] as $step => $changed){
 
             if($changed !== null)
                 $dates[$changed] = new DateTime("2025-01-0".($step + 1));
@@ -1003,7 +1139,10 @@ class RouterTest extends TestCase {
             foreach(self::routerAdapters() as [$adapterClass]){
 
                 # The first instance builds or refreshes; the second restores without writing
-                foreach([false, true] as $cached){
+                foreach([
+                    false,
+                    true
+                ] as $cached){
 
                     $before = $writes;
                     $router = new CoreRouter(new $adapterClass());
@@ -1104,7 +1243,9 @@ class RouterTest extends TestCase {
         $inputSummaryCleaned = [
             "name"          =>  $routerName,
             "methods"       =>  Json::decode($inputSummary['methods']),
-            "patterns"      =>  ["/".strtolower(Process::camelToPath($routerName))],
+            "patterns"      =>  [
+                "/".strtolower(Process::camelToPath($routerName))
+            ],
             "controller"    =>  "App\Controller\\".ucfirst($routerType)."\\".$routerName
         ];
 

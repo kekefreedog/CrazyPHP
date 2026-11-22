@@ -46,9 +46,9 @@ class FirewallTest extends TestCase {
         # Setup env
         Env::set([
             # App root for composer class
-            "crazyphp_root"     =>  getcwd(),
-            "phpunit_test"      =>  true,
-            "config_location"   =>  "@crazyphp_root/resources/Yml"
+            "crazyphp_root"      =>  getcwd(),
+            "phpunit_test"       =>  true,
+            "config_location"    =>  "@crazyphp_root/resources/Yml"
         ]);
 
     }
@@ -83,7 +83,9 @@ class FirewallTest extends TestCase {
         $result = Firewall::whitelist();
 
         # Asset
-        $this->assertEquals(["*"], $result);
+        $this->assertEquals([
+            "*"
+        ], $result);
 
     }
 

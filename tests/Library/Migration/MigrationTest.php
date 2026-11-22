@@ -47,13 +47,13 @@ class MigrationTest extends TestCase {
         # Setup env
         Env::set([
             # App root for composer class
-            "crazyphp_root"     =>  getcwd(),
-            "phpunit_test"      =>  true,
+            "crazyphp_root"    =>  getcwd(),
+            "phpunit_test"     =>  true,
         ]);
 
         # Setup env
         Env::set([
-            "app_root"          =>  File::path(self::TEMP_FOLDER)
+            "app_root"    =>  File::path(self::TEMP_FOLDER)
         ]);
 
         # Copy resources

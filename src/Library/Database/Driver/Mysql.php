@@ -84,7 +84,7 @@ class Mysql implements CrazyDatabaseDriver {
 
         # New connection
         $this->client = MariadbConnection::getInstance([
-            "user"  =>  $user
+            "user"    =>  $user
         ]);
 
         # Set manager
@@ -121,7 +121,7 @@ class Mysql implements CrazyDatabaseDriver {
                 "Please execute \"newClient\" method before \"".__METHOD__."\" method...",
                 500,
                 [
-                    "custom_code"   =>  "mongodb-003",
+                    "custom_code"    =>  "mongodb-003",
                 ]
             );
 
@@ -133,7 +133,7 @@ class Mysql implements CrazyDatabaseDriver {
                 "User parameter is empty...",
                 500,
                 [
-                    "custom_code"   =>  "mongodb-004",
+                    "custom_code"    =>  "mongodb-004",
                 ]
             );
 
@@ -161,7 +161,7 @@ class Mysql implements CrazyDatabaseDriver {
                 "Error creating user: " . $e->getMessage(),
                 500,
                 [
-                    "custom_code"   =>  "mariadb-001",
+                    "custom_code"    =>  "mariadb-001",
                 ]
             );
 
@@ -171,7 +171,9 @@ class Mysql implements CrazyDatabaseDriver {
         if(is_string($databases))
 
             # Convert to array
-            $databases = [$databases];
+            $databases = [
+                $databases
+            ];
 
         # Iteration databases
         foreach ($databases as $database) {
@@ -198,7 +200,7 @@ class Mysql implements CrazyDatabaseDriver {
                     "Error granting privileges: " . $e->getMessage(),
                     500,
                     [
-                        "custom_code"   =>  "mariadb-002",
+                        "custom_code"    =>  "mariadb-002",
                     ]
                 );
 
@@ -231,7 +233,7 @@ class Mysql implements CrazyDatabaseDriver {
                 "Please execute \"newClient\" method before \"".__METHOD__."\" method...",
                 500,
                 [
-                    "custom_code"   =>  "mariadb-003",
+                    "custom_code"    =>  "mariadb-003",
                 ]
             );
 
@@ -272,7 +274,7 @@ class Mysql implements CrazyDatabaseDriver {
                 "Please execute \"newClient\" method before \"".__METHOD__."\" method...",
                 500,
                 [
-                    "custom_code"   =>  "mariadb-004",
+                    "custom_code"    =>  "mariadb-004",
                 ]
             );
 
@@ -300,7 +302,7 @@ class Mysql implements CrazyDatabaseDriver {
                 "Error creating database: " . $e->getMessage(),
                 500,
                 [
-                    "custom_code"   =>  "mariadb-005",
+                    "custom_code"    =>  "mariadb-005",
                 ]
             );
 
@@ -654,7 +656,7 @@ class Mysql implements CrazyDatabaseDriver {
                 "Error creating table: " . $e->getMessage(),
                 500,
                 [
-                    "custom_code"   =>  "mariadb-006",
+                    "custom_code"    =>  "mariadb-006",
                 ]
             );
 
@@ -691,7 +693,9 @@ class Mysql implements CrazyDatabaseDriver {
             $query = $this->client->prepare("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = :databaseName");
 
             # Execute
-            $query->execute(['databaseName' => $database]);
+            $query->execute([
+                'databaseName'    =>  $database
+            ]);
 
             # Fetch results
             $result = $query->fetchAll(PDO::FETCH_COLUMN);
@@ -702,7 +706,7 @@ class Mysql implements CrazyDatabaseDriver {
                 "Error retrieving tables: " . $e->getMessage(),
                 500,
                 [
-                    "custom_code"   =>  "mariadb-006",
+                    "custom_code"    =>  "mariadb-006",
                 ]
             );
 
@@ -771,7 +775,7 @@ class Mysql implements CrazyDatabaseDriver {
                 "Error checking table existence: " . $e->getMessage(),
                 500,
                 [
-                    "custom_code"   =>  "mariadb-007",
+                    "custom_code"    =>  "mariadb-007",
                 ]
             );
 
@@ -844,7 +848,7 @@ class Mysql implements CrazyDatabaseDriver {
                 "An error occurred: " . $e->getMessage(),
                 500,
                 [
-                    "custom_code"   =>  "mariadb-008",
+                    "custom_code"    =>  "mariadb-008",
                 ]
             );
         }
@@ -903,7 +907,7 @@ class Mysql implements CrazyDatabaseDriver {
                 "Error updating item: " . $e->getMessage(),
                 500,
                 [
-                    "custom_code"   =>  "mariadb-008",
+                    "custom_code"    =>  "mariadb-008",
                 ]
             );
 
@@ -961,7 +965,7 @@ class Mysql implements CrazyDatabaseDriver {
                 "Error deleting item: " . $e->getMessage(),
                 500,
                 [
-                    "custom_code"   =>  "mariadb-009",
+                    "custom_code"    =>  "mariadb-009",
                 ]
             );
 
@@ -1075,7 +1079,7 @@ class Mysql implements CrazyDatabaseDriver {
 
                 # Report execution failures through the existing exception contract
                 throw new CrazyException("Error finding items: ".$exception->getMessage(), 500, [
-                    "custom_code" => "mariadb-009",
+                    "custom_code"    =>  "mariadb-009",
                 ]);
 
             }
@@ -1145,7 +1149,7 @@ class Mysql implements CrazyDatabaseDriver {
                 "Error finding item: " . $e->getMessage(),
                 500,
                 [
-                    "custom_code"   =>  "mariadb-009",
+                    "custom_code"    =>  "mariadb-009",
                 ]
             );
 
@@ -1215,7 +1219,7 @@ class Mysql implements CrazyDatabaseDriver {
                 "Error finding last item: " . $e->getMessage(),
                 500,
                 [
-                    "custom_code"   =>  "mariadb-009",
+                    "custom_code"    =>  "mariadb-009",
                 ]
             );
 
@@ -1244,7 +1248,11 @@ class Mysql implements CrazyDatabaseDriver {
     public static function createAuditTable(
         string|array $tables,
         string|array $columns,
-        string|array $operations = ['INSERT', 'UPDATE', 'DELETE'],
+        string|array $operations = [
+            'INSERT',
+            'UPDATE',
+            'DELETE'
+        ],
         string $auditLogTableName = 'Audit_log'
     ):void {
 
@@ -1252,19 +1260,25 @@ class Mysql implements CrazyDatabaseDriver {
         if(!is_array($operations))
         
             # Set operation
-            $operations = [$operations];
+            $operations = [
+                $operations
+            ];
 
         # Check columns
         if(!is_array($columns))
         
             # Set operation
-            $columns = [$columns];
+            $columns = [
+                $columns
+            ];
 
         # Check tables
         if(!is_array($tables))
         
             # Set tables
-            $tables = [$tables];
+            $tables = [
+                $tables
+            ];
 
         # Check audit log table name
         if(!$auditLogTableName)
@@ -1319,8 +1333,8 @@ class Mysql implements CrazyDatabaseDriver {
 
                         # Execute request
                         $stmt->execute([
-                            'trigger_name' => $triggerName,
-                            'table_name' => $table,
+                            'trigger_name'    =>  $triggerName,
+                            'table_name'      =>  $table,
                         ]);
             
                         # Get result
@@ -1670,7 +1684,10 @@ class Mysql implements CrazyDatabaseDriver {
         $result = '';
 
         # Check type
-        if(in_array($type, ["key", "unique"]))
+        if(in_array($type, [
+            "key",
+            "unique"
+        ]))
 
             # Check content
             if(!empty($content))
@@ -1705,7 +1722,10 @@ class Mysql implements CrazyDatabaseDriver {
         $result = '';
 
         # Check type
-        if(in_array($type, ["key", "unique"]))
+        if(in_array($type, [
+            "key",
+            "unique"
+        ]))
 
             # Check content
             if(!empty($content))

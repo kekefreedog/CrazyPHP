@@ -136,7 +136,13 @@ class File {
     public static function isFileArray(array $array, bool $checkTypeOfKeys = false):bool {
 
         # Check if all required keys exist in the array
-        $requiredKeys = ['name', 'type', 'tmp_name', 'error', 'size'];
+        $requiredKeys = [
+            'name',
+            'type',
+            'tmp_name',
+            'error',
+            'size'
+        ];
 
         # Iteration keys
         foreach ($requiredKeys as $key)
@@ -224,7 +230,7 @@ class File {
                 "Extension \”$extension\” isn't existing in collection, just need to add it...",
                 415,
                 [
-                    "custom_code"   =>  "file-001",
+                    "custom_code"    =>  "file-001",
                 ]
             );
 
@@ -296,7 +302,9 @@ class File {
         if(!is_array($paths))
 
             # Convert to array
-            $paths = [$paths];
+            $paths = [
+                $paths
+            ];
 
         # Iteration of paths
         foreach($paths as $path){
@@ -504,7 +512,9 @@ class File {
         if(!is_array($inputs))
 
             # Convert string to array
-            $inputs = [$inputs];
+            $inputs = [
+                $inputs
+            ];
 
         # Iteration des inputs
         foreach($inputs as $input){
@@ -654,7 +664,9 @@ class File {
             if(!is_array($env))
 
                 # Convert to array
-                $env = [$env];
+                $env = [
+                    $env
+                ];
 
             # Check env
             if(!empty($env))
@@ -671,7 +683,9 @@ class File {
                         $currentEnvValue = Env::get($currentEnv);
 
                         # Set alt
-                        $alts = [$currentEnvValue];
+                        $alts = [
+                            $currentEnvValue
+                        ];
 
                         # Check if valid folder
                         if(File::exists($currentEnvValue) && ($realpath = realpath($currentEnvValue)) != $currentEnvValue)
@@ -744,7 +758,7 @@ class File {
                 "Can't link file to directory.",
                 500,
                 [
-                    "custom_code"   =>  "file-005",
+                    "custom_code"    =>  "file-005",
                 ]
             );
 
@@ -764,7 +778,7 @@ class File {
                     "Symlink already exists",
                     500,
                     [
-                        "custom_code"   =>  "file-004",
+                        "custom_code"    =>  "file-004",
                     ]
                 );
                 
@@ -1032,7 +1046,7 @@ class File {
                     "Could not remove \"$relative\".",
                     500,
                     [
-                        "custom_code"   =>  "file-006",
+                        "custom_code"    =>  "file-006",
                     ]
                 );
 
@@ -1060,7 +1074,7 @@ class File {
                     "Could not remove \"$relative\".",
                     500,
                     [
-                        "custom_code"   =>  "file-006",
+                        "custom_code"    =>  "file-006",
                     ]
                 );
 
@@ -1105,14 +1119,17 @@ class File {
             self::removeStructure($root, $definition ?? [], $child);
 
             # Check folder is empty and can't be removed
-            if(scandir($path) === [".", ".."] && !rmdir($path))
+            if(scandir($path) === [
+                ".",
+                ".."
+            ] && !rmdir($path))
 
                 # New Exception
                 throw new CrazyException(
                     "Could not remove \"$child\".",
                     500,
                     [
-                        "custom_code"   =>  "file-006",
+                        "custom_code"    =>  "file-006",
                     ]
                 );
 
@@ -1170,7 +1187,7 @@ class File {
                 "Could not download the image from the URL: $url",
                 500,
                 [
-                    "custom_code"   =>  "file-002",
+                    "custom_code"    =>  "file-002",
                 ]
             ];
 
@@ -1185,7 +1202,7 @@ class File {
                 "Could not create a temporary file.",
                 500,
                 [
-                    "custom_code"   =>  "file-003",
+                    "custom_code"    =>  "file-003",
                 ]
             ];
 
@@ -1200,7 +1217,7 @@ class File {
                 "Could not write to the temporary file: $tempFile",
                 500,
                 [
-                    "custom_code"   =>  "file-003",
+                    "custom_code"    =>  "file-003",
                 ]
             ];
 
@@ -1238,7 +1255,7 @@ class File {
                 "Path \"$relative\" must be relative to root.",
                 400,
                 [
-                    "custom_code"   =>  "file-007",
+                    "custom_code"    =>  "file-007",
                 ]
             );
 
@@ -1276,57 +1293,57 @@ class File {
      */
     public const EXTENSION_TO_MIMETYPE = [
         # Html
-        "htm"       =>  "text/html",
-        "html"      =>  "text/html",
+        "htm"        =>  "text/html",
+        "html"       =>  "text/html",
         # Yml
-        "yml"       =>  "text/yaml",
-        "yaml"      =>  "text/yaml",
+        "yml"        =>  "text/yaml",
+        "yaml"       =>  "text/yaml",
         # Json
-        "json"      =>  "application/json",
+        "json"       =>  "application/json",
         # Php
-        "php"       =>  "text/php",
+        "php"        =>  "text/php",
         # Csv
-        "csv"       =>  "text/csv",
+        "csv"        =>  "text/csv",
         # Xlsx
-        "xlsx"      =>  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "xlsx"       =>  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         # Pdf
-        "pdf"       =>  "application/pdf",
+        "pdf"        =>  "application/pdf",
         # Zip
-        "zip"       =>  "application/zip",
+        "zip"        =>  "application/zip",
         # Js
-        "js"        =>  "application/javascript",
+        "js"         =>  "application/javascript",
         ## Media
         # Jpg
-        "jpg"       =>  "image/jpeg",
+        "jpg"        =>  "image/jpeg",
         # Jpeg
-        "jpeg"      =>  "image/jpeg",
+        "jpeg"       =>  "image/jpeg",
         # Png
-        "png"       =>  "image/png",
+        "png"        =>  "image/png",
         # WebP
-        "webp"      =>  "image/webp",
+        "webp"       =>  "image/webp",
         # Env
-        "env"       =>  "text/plain",
+        "env"        =>  "text/plain",
         # Sse
-        "sse"       =>  "text/event-stream",
+        "sse"        =>  "text/event-stream",
         # Message pack
-        "msgpack"   =>  "application/msgpack",
+        "msgpack"    =>  "application/msgpack",
         # Icon Mac OS
-        "icns"      =>  "image/x-icns",
+        "icns"       =>  "image/x-icns",
         # Shell Script
-        "sh"        =>  "application/x-sh",
+        "sh"         =>  "application/x-sh",
         # Text
-        "text"      =>  "text/plain",
+        "text"       =>  "text/plain",
         # TBC ...
     ];
 
     /** @var array MIMTYPE_TO_CLASS */
     public const MIMTYPE_TO_CLASS = [
         # Yaml
-        "text/yaml"             =>  "CrazyPHP\\Library\\File\\Yaml",
+        "text/yaml"              =>  "CrazyPHP\\Library\\File\\Yaml",
         # Json
-        "application/json"      =>  "CrazyPHP\\Library\\File\\Json",
+        "application/json"       =>  "CrazyPHP\\Library\\File\\Json",
         # Message Pack
-        "application/msgpack"   =>  "CrazyPHP\\Library\\File\\MessagePack",
+        "application/msgpack"    =>  "CrazyPHP\\Library\\File\\MessagePack",
         # TBC ...
     ];
 

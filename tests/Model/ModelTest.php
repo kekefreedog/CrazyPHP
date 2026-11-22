@@ -47,10 +47,10 @@ class ModelTest extends TestCase {
         # Setup env
         Env::set([
             # App root for composer class
-            "phpunit_test"      =>  true,
-            "crazyphp_root"     =>  getcwd(),
-            "app_root"          =>  getcwd(),
-            "config_location"   =>  "@crazyphp_root/resources/Yml",
+            "phpunit_test"       =>  true,
+            "crazyphp_root"      =>  getcwd(),
+            "app_root"           =>  getcwd(),
+            "config_location"    =>  "@crazyphp_root/resources/Yml",
         ]);
 
     }

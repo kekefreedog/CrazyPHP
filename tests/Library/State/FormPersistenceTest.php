@@ -30,10 +30,17 @@ class FormPersistenceTest extends TestCase {
 
         # Create a form with one opted-in field
         $form = new Form([
-            "id" => "reference",
-            "items" => [
-                ["name" => "filepath", "type" => "text"],
-                ["name" => "scenario", "type" => "select", "persist" => true],
+            "id"       =>  "reference",
+            "items"    =>  [
+                [
+                    "name"    =>  "filepath",
+                    "type"    =>  "text"
+                ],
+                [
+                    "name"       =>  "scenario",
+                    "type"       =>  "select",
+                    "persist"    =>  true
+                ],
             ],
         ]);
 
@@ -59,7 +66,9 @@ class FormPersistenceTest extends TestCase {
     public function testPersistenceIsOptIn():void {
 
         # Render a conventional form without preferences
-        $result = (new Form(["id" => "ordinary"]))->render();
+        $result = (new Form([
+            "id"    =>  "ordinary"
+        ]))->render();
 
         # Preserve existing form output when persistence was not configured
         $this->assertArrayNotHasKey("persistence", $result);

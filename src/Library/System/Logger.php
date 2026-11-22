@@ -39,14 +39,14 @@ class Logger {
 
     /** @var array $_options */
     private array $_options = [
-        "type"      =>  "back", # Front / Worker...
-        "handlers"  =>  [
-            "RotatingFileHandler"   =>  [
-                "filename"  =>  null,
-                "maxFiles"  =>  14,
-                "level"     =>  Level::Debug,
-                "formatters" =>  [
-                    "LineFormatter" =>  []
+        "type"        =>  "back", # Front / Worker...
+        "handlers"    =>  [
+            "RotatingFileHandler"    =>  [
+                "filename"      =>  null,
+                "maxFiles"      =>  14,
+                "level"         =>  Level::Debug,
+                "formatters"    =>  [
+                    "LineFormatter"    =>  []
                 ]
             ]
         ],
@@ -210,11 +210,15 @@ class Logger {
         if(!$name) throw new CrazyException(
             "Logger name is empty and not valid", 
             500,
-            ["custom_code" => "logger-001"]
+            [
+                "custom_code"    =>  "logger-001"
+            ]
         );
 
         # Ingest options
-        $this->_options = Arrays::mergeMultidimensionalArrays(true, $this->_options, $options, ["name" => $name]);
+        $this->_options = Arrays::mergeMultidimensionalArrays(true, $this->_options, $options, [
+            "name"    =>  $name
+        ]);
 
     }
 
@@ -339,7 +343,7 @@ class Logger {
         'php://stdout',
         Level::Debug,
         "formatters"    =>  [
-            "LineFormatter" =>  [
+            "LineFormatter"    =>  [
                 "format"    =>  "[%datetime%] %channel%.%level_name%: %message% %context% %extra%\n"
             ]
         ]

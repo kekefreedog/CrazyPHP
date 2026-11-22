@@ -39,9 +39,9 @@ class CrazyWorker {
 
     /** @var $_timerCollection */
     private array $_timerCollection = [
-        "onStart"   =>  [],
-        "timer"     =>  [],
-        "onStop"    =>  [],
+        "onStart"    =>  [],
+        "timer"      =>  [],
+        "onStop"     =>  [],
     ];
 
     /** @var $_workerInstance */
@@ -192,9 +192,9 @@ class CrazyWorker {
 
             # Set workers logger
             $this->_loggerInstance = new Logger("CrazyWorkers", [
-                "type"      =>  "Worker",
-                "handlers"  =>  [
-                    "StreamHandler" =>  Logger::STREAMHANDLER_TEMPLATE
+                "type"        =>  "Worker",
+                "handlers"    =>  [
+                    "StreamHandler"    =>  Logger::STREAMHANDLER_TEMPLATE
                 ]
             ]);
 
@@ -226,9 +226,9 @@ class CrazyWorker {
 
                 # Set logger
                 $this->_loggerInstances[$name] = new Logger($name, [
-                    "type"      =>  "Worker",
-                    "handlers"  =>  [
-                        "StreamHandler" =>  Logger::STREAMHANDLER_TEMPLATE
+                    "type"        =>  "Worker",
+                    "handlers"    =>  [
+                        "StreamHandler"    =>  Logger::STREAMHANDLER_TEMPLATE
                     ]
                 ]);
 
@@ -259,7 +259,9 @@ class CrazyWorker {
                 $arguments = $item["arguments"] ?? [];
 
                 # Check 
-                if(isset($this->_loggerInstances[$item["log"]])) $arguments += ["logger" => $this->_loggerInstances[$item["log"]] ?? null];
+                if(isset($this->_loggerInstances[$item["log"]])) $arguments += [
+                    "logger"    =>  $this->_loggerInstances[$item["log"]] ?? null
+                ];
 
                 # Check function
                 if(is_callable($item["function"] ?? false)){
@@ -372,13 +374,17 @@ class CrazyWorker {
         if($class && class_exists($class)){
 
             # Register methods into _timerCollection
-            foreach(["onStart", "timer", "onStop"] as $method)
+            foreach([
+                "onStart",
+                "timer",
+                "onStop"
+            ] as $method)
                 
                 # Append method 
                 $this->_timerCollection[$method][] = [
-                    "arguments" =>  $worker["arguments"] ?? [],
-                    "function"  =>  "$class::$method",
-                    "log"       =>  $worker["name"] ?? "worker"
+                    "arguments"    =>  $worker["arguments"] ?? [],
+                    "function"     =>  "$class::$method",
+                    "log"          =>  $worker["name"] ?? "worker"
                 ];
             
         }

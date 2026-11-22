@@ -133,7 +133,12 @@ class Runtime {
     public function command(string $tool, array $arguments = []):array {
 
         # Restrict execution to project creation tools
-        if(!in_array($tool, ["php", "composer", "npm", "docker"], true))
+        if(!in_array($tool, [
+            "php",
+            "composer",
+            "npm",
+            "docker"
+        ], true))
 
             # Reject unsupported tools
             throw new CrazyException("Unsupported project tool: $tool", 500);
@@ -142,7 +147,10 @@ class Runtime {
         if($tool === "php")
 
             # Reuse its extensions and configuration
-            return [PHP_BINARY, ...$arguments];
+            return [
+                PHP_BINARY,
+                ...$arguments
+            ];
 
         # Find the local tool in the selected runtime
         $executable = $this->find($tool);
@@ -151,19 +159,29 @@ class Runtime {
         if($tool === "docker")
 
             # Report a missing client before trying any project mutation
-            return $executable !== null ? [$executable, ...$arguments] : throw new CrazyException("Install Docker and its Compose plugin before running CrazyDocker new.", 500);
+            return $executable !== null ? [
+                $executable,
+                ...$arguments
+            ] : throw new CrazyException("Install Docker and its Compose plugin before running CrazyDocker new.", 500);
 
         # Use local Composer through the current PHP interpreter
         if($executable !== null && $tool === "composer")
 
             # Preserve the PHP runtime selected by the entrypoint
-            return [PHP_BINARY, $executable, ...$arguments];
+            return [
+                PHP_BINARY,
+                $executable,
+                ...$arguments
+            ];
 
         # Use local npm only when Node is also installed
         if($executable !== null && $this->find("node") !== null)
 
             # Run npm with separate arguments
-            return [$executable, ...$arguments];
+            return [
+                $executable,
+                ...$arguments
+            ];
 
         # Keep Docker opt-in instead of silently switching runtimes
         throw new CrazyException("Install $tool locally (npm also requires Node), or rerun the Crazy command with --docker.", 500);
@@ -181,7 +199,10 @@ class Runtime {
     public function isPortAvailable(int $port):bool {
 
         # Iteration of IPv4 and IPv6 loopback addresses
-        foreach(["127.0.0.1", "[::1]"] as $host){
+        foreach([
+            "127.0.0.1",
+            "[::1]"
+        ] as $host){
 
             # Try a short connection without waiting on filtered addresses
             $socket = @stream_socket_client("tcp://$host:$port", $errorCode, $errorMessage, 0.2);
@@ -220,7 +241,14 @@ class Runtime {
         foreach(explode(PATH_SEPARATOR, getenv("PATH") ?: "") as $directory){
 
             # Include Windows command wrappers when applicable
-            foreach(PHP_OS_FAMILY === "Windows" ? ["", ".exe", ".bat", ".cmd"] : [""] as $suffix){
+            foreach(PHP_OS_FAMILY === "Windows" ? [
+                "",
+                ".exe",
+                ".bat",
+                ".cmd"
+            ] : [
+                ""
+            ] as $suffix){
 
                 # Resolve the candidate without executing a shell
                 $path = $directory.DIRECTORY_SEPARATOR.$name.$suffix;
@@ -254,10 +282,24 @@ class Runtime {
         $null = PHP_OS_FAMILY === "Windows" ? "NUL" : "/dev/null";
 
         # Stream normal commands while keeping availability probes quiet
-        $descriptors = [STDIN, $quiet ? ["file", $null, "w"] : STDOUT, $quiet ? ["file", $null, "w"] : STDERR];
+        $descriptors = [
+            STDIN,
+            $quiet ? [
+                "file",
+                $null,
+                "w"
+            ] : STDOUT,
+            $quiet ? [
+                "file",
+                $null,
+                "w"
+            ] : STDERR
+        ];
 
         # Start the process with argument boundaries preserved
-        $process = proc_open($command, $descriptors, $pipes, $directory, null, ["bypass_shell" => true]);
+        $process = proc_open($command, $descriptors, $pipes, $directory, null, [
+            "bypass_shell"    =>  true
+        ]);
 
         # Return the real subprocess exit code
         return is_resource($process) ? proc_close($process) : 127;

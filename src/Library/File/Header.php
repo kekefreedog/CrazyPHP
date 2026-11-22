@@ -71,7 +71,7 @@ class Header{
                 "No header associated to extension \"$extension\", please contact author for add it.", 
                 501,
                 [
-                    "custom_code"   =>  "header-001",
+                    "custom_code"    =>  "header-001",
                 ]
             );
 
@@ -425,26 +425,25 @@ class Header{
      */
     private const DEFAULT_INFO = [
         # Name
-        "name"          =>  [
-            "value"         =>  Create::REQUIRED_VALUES[0]['default'],
+        "name"           =>  [
+            "value"    =>  Create::REQUIRED_VALUES[0]['default'],
         ] + Create::REQUIRED_VALUES[0],
         # Description
-        "description"   =>  [
-            "value"         =>  Create::REQUIRED_VALUES[1]['default'],
+        "description"    =>  [
+            "value"    =>  Create::REQUIRED_VALUES[1]['default'],
         ] + Create::REQUIRED_VALUES[1],
         # Authors
-        "author"        =>  [
-            "name"          =>  "author",
-            "value"         =>  "kekefreedog <kevin.zarshenas@gmail.com>",
-            "type"          =>  "VARCHAR",
+        "author"         =>  [
+            "name"     =>  "author",
+            "value"    =>  "kekefreedog <kevin.zarshenas@gmail.com>",
+            "type"     =>  "VARCHAR",
         ],
         # Copyright
-        "copyright"     =>  [
-            "name"          =>  "copyright",
-            "value"         =>  "2022-2024 Kévin Zarshenas",
-            "type"          =>  "VARCHAR",
+        "copyright"      =>  [
+            "name"     =>  "copyright",
+            "value"    =>  "2022-2024 Kévin Zarshenas",
+            "type"     =>  "VARCHAR",
         ],
-
     ];
 
     /**
@@ -452,14 +451,14 @@ class Header{
      */
     private const EXTENSION_TO_METHODS = [
         # Yml
-        "yml"   =>  "yaml",
-        "yaml"  =>  "yaml",
+        "yml"     =>  "yaml",
+        "yaml"    =>  "yaml",
         # Json
-        "json"  =>  "json",
+        "json"    =>  "json",
         # Php
-        "php"   =>  "php",
+        "php"     =>  "php",
         # Js
-        "js"    =>  "js",
+        "js"      =>  "js",
         # TBC ...
     ];
 
@@ -469,9 +468,9 @@ class Header{
      * @dir will be replace by __DIR__
      */
     private const NAME_TO_TEMPLATE = [
-        "c"     =>  "@dir/../../../resources/Hbs/Header/style_c.hbs",
-        "shell" =>  "@dir/../../../resources/Hbs/Header/style_shell.hbs",
-        "html"  =>  "@dir../../../resources/Hbs/Header/style_html.hbs",
+        "c"        =>  "@dir/../../../resources/Hbs/Header/style_c.hbs",
+        "shell"    =>  "@dir/../../../resources/Hbs/Header/style_shell.hbs",
+        "html"     =>  "@dir../../../resources/Hbs/Header/style_html.hbs",
     ];
 
     /** Public constant
@@ -482,21 +481,21 @@ class Header{
      * Clean exception
      */
     public const CLEAN_EXCEPTION = [
-        "Host"              => [
-            "keySeparator"      =>  ":"  
+        "Host"               =>  [
+            "keySeparator"    =>  ":"
         ],
-        "Cookie"            =>  [
-            "separator"         =>  "; ",
-            "keySeparator"      =>  "=" 
+        "Cookie"             =>  [
+            "separator"       =>  "; ",
+            "keySeparator"    =>  "="
         ],
-        "Accept-Encoding"   =>  [
-            "separator"         =>  ", "
+        "Accept-Encoding"    =>  [
+            "separator"    =>  ", "
         ],
-        "Accept-Language"   =>  [
-            "separator"         =>  ";"
+        "Accept-Language"    =>  [
+            "separator"    =>  ";"
         ],
-        "Accept"            =>  [
-            "separator"         =>  ","
+        "Accept"             =>  [
+            "separator"    =>  ","
         ]
     ];
 

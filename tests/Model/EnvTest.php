@@ -45,7 +45,7 @@ class EnvTest extends TestCase {
         # Setup env
         Env::set([
             # App root for composer class
-            "phpunit_test"      =>  true,
+            "phpunit_test"    =>  true,
         ]);
 
     }

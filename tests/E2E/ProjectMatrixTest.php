@@ -58,7 +58,11 @@ class ProjectMatrixTest extends TestCase {
      */
 
     /** @var array PHASES Ordered lifecycle phases */
-    public const PHASES = [Check::CREATED, Check::BUILT, Check::RUNNING];
+    public const PHASES = [
+        Check::CREATED,
+        Check::BUILT,
+        Check::RUNNING
+    ];
 
     /** Public method | Tests
      ******************************************************
@@ -80,7 +84,11 @@ class ProjectMatrixTest extends TestCase {
             $this->markTestSkipped("Set CRAZY_E2E=1 (or run composer test:e2e) to create and start real projects.");
 
         # Iteration of required tools
-        foreach(["composer", "docker", "curl"] as $tool)
+        foreach([
+            "composer",
+            "docker",
+            "curl"
+        ] as $tool)
 
             # Check tool is installed
             if(!self::_which($tool))
@@ -175,7 +183,11 @@ class ProjectMatrixTest extends TestCase {
         if(!getenv("CRAZY_E2E"))
 
             # One skipped placeholder, without enumerating thousands of combinations
-            return ["disabled" => [null]];
+            return [
+                "disabled"    =>  [
+                    null
+                ]
+            ];
 
         # Prepare filter
         $filter = [];
@@ -184,7 +196,9 @@ class ProjectMatrixTest extends TestCase {
         foreach(array_filter(explode(";", (string) getenv("CRAZY_E2E_FILTER"))) as $rule){
 
             # Split name and values
-            [$name, $values] = array_map("trim", explode("=", $rule, 2)) + [1 => ""];
+            [$name, $values] = array_map("trim", explode("=", $rule, 2)) + [
+                1    =>  ""
+            ];
 
             # Set accepted values
             $filter[$name] = array_map("trim", explode(",", $values));
@@ -202,7 +216,9 @@ class ProjectMatrixTest extends TestCase {
         foreach(Matrix::scenarios(getenv("CRAZY_E2E_STRATEGY") ?: "each", $filter, $limit) as $scenario)
 
             # Name the data set
-            $result[$scenario->label()." (".$scenario->id().")"] = [$scenario];
+            $result[$scenario->label()." (".$scenario->id().")"] = [
+                $scenario
+            ];
 
         # Return result
         return $result;
@@ -295,7 +311,9 @@ class ProjectMatrixTest extends TestCase {
 
         # Read the generator's dependency map for these answers
         $dependencies = (new ReflectionMethod(Create::class, "_databaseDependencies"))
-            ->invoke(new Create(["application" => $scenario->createOptions()]))
+            ->invoke(new Create([
+                "application"    =>  $scenario->createOptions()
+            ]))
         ;
 
         # Prepare result

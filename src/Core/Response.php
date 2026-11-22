@@ -174,7 +174,7 @@ class Response {
                 "Body given is not valid type", 
                 500,
                 [
-                    "custom_code"   =>  "core-001",
+                    "custom_code"    =>  "core-001",
                 ]
             );
 
@@ -348,20 +348,23 @@ class Response {
     }
 
     /**
-     * Set Statut Code
-     * 
-     * Set statut code of response
-     * 
-     * @param int $statutCode
-     * @return self
+     * Set Status Code
+     *
+     * Preserve the concrete response type when chaining subclass methods.
+     *
+     * @param int $statutCode HTTP response status
+     * @return static Current response instance
      */
-    public function setStatusCode(int $statutCode = 200):self {
+    public function setStatusCode(int $statutCode = 200):static {
+
+        # Prepare result
+        $result = $this;
 
         # Set status code
         $this->statutCode = $statutCode;
 
-        # Return self
-        return $this;
+        # Return result
+        return $result;
 
     }
 
@@ -379,8 +382,8 @@ class Response {
 
             # Append
             $this->_cookies["add"][$name] = [
-                "value"     =>  $value,
-                "options"   =>  $options
+                "value"      =>  $value,
+                "options"    =>  $options
             ];
 
         }

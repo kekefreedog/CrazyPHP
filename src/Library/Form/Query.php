@@ -60,10 +60,10 @@ class Query {
 
         # Set result
         $result = [
-            0   =>  $_GET["filters"] ?? $_GET["filter"] ?? null,    # Filters
-            1   =>  $_GET["sort"] ?? $_GET["sorting"] ?? "asc",     # Sort
-            2   =>  $_GET["group"] ?? $_GET["grouping"] ?? null,    # Group
-            3   =>  $_GET["option"] ?? $_GET["options"] ?? null,    # Option
+            0    =>  $_GET["filters"] ?? $_GET["filter"] ?? null,    # Filters
+            1    =>  $_GET["sort"] ?? $_GET["sorting"] ?? "asc",     # Sort
+            2    =>  $_GET["group"] ?? $_GET["grouping"] ?? null,    # Group
+            3    =>  $_GET["option"] ?? $_GET["options"] ?? null,    # Option
         ];
 
         # Check 0 is array or null
@@ -88,7 +88,7 @@ class Query {
 
         # Set result
         $result = [
-            0   =>  $_GET["option"] ?? $_GET["options"] ?? null,    # Option
+            0    =>  $_GET["option"] ?? $_GET["options"] ?? null,    # Option
         ];
 
         # Return result
@@ -107,10 +107,10 @@ class Query {
 
         # Set result
         $result = [
-            0   =>  $array["filters"] ?? $array["filter"] ?? null,    # Filters
-            1   =>  $array["sort"] ?? $array["sorting"] ?? "asc",     # Sort
-            2   =>  $array["group"] ?? $array["grouping"] ?? null,    # Group
-            3   =>  $array["option"] ?? $array["options"] ?? null,    # Option
+            0    =>  $array["filters"] ?? $array["filter"] ?? null,    # Filters
+            1    =>  $array["sort"] ?? $array["sorting"] ?? "asc",     # Sort
+            2    =>  $array["group"] ?? $array["grouping"] ?? null,    # Group
+            3    =>  $array["option"] ?? $array["options"] ?? null,    # Option
         ];
 
         # Return result
@@ -144,7 +144,7 @@ class Query {
                 "Given options.arguments must be an collection / array", 
                 500,
                 [
-                    "custom_code"   =>  "query-001",
+                    "custom_code"    =>  "query-001",
                 ]
             );
 
@@ -158,15 +158,27 @@ class Query {
      */
 
     /** @var array FILTERS_NAMES */
-    public const FILTERS_NAMES = ["filters", "filter"];
+    public const FILTERS_NAMES = [
+        "filters",
+        "filter"
+    ];
 
     /** @var array SORT_NAMES */
-    public const SORT_NAMES = ["sort", "sorting"];
+    public const SORT_NAMES = [
+        "sort",
+        "sorting"
+    ];
 
     /** @var array GROUP_NAMES */
-    public const GROUP_NAMES = ["group", "grouping"];
+    public const GROUP_NAMES = [
+        "group",
+        "grouping"
+    ];
 
     /** @var array OPTIONS_NAMES */
-    public const OPTIONS_NAMES = ["option", "options"];
+    public const OPTIONS_NAMES = [
+        "option",
+        "options"
+    ];
 
 }

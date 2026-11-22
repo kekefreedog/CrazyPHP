@@ -51,7 +51,11 @@ class Bootstrap {
                 $separator = true;
 
             # Collect recognized global options before the command arguments
-            if(!$separator && in_array($argument, ["--docker", "--yes", "-y"], true))
+            if(!$separator && in_array($argument, [
+                "--docker",
+                "--yes",
+                "-y"
+            ], true))
 
                 # Move the option before the command for the CLI parser
                 $options[] = $argument;
@@ -64,7 +68,11 @@ class Bootstrap {
         }
 
         # Keep the CLI parser and application globals in sync
-        $GLOBALS["argv"] = $_SERVER["argv"] = [$entry, ...$options, ...$arguments];
+        $GLOBALS["argv"] = $_SERVER["argv"] = [
+            $entry,
+            ...$options,
+            ...$arguments
+        ];
         $GLOBALS["argc"] = $_SERVER["argc"] = count($_SERVER["argv"]);
 
         # Local execution is the default; the container must not launch another container
@@ -77,7 +85,10 @@ class Bootstrap {
         try{
 
             # Run the same entrypoint with PHP and Node from the selected image
-            exit(self::_docker($entry, [...$options, ...$arguments], $arguments));
+            exit(self::_docker($entry, [
+                ...$options,
+                ...$arguments
+            ], $arguments));
 
         }catch(RuntimeException $exception){
 
@@ -109,7 +120,10 @@ class Bootstrap {
     private static function _docker(string $entry, array $arguments, array $positionals):int {
 
         # Require Docker only when explicitly requested
-        if(self::_invoke(["docker", "info"], true) !== 0)
+        if(self::_invoke([
+            "docker",
+            "info"
+        ], true) !== 0)
 
             # Explain why the requested runtime cannot start
             throw new RuntimeException("--docker requires an installed Docker client and a running daemon.");
@@ -138,9 +152,12 @@ class Bootstrap {
 
         # Build the maintained PHP, Composer and Node toolchain using Docker's cache
         if(self::_invoke([
-            "docker", "build",
-            "--build-arg", "PHP_VERSION=$version",
-            "--tag", $image,
+            "docker",
+            "build",
+            "--build-arg",
+            "PHP_VERSION=$version",
+            "--tag",
+            $image,
             $library."/resources/Docker/cli"
         ]) !== 0)
 
@@ -149,11 +166,18 @@ class Bootstrap {
 
         # Keep application and linked library paths identical inside Docker
         $command = [
-            "docker", "run", "--rm", "-i",
-            "--env", "HOME=/tmp",
-            "--env", "CRAZY_DOCKER_RUNTIME=1",
-            "--volume", "$root:$root",
-            "--workdir", $root
+            "docker",
+            "run",
+            "--rm",
+            "-i",
+            "--env",
+            "HOME=/tmp",
+            "--env",
+            "CRAZY_DOCKER_RUNTIME=1",
+            "--volume",
+            "$root:$root",
+            "--workdir",
+            $root
         ];
 
         # Mount a linked library located outside the application
@@ -179,15 +203,21 @@ class Bootstrap {
             basename($entry) === "CrazyDocker" ||
             (
                 basename($entry) === "CrazyCommand" &&
-                array_slice($positionals, 0, 2) === ["delete", "project"] &&
+                array_slice($positionals, 0, 2) === [
+                    "delete",
+                    "project"
+                ] &&
                 is_file($root."/docker-compose.yml")
             )
         ){
 
             # Resolve the daemon selected by the host environment or Docker context
             $endpoint = getenv("DOCKER_HOST") ?: self::_capture([
-                "docker", "context", "inspect",
-                "--format", "{{.Endpoints.docker.Host}}"
+                "docker",
+                "context",
+                "inspect",
+                "--format",
+                "{{.Endpoints.docker.Host}}"
             ]);
 
             # Require a Unix socket that can be mounted into the CLI container
@@ -215,10 +245,17 @@ class Bootstrap {
 
             # Read the socket group inside Docker to preserve daemon access
             $group = self::_capture([
-                "docker", "run", "--rm",
-                "--entrypoint", "stat",
-                "--volume", "$socket:/var/run/docker.sock",
-                $image, "-c", "%g", "/var/run/docker.sock"
+                "docker",
+                "run",
+                "--rm",
+                "--entrypoint",
+                "stat",
+                "--volume",
+                "$socket:/var/run/docker.sock",
+                $image,
+                "-c",
+                "%g",
+                "/var/run/docker.sock"
             ]);
 
             # Require a numeric group before preparing container permissions
@@ -238,7 +275,13 @@ class Bootstrap {
         }
 
         # Preserve arguments and propagate the container's exit code
-        return self::_invoke([...$command, $image, "php", $entry, ...$arguments]);
+        return self::_invoke([
+            ...$command,
+            $image,
+            "php",
+            $entry,
+            ...$arguments
+        ]);
 
     }
 
@@ -261,8 +304,16 @@ class Bootstrap {
             $command,
             [
                 STDIN,
-                $quiet ? ["file", $null, "w"] : STDOUT,
-                $quiet ? ["file", $null, "w"] : STDERR
+                $quiet ? [
+                    "file",
+                    $null,
+                    "w"
+                ] : STDOUT,
+                $quiet ? [
+                    "file",
+                    $null,
+                    "w"
+                ] : STDERR
             ],
             $pipes
         );
@@ -284,7 +335,14 @@ class Bootstrap {
     private static function _capture(array $command):string {
 
         # Capture short daemon metadata while retaining diagnostics
-        $process = proc_open($command, [STDIN, ["pipe", "w"], STDERR], $pipes);
+        $process = proc_open($command, [
+            STDIN,
+            [
+                "pipe",
+                "w"
+            ],
+            STDERR
+        ], $pipes);
 
         # Stop when the inspection process could not start
         if(!is_resource($process))

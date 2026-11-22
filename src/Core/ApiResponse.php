@@ -84,7 +84,7 @@ class ApiResponse extends Response {
                 "StreamInterface is not supported by set content in api context",
                 500,
                 [
-                    "custom_code"   =>  "apiResponse-001",
+                    "custom_code"    =>  "apiResponse-001",
                 ]
             );
 
@@ -250,7 +250,7 @@ class ApiResponse extends Response {
                 ) . " isn't valid...",
                 500,
                 [
-                    "custom_code"   =>  "apiResponse-002",
+                    "custom_code"    =>  "apiResponse-002",
                 ]
             );
 
@@ -287,7 +287,7 @@ class ApiResponse extends Response {
                 "\"$name\" isn't supported yet by framework...",
                 500,
                 [
-                    "custom_code"   =>  "apiResponse-003",
+                    "custom_code"    =>  "apiResponse-003",
                 ]
             );
 
@@ -318,10 +318,13 @@ class ApiResponse extends Response {
     /** @var array DEFAULT_CONTENT */
     public const DEFAULT_CONTENT = [
         # "errors"    =>  null,
-        "results"   =>  null
+        "results"    =>  null
     ];
 
     /** @var array */
-    public const SEPARATOR = ["/", "."];
+    public const SEPARATOR = [
+        "/",
+        "."
+    ];
 
 }

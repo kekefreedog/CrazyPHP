@@ -127,7 +127,7 @@ class Cache extends Psr16Adapter {
                     "Mango issue, restart your docker container",
                     500,    
                     [
-                        "custom_code"   =>  "cache-001",
+                        "custom_code"    =>  "cache-001",
                     ],
                     $e
                 );
@@ -146,7 +146,9 @@ class Cache extends Psr16Adapter {
             if(!extension_loaded("redis")){
 
                 # Explain the missing runtime dependency before attempting a connection
-                throw new CrazyException("The Redis cache driver requires the PHP redis extension.", 500, ["custom_code" => "cache-003"]);
+                throw new CrazyException("The Redis cache driver requires the PHP redis extension.", 500, [
+                    "custom_code"    =>  "cache-003"
+                ]);
 
             }
 
@@ -198,7 +200,7 @@ class Cache extends Psr16Adapter {
                 $e->getMessage(),
                 500,
                 [
-                    "custom_code"   =>  "cache-020",
+                    "custom_code"    =>  "cache-020",
                 ],
                 $e
             );
@@ -278,7 +280,16 @@ class Cache extends Psr16Adapter {
 
         # Get key
         $result = str_replace(
-            ["{", "}", "(", ")", "/", "\\", "@", ":"],
+            [
+                "{",
+                "}",
+                "(",
+                ")",
+                "/",
+                "\\",
+                "@",
+                ":"
+            ],
             ".",
             static::getCacheName($context, $customName)
         );
@@ -303,7 +314,10 @@ class Cache extends Psr16Adapter {
             return $result;
 
         # List delimiter
-        $delimiters = ["/", "."];
+        $delimiters = [
+            "/",
+            "."
+        ];
 
         # Iteration of delimiter
         foreach($delimiters as $delimiter)
@@ -431,7 +445,7 @@ class Cache extends Psr16Adapter {
                 "Driver \"$driver\" for your cache instance isn't valid...",
                 500,
                 [
-                    "custom_code"   =>  "cache-002",
+                    "custom_code"    =>  "cache-002",
                 ]
             );
 
@@ -447,7 +461,9 @@ class Cache extends Psr16Adapter {
             if($config !== null && !$config instanceof RedisConfig){
 
                 # Reject incompatible configuration before establishing a connection
-                throw new CrazyException("The Redis cache driver requires Phpfastcache\\Drivers\\Redis\\Config.", 500, ["custom_code" => "cache-004"]);
+                throw new CrazyException("The Redis cache driver requires Phpfastcache\\Drivers\\Redis\\Config.", 500, [
+                    "custom_code"    =>  "cache-004"
+                ]);
 
             }
 
@@ -469,9 +485,9 @@ class Cache extends Psr16Adapter {
                     ,
                     FILTER_VALIDATE_INT,
                     [
-                        "options" => [
-                            "min_range" => 1,
-                            "max_range" => 65535
+                        "options"    =>  [
+                            "min_range"    =>  1,
+                            "max_range"    =>  65535
                         ]
                     ]
                 );
@@ -484,15 +500,15 @@ class Cache extends Psr16Adapter {
                         "REDIS_PORT must be an integer between 1 and 65535.",
                         500,
                         [
-                            "custom_code" => "cache-005"
+                            "custom_code"    =>  "cache-005"
                         ]
                     );
 
                 # Build native Redis options with detailed cache dates
                 $config = new RedisConfig([
-                    "host" => $host, 
-                    "port" => $port, 
-                    "itemDetailedDate" => true
+                    "host"                =>  $host,
+                    "port"                =>  $port,
+                    "itemDetailedDate"    =>  true
                 ]);
 
             }
@@ -513,8 +529,8 @@ class Cache extends Psr16Adapter {
 
             # Set Files config
             $result["options"] = [
-                'path'              => self::_getPath(),
-                'itemDetailedDate'  => true,
+                'path'                =>  self::_getPath(),
+                'itemDetailedDate'    =>  true,
             ];
 
         }else
@@ -525,13 +541,13 @@ class Cache extends Psr16Adapter {
 
             # Set Mongodb config
             $result["options"] = [
-                'itemDetailedDate'  =>  true,
-                "host"              =>  $mongodbConfig["host"],
-                "port"              =>  $mongodbConfig["port"],
-                "username"          =>  $mongodbConfig["users"][0]["login"],
-                "password"          =>  $mongodbConfig["users"][0]["password"],
-                "collectionName"    =>  "cache", 
-                "databaseName"      =>  "crazy_db",
+                'itemDetailedDate'    =>  true,
+                "host"                =>  $mongodbConfig["host"],
+                "port"                =>  $mongodbConfig["port"],
+                "username"            =>  $mongodbConfig["users"][0]["login"],
+                "password"            =>  $mongodbConfig["users"][0]["password"],
+                "collectionName"      =>  "cache",
+                "databaseName"        =>  "crazy_db",
             ];
 
         }
@@ -556,15 +572,15 @@ class Cache extends Psr16Adapter {
      * Directory of class name
      */
     public const DIRECTORY = [
-        "CrazyPHP"  => [
-            "Library"   =>  [
-                "Template"  =>  [
+        "CrazyPHP"    =>  [
+            "Library"    =>  [
+                "Template"    =>  [
                     "Header"    =>  [
                         "TemplatesCompilated"
                     ]
                 ]
             ],
-            "Core"  =>  [
+            "Core"       =>  [
                 "Router"    =>  [
                     "RouterCollectionCached"    =>  [
                         "ConfigRouter"
@@ -576,7 +592,9 @@ class Cache extends Psr16Adapter {
 
     /** @var array DRIVERS_ALLOWED */
     public const DRIVERS_ALLOWED = [
-        "Files", "Mongodb", "Redis"
+        "Files",
+        "Mongodb",
+        "Redis"
     ];
 
 }

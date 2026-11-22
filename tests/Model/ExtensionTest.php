@@ -47,11 +47,11 @@ class ExtensionTest extends TestCase {
 
         # Setup env
         Env::set([
-            "phpunit_test"              =>  true,
-            "crazyphp_root"             =>  getcwd(),
-            "app_root"                  =>  getcwd()."/tests/.cache/router",
-            "config_location"           =>  "@crazyphp_root/resources/Yml",
-            "trash_disable"             =>  true,
+            "phpunit_test"       =>  true,
+            "crazyphp_root"      =>  getcwd(),
+            "app_root"           =>  getcwd()."/tests/.cache/router",
+            "config_location"    =>  "@crazyphp_root/resources/Yml",
+            "trash_disable"      =>  true,
         ]);
 
         # Check app root

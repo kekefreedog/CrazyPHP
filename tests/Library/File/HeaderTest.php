@@ -54,9 +54,9 @@ class HeaderTest extends TestCase{
 
         # Setup env
         Env::set([
-            "phpunit_test"      =>  true,
-            "crazyphp_root"     =>  getcwd(),
-            "app_root"          =>  getcwd(),
+            "phpunit_test"     =>  true,
+            "crazyphp_root"    =>  getcwd(),
+            "app_root"         =>  getcwd(),
         ]);
 
         # Check folder exists
@@ -132,7 +132,11 @@ class HeaderTest extends TestCase{
         $this->assertEquals(html_entity_decode($headerPhp), str_replace("2023", date("Y"), self::RESULT));
             
         # Remove cache folder
-        $this->cache->deleteMultiple(["test-string", "test-array", "test-template"]);
+        $this->cache->deleteMultiple([
+            "test-string",
+            "test-array",
+            "test-template"
+        ]);
         File::remove(self::TEST_PATH);
         
     }

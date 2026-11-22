@@ -46,7 +46,7 @@ class CatchStateTest extends TestCase{
 
         # Setup env
         Env::set([
-            "phpunit_test"      =>  true,
+            "phpunit_test"    =>  true,
         ]);
 
     }
@@ -84,7 +84,7 @@ class CatchStateTest extends TestCase{
 
         # Set state
         $state = [
-            "results"   =>  [
+            "results"    =>  [
                 "id"    =>  42,
             ],
         ];
