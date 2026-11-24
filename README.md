@@ -147,6 +147,10 @@ Run test (usign PHPUnit)
 php vendor/phpunit/phpunit/phpunit
 ```
 
+### Performance benchmarks
+
+Run `composer bench` for PHP routing and Handlebars. Run `npm run bench` for frontend MessagePack decoding and HTTP performance. The npm command starts and stops the local CrazyPHP server automatically. See the [benchmark guide](tests/Bench/README.md) for JSON reports and comparisons with Laravel and Symfony.
+
 ## Default env variables
 
 > Env variables of the app are stored in `$GLOBALS["__CRAZY_APP"]`

@@ -31,7 +31,8 @@ describe("Front/Library/Utility/cssInlineStyle", () => {
     // Set originals (undefined outside a browser/jsdom)
     let originalWindow:any;
     let originalDocument:any;
-    let originalNavigator:any;
+    // Save the native navigator descriptor for teardown
+    const originalNavigator = Object.getOwnPropertyDescriptor(globalThis, "navigator");
 
     // Set dom instance (reused, body rebuilt per test)
     let dom:JSDOM;
@@ -44,12 +45,13 @@ describe("Front/Library/Utility/cssInlineStyle", () => {
         // Save originals
         originalWindow = (globalThis as any).window;
         originalDocument = (globalThis as any).document;
-        originalNavigator = (globalThis as any).navigator;
 
         // Install jsdom's globals
         (globalThis as any).window = dom.window;
         (globalThis as any).document = dom.window.document;
-        (globalThis as any).navigator = dom.window.navigator;
+
+        // Expose the jsdom navigator over Node’s configurable getter
+        Object.defineProperty(globalThis, "navigator", {configurable: true, value: dom.window.navigator});
 
     });
 
@@ -58,7 +60,19 @@ describe("Front/Library/Utility/cssInlineStyle", () => {
         // Restore originals
         (globalThis as any).window = originalWindow;
         (globalThis as any).document = originalDocument;
-        (globalThis as any).navigator = originalNavigator;
+
+        // Check whether the runtime originally exposed a navigator
+        if(originalNavigator){
+
+            // Restore the native property descriptor
+            Object.defineProperty(globalThis, "navigator", originalNavigator);
+
+        }else{
+
+            // Remove the temporary navigator
+            Reflect.deleteProperty(globalThis, "navigator");
+
+        }
 
     });
 

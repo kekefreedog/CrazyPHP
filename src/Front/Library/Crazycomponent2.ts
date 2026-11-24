@@ -34,9 +34,11 @@ export default abstract class Crazycomponent2<T extends object = Record<string, 
     public static styles: Crazycomponent2Styles = "";
 
     /** @var options Default rendering mode for instances of the component */
-    public static options: Crazycomponent2Options = { shadow: false };
+    public static options: Crazycomponent2Options = {
+        shadow: false
+    };
 
-    /** Parameters
+    /** Public Parameters
      ******************************************************
      */
 
@@ -100,8 +102,16 @@ export default abstract class Crazycomponent2<T extends object = Record<string, 
         super();
 
         // Constructor options take precedence over the component's static defaults.
-        const configuration = { ...this.component.options, ...options };
-        this.renderRoot = configuration.shadow ? this.attachShadow({ mode: "open" }) : this;
+        const configuration = { 
+            ...this.component.options, 
+            ...options 
+        };
+
+        // Set render root
+        this.renderRoot = configuration.shadow 
+            ? this.attachShadow({ mode: "open" }) 
+            : this
+        ;
 
         // Keep unmatched light DOM children alive without displaying them.
         this._parking = this.ownerDocument.createDocumentFragment();
@@ -135,6 +145,7 @@ export default abstract class Crazycomponent2<T extends object = Record<string, 
      */
     public onCleanup(cleanup: () => void): void {
 
+        // On clean up of component
         this._cleanups.push(cleanup);
 
     }
@@ -154,8 +165,13 @@ export default abstract class Crazycomponent2<T extends object = Record<string, 
      */
     public getProperty<K extends keyof T & string>(name: K): T[K] {
 
+        // Set definition
         this.definition(name);
+
+        // Initalize
         this.initialize();
+
+        // Return values
         return this._values[name] as T[K];
 
     }
@@ -173,29 +189,65 @@ export default abstract class Crazycomponent2<T extends object = Record<string, 
      */
     public setProperty<K extends keyof T & string>(name: K, value: T[K]): void {
 
+        // Set property
         const property = this.definition(name);
+
+        // Initalize
         this.initialize();
-        if (!this.valid(value, property)) throw new TypeError(`Invalid component property: ${name}`);
+
+        // Checi if not valid
+        if(!this.valid(value, property)) 
+            
+            // Invalid compoenent
+            throw new TypeError(`Invalid component property: ${name}`);
+
+        // Set attribute
         const attribute = this.component.attributeName(name, property);
 
         // Serialize before changing state: circular JSON must not partially update it.
         const serialized = property.reflect && attribute !== null
-            ? property.type === "array" || property.type === "object" ? JSON.stringify(value)
-                : String(value)
+            ? (
+                property.type === "array" || property.type === "object" 
+                    ? JSON.stringify(value)
+                    : String(value)
+            )
             : null;
+
+        // Set changed
         const changed = !Object.is(this._values[name], value);
+
+        // Set property
         this._values[name] = value;
 
         // Reflected writes must not trigger a second conversion or render request.
         if (serialized !== null && attribute !== null) {
+
+            // Set reflecting
             this._reflecting = true;
+
+            // Try
             try {
-                if (this.getAttribute(attribute) !== serialized) this.setAttribute(attribute, serialized);
-            } finally {
+
+                // Chec attribute not serialize
+                if(this.getAttribute(attribute) !== serialized) 
+                    
+                    // Set attribute
+                    this.setAttribute(attribute, serialized);
+
+            }finally{
+
+                // Set reflecting
                 this._reflecting = false;
+
             }
+
         }
-        if (changed) this.requestUpdate();
+
+        // Checj change
+        if(changed) 
+            
+            // Request update
+            this.requestUpdate();
 
     }
 
@@ -212,10 +264,16 @@ export default abstract class Crazycomponent2<T extends object = Record<string, 
      * @param css CSS string, context function, or css-loader export
      * @return void
      */
-    public setHtmlAndCss(html: Crazycomponent2Template, css: Crazycomponent2Styles): void {
+    public setHtmlAndCss(html:Crazycomponent2Template, css:Crazycomponent2Styles):void {
 
+
+        // Set template
         this._template = html;
+        
+        // Set style
         this._styles = css;
+        
+        // Request update
         this.requestUpdate();
 
     }
@@ -230,9 +288,20 @@ export default abstract class Crazycomponent2<T extends object = Record<string, 
      */
     public render(): string {
 
+        // Get template
         let template = this._template ?? this.component.template;
-        while (typeof template === "object") template = template.default;
-        return typeof template === "function" ? template(this.prepareContext()) : template;
+        
+        // Iteration template
+        while (typeof template === "object") 
+            
+            // Update template
+            template = template.default;
+
+        // Return template
+        return typeof template === "function" 
+            ? template(this.prepareContext()) 
+            : template
+        ;
 
     }
 
@@ -244,19 +313,38 @@ export default abstract class Crazycomponent2<T extends object = Record<string, 
      *
      * @return Promise resolving whether the queued update rendered
      */
-    public requestUpdate(): Promise<boolean> {
+    public requestUpdate():Promise<boolean> {
 
         // Reuse the pending update so synchronous property changes render together.
-        if (this._pending) return this.updateComplete;
+        if (this._pending) 
+            
+            // Reuse
+            return this.updateComplete;
+
+        // Set pending
         this._pending = true;
+
+        // Update complete
         this.updateComplete = Promise.resolve().then(() => {
 
             // Release the queue before rendering so hooks can request a later update.
             this._pending = false;
-            if (!this.isConnected) return false;
+
+            // Check is connected
+            if (!this.isConnected) 
+                
+                // Return false
+                return false;
+
+            // Update
             this.update();
+
+            // Return true
             return true;
+
         });
+
+        // Return update complete
         return this.updateComplete;
 
     }
@@ -275,8 +363,16 @@ export default abstract class Crazycomponent2<T extends object = Record<string, 
      */
     protected prepareContext(): Crazycomponent2Context {
 
+        // Initerliaze
         this.initialize();
-        return { attributes: { ...this._values }, name: this.localName };
+
+        // Return attributes
+        return { 
+            attributes: { 
+                ...this._values 
+            }, 
+            name: this.localName 
+        };
 
     }
 
@@ -285,20 +381,21 @@ export default abstract class Crazycomponent2<T extends object = Record<string, 
      */
 
     /**
-     * Get Component
+     * Component
      *
      * Access declarations on the concrete subclass rather than instance fields.
      *
      * @return Component constructor
      */
-    private get component(): typeof Crazycomponent2 {
+    private get component():typeof Crazycomponent2 {
 
+        // Return constructor
         return this.constructor as typeof Crazycomponent2;
 
     }
 
     /**
-     * Get Definition
+     * Definition
      *
      * Resolve an own schema entry, rejecting undeclared property names.
      *
@@ -307,49 +404,80 @@ export default abstract class Crazycomponent2<T extends object = Record<string, 
      */
     private definition(name: string): Crazycomponent2Property {
 
-        if (!Object.prototype.hasOwnProperty.call(this.component.properties, name)) {
+        // Chheck property
+        if(!Object.prototype.hasOwnProperty.call(this.component.properties, name)) 
+
+            // Throw new error
             throw new TypeError(`Unknown component property: ${name}`);
-        }
+        
+        // Return propertie
         return this.component.properties[name];
 
     }
 
     /**
-     * Clone Default
+     * Clone
      *
      * Copy JSON-compatible defaults recursively so instances do not share objects.
      *
      * @param value Default value to copy
      * @return Independent copy of the value
      */
-    private clone(value: unknown): unknown {
+    private clone(value:unknown):unknown {
 
-        if (Array.isArray(value)) return value.map(item => this.clone(item));
-        if (value !== null && typeof value === "object") {
-            const result: Record<string, unknown> = {};
-            for (const key of Object.keys(value)) {
-                Object.defineProperty(result, key, {
-                    value: this.clone((value as Record<string, unknown>)[key]),
-                    enumerable: true, configurable: true, writable: true,
-                });
+        // Check value is array
+        if(Array.isArray(value)) 
+            
+            // Return close
+            return value.map(item => this.clone(item));
+
+        // Check value
+        if(value !== null && typeof value === "object"){
+
+            // Set result
+            const result:Record<string, unknown> = {};
+
+            // Iteration value
+            for(const key of Object.keys(value)){
+
+                // Define preperty
+                Object.defineProperty(
+                    result, 
+                    key, {
+                        value: this.clone((value as Record<string, unknown>)[key]),
+                        enumerable: true, configurable: true, writable: true,
+                    }
+                );
+
             }
+
+            // Return result
             return result;
+
         }
+
+        // Return value
         return value;
 
     }
 
     /**
-     * Get Default Value
+     * Default Value
      *
      * Use the declared default or the empty value for the declared type.
      *
      * @param property Property definition
      * @return Fresh default value
      */
-    private defaultValue(property: Crazycomponent2Property): unknown {
+    private defaultValue(property:Crazycomponent2Property):unknown {
 
-        if (property.default !== undefined) return this.clone(property.default);
+        // Check default propoerty
+        if (property.default !== undefined) 
+            
+            // Return clone
+            return this.clone(property.default);
+
+        // Switch
         switch (property.type) {
             case "string": return "";
             case "number": return 0;
@@ -361,7 +489,7 @@ export default abstract class Crazycomponent2<T extends object = Record<string, 
     }
 
     /**
-     * Validate Value
+     * Valud
      *
      * Check the runtime type and any allowed scalar values.
      *
@@ -369,47 +497,85 @@ export default abstract class Crazycomponent2<T extends object = Record<string, 
      * @param property Property definition
      * @return Whether the value matches the schema
      */
-    private valid(value: unknown, property: Crazycomponent2Property): boolean {
+    private valid(value:unknown, property:Crazycomponent2Property):boolean {
 
-        let matches: boolean;
-        switch (property.type) {
+        // Set matches
+        let matches:boolean;
+
+        // Switch
+        switch (property.type){
+
+            // Case number
             case "number": matches = typeof value === "number" && Number.isFinite(value); break;
+            
+            // Case array
             case "array": matches = Array.isArray(value); break;
+            
+            // Case object
             case "object": matches = Object.prototype.toString.call(value) === "[object Object]"; break;
+            
+            // Case default
             default: matches = typeof value === property.type;
         }
-        return matches && (!property.select || (property.select as readonly unknown[]).includes(value));
+
+        // Return matches
+        return matches && (
+            !property.select || (
+                property.select as readonly unknown[]
+            ).includes(value)
+        );
 
     }
 
     /**
-     * Initialize Properties
+     * Initialize
      *
      * Validate the schema and create each instance's initial values once.
      *
      * @return void
      * @throws TypeError When defaults or reflection options are inconsistent
      */
-    private initialize(): void {
+    private initialize():void {
 
-        if (this._initialized) return;
+        // Set initialized
+        if (this._initialized) 
+            
+            // Return
+            return;
+
+        // Iteration properties
         for (const name of Object.keys(this.component.properties)) {
+
+            // Get property
             const property = this.definition(name);
+            
+            // Get value
             const value = this.defaultValue(property);
-            if (!this.valid(value, property)) {
+
+            // Check not valud
+            if (!this.valid(value, property))
+
+                // New error
                 throw new TypeError(`Invalid default for component property: ${name}`);
-            }
-            if (property.reflect && property.attribute === false) {
+            
+            // Check reflect and no attribute
+            if (property.reflect && property.attribute === false)
+
+                // New error
                 throw new TypeError(`Reflected property must have an attribute: ${name}`);
-            }
+            
+            // Set value
             this._values[name] = value;
+
         }
+
+        // Set initialized
         this._initialized = true;
 
     }
 
     /**
-     * Convert Attribute
+     * From Attribute
      *
      * Convert HTML strings to typed values. Invalid or removed attributes restore
      * the declared default, including explicit false and zero values.
@@ -418,24 +584,75 @@ export default abstract class Crazycomponent2<T extends object = Record<string, 
      * @param property Property definition
      * @return Converted value or default
      */
-    private fromAttribute(value: string | null, property: Crazycomponent2Property): unknown {
+    private fromAttribute(value:string|null, property:Crazycomponent2Property):unknown {
 
-        if (value === null) return this.defaultValue(property);
+        // Set value
+        if (value === null) 
+            
+            // Return default value
+            return this.defaultValue(property);
+
+        // Set parsed
         let parsed: unknown = value;
+
+        // Switch
         switch (property.type) {
-            case "number": parsed = value.trim() === "" ? NaN : Number(value); break;
+
+            // Case number
+            case "number": parsed = value.trim() === "" 
+                ? NaN 
+                : Number(value); 
+            break;
+
+            // Case booloean
             case "boolean": {
+
+                // Set normaized
                 const normalized = value.trim().toLowerCase();
-                parsed = ["", "true", "1"].includes(normalized) ? true
-                    : ["false", "0"].includes(normalized) ? false : undefined;
+
+                // set parsed
+                parsed = ["", "true", "1"].includes(normalized) 
+                    ? true
+                    : (
+                        ["false", "0"].includes(normalized) 
+                            ? false
+                            : undefined
+                        
+                    )
+                ;
+
+                // Break
                 break;
             }
+
+            // Case array
             case "array":
+            // Case Object
             case "object":
-                try { parsed = JSON.parse(value); } catch { parsed = undefined; }
+
+                // Try
+                try { 
+                    
+                    // Get parsed
+                    parsed = JSON.parse(value); 
+                
+                }catch{ 
+                    
+                    // Set parsed
+                    parsed = undefined;
+                
+                }
+
+                // Break
                 break;
+
         }
-        return this.valid(parsed, property) ? parsed : this.defaultValue(property);
+
+        // Return valid
+        return this.valid(parsed, property) 
+            ? parsed 
+            : this.defaultValue(property)
+        ;
 
     }
 
@@ -444,7 +661,7 @@ export default abstract class Crazycomponent2<T extends object = Record<string, 
      */
 
     /**
-     * Get Style Text
+     * Style Text
      *
      * Normalize styles while retaining css-loader's CSS-aware serialization.
      *
@@ -452,14 +669,35 @@ export default abstract class Crazycomponent2<T extends object = Record<string, 
      */
     private styleText(): string {
 
+        // Get styles
         let styles = this._styles ?? this.component.styles;
-        while (typeof styles === "object" && "default" in styles) styles = styles.default;
-        if (typeof styles === "function") return styles(this.prepareContext());
-        if (typeof styles === "string") return styles;
+
+        // Iteration styles
+        while(typeof styles === "object" && "default" in styles) 
+            
+            // Set default
+            styles = styles.default;
+
+        
+        // Check if function
+        if(typeof styles === "function") 
+            
+            // Return style
+            return styles(this.prepareContext());
+
+        // Check if string
+        if(typeof styles === "string") 
+            
+            // Return styles
+            return styles;
+
         // css-loader exports a list with its own CSS-aware toString().
-        if (styles.toString !== Object.prototype.toString && styles.toString !== Array.prototype.toString) {
+        if(styles.toString !== Object.prototype.toString && styles.toString !== Array.prototype.toString)
+
+            // Return to string
             return styles.toString();
-        }
+        
+        // Error
         throw new TypeError("Component styles must be CSS text or a css-loader export.");
 
     }
@@ -474,26 +712,51 @@ export default abstract class Crazycomponent2<T extends object = Record<string, 
      */
     private update(): void {
 
+        // Initialize
         this.initialize();
 
         // Evaluate both assets before disturbing the currently mounted content.
         const template = this.ownerDocument.createElement("template");
+
+        // Set template
         template.innerHTML = this.render();
+
+        // Set css
         const css = this.styleText();
-        if (css) {
+
+        // Check css 
+        if(css){
+
+            // Check style
             const style = this.ownerDocument.createElement("style");
+            
+            // Set text content
             style.textContent = css;
+
+            // Append
             template.content.prepend(style);
         }
+
         // Internal node moves must not be interpreted as new supplied children.
         this._observer?.disconnect();
-        try {
+
+        // Try
+        try{
+
+            // Clean up
             this.cleanup();
-            if (this.renderRoot === this) {
+
+            // Set render root
+            if(this.renderRoot === this){
 
                 // Save original nodes rather than cloning their markup and losing state.
                 this.collectChildren();
-                for (const node of this._children) this._parking.appendChild(node);
+
+                // Iteration children
+                for (const node of this._children) 
+                    
+                    // Apoend node
+                    this._parking.appendChild(node);
 
                 // A nested custom element owns its own slots.
                 this._slots = Array.from(template.content.querySelectorAll("slot"))
@@ -503,15 +766,28 @@ export default abstract class Crazycomponent2<T extends object = Record<string, 
                         }
                         return true;
                     })
-                    .map(element => ({ element, fallback: Array.from(element.childNodes) }));
+                    .map(element => ({ element, fallback: Array.from(element.childNodes) }))
+                ;
+
+                // Set onwned roots
                 this._ownedRoots = new Set(template.content.childNodes);
+
             }
 
             // Native shadow slots project automatically; light DOM requires explicit moves.
             this.renderRoot.replaceChildren(template.content);
-            if (this.renderRoot === this) this.projectChildren();
-        } finally {
+
+            // Check render root
+            if(this.renderRoot === this)
+                
+                // Project children
+                this.projectChildren();
+
+        }finally{
+
+            // Observe children
             this.observeChildren();
+
         }
 
         // Hooks see the complete render, including any supplied content.
@@ -529,19 +805,78 @@ export default abstract class Crazycomponent2<T extends object = Record<string, 
      */
     private cleanup(): void {
 
+        // GEt callbacks
         const callbacks = this._cleanups.splice(0).reverse();
-        let failure: unknown;
+
+        // Set failure
+        let failure:unknown;
+
+        // Set failed
         let failed = false;
-        for (const callback of callbacks) {
-            try { callback(); } catch (error) { failed = true; failure = error; }
-        }
-        if (failed) throw failure;
+
+        // Iteration callbacks
+        for(const callback of callbacks)
+
+            // Try
+            try{ 
+                
+                // Callback
+                callback(); 
+            
+            }catch(error){ 
+                
+                // Set failed
+                failed = true; 
+                
+                // Set failure
+                failure = error; 
+            
+            }
+        
+        // Check fail
+        if (failed) 
+            
+            // Throw failure
+            throw failure;
 
     }
 
     /** Private Methods | Children
      ******************************************************
      */
+
+    /**
+     * Patch Supplied Children
+     * 
+     * Reconcile supplied light DOM nodes, including currently parked children.
+     *
+     * @param reconcile Patch the logical children and return their new order
+     */
+    public patchSuppliedChildren(reconcile:(children:Node[]) => Node[]):void {
+
+        // Suspend observation during projection
+        this._observer?.disconnect();
+
+        // Restore observation even if a child throws during reconciliation
+        try{
+
+            // Include recently added children
+            this.collectChildren();
+
+            // Update the logical child sequence
+            this._children = reconcile(this._children);
+
+            // Project the updated sequence
+            this.projectChildren();
+
+        }finally{
+
+            // Resume observing application changes
+            this.observeChildren();
+
+        }
+
+    }
 
     /**
      * Collect Children
@@ -555,9 +890,14 @@ export default abstract class Crazycomponent2<T extends object = Record<string, 
 
         // Drop nodes removed or transferred out of this component by application code.
         this._children = this._children.filter(node => this.contains(node) || node.parentNode === this._parking);
+
+        // Set added
         const added = Array.from(this.childNodes).filter(node => !this._ownedRoots.has(node));
+        
         // Re-appending a supplied node moves it to the end, as appendChild does.
         this._children = this._children.filter(node => !added.includes(node as ChildNode));
+
+        // Push in children
         this._children.push(...added);
 
     }
@@ -574,25 +914,55 @@ export default abstract class Crazycomponent2<T extends object = Record<string, 
 
         // Group nodes by the first matching named or default slot.
         const groups = new Map<HTMLSlotElement, Node[]>();
+
+        // Iteration chuildren
         for (const node of this._children) {
-            const name = node.nodeType === 1 ? (node as Element).getAttribute("slot") ?? "" : "";
+
+            // Set name
+            const name = node.nodeType === 1 
+                ? (node as Element).getAttribute("slot") ?? "" 
+                : ""
+            ;
+
+            // Set slot
             const slot = this._slots.find(slot => slot.element.name === name);
-            if (slot) {
+
+            // Check slot
+            if(slot){
+
+                // Set group
                 const group = groups.get(slot.element) ?? [];
+
+                // Push node
                 group.push(node);
+
+                // Set slot
                 groups.set(slot.element, group);
-            } else if (node.parentNode !== this._parking) {
+
+            }else
+            // Check paking not is parent    
+            if(node.parentNode !== this._parking)
+
+                // Append node in parking
                 this._parking.appendChild(node);
-            }
+
         }
 
         // Avoid unnecessary moves, which would reconnect nested custom elements.
-        for (const slot of this._slots) {
+        for(const slot of this._slots){
+
+            // Get children
             const children = groups.get(slot.element) ?? slot.fallback;
-            if (children.length !== slot.element.childNodes.length
-                || children.some((node, index) => node !== slot.element.childNodes[index])) {
+
+            // Checj children
+            if(
+                children.length !== slot.element.childNodes.length ||
+                children.some((node, index) => node !== slot.element.childNodes[index])
+            )
+
+                // Replace children
                 slot.element.replaceChildren(...children);
-            }
+
         }
 
     }
@@ -607,23 +977,64 @@ export default abstract class Crazycomponent2<T extends object = Record<string, 
      */
     private observeChildren(): void {
 
-        if (this.renderRoot !== this || !this.isConnected) return;
-        if (!this._observer) {
+        // Check render root not this and not connected
+        if(this.renderRoot !== this || !this.isConnected) 
+            
+            // Return
+            return;
+
+        // If not oberver
+        if(!this._observer){
+
+            // Get observer
             const Observer = this.ownerDocument.defaultView!.MutationObserver;
+
+            // Observer
             this._observer = new Observer(() => {
+
+                // Disconnect
                 this._observer!.disconnect();
+
                 try {
+
+                    // Collect children
                     this.collectChildren();
+
+                    // Project chuldren
                     this.projectChildren();
-                } finally {
+
+                }finally{
+
+                    // Observe children
                     this.observeChildren();
+
                 }
+                
             });
+
         }
 
         // Also watch retained nodes: a changed slot name can make them visible again.
-        this._observer.observe(this, { childList: true, subtree: true, attributes: true, attributeFilter: ["slot"] });
-        this._observer.observe(this._parking, { childList: true, subtree: true, attributes: true, attributeFilter: ["slot"] });
+        this._observer.observe(
+            this, 
+            { 
+                childList: true,
+                subtree: true,
+                attributes: true,
+                attributeFilter: ["slot"] 
+            }
+        );
+
+        // Observe parking
+        this._observer.observe(
+            this._parking, 
+            {
+                childList: true,
+                subtree: true,
+                attributes: true,
+                attributeFilter: ["slot"] 
+            }
+        );
 
     }
 
@@ -640,8 +1051,13 @@ export default abstract class Crazycomponent2<T extends object = Record<string, 
      */
     public connectedCallback(): void {
 
+        // Initialize
         this.initialize();
+        
+        // Observe children
         this.observeChildren();
+        
+        // Request update
         this.requestUpdate();
 
     }
@@ -655,7 +1071,10 @@ export default abstract class Crazycomponent2<T extends object = Record<string, 
      */
     public disconnectedCallback(): void {
 
+        // Disconnect
         this._observer?.disconnect();
+
+        // Cleanup
         this.cleanup();
 
     }
@@ -672,15 +1091,36 @@ export default abstract class Crazycomponent2<T extends object = Record<string, 
      */
     public attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null): void {
 
-        if (this._reflecting || oldValue === newValue) return;
+        // Checkreflecting or not change
+        if(this._reflecting || oldValue === newValue) 
+            
+            // Return
+            return;
+
+        // Initialize
         this.initialize();
-        const key = Object.keys(this.component.properties).find(key =>
-            this.component.attributeName(key, this.definition(key)) === name);
-        if (key === undefined) return;
+
+        // Get key
+        const key = Object.keys(this.component.properties).find(key => this.component.attributeName(key, this.definition(key)) === name);
+
+        // Check key not defined
+        if (key === undefined) 
+            
+            // Return
+            return;
+
+        // Get values
         const value = this.fromAttribute(newValue, this.definition(key));
-        if (!Object.is(this._values[key], value)) {
+
+        // Check is
+        if(!Object.is(this._values[key], value)){
+
+            // Set value
             this._values[key] = value;
+
+            // Request update
             this.requestUpdate();
+
         }
 
     }
@@ -699,18 +1139,22 @@ export default abstract class Crazycomponent2<T extends object = Record<string, 
      */
     public static get observedAttributes(): string[] {
 
-        const names = Object.keys(this.properties)
-            .map(name => this.attributeName(name, this.properties[name]))
-            .filter((name): name is string => name !== null);
-        if (new Set(names).size !== names.length) {
+        // GEt names
+        const names = Object.keys(this.properties).map(name => this.attributeName(name, this.properties[name])).filter((name): name is string => name !== null);
+
+        // Checj names size not valid
+        if(new Set(names).size !== names.length)
+
+            // New error
             throw new TypeError("Component properties must use distinct attribute names.");
-        }
+
+        // Return
         return names;
 
     }
 
     /**
-     * Get Attribute Name
+     * Attribute Name
      *
      * Resolve and validate an optional lowercase HTML attribute mapping.
      *
@@ -718,13 +1162,27 @@ export default abstract class Crazycomponent2<T extends object = Record<string, 
      * @param property Property definition
      * @return Mapped name, or null for a property without an attribute
      */
-    private static attributeName(name: string, property: Crazycomponent2Property): string | null {
+    private static attributeName(name:string, property:Crazycomponent2Property):string|null {
 
-        if (property.attribute === false) return null;
-        const attribute = typeof property.attribute === "string" ? property.attribute : name.toLowerCase();
-        if (!attribute || /[\s\u0000"'>/=]/.test(attribute) || attribute !== attribute.toLowerCase()) {
+        // Check property attribute
+        if(property.attribute === false) 
+            
+            // Return null
+            return null;
+
+        // Get attribute
+        const attribute = typeof property.attribute === "string" 
+            ? property.attribute 
+            : name.toLowerCase()
+        ;
+
+        //Check not attribute
+        if(!attribute || /[\s\u0000"'>/=]/.test(attribute) || attribute !== attribute.toLowerCase())
+
+            // New error
             throw new TypeError(`Invalid component attribute name: ${attribute}`);
-        }
+
+        // Return attribute
         return attribute;
 
     }

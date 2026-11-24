@@ -52,6 +52,7 @@
         }
     },
     "scripts": {
+        "bench": "@php tests/Bench/run.php",
         "test": [
             "php -f ./vendor/phpunit/phpunit/phpunit"
         ],

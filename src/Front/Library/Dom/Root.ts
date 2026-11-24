@@ -1,7 +1,7 @@
 /**
- * Dom
+ * DOM Root
  *
- * Front TS Scrips for load elements
+ * Update the live page root from rendered HTML.
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
@@ -11,12 +11,12 @@
 /**
  * Dependances
  */
-import {default as PageError} from './../Error/Page';
+import PageError from "../Error/Page";
 
 /**
  * Root
  *
- * Methods for manipulate dom root
+ * Locate the page wrapper and reconcile its DOM with incoming markup.
  *
  * @package    kzarshenas/crazyphp
  * @author     kekefreedog <kevin.zarshenas@gmail.com>
@@ -28,54 +28,54 @@ export default class Root {
      ******************************************************
      */
 
-    /** @var id:string Id of the root
-     * 
-     */
+    /** @var id:string ID of the page wrapper */
     public static readonly id:string = "crazy-root";
 
-    /** Public static methods
+    /** Public Static Methods
      ******************************************************
      */
 
     /**
      * Get ID
-     * 
-     * Get Id of the root element
-     * 
+     *
+     * Read the configured ID of the page wrapper.
+     *
      * @return string
      */
     public static getId = ():string => {
 
-        // Check id
-        if(!Root.id)
+        // Prepare the root ID
+        const result = Root.id;
 
-            // New error
+        // Check for a missing ID
+        if(!result)
+
+            // Report the missing root ID
             throw new PageError("ID of the root is not set.");
 
         // Return id
-        return Root.id;
+        return result;
+
     }
 
     /**
      * Get El
-     * 
-     * Get Root Element
-     * 
+     *
+     * Find the current page wrapper.
+     *
      * @return HTMLElement
+     * @throws PageError When the wrapper is missing
      */
     public static getEl = ():HTMLElement => {
 
-        // Get id
-        const id:string = Root.id;
+        // Prepare the root lookup result
+        const result = document.getElementById(Root.id);
 
-        // Get el
-        let result:HTMLElement|null = document.getElementById(id);
-
-        // Check result is null
+        // Check for a missing wrapper
         if(result === null)
 
-            // New error
-            throw new PageError(`Element "#${id}" does not exist in the dom.`);
+            // Report the missing wrapper
+            throw new PageError(`Element "#${Root.id}" does not exist in the dom.`);
 
         // Return result
         return result;
@@ -84,21 +84,15 @@ export default class Root {
 
     /**
      * Check El
-     * 
-     * Check Root Element
-     * 
-     * @return HTMLElement
+     *
+     * Check whether the page wrapper exists.
+     *
+     * @return boolean
      */
     public static checkEl = ():boolean => {
 
-        // Get id
-        const id:string = Root.id;
-
-        // Get el
-        let result:boolean = false;
-
-        // Check result is null
-        if(document.getElementById(id) instanceof HTMLElement) result = true;
+        // Check for an HTML page wrapper
+        const result = document.getElementById(Root.id) instanceof HTMLElement;
 
         // Return result
         return result;
@@ -107,179 +101,543 @@ export default class Root {
 
     /**
      * Set Content
-     * 
-     * Set Content of the Root 
-     * 
-     * @returns {HTMLElement}
+     *
+     * Apply rendered page markup to the live wrapper.
+     *
+     * @param content Rendered page markup
+     * @return HTMLElement
      */
     public static setContent = (content:string = ""):HTMLElement => {
 
-        // Get crazy root
-        let rootEl:HTMLElement = Root.getEl();
+        // Resolve the live page root
+        let result = Root.getEl();
 
-        // Parse new HTML into DOM
-        let parser = new DOMParser();
+        // Parse the incoming page
+        const page = new DOMParser().parseFromString(content, "text/html");
 
-        // Create new DOM tree from content
-        let newDoc = parser.parseFromString(content, "text/html");
+        // Prefer the designated wrapper when a page contains leading elements
+        const incoming = page.getElementById(Root.id) ?? page.body.firstElementChild;
 
-        // Extract the first element inside <body>
-        let newRoot = newDoc.body.firstElementChild;
+        // Keep the public root an HTML element
+        if(incoming && incoming.namespaceURI === result.namespaceURI){
 
-        // If no content or invalid HTML → exit
-        if(!newRoot) return rootEl;
+            // Preserve the lookup contract for older templates
+            incoming.id = Root.id;
 
-        // Patch the existing root content instead of replacing it
-        this._patchElement(rootEl, newRoot);
+            // Patch a compatible wrapper
+            if(Root._compatible(result, incoming)){
 
-        // Return the updated root
-        return rootEl;
+                // Update the existing root
+                Root._patchElement(result, incoming);
+
+            }else{
+
+                // Import the new wrapper into the live document
+                const replacement = result.ownerDocument.importNode(incoming, true) as HTMLElement;
+
+                // Install the replacement
+                result.replaceWith(replacement);
+
+                // Store the connected wrapper
+                result = replacement;
+
+            }
+
+        }
+
+        // Return the current page root
+        return result;
 
     }
 
-    /** Private static methods
+    /** Private Static Methods
      ******************************************************
      */
 
     /**
-     * Patch Element
-     * 
-     * Reuse DOM elements instead of replacing them completely
-     * Handle custom elements, partial HTML, and refresh flags correctly
-     * 
-     * @param oldEl Current DOM element in the page
-     * @param newEl New element from parsed HTML
-     * @returns {void}
+     * Check Node Compatibility
+     *
+     * Check whether a node can represent the incoming markup in place.
+     *
+     * @param current Live node
+     * @param incoming Template node
+     * @return boolean
      */
-    private static _patchElement = (oldEl: Element, newEl: Element): void => {
+    private static _compatible = (current:Node, incoming:Node):boolean => {
 
-        // If different tag → replace the node entirely
-        if (oldEl.tagName !== newEl.tagName) {
-            oldEl.replaceWith(newEl);
-            return;
-        }
+        // Compare node kind, element name and namespace
+        const result =
+            current.nodeType === incoming.nodeType &&
+            current.nodeName === incoming.nodeName &&
+            (current as Element).namespaceURI === (incoming as Element).namespaceURI &&
+            (current as Element).getAttribute?.("is") === (incoming as Element).getAttribute?.("is")
+        ;
 
-        // Check if element is a registered custom element (e.g. <regular-btn>)
-        const tag = oldEl.tagName.toLowerCase();
-        const isCustom = !!customElements.get(tag);
+        // Return compatibility
+        return result;
 
-        // If custom element → only sync attributes, never patch inside shadow DOM
-        if (isCustom) {
-            this._syncAttributes(oldEl, newEl);
-            return;
-        }
+    }
 
-        // Sync attributes between old and new
-        this._syncAttributes(oldEl, newEl);
+    /**
+     * Get Sibling Key
+     *
+     * Read a sibling identity, preferring an explicit key.
+     *
+     * @param node Sibling to identify
+     * @return string
+     */
+    private static _key = (node:Node):string => {
 
-        // Handle elements with "partial" attribute (used for Handlebars partials)
-        if (oldEl.hasAttribute("partial")) {
+        // Read the element key when available
+        const result = (node as Element).getAttribute?.("data-key") || (node as Element).id || "";
 
-            // Check if a forced refresh is required
-            const forceRefresh = oldEl.getAttribute("partial-refresh") === "true";
+        // Return the sibling key
+        return result;
 
-            // Get new HTML content
-            const newHtml = newEl.innerHTML.trim();
-            const oldHtml = oldEl.innerHTML.trim();
+    }
 
-            // If changed or forced → replace innerHTML (render real HTML, not text)
-            if (forceRefresh || oldHtml !== newHtml) {
+    /**
+     * Reconcile Siblings
+     *
+     * Match siblings before moving them so edits and listeners follow their items.
+     *
+     * @param previous Existing sibling nodes
+     * @param incoming Template sibling nodes
+     * @param owner Document for new nodes
+     * @return Node[]
+     */
+    private static _reconcile = (previous:Node[], incoming:Node[], owner:Document):Node[] => {
 
-                // Replace content safely
-                oldEl.innerHTML = newHtml;
+        // Prepare the requested sibling sequence
+        const result:Node[] = [];
 
-                // Reset refresh flag if needed
-                if (forceRefresh) oldEl.removeAttribute("partial-refresh");
-            }
+        // Index old siblings by key
+        const keyed = new Map<string, Node>();
 
-            // Stop recursion inside this partial
-            return;
-        }
+        // Track ambiguous keys on either side
+        const duplicates = new Set<string>();
 
-        // If both are text-only nodes → update text or real HTML
-        if (!oldEl.hasChildNodes() || !newEl.hasChildNodes()) {
-            const newHtml = newEl.innerHTML.trim();
+        // Inspect each sibling list independently
+        for(const siblings of [previous, incoming]){
 
-            // If new HTML contains tags → render it as DOM
-            if (newHtml.includes("<")) {
-                oldEl.innerHTML = newHtml;
-            } else if (oldEl.textContent !== newEl.textContent) {
-                oldEl.textContent = newEl.textContent;
-            }
+            // Track occurrences on this side
+            const seen = new Set<string>();
 
-            return;
-        }
+            // Inspect each sibling identity
+            for(const node of siblings){
 
-        // Convert children to arrays
-        const oldChildren = Array.from(oldEl.childNodes);
-        const newChildren = Array.from(newEl.childNodes);
+                // Resolve the sibling key
+                const key = Root._key(node);
 
-        // Loop through maximum child count
-        const max = Math.max(oldChildren.length, newChildren.length);
+                // Mark repeated keys for positional matching
+                if(seen.has(key))
 
-        for (let i = 0; i < max; i++) {
+                    // Record the ambiguous key
+                    duplicates.add(key);
 
-            const oldChild = oldChildren[i];
-            const newChild = newChildren[i];
+                // Record this occurrence
+                seen.add(key);
 
-            // If new child doesn't exist → remove old
-            if (oldChild && !newChild) {
-                oldChild.remove();
-                continue;
-            }
+                // Index the existing node
+                if(siblings === previous)
 
-            // If old child doesn't exist → append new
-            if (!oldChild && newChild) {
-                oldEl.appendChild(newChild.cloneNode(true));
-                continue;
-            }
+                    // Index the live sibling
+                    keyed.set(key, node);
 
-            // If both text nodes → update content if changed
-            if (oldChild?.nodeType === Node.TEXT_NODE && newChild?.nodeType === Node.TEXT_NODE) {
-                if (oldChild.textContent !== newChild.textContent)
-                    oldChild.textContent = newChild.textContent;
-                continue;
-            }
-
-            // If both element nodes → recurse patch
-            if (oldChild?.nodeType === Node.ELEMENT_NODE && newChild?.nodeType === Node.ELEMENT_NODE) {
-                this._patchElement(oldChild as Element, newChild as Element);
-                continue;
-            }
-
-            // Otherwise replace node entirely
-            if (oldChild && newChild) {
-                oldChild.replaceWith(newChild.cloneNode(true));
             }
 
         }
+
+        // Preserve relative order among positional candidates
+        const unkeyed = previous.filter(node => !Root._key(node) || duplicates.has(Root._key(node)));
+
+        // Track the next positional match
+        let position = 0;
+
+        // Match each incoming node
+        for(const next of incoming){
+
+            // Resolve its sibling key
+            const key = Root._key(next);
+
+            // Consume the appropriate candidate
+            const current = key && !duplicates.has(key) ? keyed.get(key) : unkeyed[position++];
+
+            // Reuse a compatible node
+            if(current && Root._compatible(current, next)){
+
+                // Reconcile element state or character data
+                if(current.nodeType === Node.ELEMENT_NODE){
+
+                    // Patch the matched element
+                    Root._patchElement(current as Element, next as Element);
+
+                }else if(current.nodeValue !== next.nodeValue){
+
+                    // Preserve exact text or comment content
+                    current.nodeValue = next.nodeValue;
+
+                }
+
+                // Retain the matched node
+                result.push(current);
+
+            }else{
+
+                // Create a fresh node for a new identity
+                result.push(owner.importNode(next, true));
+
+            }
+
+        }
+
+        // Index the nodes retained by the template
+        const retained = new Set(result);
+
+        // Visit existing nodes
+        for(const node of previous){
+
+            // Remove an unmatched node
+            if(!retained.has(node))
+
+                // Detach the obsolete node
+                node.parentNode?.removeChild(node);
+
+        }
+
+        // Return the desired sequence
+        return result;
+
+    }
+
+    /**
+     * Patch Children
+     *
+     * Place ordinary children in template order.
+     *
+     * @param current Live parent
+     * @param incoming Template parent
+     * @return void
+     */
+    private static _patchChildren = (current:Element|DocumentFragment, incoming:Element|DocumentFragment):void => {
+
+        // Skip leaf elements and update a lone text node without allocating sibling indexes
+        if(
+            current.firstChild?.nodeType === Node.TEXT_NODE &&
+            current.firstChild === current.lastChild &&
+            incoming.firstChild?.nodeType === Node.TEXT_NODE &&
+            incoming.firstChild === incoming.lastChild
+        ){
+
+            // Preserve text identity when the contents change
+            if(current.firstChild.nodeValue !== incoming.firstChild.nodeValue)
+
+                // Update the existing text node
+                current.firstChild.nodeValue = incoming.firstChild.nodeValue;
+
+        }else if(current.firstChild || incoming.firstChild){
+
+            // Resolve the final child sequence
+            const children = Root._reconcile(Array.from(current.childNodes), Array.from(incoming.childNodes), current.ownerDocument);
+
+            // Track the next sibling already in place
+            let cursor = current.firstChild;
+
+            // Install each child at its requested position
+            for(const child of children){
+
+                // Move only nodes that are out of place
+                if(child !== cursor)
+
+                    // Move the child into position
+                    current.insertBefore(child, cursor);
+
+                // Advance past the installed child
+                cursor = child.nextSibling;
+
+            }
+
+        }
+
+    }
+
+    /**
+     * Patch Element
+     *
+     * Synchronize markup while respecting component and form ownership.
+     *
+     * @param current Live element
+     * @param incoming Template element
+     * @return void
+     */
+    private static _patchElement = (current:Element, incoming:Element):void => {
+
+        // Capture form defaults before attribute or child updates
+        const restore = Root._formUpdate(current, incoming);
+
+        // Synchronize host attributes
+        Root._syncAttributes(current, incoming);
+
+        // Resolve the live custom element definition
+        const custom = current.ownerDocument.defaultView?.customElements.get(current.getAttribute("is") || current.localName);
+
+        // Read the component's optional light DOM reconciliation hook
+        const host = current as PatchableHost;
+
+        // Delegate custom element content according to its ownership
+        if(custom){
+
+            // Patch supplied children of an open shadow host
+            if(current.shadowRoot){
+
+                // Leave native projection to the browser
+                Root._patchChildren(current, incoming);
+
+            }else if(typeof host.patchSuppliedChildren === "function"){
+
+                // Reconcile the component's logical sequence of supplied nodes
+                host.patchSuppliedChildren(nodes => Root._reconcile(nodes, Array.from(incoming.childNodes), current.ownerDocument));
+
+            }
+
+        }else if(incoming.hasAttribute("partial")){
+
+            // Read the requested refresh mode
+            const refresh = incoming.getAttribute("partial-refresh") === "true";
+
+            // Rebuild changed or explicitly refreshed partials
+            if(refresh || current.innerHTML !== incoming.innerHTML)
+
+                // Replace the partial contents
+                current.innerHTML = incoming.innerHTML;
+
+            // Consume the one-shot refresh flag
+            if(refresh)
+
+                // Clear the refresh flag
+                current.removeAttribute("partial-refresh");
+
+        }else if(current.localName === "template" && "content" in current){
+
+            // Patch the inert template fragment
+            Root._patchChildren((current as HTMLTemplateElement).content, (incoming as HTMLTemplateElement).content);
+
+        }else{
+
+            // Patch ordinary children
+            Root._patchChildren(current, incoming);
+
+        }
+
+        // Apply form state after option and textarea children settle
+        restore?.();
+
+    }
+
+    /**
+     * Prepare Form Update
+     *
+     * Prepare live form updates only where template defaults change.
+     *
+     * @param current Live control
+     * @param incoming Template control
+     * @return Deferred update callback or undefined
+     */
+    private static _formUpdate = (current:Element, incoming:Element):(() => void)|undefined => {
+
+        // Prepare the deferred form update
+        let result:(() => void)|undefined = undefined;
+
+        // Inspect native HTML controls
+        if(current.namespaceURI === "http://www.w3.org/1999/xhtml"){
+
+            // Compare input defaults before updating attributes
+            if(current.localName === "input"){
+
+                // Resolve the live control
+                const input = current as HTMLInputElement;
+
+                // Resolve the template control
+                const next = incoming as HTMLInputElement;
+
+                // Detect a changed text default
+                const valueChanged = input.defaultValue !== next.defaultValue;
+
+                // Detect a changed checked default
+                const checkedChanged = input.defaultChecked !== next.defaultChecked;
+
+                // Apply changed defaults after the input type has been updated
+                result = () => {
+
+                    // Update editable values without assigning file paths
+                    if(valueChanged && input.type !== "file" && input.value !== next.value)
+
+                        // Apply the template value
+                        input.value = next.value;
+
+                    // Apply a changed checked default
+                    if(checkedChanged)
+
+                        // Apply the template checked state
+                        input.checked = next.defaultChecked;
+
+                };
+
+            }else if(current.localName === "textarea"){
+
+                // Resolve the incoming default text
+                const value = (incoming as HTMLTextAreaElement).defaultValue;
+
+                // Replace a live edit only when the template changes
+                if((current as HTMLTextAreaElement).defaultValue !== value){
+
+                    // Defer the live textarea update
+                    result = () => {
+
+                        // Apply the new textarea value
+                        (current as HTMLTextAreaElement).value = value;
+
+                    };
+
+                }
+
+            }else 
+            // Check if select    
+            if(current.localName === "select"){
+
+                // Resolve the live control
+                const select = current as HTMLSelectElement;
+
+                // Record whether the control had any choices
+                const hadOptions = select.options.length > 0;
+
+                // Record explicit defaults, including their submitted values
+                const previousOptions = Array.from(select.options);
+
+                // Resolve the selected options a reset would produce
+                const explicit = previousOptions.filter(option => option.defaultSelected);
+
+                // Resolve an implicit single-select default when no option declares one
+                const implicit = !select.multiple && select.size <= 1 && !explicit.length
+                    ? previousOptions.find(option => !option.matches(":disabled") && !option.closest("optgroup[disabled]"))
+                    : undefined
+                ;
+
+                // Keep the identities and values of effective defaults
+                const defaults = new Map((implicit ? [implicit] : select.multiple ? explicit : explicit.slice(-1))
+                    .map(option => [option, option.value] as const));
+
+                // Snapshot live option identities
+                const selected = new Set(Array.from(select.selectedOptions));
+
+                // Reconcile selection after options move
+                result = () => {
+
+                    // Inspect the updated option sequence
+                    const options = Array.from(select.options);
+
+                    // Read the browser's resolved incoming selection
+                    const template = (incoming as HTMLSelectElement).options;
+
+                    // Compare effective defaults after matching option identities
+                    const incomingDefaults = options.filter((_, index) => template[index]?.selected);
+
+                    // Detect changed default options or submitted values
+                    const changed = incomingDefaults.length !== defaults.size || incomingDefaults.some(option => defaults.get(option) !== option.value);
+
+                    // Restore surviving choices or accept the template when all choices disappeared
+                    const useTemplate = !hadOptions || changed || (selected.size > 0 && !options.some(option => selected.has(option)));
+
+                    // Resolve desired selection before changing the live control
+                    const desired = useTemplate ? new Set(incomingDefaults) : selected;
+
+                    // Update the live selection only when necessary
+                    if(options.some(option => option.selected !== desired.has(option))){
+
+                        // Clear automatic or stale selections
+                        select.selectedIndex = -1;
+
+                        // Select the desired options
+                        for(const option of options){
+
+                            // Restore this selected option
+                            if(desired.has(option))
+
+                                // Select the retained option
+                                option.selected = true;
+
+                        }
+
+                    }
+
+                };
+
+            }
+
+        }
+
+        // Return the deferred update
+        return result;
 
     }
 
     /**
      * Sync Attributes
-     * 
-     * Update or remove attributes as needed
-     * 
-     * @param oldEl 
-     * @param newEl 
-     * @returns {void}
+     *
+     * Synchronize attributes with their original namespaces.
+     *
+     * @param current Live element
+     * @param incoming Template element
+     * @return void
      */
-    private static _syncAttributes = (oldEl: Element, newEl: Element): void => {
+    private static _syncAttributes = (current:Element, incoming:Element):void => {
 
-        // Remove old attributes not in new element
-        for (const attr of Array.from(oldEl.attributes)) {
-            if (!newEl.hasAttribute(attr.name))
-                oldEl.removeAttribute(attr.name);
+        // Visit current attributes
+        for(const attr of Array.from(current.attributes)){
+
+            // Remove absent attributes
+            if(!incoming.hasAttributeNS(attr.namespaceURI, attr.localName))
+
+                // Remove the obsolete attribute
+                current.removeAttributeNode(attr);
+
         }
 
-        // Add / update attributes from new element
-        for (const attr of Array.from(newEl.attributes)) {
-            if (oldEl.getAttribute(attr.name) !== attr.value)
-                oldEl.setAttribute(attr.name, attr.value);
+        // Visit incoming attributes
+        for(const attr of Array.from(incoming.attributes)){
+
+            // Update changed values
+            if(current.getAttributeNS(attr.namespaceURI, attr.localName) !== attr.value){
+
+                // Preserve attributes with a namespace
+                if(attr.namespaceURI){
+
+                    // Apply the qualified attribute
+                    current.setAttributeNS(attr.namespaceURI, attr.name, attr.value);
+
+                }else{
+
+                    // Accept ordinary HTML names including colons
+                    current.setAttribute(attr.name, attr.value);
+
+                }
+
+            }
+
         }
 
     }
 
+}
+
+/** Interface
+ ******************************************************
+ */
+
+/** Optional component contract for reconciling caller-supplied light DOM. */
+interface PatchableHost extends Element {
+
+    /** Reconcile children supplied by the page template. */
+    patchSuppliedChildren?:(reconcile:(children:Node[]) => Node[]) => void;
 
 }

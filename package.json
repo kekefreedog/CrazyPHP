@@ -19,6 +19,7 @@
     },
     "homepage": "https://github.com/kekefreedog/CrazyPHP#readme",
     "scripts": {
+        "bench": "node --import tsx tests/Front/Bench/run.ts",
         "test": "find tests/Front -name '*.test.ts' -print0 | xargs -0 node --import tsx --test"
     },
     "devDependencies": {

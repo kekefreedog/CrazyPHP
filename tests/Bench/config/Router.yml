@@ -1,0 +1,20 @@
+Router:
+  vendor: mezon
+  methods:
+    - get
+  prefix:
+    api: api
+  type: {}
+  app:
+    - name: Ping
+      controller: Tests\Bench\Ping
+      patterns:
+        - /ping
+    - name: User
+      controller: Tests\Bench\User
+      patterns:
+        - /users/[i:id]
+    - name: Catalog
+      controller: Tests\Bench\Catalog
+      patterns:
+        - /catalog

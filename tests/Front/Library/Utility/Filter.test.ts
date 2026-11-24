@@ -30,6 +30,9 @@ let FilterItem:typeof FilterItemType;
 // if cross-wired with Node's.
 const TIMER_KEYS = new Set(["setTimeout", "clearTimeout", "setInterval", "clearInterval", "setImmediate", "clearImmediate", "queueMicrotask"]);
 
+// Save the native navigator descriptor before installing jsdom globals
+const originalNavigator = Object.getOwnPropertyDescriptor(globalThis, "navigator");
+
 /**
  * Shared setup for both describe blocks below: install a full jsdom window
  * as the global environment (needed for `Filter`'s constructor to build a
@@ -49,15 +52,19 @@ before(async () => {
     // Set window
     const window = dom.window as any;
 
-    // Copy every jsdom global onto the node global, timers excluded
+    // Copy ordinary jsdom globals while preserving Node timers
     for(const key of Object.getOwnPropertyNames(window))
-        if(!TIMER_KEYS.has(key))
+
+        // Install the navigator separately because Node can expose it through a getter
+        if(key !== "navigator" && !TIMER_KEYS.has(key))
             try{ (globalThis as any)[key] = window[key]; } catch { /* read-only global, ignore */ }
 
     // Install missing window/document/navigator references
     (globalThis as any).window = window;
     (globalThis as any).document = window.document;
-    (globalThis as any).navigator = window.navigator;
+
+    // Install the jsdom navigator over the configurable native property
+    Object.defineProperty(globalThis, "navigator", {configurable: true, value: window.navigator});
 
     // jsdom has no layout engine; kmaterialize observes outlined fields on import.
     (globalThis as any).ResizeObserver = class {
@@ -74,6 +81,24 @@ before(async () => {
 
     Filter = module.default;
     FilterItem = module.FilterItem;
+
+});
+
+// Restore the native navigator after the browser-dependent tests
+after(() => {
+
+    // Check whether the runtime originally exposed a navigator
+    if(originalNavigator){
+
+        // Restore the native property descriptor
+        Object.defineProperty(globalThis, "navigator", originalNavigator);
+
+    }else{
+
+        // Remove the temporary navigator
+        Reflect.deleteProperty(globalThis, "navigator");
+
+    }
 
 });
 
