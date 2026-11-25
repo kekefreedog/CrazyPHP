@@ -725,6 +725,217 @@ class RouterTest extends TestCase {
     }
 
     /**
+     * Test Router Configuration Discovery
+     *
+     * Exercise missing, nested, cached and ambiguous files through the constructor.
+     *
+     * @return void
+     */
+    public function testRouterConfigurationDiscovery():void {
+
+        # Preserve the application's settings for the other router tests
+        $original = $GLOBALS[Config::PREFIX] ?? [];
+
+        # Preserve the configured directory
+        $location = Env::get("config_location");
+
+        # Isolate this application's optional configuration directory
+        $directory = File::path("@app_root/vendor-settings");
+
+        # Inspect the adapter selected by each fresh constructor
+        $adapter = new ReflectionProperty(CoreRouter::class, "_adapter");
+
+        # Exercise actual filesystem discovery with a custom location
+        try{
+
+            # Simulate a request with no preloaded router document
+            unset($GLOBALS[Config::PREFIX]["Router"]);
+
+            # Point discovery at a directory which does not yet exist
+            Env::set([
+                "config_location"    =>  $directory
+            ]);
+
+            # Applications without a configuration directory use Mezon
+            self::assertInstanceOf(Mezon::class, $adapter->getValue(new CoreRouter()));
+
+            # Create a nested directory for an alternative supported file format
+            mkdir($directory."/nested", 0700, true);
+
+            # An existing directory with no Router file also uses Mezon
+            self::assertInstanceOf(Mezon::class, $adapter->getValue(new CoreRouter()));
+
+            # Include a config reference so the router must use the normal value resolver
+            file_put_contents($directory."/nested/Router.json", '{"Router":{"vendor":"{{Router.engine}}","engine":"symfony"}}');
+
+            # Select the configured adapter from the nested JSON document
+            self::assertInstanceOf(Symfony::class, $adapter->getValue(new CoreRouter()));
+
+            # Verify the original unexpanded document is cached for subsequent lookups
+            self::assertSame("{{Router.engine}}", $GLOBALS[Config::PREFIX]["Router"]["Router"]["vendor"]);
+
+            # Introduce a second matching file
+            file_put_contents($directory."/Router.yml", "Router: {vendor: league}");
+
+            # Reuse the loaded document for the rest of this request
+            self::assertInstanceOf(Symfony::class, $adapter->getValue(new CoreRouter()));
+
+            # Start discovery afresh to check for duplicates
+            unset($GLOBALS[Config::PREFIX]["Router"]);
+
+            # Report ambiguous configuration for optional values
+            self::expectExceptionMessage('Conflict of config file with the same name for "Router".');
+
+            # Both files must participate in discovery
+            new CoreRouter();
+
+        }finally{
+
+            # Restore the previous in-memory configuration
+            $GLOBALS[Config::PREFIX] = $original;
+
+            # Restore the configuration directory
+            Env::set([
+                "config_location"    =>  $location
+            ]);
+
+        }
+
+    }
+
+    /**
+     * Test Direct File Cache
+     *
+     * Exercise cold publication, warm includes, legacy entries and route source edits.
+     *
+     * @param string $adapterClass Routing engine to exercise
+     * @return void
+     */
+    #[DataProvider("routerAdapters")]
+    public function testDirectFileCache(string $adapterClass):void {
+
+        # Isolate the Files pool so clear cannot affect other tests
+        $_SERVER["HTTP_HOST"] = "router-test-".bin2hex(random_bytes(8));
+
+        # Use an explicit route source under the disposable application
+        $source = File::path("@app_root/config/Compiled.yml");
+
+        # Write a real parameterized GET route
+        $yaml = "Router:\n  app:\n    - name: Item\n      controller: FixtureController\n      patterns:\n        - /item/[i:id]\n";
+
+        # Preserve config already loaded by neighboring tests
+        $config = $GLOBALS[Config::PREFIX] ?? [];
+
+        # Use a real local pool throughout the simulated requests
+        $cache = new Cache("Files");
+
+        # Track the artifacts owned by this pool
+        $directory = $cache->getFileCacheDirectory();
+
+        # Exercise the application's collection entry point on each fresh router
+        $load = static function() use ($adapterClass, $source, $cache):CoreRouter {
+
+            # Start with an empty routing engine
+            $result = new CoreRouter(new $adapterClass());
+
+            # Install the isolated cache
+            $result->cache = $cache;
+
+            # Compile or restore the configured collection
+            $result->pushCollection($source);
+
+            # Return the router for dispatch assertions
+            return $result;
+
+        };
+
+        # Restore shared configuration even on assertion failure
+        try{
+
+            # Supply an empty API group alongside the explicit collection
+            $GLOBALS[Config::PREFIX]["Api"] = [
+                "Api"    =>  []
+            ];
+
+            # Create the original YAML
+            file_put_contents($source, $yaml);
+
+            # Make the initial source old enough for an immediate cache hit
+            touch($source, time() - 60);
+
+            # Prime the compiled collection
+            self::assertSame("FixtureController::GET", $load()->getCallback("/item/42"));
+
+            # Locate the one published generation in this pool
+            $files = glob($directory."/routes-*.php");
+
+            # Verify publication occurred during compilation
+            self::assertCount(1, $files);
+
+            # Mark the generation so rewriting it on a cache hit is observable
+            touch($files[0], 1000000000);
+
+            # Restore a fresh adapter and exercise the captured parameter
+            $warm = $load();
+
+            # Check the handler selected from the warm table
+            self::assertSame("FixtureController::GET", $warm->getCallback("/item/42"));
+
+            # Check the route parameter survived restoration
+            self::assertSame("42", $warm->getParam("id"));
+
+            # Verify PHP included the persistent file itself
+            self::assertContains($files[0], get_included_files());
+
+            # Verify the warm request left its contents in place
+            self::assertSame(1000000000, filemtime($files[0]));
+
+            # Simulate an older cache containing only compiled bytes
+            unlink($files[0]);
+
+            # Restore the old entry through the public cache API
+            $warm->loadFromCache(Cache::getKeyWithCacheName(CoreRouter::class, ".RouterCollectionCached.Compiled.".$adapterClass));
+
+            # Confirm an executable file was republished for future requests
+            self::assertFileExists($files[0]);
+
+            # Change the YAML immediately after the earlier cache write
+            file_put_contents($source, str_replace("/item/", "/updated/", $yaml));
+
+            # Refresh the request's view of source timestamps
+            clearstatcache();
+
+            # Compile the updated routes from the same source
+            $updated = $load();
+
+            # Check the updated route
+            self::assertSame("FixtureController::GET", $updated->getCallback("/updated/42"));
+
+            # Verify the obsolete pattern is gone
+            self::assertFalse($updated->routeExists("/item/[i:id]"));
+
+            # Verify both complete generations have distinct OPcache paths
+            self::assertCount(2, glob($directory."/routes-*.php"));
+
+            # Check staging files were released
+            self::assertSame([], glob($directory."/routerDump*"));
+
+        }finally{
+
+            # Restore the surrounding application configuration
+            $GLOBALS[Config::PREFIX] = $config;
+
+            # Clear only this test's namespace including its compiled files
+            $cache->clear();
+
+        }
+
+        # Check normal cache cleanup releases executable generations
+        self::assertSame([], glob($directory."/routes-*.php"));
+
+    }
+
+    /**
      * Test Adapter Cache Round Trip
      *
      * @return void

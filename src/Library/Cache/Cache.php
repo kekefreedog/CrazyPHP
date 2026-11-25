@@ -22,7 +22,8 @@ use Phpfastcache\Drivers\Mongodb\Config as MemcachedConfig;
 use Phpfastcache\Core\Pool\ExtendedCacheItemPoolInterface;
 use Phpfastcache\Config\ConfigurationOptionInterface;
 use Phpfastcache\Drivers\Redis\Config as RedisConfig;
-use Phpfastcache\Config\ConfigurationOption;
+use Phpfastcache\Drivers\Files\Driver as FilesDriver;
+use Phpfastcache\Drivers\Files\Config as FilesConfig;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\File\Composer;
 use Phpfastcache\Helper\Psr16Adapter;
@@ -75,13 +76,11 @@ class Cache extends Psr16Adapter {
         ## Files
         if($configuration["driver"] == "Files"){
 
-            # Set path of cache
-            CacheManager::setDefaultConfig(
-                new ConfigurationOption($configuration["options"])
-            );
+            # Configure the Files pool without changing the defaults for other drivers
+            $options = $configuration["options"];
 
-            # Set driver instance
-            $driverInstance = CacheManager::getInstance('files');
+            # Share the pool across clients using the same file configuration
+            $driverInstance = CacheManager::getInstance("Files", is_array($options) ? new FilesConfig($options) : $options);
 
         }else
         ## Mongodb
@@ -166,6 +165,30 @@ class Cache extends Psr16Adapter {
      ******************************************************
      */
 
+    /**
+     * Get File Cache Directory
+     *
+     * Resolve the active Files pool directory so derived files follow its namespace and clear operation.
+     *
+     * @return string|null
+     */
+    public function getFileCacheDirectory():?string {
+
+        # Default to opaque storage for other drivers and injected cache implementations
+        $result = null;
+
+        # Resolve the actual pool selected by the cache manager
+        /** @disregard P1013 */
+        if(($this->internalCacheInstance ?? null) instanceof FilesDriver)
+
+            # Use the same directory removed by the driver's clear operation
+            $result = $this->internalCacheInstance->getPath();
+
+        # Return the local storage directory
+        return $result;
+
+    }
+
     /** 
      * Has Up To Date
      * 
@@ -229,6 +252,28 @@ class Cache extends Psr16Adapter {
     /** Public static methods
      ******************************************************
      */
+
+    /**
+     * Open the local Files pool without consulting database configuration.
+     *
+     * @param string|null $directory Override the application's cache directory
+     * @return self
+     */
+    public static function files(?string $directory = null):self {
+
+        # Override only the base path for callers with a dedicated directory
+        $config = $directory === null 
+            ? null 
+            : (new FilesConfig(self::FILE_OPTIONS))->setPath($directory)
+        ;
+
+        # Open the pool using the standard file storage settings
+        $result = new self("Files", $config);
+
+        # Return the cache client
+        return $result;
+
+    }
 
     /**
      * Get Cache Name
@@ -360,8 +405,11 @@ class Cache extends Psr16Adapter {
             # Set result
             $result = self::PATH_TEST;
 
-        # Strange reaction... Allow to debug next command... ¯\_(ツ)_/¯
-        Env::get("crazyphp_root");
+        # Require the root used by the selected cache path
+        Env::get($result === self::PATH_TEST
+            ? "crazyphp_root"
+            : "app_root"
+        );
 
         # Process result
         $result = File::path($result);
@@ -528,10 +576,7 @@ class Cache extends Psr16Adapter {
         if($driver == "Files"){
 
             # Set Files config
-            $result["options"] = [
-                'path'                =>  self::_getPath(),
-                'itemDetailedDate'    =>  true,
-            ];
+            $result["options"] = self::FILE_OPTIONS + ["path" => $this->_getPath()];
 
         }else
         # Check if mongodb driver
@@ -561,12 +606,21 @@ class Cache extends Psr16Adapter {
      ******************************************************
      */
 
+    /** @var array Publish complete files for concurrent readers and retain item dates */
+    private const FILE_OPTIONS = [
+        "secureFileManipulation"    =>  true,
+        "itemDetailedDate"          =>  true
+    ];
+
     /**
      * Path of the cache
      */
     public const PATH = "@app_root/.cache/app/";
-    public const PATH_TEST = "@crazyphp_root/tests/.cache/cache/";
 
+    /**
+     * Path test of the cache
+     */
+    public const PATH_TEST = "@crazyphp_root/tests/.cache/cache/";
 
     /**
      * Directory of class name

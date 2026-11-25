@@ -18,7 +18,6 @@ namespace CrazyPHP\Core;
 use CrazyPHP\Library\Router\Router as LibraryRouter;
 use CrazyPHP\Library\Router\Adapter\LeagueRoute;
 use CrazyPHP\Driver\Model\Config as ModelConfig;
-use CrazyPHP\Model\Config as ApplicationConfig;
 use CrazyPHP\Library\Router\Adapter\FastRoute;
 use CrazyPHP\Library\Router\Adapter\Symfony;
 use Psr\Http\Message\ServerRequestInterface;
@@ -34,6 +33,7 @@ use CrazyPHP\Library\File\Header;
 use CrazyPHP\Library\File\File;
 use CrazyPHP\Model\Context;
 use CrazyPHP\Model\Env;
+use RuntimeException;
 
 /**
  * Router
@@ -56,6 +56,9 @@ class Router implements CrazyRouter {
     /** @var CrazyRouter $_adapter Routing engine used by the framework */
     private CrazyRouter $_adapter;
 
+    /** @var bool Whether middleware discovery can validate all configuration sources */
+    private bool $_hasMiddlewareSourceFiles;
+
     /** @var DateTime lastModifiedDateRouter */
     private DateTime $_lastModifiedDateRouter;
 
@@ -75,14 +78,8 @@ class Router implements CrazyRouter {
         # Honor an explicitly injected adapter before reading application defaults
         if($adapter === null){
 
-            # Locate optional application settings using the configured directory
-            $location = Env::has("config_location") ? Env::get("config_location") : Config::FOLDER_PATH;
-
-            # Support minimal projects and tests without a Router configuration file
-            $hasRouter = isset($GLOBALS[Config::PREFIX]["Router"]) || ApplicationConfig::exists("Router", $location);
-
-            # Read the selected vendor alongside the route collections
-            $vendor = $hasRouter && Config::has("Router.vendor") ? Config::getValue("Router.vendor") : "mezon";
+            # Resolve the optional vendor in the same lookup that loads the route configuration
+            $vendor = Config::getValueOrDefault("Router.vendor", "mezon");
 
             # Select the configured implementation while preserving the legacy default
             $adapter = match($vendor){
@@ -195,8 +192,8 @@ class Router implements CrazyRouter {
         # Register custom types for both freshly compiled and cached routes
         $this->addRouterType();
 
-        # Check cache is valid
-        if($this->cache->hasUpToDate($key, $lastModifiedDate)){
+        # Rebuild after same-second edits to configuration sources with whole-second timestamps
+        if($this->cache->hasUpToDate($key, $lastModifiedDate->modify("+1 second"))){
 
             # Load From Cache
             $this->loadFromCache($key);
@@ -297,7 +294,7 @@ class Router implements CrazyRouter {
                 "ConfigMiddlewares";
 
         # Get key
-        $key = Cache::getKeyWithCacheName(__CLASS__, ".RouterCollectionCached.$collectionName.".$this->_adapter::class);
+        $key = Cache::getKeyWithCacheName(__CLASS__, ".MiddlewareCollectionCached.$collectionName.".$this->_adapter::class);
 
         # Check cache
         if($this->cache === null)
@@ -305,32 +302,22 @@ class Router implements CrazyRouter {
             # New cache instance
             $this->cache = new Cache();
 
-        # Set lastModifiedDate
-        $lastModifiedDate = $collectionPath 
-            ? File::getLastModifiedDate(File::path($collectionPath))
-            : $this->_lastModifiedDateRouter
-        ;
+        # Include the concrete core middleware class in discovery cache invalidation
+        $lastModifiedDate = max(
+            $this->_lastModifiedDateRouter,
+            $this->_lastModifiedDateApi,
+            $this->_lastModifiedDateMiddleware,
+            DateTime::lastUpdateFile(__DIR__."/Middleware.php")
+        );
 
-        # Get last modified date of api
-        $lastModifiedDateApi = $this->_lastModifiedDateApi;
+        # Include the optional collection file in freshness checks
+        if($collectionPath)
 
-        # Get last modified date of api
-        $lastModifiedDateMiddleware = $this->_lastModifiedDateMiddleware;
+            # Track the latest dependency
+            $lastModifiedDate = max($lastModifiedDate, File::getLastModifiedDate($collectionPath));
 
-        # Compare two dates
-        if($lastModifiedDateApi > $lastModifiedDate)
-
-            # Update last modified date
-            $lastModifiedDate = $lastModifiedDateApi;
-
-        # Compare two dates
-        if($lastModifiedDateMiddleware > $lastModifiedDate)
-
-            # Update last modified date
-            $lastModifiedDate = $lastModifiedDateMiddleware;
-
-        # Check cache is valid
-        if($this->cache->hasUpToDate($key, $lastModifiedDate) && false){
+        # Require a cache write after the last edit second to catch same-second configuration changes
+        if($this->_hasMiddlewareSourceFiles && $this->cache->hasUpToDate($key, $lastModifiedDate->modify("+1 second"))){
 
             # Get cached data
             list($coreMiddlewares, $appMiddlewares, $apiMiddlewares) = $this->cache->get($key);
@@ -416,21 +403,43 @@ class Router implements CrazyRouter {
                 ]
             );
 
-        # Tmp file Path
-        $tmpFilePath = tempnam(sys_get_temp_dir(), 'routerDump');
+        # Stage local route tables on the same filesystem as the published file
+        $directory = $this->cache->getFileCacheDirectory();
 
+        # Allocate a private staging file for the adapter
+        $temporary = $this->_temporaryRouteFile($directory);
+
+        # Publish only fully written adapter output
         try{
 
-            # Create file cache through the selected adapter
-            $this->dumpOnDisk($tmpFilePath);
+            # Compile through the adapter's existing serialization contract
+            $this->dumpOnDisk($temporary);
 
-            # Put the compiled routes on cache
-            $this->cache->set($key, file_get_contents($tmpFilePath));
+            # Read the portable payload used by cache expiry, deletion and older installations
+            $data = file_get_contents($temporary);
+
+            # Reject an adapter that failed to produce a route table
+            if($data === false || $data === "")
+
+                # Keep the previous cache entry intact
+                throw new RuntimeException("Unable to read compiled routes.");
+
+            # Publish the completed local file before making its cache entry visible
+            if($directory !== null)
+
+                # Name each immutable generation by its contents
+                $this->_publishRouteFile($temporary, $this->_routeFilePath($directory, $data));
+
+            # Preserve the existing cache value for all drivers
+            $this->cache->set($key, $data);
 
         }finally{
 
-            # Release the temporary adapter cache file
-            unlink($tmpFilePath);
+            # Discard unpublished staging files, including duplicates from concurrent writers
+            if(is_file($temporary))
+
+                # Remove only this invocation's file
+                unlink($temporary);
 
         }
 
@@ -473,19 +482,50 @@ class Router implements CrazyRouter {
                 ]
             );
 
-        # Tmp file Path
-        $tmpFilePath = tempnam(sys_get_temp_dir(), 'routerDump');
+        # Locate the persistent executable only for a filesystem-backed pool
+        $directory = $this->cache->getFileCacheDirectory();
 
-        try{
+        # Derive the file from the authoritative cache value
+        $path = $directory === null ? null : $this->_routeFilePath($directory, $data);
 
-            # Restore the compiled routes through the selected adapter
-            file_put_contents($tmpFilePath, $data);
-            $this->loadFromDisk($tmpFilePath);
+        # Load warm tables directly without allocating or writing a temporary file
+        if($path !== null && is_file($path)){
 
-        }finally{
+            # Restore the exact generation used by this cache entry
+            $this->loadFromDisk($path);
 
-            # Release the temporary adapter cache file
-            unlink($tmpFilePath);
+        }else{
+
+            # Stage remote payloads and local entries created before direct file loading
+            $temporary = $this->_temporaryRouteFile($directory);
+
+            # Materialize the cached table for the adapter
+            try{
+
+                # Require a complete write before the adapter can include the file
+                if(file_put_contents($temporary, $data) !== strlen($data))
+
+                    # Reject incomplete filesystem writes
+                    throw new RuntimeException("Unable to write compiled routes.");
+
+                # Retain the executable for subsequent local hits
+                if($path !== null)
+
+                    # Atomically publish the recovered local table
+                    $this->_publishRouteFile($temporary, $path);
+
+                # Remote cache drivers still restore through the temporary file
+                $this->loadFromDisk($path ?? $temporary);
+
+            }finally{
+
+                # Remove transient or unpublished files even when the adapter fails
+                if(is_file($temporary))
+
+                    # Release this invocation's staging file
+                    unlink($temporary);
+
+            }
 
         }
 
@@ -841,11 +881,91 @@ class Router implements CrazyRouter {
                 ){
 
                     # Push in router
-                    $this->addType(strtolower($router["name"]), $router["class"]);
+                    $this->addType(strtolower($router["name"]), (string) $router["class"]);
 
                 }
 
             }
+
+    }
+
+    /**
+     * Get Route File Path
+     *
+     * Content-addressed paths keep concurrent readers and OPcache on a complete generation.
+     *
+     * @param string $directory Active file-cache pool
+     * @param string $data Adapter output
+     * @return string
+     */
+    private function _routeFilePath(string $directory, string $data):string {
+
+        # Use a digest instead of incorporating a caller-supplied cache key into a path
+        $result = $directory."/routes-".hash("sha256", $data).".php";
+
+        # Return the immutable file path
+        return $result;
+
+    }
+
+    /**
+     * Allocate Temporary Route File
+     *
+     * @param string|null $directory Local pool or the system temporary directory
+     * @return string
+     */
+    private function _temporaryRouteFile(?string $directory):string {
+
+        # Allocate a unique file with restrictive permissions
+        $result = tempnam($directory ?? sys_get_temp_dir(), "routerDump");
+
+        # Report allocation failures before passing the path to an adapter
+        if($result === false)
+
+            # Stop cache publication
+            throw new RuntimeException("Unable to create a temporary route file.");
+
+        # Reject tempnam's system-directory fallback when publication requires a local rename
+        if($directory !== null && dirname($result) !== $directory){
+
+            # Release the fallback file before reporting the unusable cache directory
+            unlink($result);
+
+            # Avoid crossing filesystems while publishing executable PHP
+            throw new RuntimeException("Unable to stage compiled routes in the file cache.");
+
+        }
+
+        # Return the allocated path
+        return $result;
+
+    }
+
+    /**
+     * Publish Route File
+     *
+     * @param string $temporary Completed adapter output in the local pool
+     * @param string $path Immutable destination for these bytes
+     * @return void
+     */
+    private function _publishRouteFile(string $temporary, string $path):void {
+
+        # Publish a new generation only when the pool does not already have these bytes
+        if(!is_file($path)){
+
+            # Allow other PHP workers to read the table subject to the application's umask
+            if(!chmod($temporary, 0644 & ~umask()))
+
+                # Keep the publication private until its permissions are ready
+                throw new RuntimeException("Unable to configure compiled route file permissions.");
+
+            # Let concurrent writers publish identical bytes through a same-directory rename
+            if(!rename($temporary, $path) && !is_file($path))
+
+                # Keep an incomplete table out of the cache
+                throw new RuntimeException("Unable to publish compiled routes.");
+
+        }
 
     }
 
@@ -856,14 +976,27 @@ class Router implements CrazyRouter {
      */
     private function _setLastModifiedDates():void {
 
-        # Set last modified date router
-        $this->_lastModifiedDateRouter = File::getLastModifiedDate(File::path("@app_root/config/Router.yml"));
+        # Resolve the directory used by the application configuration loader
+        $location = Env::has("config_location") ? Env::get("config_location") : Config::FOLDER_PATH;
 
-        # Set last modified date api
-        $this->_lastModifiedDateApi = File::getLastModifiedDate(File::path("@app_root/config/Api.yml"));
-        
-        # Set last modified date middleware
-        $this->_lastModifiedDateMiddleware = File::getLastModifiedDate(File::path("@app_root/config/Middleware.yml"));
+        # Resolve the configuration directory before checking source files
+        $location = File::path($location);
+
+        # Keep discovery live for in-memory or nonstandard configuration sources
+        $this->_hasMiddlewareSourceFiles =
+            is_file("$location/Router.yml") &&
+            is_file("$location/Api.yml") &&
+            is_file("$location/Middleware.yml")
+        ;
+
+        # Read the route configuration timestamp
+        $this->_lastModifiedDateRouter = File::getLastModifiedDate("$location/Router.yml");
+
+        # Read the API configuration timestamp
+        $this->_lastModifiedDateApi = File::getLastModifiedDate("$location/Api.yml");
+
+        # Read the middleware configuration timestamp
+        $this->_lastModifiedDateMiddleware = File::getLastModifiedDate("$location/Middleware.yml");
 
     }
 

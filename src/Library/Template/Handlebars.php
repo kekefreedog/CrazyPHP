@@ -12,9 +12,10 @@
  */
 namespace CrazyPHP\Library\Template;
 
-/** 
+/**
  * Dependances
  */
+use Phpfastcache\Exceptions\PhpfastcacheIOException;
 use CrazyPHP\Library\Template\Handlebars\Helpers;
 use CrazyPHP\Exception\CrazyException;
 use Symfony\Component\Finder\Finder;
@@ -23,7 +24,7 @@ use CrazyPHP\Library\Cache\Cache;
 use CrazyPHP\Library\File\Config;
 use CrazyPHP\Library\File\File;
 use LightnCandy\LightnCandy;
-use CrazyPHP\Model\Env;
+use Closure;
 
 /**
  * Handlebars
@@ -59,11 +60,6 @@ class Handlebars {
     ];
 
     /**
-     * @var ?string $key Key og the cache of the current template
-     */
-    private $key = null;
-
-    /**
      * @var ?\Closure $renderableClass Compiled template renderer
      */
     private ?\Closure $renderableClass = null;
@@ -73,41 +69,39 @@ class Handlebars {
      */
     private $partials = null;
 
+    /** @var Cache|null Cache client shared by the current document */
+    private ?Cache $_cache = null;
+
     /**
-     * Constructor
-     * 
-     * Ingest data
-     * 
-     * @param array $options Options
-     * @return self
+     * Construct Template Renderer
+     *
+     * Accept explicit compiler options and an optional document cache client.
+     *
+     * @param array $options Template options
+     * @param Cache|null $cache Shared cache client
      */
-    public function __construct(array $options = []){
-        
-        # Check options
-        if(!empty($options))
+    public function __construct(array $options = [], ?Cache $cache = null){
 
-            # Iterations of options
-            foreach($options as $key => $option){
+        # Keep the cache client separate from compiler options and their cache key
+        $this->_cache = $cache;
 
-                # Check if partials
-                if(
-                    $key == "partials" && 
-                    (
-                        is_null($option) ||
-                        is_array($option)
-                    )
-                )
+        # Apply each caller-supplied option
+        foreach($options as $key => $option){
 
-                    # Set partials
-                    $this->partials = $option;
+            # Keep explicit partial sources available to the ordinary template loader
+            if($key === "partials" && ($option === null || is_array($option))){
 
-                # Regular option
-                else
+                # Store the partial map
+                $this->partials = $option;
 
-                    # Puhs option
-                    $this->options[$key] = $option;
+            }else{
+
+                # Override the corresponding compiler option
+                $this->options[$key] = $option;
 
             }
+
+        }
 
     }
 
@@ -141,113 +135,150 @@ class Handlebars {
      */
     public function load(string|array $inputs = "", string $customName = ""):void {
 
-        # Check inputs
-        if(empty($inputs))
+        # Preserve the current renderer when no template was requested
+        if(!empty($inputs)){
 
-            # Stop
-            return;
+            # Resolve the same ordered source paths used by the compiler
+            $paths = (array)Process::shortcutsByFile($inputs);
 
-        # Process inputs
-        $inputs = Process::shortcutsByFile($inputs);
+            # Development builds and watchers always load the current template contents
+            $live = Config::getValueOrDefault("Front.lastBuild.watch", false)
+                || Config::getValueOrDefault("Front.lastBuild.mode", null) === "development"
+            ;
 
-        # Check inputs is array
-        if(!is_array($inputs))
+            # Keep live templates local to this load
+            $cache = $live ? null : ($this->_cache ?? new Cache());
 
-            # Convert inputs to array
-            $inputs = [
-                $inputs
-            ];
+            # Compile directly when there is no persistent cache for this load
+            if($cache === null){
 
-        # Add class in top of inputs
-        $collectionKey = [];
+                # Read fresh source bytes for the live renderer
+                $compiled = $this->_compileTemplate(File::read($paths), $this->partials);
 
-        # Iteration des inputs
-        foreach($inputs as $input)
+            }else{
 
-            # Check input
-            if($input)
+                # Preserve the order of the caller's nonempty template names
+                $names = array_map(
+                    static fn($path) => File::path(pathinfo($path, PATHINFO_FILENAME)),
+                    array_filter($paths)
+                );
 
-                # Push filename in collection
-                $collectionKey[] = File::path(pathinfo($input, PATHINFO_FILENAME));
+                # Retain compatibility with compiled entries already in the pool
+                $key = self::getKey(
+                    $names,
+                    Cache::getCacheName(__CLASS__).($customName ? ".$customName." : "").".templateCached."
+                );
 
-        # Get key
-        $this->key = self::getKey($collectionKey, Cache::getCacheName(__CLASS__).($customName ? ".$customName." : "").".templateCached.");
+                # Retrieve the compiled bytes only while their sources are up to date
+                $compiled = $cache->hasUpToDate($key, File::getLastModifiedDate($paths))
+                    ? $cache->get($key)
+                    : null
+                ;
 
-        # Prepare template
-        if(
-            isset($this->options["template"]) &&
-            !empty($this->options["template"])
-        ){
+                # Compile expired, missing or concurrently cleared entries
+                if(!is_string($compiled)){
 
-            # Set template
-            $template = $this->options["template"];
+                    # Compile this snapshot with the explicit partials
+                    $compiled = $this->_compileTemplate(File::read($paths), $this->partials);
 
-            # Check partials
-            if($this->partials && !empty($this->partials))
+                    # Store the generated program under the same lookup key
+                    $cache->set($key, $compiled);
 
-                # Set partials
-                $template["partials"] = $this->partials;
+                }
 
-        }else
+            }
 
-            # Set default template
-            $template = self::CRAZY_PRESET;
+            # Install the renderer for this load, including when an instance is reused
+            $this->renderableClass = $this->_loadRenderer($compiled, $cache);
 
-        # Check helpers
-        if(isset($this->options["helpers"]) && $this->options["helpers"]){
+        }
 
-            # Set helpers
-            $template["helpers"] = Helpers::listArray();
+    }
 
-            # Check if App\Library\Handlebars\Helpers is valid class
-            if(class_exists(static::APP_HELPERS) && method_exists(static::APP_HELPERS, "listArray")){
+    /**
+     * Load a page or email template with the application's recursive partial collection.
+     *
+     * @param string|array $inputs Ordered template sources
+     * @param string $customName Caller-supplied template namespace
+     */
+    public function loadWithAppPartials(string|array $inputs, string $customName = ""):void {
 
-                # Get app list array
-                $appListArray = static::APP_HELPERS::listArray();
+        # Resolve the same input paths as the ordinary template loader
+        $paths = (array)Process::shortcutsByFile($inputs);
 
-                # Check app list array
-                if(is_array($appListArray) && !empty($appListArray))
+        # Hash and compile the same source snapshot, including same-timestamp edits
+        $source = File::read($paths);
 
-                    # Set $template["helpers"]
-                    $template["helpers"] = is_array($template["helpers"])
-                        ? array_merge($template["helpers"], $appListArray)
-                        : $appListArray
-                    ;
+        # Identify a completed production build or select live discovery
+        $partialsKey = $this->_getPartialBuildKey();
+
+        # Reuse the document client only for an identifiable production build
+        $cache = $partialsKey === null 
+            ? null 
+            : ($this->_cache ?? new Cache())
+        ;
+
+        # Keep live discovery independent of production cache entries
+        if($cache === null || $partialsKey === null){
+
+            # Compile with the current partial sources, including newly added files
+            $compiled = $this->_compileTemplate($source, $this->_readAppPartials());
+
+        }else{
+
+            # Include the source, preset and delimiters in the compiled template identity
+            try{
+
+                # Keep templates with different compilation options independent
+                $templateKey = $partialsKey.".".hash("sha256", serialize([
+                    $paths,
+                    $customName,
+                    $this->options,
+                    $source
+                ]));
+
+            }catch(\Exception){
+
+                # Compile presets containing closures locally
+                $templateKey = null;
+
+            }
+
+            # A warm renderer needs neither partial discovery nor the stored partial map
+            $compiled = $templateKey === null ? null : $cache->get($templateKey);
+
+            # Compile the page when its program cannot be reused
+            if(!is_string($compiled)){
+
+                # Share the partial map across distinct templates from this build
+                $partials = $cache->get($partialsKey);
+
+                # Discover partials on the first load for this build
+                if(!is_array($partials)){
+
+                    # Read the current recursive partial collection
+                    $partials = $this->_readAppPartials();
+
+                    # Store the snapshot, including an empty directory
+                    $cache->set($partialsKey, $partials);
+
+                }
+
+                # Compile the page with the selected snapshot
+                $compiled = $this->_compileTemplate($source, $partials);
+
+                # Publish a reusable renderer for this production template
+                if($templateKey !== null)
+
+                    # Store the compiled program alongside its partial map
+                    $cache->set($templateKey, $compiled);
 
             }
 
         }
 
-        # New cache instance
-        $cache = new Cache();
-
-        # Set lastModifiedDate
-        $lastModifiedDate = File::getLastModifiedDate($inputs);
-
-        # Get watch
-        $isWatch = Env::get("phpunit_test", true)
-            ? false # Avoid error on phph unit test
-            : Config::getValue("Front.lastBuild.watch")
-        ;
-
-        # Check cache is valid
-        if($isWatch || !$cache->hasUpToDate($this->key, $lastModifiedDate)){
-
-            # Read file
-            $file = File::read($inputs);
-
-            # Compile
-            $compile = $this->compile($file, [
-                "delimiters"    =>  $this->options["delimiters"] ?? [
-                    '{{',
-                    '}}'
-                ]
-            ] + $template);
-
-            # Set Cache
-            $cache->set($this->key, $compile);
-
-        }
+        # Use this exact program even if another request clears the cache before rendering
+        $this->renderableClass = $this->_loadRenderer($compiled, $cache);
 
     }
 
@@ -263,7 +294,7 @@ class Handlebars {
         $result = "";
 
         # Check key
-        if(!$this->key)
+        if(!$this->renderableClass)
 
             # New Exception
             throw new CrazyException(
@@ -274,25 +305,8 @@ class Handlebars {
                 ]
             );
 
-        # Check compilate already load
-        if(!$this->renderableClass){
-
-            # New cache instance
-            $cache = new Cache();
-
-            # Get cached compilate
-            $compilate = $cache->get($this->key);
-
-            # COnvert cache to php
-            $this->renderableClass = eval($compilate);
-
-        }
-
-        # Get rendarable class
-        $function = $this->renderableClass;
-
-        # Render compilate
-        $result = $function($data);
+        # Render the loaded program with the current request data
+        $result = ($this->renderableClass)($data);
 
         # Return result
         return $result;
@@ -491,40 +505,37 @@ class Handlebars {
                         ->in(File::path($partialDir))
                     ;
                     
-                    # Check has result
-                    if($finder->hasResults())
+                    # Iteration result
+                    foreach($finder as $file){
 
-                        # Iteration result
-                        foreach($finder as $file){
+                        # Get relative path (includes any subfolders), e.g. "form/form_color.hbs" or "hello.hbs"
+                        $relativePath = str_replace(DIRECTORY_SEPARATOR, "/", $file->getRelativePathname());
 
-                            # Get relative path (includes any subfolders), e.g. "form/form_color.hbs" or "hello.hbs"
-                            $relativePath = str_replace(DIRECTORY_SEPARATOR, "/", $file->getRelativePathname());
+                        # Strip the matched extension (".hbs" / ".handlebars")
+                        $extension = $file->getExtension();
 
-                            # Strip the matched extension (".hbs" / ".handlebars")
-                            $extension = $file->getExtension();
+                        # Extract name without extension
+                        $nameNoExt = rtrim(substr($relativePath, 0, -strlen($extension)), ".");
 
-                            # Extract name without extension
-                            $nameNoExt = rtrim(substr($relativePath, 0, -strlen($extension)), ".");
+                        # Explide segment
+                        $segments = explode("/", $nameNoExt);
 
-                            # Explide segment
-                            $segments = explode("/", $nameNoExt);
+                        # Trim a leading underscore only off the final path segment (filename), not directory parts
+                        $segments[count($segments) - 1] = ltrim(end($segments), "_");
 
-                            # Trim a leading underscore only off the final path segment (filename), not directory parts
-                            $segments[count($segments) - 1] = ltrim(end($segments), "_");
+                        # Recreate path
+                        $name = implode("/", $segments);
 
-                            # Recreate path
-                            $name = implode("/", $segments);
+                        # Get content
+                        $content = $file->getContents();
 
-                            # Get content
-                            $content = $file->getContents();
+                        # Preserve the filename used by browser partial imports
+                        $result[$nameNoExt] = $content;
 
-                            # Preserve the filename used by browser partial imports
-                            $result[$nameNoExt] = $content;
+                        # Keep the legacy alias without a leading underscore
+                        $result[$name] = $content;
 
-                            # Keep the legacy alias without a leading underscore
-                            $result[$name] = $content;
-
-                        }
+                    }
 
                 }
 
@@ -533,6 +544,211 @@ class Handlebars {
 
     }
     
+
+    /** Private methods
+     ******************************************************
+     */
+
+    /**
+     * Load trusted compiler output from an immutable PHP file when the pool supports it.
+     */
+    private function _loadRenderer(string $compiled, ?Cache $cache):Closure {
+
+        # Keep in-memory execution available for live loads and non-file drivers
+        $result = null;
+
+        # Storage can become unavailable after the pool has returned the compiled bytes
+        try{
+
+            # Resolve the directory cleared by the active Files pool
+            $directory = $cache?->getFileCacheDirectory();
+
+        }catch(PhpfastcacheIOException){
+
+            # Render from the bytes already held by this request
+            $directory = null;
+
+        }
+
+        # Share the generated program across PHP workers
+        if($directory !== null){
+
+            # Give distinct programs distinct paths even when OPcache skips timestamp checks
+            $path = $directory."/handlebars-".hash("sha256", $compiled).".php";
+
+            # Publish legacy cached strings as well as newly compiled programs
+            if(!is_file($path))
+
+                # Stage the complete program before exposing its final path
+                $this->_publishRenderer($directory, $path, "<?php\n".$compiled);
+
+            # A concurrent pool clear may remove the file before it can be opened
+            $result = @include $path;
+
+        }
+
+        # Use the already available bytes when file execution is unavailable
+        if(!$result instanceof Closure)
+
+            # Build the renderer from the same trusted compiler output
+            $result = eval($compiled);
+
+        # Return the callable for this template
+        return $result;
+
+    }
+
+    /**
+     * Atomically publish a complete program in the cache pool on a cold load.
+     */
+    private function _publishRenderer(string $directory, string $path, string $program):void {
+
+        # Allocate a private staging file beside the final path
+        $temporary = @tempnam($directory, ".handlebars-");
+
+        # Clean up the staging file after failed or concurrent publication
+        if($temporary !== false){
+
+            # Limit publication to complete writes on the same filesystem
+            try{
+
+                # Reject tempnam's fallback directory and respect the application umask
+                if(dirname($temporary) === $directory && @file_put_contents($temporary, $program) === strlen($program) && @chmod($temporary, 0640 & ~umask())){
+
+                    # Concurrent writers for this digest have identical contents
+                    @rename($temporary, $path);
+
+                }
+
+            }finally{
+
+                # Release only this worker's unpublished file
+                if(is_file($temporary))
+
+                    # Remove the staging file after an I/O failure
+                    @unlink($temporary);
+
+            }
+
+        }
+
+    }
+
+    /**
+     * Read Application Partials
+     *
+     * Include nested templates and aliases when the app has a partial directory.
+     *
+     * @return array
+     */
+    private function _readAppPartials():array {
+
+        # Treat an application without partials as an empty collection
+        $result = is_dir(File::path(self::PARTIAL_DIR[0])) ? (self::loadAppPartials() ?? []) : [];
+
+        # Return the current partial collection
+        return $result;
+
+    }
+
+    /**
+     * Identify the partial collection for a production deployment.
+     *
+     * @return string|null Null selects recursive discovery on each load
+     */
+    private function _getPartialBuildKey():?string {
+
+        # Fall back to live discovery for development, watch and unbuilt apps
+        $result = null;
+
+        # Check the recorded build mode before consulting its identity
+        if(Config::getValueOrDefault("Front.lastBuild.mode", null) === "production" && !Config::getValueOrDefault("Front.lastBuild.watch", false)){
+
+            # Read the asset hash recorded by the bundler
+            $hash = Config::getValueOrDefault("Front.lastBuild.hash", null);
+
+            # Distinguish builds that produce identical assets after a PHP partial edit
+            $date = Config::getValueOrDefault("Front.lastBuild.date", null);
+
+            # Reuse a snapshot only when the build can be identified
+            if($hash || $date)
+
+                # Isolate apps sharing a cache backend as well as successive builds
+                $result = "Handlebars.partials.v1.".hash("sha256", serialize([
+                    File::path(self::PARTIAL_DIR[0]),
+                    $hash,
+                    $date
+                ]));
+
+        }
+
+        # Return the active build key
+        return $result;
+
+    }
+
+    /**
+     * Compile a source snapshot with the caller's preset, partials and helper registry.
+     */
+    private function _compileTemplate(string $source, ?array $partials):string {
+
+        # Prepare template
+        if(
+            isset($this->options["template"]) &&
+            !empty($this->options["template"])
+        ){
+
+            # Set template
+            $template = $this->options["template"];
+
+            # Check partials
+            if(!empty($partials))
+
+                # Set partials
+                $template["partials"] = $partials;
+
+        }else
+
+            # Set default template
+            $template = self::CRAZY_PRESET;
+
+        # Check helpers
+        if(isset($this->options["helpers"]) && $this->options["helpers"]){
+
+            # Set helpers
+            $template["helpers"] = Helpers::listArray();
+
+            # Check if App\Library\Handlebars\Helpers is valid class
+            if(class_exists(static::APP_HELPERS) && method_exists(static::APP_HELPERS, "listArray")){
+
+                # Get app list array
+                $appListArray = static::APP_HELPERS::listArray();
+
+                # Check app list array
+                if(is_array($appListArray) && !empty($appListArray))
+
+                    # Set $template["helpers"]
+                    $template["helpers"] = is_array($template["helpers"])
+                        ? array_merge($template["helpers"], $appListArray)
+                        : $appListArray
+                    ;
+
+            }
+
+        }
+
+        # Compile with the configured delimiters
+        $result = $this->compile($source, [
+            "delimiters"    =>  $this->options["delimiters"] ?? [
+                "{{",
+                "}}"
+            ]
+        ] + $template);
+
+        # Return the generated PHP program
+        return $result;
+
+    }
 
     /** Public constants | Options preset
      ******************************************************

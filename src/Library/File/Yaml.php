@@ -15,10 +15,13 @@ namespace CrazyPHP\Library\File;
 /**
  * Dependances
  */
+use Phpfastcache\Exceptions\PhpfastcacheRootException;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml as YamlS;
 use CrazyPHP\Exception\CrazyException;
+use Psr\SimpleCache\CacheException;
 use CrazyPHP\Library\Array\Arrays;
+use CrazyPHP\Library\Cache\Cache;
 use CrazyPHP\Library\File\File;
 
 /**
@@ -170,40 +173,85 @@ class Yaml{
                 ]
             );
 
-        # Try to...
-        try {
-
-            # Reading YAML files and parse content
-            $result = YamlS::parseFile($filename);
-            
-        # If it doesn't work...
-        } catch (ParseException $exception) {
-
-            # New Exception
-            throw new CrazyException(
-                ( 
-                    $exception->getMessage() ?
-                        PHP_EOL.$exception->getMessage().PHP_EOL :
-                            ""
-                ).
-                "Content of  \"$filename\" isn't yaml...",
-                500,
-                [
-                    "custom_code"    =>  "yaml-001",
-                ]
-            );
-
-        }
-
-        # Check result
-        if(!is_array($result))
-
-            # Set result
-            $result = [];
+        # Parse the file with the normal YAML diagnostics
+        $result = self::_parseDocument($filename);
 
         # Return result
         return $result;
-        
+
+    }
+
+    /**
+     * Open Cached YAML
+     *
+     * Cache the raw array in the local Files pool during configuration bootstrap.
+     *
+     * @param string $filename Discovered YAML file
+     * @param string|null $directory Optional Files pool base directory
+     * @return array
+     */
+    public static function openCached(string $filename, ?string $directory = null):array {
+
+        # Keep the parsed snapshot available if a cache write fails
+        $result = null;
+
+        # Read the bytes once for both validation and parsing
+        $source = @file_get_contents($filename);
+
+        # Preserve diagnostics for missing or unreadable sources
+        if($source === false){
+
+            # Delegate file errors to the regular reader
+            $result = self::open($filename);
+
+        }else{
+
+            # Keep one entry per source across edits
+            $key = "Yaml.v1.".hash("sha256", realpath($filename) ?: $filename);
+
+            # Detect changes even if the file size and modification time match
+            $hash = hash("sha256", $source);
+
+            # Load the document without consulting database configuration during bootstrap
+            try{
+
+                # Use the framework's Files pool for storage and eviction
+                $cache = Cache::files($directory);
+
+                # Look up the latest document stored for this path
+                $entry = $cache->get($key);
+
+                # Reuse only a raw array parsed from the same source bytes
+                if(($entry["hash"] ?? null) === $hash && is_array($entry["document"] ?? null)){
+
+                    # Leave reference resolution to the caller
+                    $result = $entry["document"];
+
+                }else{
+
+                    # Parse the exact snapshot that was hashed
+                    $result = self::_parseDocument($filename, $source);
+
+                    # Replace the previous version in one cache entry
+                    $cache->set($key, [
+                        "document"    =>  $result,
+                        "hash"        =>  $hash
+                    ]);
+
+                }
+
+            }catch(PhpfastcacheRootException|CacheException $exception){
+
+                # Parse on a failed read or retain the parsed result on a failed write
+                $result ??= self::_parseDocument($filename, $source);
+
+            }
+
+        }
+
+        # Return the raw document
+        return $result;
+
     }
 
     /**
@@ -461,6 +509,55 @@ class Yaml{
 
     }
     
+    /** Private Static Methods
+     ******************************************************
+     */
+
+    /**
+     * Parse Document
+     *
+     * @param string $filename Path for file parsing and diagnostics
+     * @param string|null $source Already-read source snapshot
+     * @return array
+     */
+    private static function _parseDocument(string $filename, ?string $source = null):array {
+
+        # Parse with the same flags for file and snapshot reads
+        try{
+
+            # Preserve the original array contract for empty documents and scalars
+            $parsed = $source === null
+                ? YamlS::parseFile($filename)
+                : YamlS::parse($source)
+            ;
+
+            # Normalize non-array YAML
+            $result = is_array($parsed) ? $parsed : [];
+
+        }catch(ParseException $exception){
+
+            # Attach the path when parsing a snapshot without the parser's normal filename context
+            if($source !== null)
+
+                # Keep the same source location in snapshot parse errors
+                $exception->setParsedFile($filename);
+
+            # Report malformed YAML through the framework's existing exception
+            throw new CrazyException(
+                PHP_EOL.$exception->getMessage().PHP_EOL."Content of  \"$filename\" isn't yaml...",
+                500,
+                [
+                    "custom_code"    =>  "yaml-001"
+                ]
+            );
+
+        }
+
+        # Return the parsed document
+        return $result;
+
+    }
+
     /** Public constants
      ******************************************************
      */

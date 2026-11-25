@@ -149,7 +149,7 @@ php vendor/phpunit/phpunit/phpunit
 
 ### Performance benchmarks
 
-Run `composer bench` for PHP routing and Handlebars. Run `npm run bench` for frontend MessagePack decoding and HTTP performance. The npm command starts and stops the local CrazyPHP server automatically. See the [benchmark guide](tests/Bench/README.md) for JSON reports and comparisons with Laravel and Symfony.
+Run `composer bench` for PHP routing and Handlebars. Run `npm run bench` for frontend decoding, HTTP latency, and JSON/MessagePack transport with and without gzip. Both commands finish automatically. For browser timings, add `-- --browser` to the npm command and open the printed local URL. See the [benchmark guide](tests/Bench/README.md) for reports and comparisons with Laravel and Symfony.
 
 ## Default env variables
 

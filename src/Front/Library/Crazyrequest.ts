@@ -377,8 +377,13 @@ export default class Crazyrequest{
         // Check responseType
         if(!this.requestOptions.headers.has("Accept") && typeof this.options.responseType === "string" && ["json", "msgpack"].includes(this.options.responseType))
 
-            // Push accept on reques
-            this.requestOptions.headers.set("Accept", ["application/json", "application/msgpack"].join(", "));
+            // Request MessagePack when selected, otherwise retain the mode-specific server default
+            this.requestOptions.headers.set(
+                "Accept",
+                this.options.responseType === "msgpack" 
+                    ? "application/msgpack, application/json;q=0.9" 
+                    : "application/json, application/msgpack"
+            );
 
         
 

@@ -186,118 +186,30 @@ class Config{
      */
     public static function getValue(string $input = ""):mixed {
 
-        # Declare result
-        $result = [];
+        # Resolve references only in the requested value and preserve the empty-array default
+        $result = Process::envAndConfigValues(self::_readValue($input) ?? []);
 
-        # Check input
-        if(!$input)
+        # Return result
+        return $result;
 
-            # Return result
-            return $result;
+    }
 
-        # Check config has input
-        if(self::has($input)){
+    /**
+     * Get Value Or Default
+     *
+     * Use the supplied default when the configuration file or key is absent.
+     *
+     * @param string $input Configuration key
+     * @param mixed $default Fallback value
+     * @return mixed
+     */
+    public static function getValueOrDefault(string $input, mixed $default):mixed {
 
-            # Set location
-            $location = Env::has("config_location") ?
-                Env::get("config_location") :
-                    self::FOLDER_PATH;
+        # Resolve the optional key through the normal request-local document cache
+        $value = self::_readValue($input, true);
 
-            /* Get config file */
-
-            # Replace separator
-            $input = str_replace(self::SEPARATOR, "___", $input);
-
-            # Explode to get first value
-            $configFolder = explode("___", $input, 2)[0];
-
-            # Check if config is cached on global variables
-            if(isset($GLOBALS[self::PREFIX]) && array_key_exists($configFolder, $GLOBALS[self::PREFIX]) && $GLOBALS[self::PREFIX][$configFolder] !== null){
-
-                # Get content
-                # $content = $GLOBALS[self::PREFIX][$configFolder];
-                /** @disregard P1125 */
-                $content = self::_getGlobalCache($configFolder);
-
-            # Get content and set cache
-            }else{
-
-                # New finder
-                $finder = new Finder();
-
-                # Search files
-                $finder
-                    ->files()
-                    ->name([
-                        "$configFolder.*",
-                        $configFolder
-                    ])
-                    ->in(File::path($location))
-                ;
-
-                # Check not multiple file
-                if($finder->count() === 0)
-        
-                    # New Exception
-                    throw new CrazyException(
-                        "No config file found for \"$configFolder\".", 
-                        500,
-                        [
-                            "custom_code"    =>  "config-003",
-                        ]
-                    );
-
-                # Check not multiple file
-                if($finder->count() > 1)
-
-                    # New Exception
-                    throw new CrazyException(
-                        "Conflict of config file with the same name for \"$configFolder\".", 
-                        500,
-                        [
-                            "custom_code"    =>  "config-004",
-                        ]
-                    );
-
-                # Iteration of files
-                foreach ($finder as $file){
-
-                    # Get path file
-                    $filePath = $file->getPathname();
-
-                    # Get mime type
-                    $fileMime = File::guessMime($filePath);
-
-                    # break;
-                    break;
-
-                }
-
-                # Check file path and file mime
-                if(!($filePath ?? false) || !($fileMime ?? false) || !isset(File::MIMTYPE_TO_CLASS[$fileMime]))
-
-                    # Return result
-                    return $result;
-
-                # Set file instance class
-                $fileInstance = File::MIMTYPE_TO_CLASS[$fileMime];
-
-                # Read file path
-                $content = $fileInstance::open($filePath);
-
-                # Set content
-                # $GLOBALS[self::PREFIX][$configFolder] = $content;
-                self::_setGlobalCache($configFolder, $content);
-
-            }
-
-            # Get value
-            $result = Arrays::parseKey($input, $content, self::SEPARATOR);
-
-        }
-
-        # Process result
-        $result = Process::envAndConfigValues($result);
+        # Expand configured values and leave the caller's fallback as supplied
+        $result = $value === null ? $default : Process::envAndConfigValues($value);
 
         # Return result
         return $result;
@@ -401,113 +313,8 @@ class Config{
      */
     public static function has(string $input = "") :bool {
 
-        # Declare result
-        $result = false;
-
-        # Check input
-        if(!$input)
-
-            # Return result
-            return $result;
-
-        /* Get config file */
-
-        # Replace separator
-        $input = str_replace(self::SEPARATOR, "___", $input);
-
-        # Explode to get first value
-        $configFolder = explode("___", $input, 2)[0];
-
-
-
-        # Check if config is cached on global variables
-        if(isset($GLOBALS[self::PREFIX]) && array_key_exists($configFolder, $GLOBALS[self::PREFIX])){
-
-            # Get content
-            # $content = $GLOBALS[self::PREFIX][$configFolder];
-            /** @disregard P1125 */
-            $content = self::_getGlobalCache($configFolder);
-
-        # Check in files
-        }else{
-
-            # Set location
-            $location = Env::has("config_location") ?
-                Env::get("config_location") :
-                    self::FOLDER_PATH;
-
-            # New finder
-            $finder = new Finder();
-
-            # Search files
-            $finder
-                ->files()
-                ->name([
-                    "$configFolder.*",
-                    $configFolder
-                ])
-                ->in(File::path($location))
-            ;
-
-            # Check not multiple file
-            if($finder->count() === 0)
-
-                # New Exception
-                throw new CrazyException(
-                    "No config file found for \"$configFolder\".", 
-                    500,
-                    [
-                        "custom_code"    =>  "config-005",
-                    ]
-                );
-
-            # Check not multiple file
-            if($finder->count() > 1)
-
-                # New Exception
-                throw new CrazyException(
-                    "Conflict of config file with the same name for \"$configFolder\".", 
-                    500,
-                    [
-                        "custom_code"    =>  "config-006",
-                    ]
-                );
-
-
-            # Iteration of files
-            foreach ($finder as $file){
-
-                # Get path file
-                $filePath = $file->getPathname();
-
-                # Get mime type
-                $fileMime = File::guessMime($filePath);
-
-                # break;
-                break;
-
-            }
-
-            # Set file instance class
-            $fileInstance = File::MIMTYPE_TO_CLASS[$fileMime ?? null];
-
-            # Read file path
-            $content = $fileInstance::open($filePath ?? null);
-
-            # Set content
-            # $GLOBALS[self::PREFIX][$configFolder] = $content;
-            self::_setGlobalCache($configFolder, $content);
-
-        }
-
-        # Get value
-        $valueToCheck = Arrays::parseKey($input, $content);
-
-        # Check value to check
-        if($valueToCheck !== null)
-
-            # Update result
-            $result = true;
+        # Test the raw value without resolving configuration references
+        $result = self::_readValue($input) !== null;
 
         # Return result
         return $result;
@@ -674,6 +481,9 @@ class Config{
                     "custom_code"    =>  "config-010",
                 ]
             );
+
+        # Set file
+        $filePath = "";
 
         # Iteration of files
         foreach ($finder as $file){
@@ -843,6 +653,9 @@ class Config{
                 ]
             );
 
+        # Set file
+        $filePath = "";
+
         # Iteration of files
         foreach ($finder as $file){
 
@@ -972,6 +785,99 @@ class Config{
     /** Private static methods
      ******************************************************
      */
+
+    /**
+     * Read Configuration Value
+     *
+     * Discover a document once, cache its original contents and select the requested key.
+     *
+     * @param string $input Configuration key
+     * @param bool $optionalFile Allow a missing configuration file
+     * @return mixed
+     */
+    private static function _readValue(string $input, bool $optionalFile = false):mixed {
+
+        # Default to a missing value
+        $result = null;
+
+        # Read only nonempty configuration keys
+        if($input){
+
+            # Normalize all supported separators
+            $key = str_replace(self::SEPARATOR, "___", $input);
+
+            # Select the document containing the requested key
+            $name = explode("___", $key, 2)[0];
+
+            # Discover the file only when the current request has no cached document
+            if(!isset($GLOBALS[self::PREFIX][$name])){
+
+                # Resolve the application's configured directory
+                $directory = File::path(Env::has("config_location")
+                    ? Env::get("config_location")
+                    : self::FOLDER_PATH
+                );
+
+                # Allow optional settings in applications without a configuration directory
+                if(!$optionalFile || is_dir($directory)){
+
+                    # Find all supported filename forms in one traversal, preserving duplicate detection
+                    $matches = iterator_to_array((new Finder())->files()->name([
+                        "$name.*",
+                        $name
+                    ])->in($directory), false);
+
+                    # Reject ambiguous configuration even when the key is optional
+                    if(count($matches) > 1)
+
+                        # Report the conflicting document name
+                        throw new CrazyException("Conflict of config file with the same name for \"$name\".", 500, [
+                            "custom_code"    =>  "config-006"
+                        ]);
+
+                    # Cache the parsed document for the remaining configuration lookups
+                    if($matches){
+
+                        # Select the unique matching file
+                        $path = $matches[0]->getPathname();
+
+                        # Use the existing configuration reader for this file type
+                        $reader = File::MIMTYPE_TO_CLASS[File::guessMime($path)];
+
+                        # Cache the raw Router.yml between requests in the application's private cache
+                        $cacheRouter = $matches[0]->getFilename() === "Router.yml" && Env::get("app_root", true);
+
+                        # Keep discovery and other document formats on their existing reader
+                        $content = $cacheRouter
+                            ? Yaml::openCached($path)
+                            : $reader::open($path)
+                        ;
+
+                        # Keep raw values so references are resolved at the point of use
+                        self::_setGlobalCache($name, $content);
+
+                    }elseif(!$optionalFile){
+
+                        # Preserve the error for callers requiring a configuration document
+                        throw new CrazyException("No config file found for \"$name\".", 500, [
+                            "custom_code"    =>  "config-005"
+                        ]);
+
+                    }
+
+                }
+
+            }
+
+            # Read the key once, including values supplied directly by the application
+            $result = Arrays::parseKey($key, $GLOBALS[self::PREFIX][$name] ?? []);
+
+        }
+
+        # Return result
+        return $result;
+
+    }
 
     /**
      * Set Gobal Cache

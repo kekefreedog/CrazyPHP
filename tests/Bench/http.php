@@ -16,6 +16,17 @@ namespace Tests\Bench;
 use CrazyPHP\Core\Router;
 use CrazyPHP\Model\Env;
 
+# Delegate transport scenarios to the same temporary benchmark server
+if(str_starts_with(parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH), "/__bench/transport")){
+
+    # Serve the browser page, client module or negotiated API fixture
+    require __DIR__."/transport.php";
+
+    # Finish the fixture without dispatching an application route
+    return;
+
+}
+
 # Load the framework and shared catalog fixture
 require __DIR__."/fixtures.php";
 

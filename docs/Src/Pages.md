@@ -66,6 +66,10 @@ class Home extends Controller {
 
 `State::render()` returns a JSON object the frontend stores as the page state.
 
+### HTML-only pages
+
+For a standalone page whose browser never requests `?catch_state`, declare `protected const CACHE_INITIAL_PAGE_STATE = false;` in its CrazyPHP controller. Existing `static::Structure()` calls then render HTML and reuse compiled templates without allocating a state UUID or saving the initial payload. Controllers default to caching initial state for interactive pages. Direct callers can use `new Structure(cacheInitialState: false)`.
+
 ---
 
 ## Frontend — TypeScript class

@@ -11,6 +11,9 @@
 /**
  * Dependances
  */
+import MessagePack from "../../../src/Front/Library/Utility/MessagePack";
+import {measureTransport} from "./transport.mjs";
+import {once} from "node:events";
 import {createInterface} from "node:readline";
 import {spawn} from "node:child_process";
 import {measureDecode} from "./decode";
@@ -40,7 +43,7 @@ async function main():Promise<void> {
     // Parse shared output and HTTP workload options once.
     const {values} = parseArgs({options: {
         target: {type: "string", multiple: true}, requests: {type: "string", default: "200"},
-        concurrency: {type: "string", default: "8"}, json: {type: "boolean"}
+        concurrency: {type: "string", default: "8"}, json: {type: "boolean"}, browser: {type: "boolean"}
     }});
 
     // Check the requested sample count.
@@ -59,7 +62,7 @@ async function main():Promise<void> {
     delete env.PHP_CLI_SERVER_WORKERS;
 
     // Let the OS allocate a free loopback port for this run.
-    const server = spawn("php", ["-S", "127.0.0.1:0", "-t", "tests/Bench", "tests/Bench/http.php"],
+    const server = spawn("php", ["-d", "zlib.output_compression=0", "-S", "127.0.0.1:0", "-t", "tests/Bench", "tests/Bench/http.php"],
         {env, stdio: ["ignore", "ignore", "pipe"]});
 
     // Terminate only the server started by this invocation.
@@ -129,11 +132,14 @@ async function main():Promise<void> {
         // Measure the local fixture and any reference applications sequentially.
         const http = await measureHttp([`CrazyPHP=${origin}`, ...(values.target ?? [])], requests, concurrency);
 
-        // Keep the existing decode results and append HTTP measurements to JSON.
+        // Measure the four real PHP responses through Node Fetch using the framework decoder.
+        const transport = await measureTransport(origin, MessagePack.parse);
+
+        // Include transport measurements alongside the established report fields.
         if(values.json){
 
             // Emit one parseable document for the entire command.
-            console.log(JSON.stringify({node: process.version, results, http}, null, 2));
+            console.log(JSON.stringify({node: process.version, results, http, transport}, null, 2));
 
         }else{
 
@@ -144,12 +150,29 @@ async function main():Promise<void> {
             console.table(results.map(row => ({...row, medianUs: +row.medianUs.toFixed(3),
                 minUs: +row.minUs.toFixed(3), maxUs: +row.maxUs.toFixed(3)})));
 
+            // Identify the transport workload and the client used for decoding.
+            console.log("PHP → Node Fetch · 1,000 items · median preparation and decode in µs, total in ms");
+
+            // Print the verified medians for each format and content coding.
+            console.table(transport);
+
             // Label the HTTP latency table.
             console.log("HTTP latency in milliseconds");
 
             // Print rounded latency and throughput for each endpoint.
             console.table(http.map(row => ({...row, p50Ms: row.p50Ms?.toFixed(2), p95Ms: row.p95Ms?.toFixed(2),
                 successPerSecond: row.successPerSecond.toFixed(1)})));
+
+        }
+
+        // Keep the same fixture available for an optional real-browser measurement.
+        if(values.browser){
+
+            // Send instructions to stderr to keep the JSON report machine-readable.
+            console.error(`Browser measurement: ${origin}/__bench/transport (Ctrl-C to stop)`);
+
+            // Leave the server running only when the interactive option is selected.
+            await once(server, "close");
 
         }
 

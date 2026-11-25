@@ -37,6 +37,14 @@ This means **there is no separate config file** for partials. The three index fi
 
 ---
 
+## Server-rendered page and email templates
+
+`Structure` discovers `.hbs` and `.handlebars` files recursively under `assets/Hbs/partials/`. A file called `cards/_item.hbs` is available as both `cards/_item` and `cards/item`.
+
+In development and watch mode, each template load reads the current page, layout and partial sources, even when an edit preserves the file size and modification time. New files, edits, renames and deletions take effect on the next render. A production build with a recorded hash or date shares its partial sources and compiled templates through the configured CrazyPHP cache. A warm compiled template skips the directory scan. After deploying a partial-only change, a new build hash or date, or clearing the application cache, refreshes the templates. Apps without a recorded build identity use live discovery.
+
+With the Files driver, CrazyPHP stores compiled page and layout PHP under content-based filenames inside the cache pool. PHP can reuse these files through OPcache. Clearing the pool removes the generated files along with their cache entries.
+
 ## CLI management — `CrazyCommand`
 
 Partials are created and deleted through the CrazyPHP CLI:

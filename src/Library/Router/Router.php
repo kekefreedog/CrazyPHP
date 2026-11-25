@@ -356,51 +356,62 @@ class Router {
         # Set result
         $result = null;
 
-        # Check router name
-        if(!$routerName)
+        # Look up a nonempty route name
+        if($routerName){
 
-            # Return result
-            return $result;
+            # Cache Instance
+            $cacheInstance = new Cache();
 
-        # Cache Instance
-        $cacheInstance = new Cache();
+            # Prepare key
+            $key = self::_getCollectionCacheKey();
 
-        # Prepare key
-        $key = Cache::getKeyWithCacheName(__METHOD__, "collection");
+            # Resolve the application configuration directory
+            $location = Env::has("config_location") ? Env::get("config_location") : Config::FOLDER_PATH;
 
-        # Get last modified date
-        $lastModifiedDate = File::getLastModifiedDate(File::path("@app_root/config/Router.yml"));
+            # Resolve the on-disk dependencies of the named route collection
+            $routerFile = File::path("$location/Router.yml");
 
-        # Check if modified
-        if(!$cacheInstance->hasUpToDate($key, $lastModifiedDate)){
+            # Resolve the API route source
+            $apiFile = File::path("$location/Api.yml");
 
-            # Dump on cache
-            static::dumpOnCache();
+            # Require a cache write after the last edit second because filemtime has whole-second precision
+            if(
+                !is_file($routerFile) ||
+                !is_file($apiFile) ||
+                !$cacheInstance->hasUpToDate($key, File::getLastModifiedDate([
+                    $routerFile,
+                    $apiFile
+                ])->modify("+1 second"))
+            ){
+
+                # Dump on cache
+                static::dumpOnCache();
+
+            }
+
+            # Get collection from cache
+            $routersCollection = self::loadFromCache();
+
+            # Check router exists
+            if(!isset($routersCollection[$routerName]))
+
+                # New Exception
+                throw new CrazyException(
+                    "Router \"$routerName\" doesn't exists...",
+                    500,
+                    [
+                        "custom_code"    =>  "router-003",
+                    ]
+                );
+
+            # Set result
+            $result = $routersCollection[$routerName];
 
         }
 
-        # Get collection from cache
-        $routersCollection = self::loadFromCache();
-
-        # Check router exists
-        if(!isset($routersCollection[$routerName]))
-
-            # New Exception
-            throw new CrazyException(
-                "Router \"$routerName\" doesn't exists...",
-                500,
-                [
-                    "custom_code"    =>  "router-003",
-                ]
-            );
-
-        # Set result
-        /** @disregard P1006 */
-        $result = $routersCollection[$routerName];
-
         # Return result
         return $result;
-        
+
     }
 
     /**
@@ -414,7 +425,7 @@ class Router {
         $cacheInstance = new Cache();
 
         # Prepare key
-        $key = Cache::getKeyWithCacheName(__CLASS__, "routerCollection");
+        $key = self::_getCollectionCacheKey();
 
         # Get router collection from config
         $routerConfig = Config::get("Router");
@@ -551,7 +562,7 @@ class Router {
         $cacheInstance = new Cache();
 
         # Prepare key
-        $key = Cache::getKeyWithCacheName(__CLASS__, "routerCollection");
+        $key = self::_getCollectionCacheKey();
 
         # Get data from cache
         $result = $cacheInstance->get($key);
@@ -724,6 +735,27 @@ class Router {
 
         # Set result
         $result = Env::get("router_type_path", true) ?: static::ROUTER_TYPE_PATH;
+
+        # Return result
+        return $result;
+
+    }
+
+    /** Private Static Methods
+     ******************************************************
+     */
+
+    /**
+     * Get Collection Cache Key
+     *
+     * Share one storage key for freshness checks, reads and writes.
+     *
+     * @return string
+     */
+    private static function _getCollectionCacheKey():string {
+
+        # Build the existing named route collection key
+        $result = Cache::getKeyWithCacheName(__CLASS__, "routerCollection");
 
         # Return result
         return $result;

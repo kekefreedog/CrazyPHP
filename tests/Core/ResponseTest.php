@@ -283,6 +283,249 @@ class ResponseTest extends TestCase {
     }
 
     /**
+     * Test Negotiated API Transport
+     *
+     * @param string $accept Accepted representations
+     * @param string $coding Accepted codings
+     * @param string $mime Expected response MIME or an empty value for rejection
+     * @param bool $compressed Whether the response requires HTTP decompression
+     * @param int $size Input string length
+     * @return void
+     */
+    #[DataProvider("transportCases")]
+    public function testNegotiatedApiTransport(string $accept, string $coding, string $mime, bool $compressed, int $size):void {
+
+        # Build an independent request carrying both preference lists
+        $request = new \Nyholm\Psr7\ServerRequest("GET", "/", [
+            "Accept"             =>  $accept,
+            "Accept-Encoding"    =>  $coding
+        ]);
+
+        # Use a compressible value to exercise threshold selection
+        $state = [
+            "value"    =>  str_repeat("a", $size)
+        ];
+
+        # Prepare through the public API response path
+        $api = (new ApiResponse($request))->addHeader("Vary", "Origin")->setContent($state);
+
+        # Assemble the actual outgoing HTTP message
+        $api->prepare();
+
+        # Read the prepared message
+        $message = $api->response;
+
+        # Read its wire bytes
+        $bytes = (string)$message->getBody();
+
+        # Verify the disposition of excluded representations and codings
+        self::assertSame($mime === "" ? 406 : 200, $message->getStatusCode());
+
+        # Verify the negotiated media type
+        self::assertSame($mime, explode(";", $message->getHeaderLine("Content-Type"))[0]);
+
+        # Verify the length after optional compression
+        self::assertSame((string)strlen($bytes), $message->getHeaderLine("Content-Length"));
+
+        # Preserve existing cache variation alongside transport preferences
+        self::assertSame("Origin, Accept, Accept-Encoding", $message->getHeaderLine("Vary"));
+
+        # Verify the gzip header matches the actual response
+        self::assertSame($compressed ? "gzip" : "", $message->getHeaderLine("Content-Encoding"));
+
+        # Inspect an accepted representation
+        if($mime !== ""){
+
+            # Undo HTTP compression exactly once
+            $payload = $compressed ? gzdecode($bytes) : $bytes;
+
+            # Decode the selected wire format
+            $decoded = $mime === "application/json" ? json_decode($payload, true, flags: JSON_THROW_ON_ERROR) : MessagePack::decode($payload);
+
+            # Confirm the complete envelope survived negotiation
+            self::assertSame($state, $decoded);
+
+        }else{
+
+            # Confirm that a rejection carries no unacceptable representation
+            self::assertSame("", $bytes);
+
+        }
+
+    }
+
+    /**
+     * Transport Cases
+     *
+     * @return iterable Named API negotiation scenarios
+     */
+    public static function transportCases():iterable {
+
+        # Prepare independent requests using the JSON-configured test application
+        $result = [
+            "absent headers"            =>  [
+                "",
+                "",
+                "application/json",
+                false,
+                8
+            ],
+            "wildcard honors default"   =>  [
+                "*/*",
+                "gzip",
+                "application/json",
+                true,
+                4096
+            ],
+            "weighted binary"           =>  [
+                "application/json;q=0.2, application/msgpack",
+                "gzip",
+                "application/msgpack",
+                true,
+                4096
+            ],
+            "tiny binary"               =>  [
+                "application/msgpack",
+                "gzip",
+                "application/msgpack",
+                false,
+                8
+            ],
+            "explicit gzip exclusion"   =>  [
+                "application/json",
+                "gzip;q=0, *;q=1",
+                "application/json",
+                false,
+                4096
+            ],
+            "prefer identity"           =>  [
+                "application/json",
+                "identity;q=1, gzip;q=0.4",
+                "application/json",
+                false,
+                4096
+            ],
+            "identity excluded"         =>  [
+                "application/json",
+                "gzip, identity;q=0",
+                "application/json",
+                true,
+                8
+            ],
+            "exact exclusion"           =>  [
+                "application/json;q=0, application/*",
+                "",
+                "application/msgpack",
+                false,
+                8
+            ],
+            "no acceptable format"      =>  [
+                "text/plain",
+                "",
+                "",
+                false,
+                8
+            ],
+            "no acceptable coding"      =>  [
+                "application/json",
+                "br, *;q=0",
+                "",
+                false,
+                8
+            ]
+        ];
+
+        # Return the cases
+        return $result;
+
+    }
+
+    /**
+     * Test Production API Defaults
+     *
+     * Keep MessagePack for clients using the existing production configuration.
+     *
+     * @return void
+     */
+    public function testProductionApiDefaults():void {
+
+        # Use the legacy mode-specific format settings
+        $GLOBALS[Config::PREFIX]["Router"] = [
+            "Router"    =>  [
+                "parameters"    =>  [
+                    "api"    =>  [
+                        "format"    =>  [
+                            "production"     =>  "msgpack",
+                            "development"    =>  "json"
+                        ]
+                    ]
+                ]
+            ]
+        ];
+
+        # Exercise clients with no preference, a wildcard and the original frontend header
+        foreach([
+            "",
+            "*/*",
+            "application/json, application/msgpack"
+        ] as $accept){
+
+            # Supply the original client preferences without opting into gzip
+            $request = new \Nyholm\Psr7\ServerRequest("GET", "/", [
+                "Accept"    =>  $accept
+            ]);
+
+            # Prepare a representative success envelope
+            $api = (new ApiResponse($request))->pushContent("results", true);
+
+            # Select the wire representation
+            $api->prepare();
+
+            # Preserve the production media type
+            self::assertSame("application/msgpack", $api->response->getHeaderLine("Content-Type"));
+
+            # Keep the response readable by clients without HTTP gzip support
+            self::assertFalse($api->response->hasHeader("Content-Encoding"));
+
+            # Verify the original response shape
+            self::assertSame([
+                "results"    =>  true
+            ], MessagePack::decode((string)$api->response->getBody()));
+
+        }
+
+    }
+
+    /**
+     * Test Explicit API Format And HEAD
+     *
+     * @return void
+     */
+    public function testExplicitApiFormatAndHead():void {
+
+        # Request a HEAD response with an unsupported media range
+        $request = new \Nyholm\Psr7\ServerRequest("HEAD", "/", [
+            "Accept"    =>  "text/plain"
+        ]);
+
+        # Let a controller explicitly select its response representation
+        $api = (new ApiResponse($request))->setContentType("json")->pushContent("results", true);
+
+        # Prepare the equivalent GET representation metadata
+        $api->prepare();
+
+        # Preserve the explicit controller selection
+        self::assertSame(200, $api->response->getStatusCode());
+
+        # Match the wire length of the corresponding GET representation
+        self::assertSame((string)strlen('{"results":true}'), $api->response->getHeaderLine("Content-Length"));
+
+        # Suppress the body for HEAD
+        self::assertSame("", (string)$api->response->getBody());
+
+    }
+
+    /**
      * Test Unsupported API Content Type
      *
      * @return void

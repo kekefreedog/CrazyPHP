@@ -1,5 +1,22 @@
 # ***Api*** **Schema of response**
 
+## HTTP format and compression
+
+For API controllers using `CrazyPHP\Core\ApiResponse`, clients can send `Accept: application/json` or `Accept: application/msgpack`. Weighted preferences and wildcards are supported. An absent header or a tie uses the application's configured format. A controller that explicitly calls `setContentType()` selects its own representation. The starter configuration prefers MessagePack in production and JSON in development.
+
+```yaml
+Router:
+  parameters:
+    api:
+      format:
+        production: msgpack
+        development: json
+```
+
+A client advertising `Accept-Encoding: gzip` can receive either format with HTTP gzip compression. CrazyPHP considers gzip for serialized bodies of at least 1,024 bytes. Small or incompressible responses use identity when permitted. A client excluding identity may receive gzip below the threshold. Requests excluding all available representations or content codings receive HTTP 406. Responses vary on the negotiation headers so shared caches can distinguish the variants.
+
+Browsers decode HTTP gzip automatically. Pass the resulting bytes directly to the MessagePack parser, or call `response.json()` for JSON. The API envelope is identical in both formats.
+
 ## Version 1
 
 ### Description

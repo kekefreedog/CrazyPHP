@@ -44,6 +44,9 @@ use CrazyPHP\Model\Env;
  */
 class Controller {
 
+    /** @var bool Cache initial HTML state for the browser's catch_state request */
+    protected const CACHE_INITIAL_PAGE_STATE = true;
+
     /** Public static methods
      ******************************************************
      */
@@ -57,8 +60,8 @@ class Controller {
      */
     public static function Structure():Structure {
 
-        # New structure
-        $result = new Structure();
+        # Apply the page controller's initial-state policy
+        $result = new Structure(cacheInitialState: static::CACHE_INITIAL_PAGE_STATE);
 
         # Return result
         return $result;

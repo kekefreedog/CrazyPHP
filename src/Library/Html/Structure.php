@@ -64,8 +64,8 @@ class Structure {
     /** @var ?string $_buildHash Build selected for this HTML document */
     private ?string $_buildHash = null;
 
-    /** @var string UUID */
-    private $_uuid;
+    /** @var string|null Browser identifier for the cached initial page state */
+    private ?string $_uuid = null;
 
     /** @var Cache $_cache */
     private Cache $_cache;
@@ -74,21 +74,24 @@ class Structure {
     private bool $_is_cached = false;
 
     /**
-     * Constructor
-     * 
-     * Construct
-     * 
-     * @return self
+     * Construct HTML Document
+     *
+     * Share a cache client between the page, layout and initial state writer.
+     *
+     * @param bool $cacheInitialState Store state for a subsequent catch_state request
      */
-    public function __construct(){
+    public function __construct(bool $cacheInitialState = true){
 
-        # Set html tag
+        # Prepare the root HTML element
         $this->response["elements"][0]["tag"] = "html";
 
-        # Set uuid
-        if(Context::getCurrentRoute("group") == "app") $this->_uuid = Uuid::create();
+        # Allocate an identifier only for app pages that cache initial state
+        if($cacheInitialState && Context::getCurrentRoute("group") === "app")
 
-        # New cache instance
+            # Scope the initial state to this document
+            $this->_uuid = Uuid::create();
+
+        # Share the configured client throughout this document
         $this->_cache = new Cache();
 
     }
@@ -107,10 +110,13 @@ class Structure {
     public function prepare():self {
 
         # New template
-        $this->instance["Handlebars"] = new Handlebars([
-            "template"    =>  Handlebars::HTML_STRUCTURE,
-            "partials"    =>  self::PARTIAL_BLOCK
-        ]);
+        $this->instance["Handlebars"] = new Handlebars(
+            [
+                "template"    =>  Handlebars::HTML_STRUCTURE,
+                "partials"    =>  self::PARTIAL_BLOCK
+            ],
+            $this->_cache
+        );
 
         # Load template
         $this->instance["Handlebars"]->load(File::path(self::TEMPLATES["index"]));
@@ -579,52 +585,20 @@ class Structure {
      */
     public function setBodyTemplate(string|array|null $template = null, $preset = null, ?array $data = [], ?string $customNameForTemplateCache = null):self {
 
-        # Check template
-        if(!$template || empty($template))
+        # Use the same data for HTML rendering and subsequent state requests
+        $data ??= [];
 
-            # Return current instance
-            return $this;
+        # Render the body with the document's shared template cache
+        $content = $this->_renderBodyTemplate($template, $preset, $data, $customNameForTemplateCache);
 
-        # Check extension of template
-        if(in_array(strtolower(pathinfo($template, PATHINFO_EXTENSION)), Handlebars::EXTENSIONS))
+        # Update the document only when a template was selected
+        if($content !== null){
 
-            # Set instance
-            $instance = "CrazyPHP\Library\Template\Handlebars";
+            # Store the payload when this page has a state identifier
+            $this->_cacheData($data);
 
-        # Check preset
-        if($preset)
-
-            # Prepare option
-            $option = [
-                'template'    =>  $preset,
-                'partials'    =>  Handlebars::loadAppPartials()
-            ];
-
-        # Else
-        else
-
-            # Set option
-            $option = [
-                'partials'    =>  Handlebars::loadAppPartials()
-            ];
-
-        # Check instance
-        if(isset($instance)){
-
-            # Prepare template
-            $templateInstance = new $instance($option);
-
-            # Load template
-            $templateInstance->load($template, $customNameForTemplateCache ? $customNameForTemplateCache : Context::get("routes.current.name"));
-
-            # Rendered template
-            $renderedTemplate = $templateInstance->render($data);
-
-            # Store uuid
-            $this->_uuid && $this->_cacheData($data);
-
-            # Set body with template render
-            $this->setBodyContent($renderedTemplate);
+            # Insert the rendered body
+            $this->setBodyContent($content);
 
         }
 
@@ -647,59 +621,14 @@ class Structure {
      */
     public function setBodyEmailTemplate(string|array|null $template = null, $preset = null, ?array $data = [], null|string|array $cssFiles = null, ?string $customNameForTemplateCache = null):self {
 
-        # Set instance
-        $instance = null;
+        # Render the email with the same template loader as an ordinary page
+        $renderedTemplate = $this->_renderBodyTemplate($template, $preset, $data ?? [], $customNameForTemplateCache);
 
-        # Check template
-        if(!$template || empty($template))
-
-            # Return current instance
-            return $this;
-
-        # Check extension of template
-        if(in_array(strtolower(pathinfo($template, PATHINFO_EXTENSION)), Handlebars::EXTENSIONS))
-
-            # Set instance
-            $instance = "CrazyPHP\Library\Template\Handlebars";
-
-        # Check preset
-        if($preset)
-
-            # Prepare option
-            $option = [
-                'template'    =>  $preset,
-                'partials'    =>  Handlebars::loadAppPartials()
-            ];
-
-        # Else
-        else
-
-            # Set option
-            $option = [
-                'partials'    =>  Handlebars::loadAppPartials()
-            ];
-
-        # Check instance
-        if($instance){
-
-            # Prepare template
-            $templateInstance = new $instance($option);
-
-            # Load template
-            $templateInstance->load($template, $customNameForTemplateCache ? $customNameForTemplateCache : Context::get("routes.current.name"));
-
-            # Rendered template in html
-            $renderedTemplate = $templateInstance->render($data);
+        # Apply email transformations only to a rendered template
+        if($renderedTemplate !== null){
 
             # css inliner
             $cssInliner = CssInliner::fromHtml($renderedTemplate)->inlineCss();
-
-            # Check css
-            if(!empty($cssFiles)){
-
-                # ->inlineCss($renderedTemplate)
-
-            }
 
             # Dom Document
             $domDocument = $cssInliner->getDomDocument();
@@ -985,6 +914,65 @@ class Structure {
             $attributes["data-crazy-color"] = $source;
 
         }
+
+    }
+
+    /**
+     * Render Body Template
+     *
+     * Load supported sources using this document's cache client and the caller's preset.
+     *
+     * @param string|array|null $template Ordered source paths
+     * @param mixed $preset Optional compiler preset
+     * @param array $data Template data
+     * @param string|null $name Optional cache namespace
+     * @return string|null Rendered HTML or null when there is no supported template
+     */
+    private function _renderBodyTemplate(string|array|null $template, mixed $preset, array $data, ?string $name):?string {
+
+        # Leave the current body intact when no template can be rendered
+        $result = null;
+
+        # Normalize a single template and preserve the order of multiple sources
+        $paths = (array) $template;
+
+        # Reject unsupported sources before calling the Handlebars compiler
+        foreach($paths as $path){
+
+            # Check the path and extension
+            if(!is_string($path) || !in_array(strtolower(pathinfo($path, PATHINFO_EXTENSION)), Handlebars::EXTENSIONS, true)){
+
+                # Discard the unsupported collection
+                $paths = [];
+
+                # Stop validating the remaining paths
+                break;
+
+            }
+
+        }
+
+        # Render a nonempty collection of supported sources
+        if($paths){
+
+            # Pass the document cache separately from its compiler options
+            $renderer = new Handlebars(
+                [
+                    "template"    =>  $preset ?: Handlebars::CRAZY_PRESET
+                ],
+                $this->_cache
+            );
+
+            # Load partials using the explicit namespace or current route
+            $renderer->loadWithAppPartials($paths, $name ?: Context::get("routes.current.name"));
+
+            # Render the current page data
+            $result = $renderer->render($data);
+
+        }
+
+        # Return the rendered body
+        return $result;
 
     }
 

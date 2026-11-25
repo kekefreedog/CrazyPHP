@@ -16,8 +16,9 @@ bin/*.log
 
 # PHPUnit (PHP)
 .phpunit.result.cache
-.cache/phpunit/*
-tests/.cache/*
+
+# Cache directories
+.cache/
 
 # Claude Code
 .claude

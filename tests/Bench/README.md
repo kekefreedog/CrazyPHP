@@ -16,6 +16,12 @@ composer bench -- --json > php-bench.json
 npm run --silent bench -- --json > npm-bench.json
 ```
 
+## Browser API transport
+
+The standard `npm run bench` report includes a `transport` table (and JSON field) measured with Node Fetch. It compares JSON and MessagePack, each with identity and HTTP gzip, on 1,000 records sent through the production PHP response class. For real browser timings run `npm run bench -- --browser`. Open the local URL printed after the command-line report and press Ctrl-C when finished. Both clients run the same measurement module and validate the actual content coding. The browser uses the installed build of msgpackr. The identity control supplies an identity-only request to the response class because browsers manage Accept-Encoding. The gzip case forwards the header actually sent by the client.
+
+The report shows medians across eleven observations after warm-up, rotating the starting case. Bytes are the encoded HTTP body length, excluding headers. PHP preparation includes serialization, content coding selection and compression. Client decode time measures UTF-8 plus JSON parsing or MessagePack unpacking on already decompressed bytes. Total time includes the local fetch, automatic HTTP decompression and the first parse, and excludes verification. Each client validates every field and the actual response headers. PHP's native msgpack extension, when installed, can change the server-side comparison.
+
 ## HTTP measurements
 
 `npm run bench` starts PHP on a free loopback port and stops it when the run finishes. By default the client sends 200 measured requests per endpoint at a concurrency of eight, after one warm-up request per client. Use `--requests` and `--concurrency` to change the workload. The npm JSON report contains decode measurements in `results` and HTTP measurements in `http`.

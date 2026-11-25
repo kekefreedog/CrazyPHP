@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>CrazyPHP API transport benchmark</title>
+<h1>CrazyPHP API transport benchmark</h1>
+<pre id="report">Measuring 1,000 catalog items…</pre>
+<script src="/__bench/transport/decoder.js"></script>
+<script type="module">
+import {measureTransport} from "/__bench/transport/measure.mjs";
+
+// Display the verified report or a visible failure
+measureTransport(location.origin, msgpackr.unpack).then(rows => {
+
+    // Include browser details alongside the machine-readable results
+    document.getElementById("report").textContent = JSON.stringify({browser: navigator.userAgent, items: 1000, samples: 11, rows}, null, 2);
+
+}).catch(error => {
+
+    // Report a failed measurement
+    document.getElementById("report").textContent = "Failed: " + error.message;
+
+});
+</script>
+</html>
