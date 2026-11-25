@@ -91,8 +91,7 @@ export default class Page {
                 // Page loader
                 new PageLoader({
                     name: page.className,
-                    // @ts-ignore
-                    scriptLoaded: page,
+                    scriptLoaded: page.classReference,
                     status: {
                         "scriptRegistered": true,
                         "contentLoaded": true,

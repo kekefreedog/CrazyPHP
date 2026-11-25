@@ -67,9 +67,6 @@ class ApiResponse extends Response {
         # Api set default parameters
         $this->_setDefaultParametersApi();
 
-        # Allow negotiation of the configured default
-        $this->_negotiateFormat = true;
-
         # Set default array return
         $this->_prepareDefaultContent();
         
@@ -408,8 +405,11 @@ class ApiResponse extends Response {
         # Get default format of response
         $responseFormat = Config::getValue("Router.parameters.api.format");
 
+        # A mode-specific format is selected by the application
+        $modeSpecific = is_array($responseFormat);
+
         # Check if custom type by front mode
-        if(is_array($responseFormat) && !empty($responseFormat)){
+        if($modeSpecific && !empty($responseFormat)){
 
             # Get mode of front
             $mode = trim(Config::getValue("Front.lastBuild.mode") ?? "");
@@ -446,8 +446,14 @@ class ApiResponse extends Response {
         # Preserve the configured format unless the client requests an alternative
         $acceptable = true;
 
-        # Negotiate only API formats with interchangeable structured envelopes
-        if($mime === "application/json" || $mime === "application/msgpack"){
+        # Negotiate a scalar JSON or MessagePack default
+        $negotiate = !$modeSpecific && in_array($mime, [
+            "application/json",
+            "application/msgpack"
+        ], true);
+
+        # Apply the request preferences to a negotiable default
+        if($negotiate){
 
             # Prefer the injected request when running outside the classic PHP SAPI
             $accept = $this->request?->getHeaderLine("Accept") ?? ($_SERVER["HTTP_ACCEPT"] ?? "");
@@ -485,6 +491,9 @@ class ApiResponse extends Response {
 
         # Install the selected encoder and its public MIME type
         $this->setContentType($mime, $mime === "application/msgpack" ? null : "UTF-8");
+
+        # Vary on Accept only when it participates in format selection
+        $this->_negotiateFormat = $negotiate;
 
         # Retain the disposition of the Accept header
         $this->_acceptableFormat = $acceptable;

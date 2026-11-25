@@ -17,6 +17,7 @@ namespace Tests\Core;
  */
 use CrazyPHP\Library\Time\DateTime as FrameworkDateTime;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\TestWith;
 use CrazyPHP\Library\File\MessagePack;
 use CrazyPHP\Exception\CrazyException;
 use CrazyPHP\Library\File\Config;
@@ -441,13 +442,16 @@ class ResponseTest extends TestCase {
     }
 
     /**
-     * Test Production API Defaults
-     *
-     * Keep MessagePack for clients using the existing production configuration.
+     * Verify the configured response format for each frontend build mode.
      *
      * @return void
      */
-    public function testProductionApiDefaults():void {
+    #[TestWith(["production", "application/msgpack", MessagePack::class])]
+    #[TestWith(["development", "application/json", Json::class])]
+    public function testModeSpecificApiFormat(string $mode, string $mime, string $encoder):void {
+
+        # Set the build mode in the isolated application
+        Config::setValue("Front.lastBuild.mode", $mode);
 
         # Use the legacy mode-specific format settings
         $GLOBALS[Config::PREFIX]["Router"] = [
@@ -463,8 +467,10 @@ class ResponseTest extends TestCase {
             ]
         ];
 
-        # Exercise clients with no preference, a wildcard and the original frontend header
+        # Exercise requests with absent, wildcard, tied and exclusive media preferences
         foreach([
+            "application/json",
+            "application/msgpack",
             "",
             "*/*",
             "application/json, application/msgpack"
@@ -481,8 +487,11 @@ class ResponseTest extends TestCase {
             # Select the wire representation
             $api->prepare();
 
-            # Preserve the production media type
-            self::assertSame("application/msgpack", $api->response->getHeaderLine("Content-Type"));
+            # Verify the mode selected the expected media type
+            self::assertSame($mime, explode(";", $api->response->getHeaderLine("Content-Type"))[0]);
+
+            # Vary only on compression when the build mode fixes the format
+            self::assertSame("Accept-Encoding", $api->response->getHeaderLine("Vary"));
 
             # Keep the response readable by clients without HTTP gzip support
             self::assertFalse($api->response->hasHeader("Content-Encoding"));
@@ -490,7 +499,7 @@ class ResponseTest extends TestCase {
             # Verify the original response shape
             self::assertSame([
                 "results"    =>  true
-            ], MessagePack::decode((string)$api->response->getBody()));
+            ], $encoder::decode((string)$api->response->getBody()));
 
         }
 
